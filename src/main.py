@@ -1,0 +1,2 @@
+def runner():
+    self.main = 
