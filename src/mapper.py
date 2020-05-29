@@ -1,4 +1,4 @@
-class Scheduling:
+class Mapper:
     def __init__(self, opts=None, constrainsts=None):
         total_cycles = 0
 
@@ -33,3 +33,4 @@ class Scheduling:
             return node.computational_expense // hwdesc
         else:
             return total_memory_accesses // memory_bandwidth
+
