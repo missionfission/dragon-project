@@ -1,3 +1,6 @@
+from utils import yaml_parser
+
+
 def runner():
     """
     Runs the Input Graph
