@@ -51,7 +51,7 @@ class Node:
         self._scope = scope
     
     def get_stats(self):
-        return self.computer_expense, self.read_access, self.write_access
+        return self.compute_expense, self.read_access, self.write_access
 
     def __repr__(self):
         text = ', '.join([str(v) for v in self.outputs])
