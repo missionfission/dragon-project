@@ -5,3 +5,5 @@ timeloop-accelergy-exercises/
 tfsim/
 src/plugins/
 .ipynb_checkpoints/*
+src/__pycache__/*
+src/ir/__pycache__/
