@@ -4,3 +4,4 @@ src/__pycache__/*
 src/ir/__pycache__/
 src/logs/
 src/.ipynb_checkpoints/
+src/configs/
