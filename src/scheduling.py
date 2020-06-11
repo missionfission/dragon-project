@@ -9,7 +9,6 @@ from utils.logger import create_logger
 class Scheduling:
     def __init__(
         self,
-        prim_file="primitive.yaml",
         constraintfiles=["max.yaml", "min.yaml"],
         hwfile="defaulthw.yaml",
         opts=None,
@@ -22,9 +21,6 @@ class Scheduling:
         )
         self.minval = yaml.load(
             open(base_dir + constraintfiles[1]), Loader=yamlordereddictloader.Loader
-        )
-        self.primitives = yaml.load(
-            open(base_dir + prim_file), Loader=yamlordereddictloader.Loader
         )
         self.config = self.create_config(
             yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
@@ -76,4 +72,15 @@ class Scheduling:
 
     def create_config(self, hwdict):
         config = collections.OrderedDict()
+        primitive_classes = ["DRAM", "SRAM", "mac", "regfile"]
+        for k in hwdict["local"].keys():
+            print(k["name"]["class"])
+            if k["name"]["class"] in primitive_classes:
+                if k["name"]["class"] == "DRAM":
+                    config["dram"] = k["name"]["class"]["attributes"]
+                if k["name"]["class"] == "SRAM":
+                    config["sram"] = k["name"]["class"]["attributes"]
+                if k["name"]["class"] == "regfile":
+        
+        
         return config
