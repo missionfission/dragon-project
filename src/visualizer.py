@@ -1,10 +1,13 @@
-
-
 def roofline_model():
-    return 0
+    pass
+
+
+# Generate a Time Lapse Video
+
 
 def generate_execution_movie():
-    return 0
+    pass
+
+
 def genvideologger(logger):
-    # Generate a Time Lapse Video 
-    return 0
+    pass

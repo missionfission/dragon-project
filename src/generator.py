@@ -7,11 +7,13 @@ class generators():
     Iterate over Generated Hardware Description
 
     """
-    return 0
+    pass 
+
 
     @staticmethod
-    def idealcharacteristics(self):
+    def characteristics(self):
     """
-    Ideal Execution Scheduling and generating characteristics by solving bottlenecks
+    Ideal Execution Scheduling and generating characteristics by solving bottlenecks 
+    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
     """
-    return 0
+    pass
