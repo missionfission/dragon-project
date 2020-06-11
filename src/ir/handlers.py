@@ -176,3 +176,18 @@ handlers = (
         None,
     ),
 )
+
+# TODO Merge Small Nodes
+
+
+def set_node_characterstics(graph):
+    for node in graph.nodes:
+        for operators, func in handlers:
+            if isinstance(operators, str):
+                operators = [operators]
+            if node.operator in operators:
+                if func is not None:
+                    print(node.operator)
+                    node.compute_expense, node.read_access, node.write_access = func(
+                        node
+                    )

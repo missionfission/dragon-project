@@ -12,22 +12,9 @@ import yamlordereddictloader
 from torchvision import models
 from yaml import dump
 
-from ir.handlers import handlers
+from ir.handlers import handlers, set_node_characterstics
 from ir.trace import trace
 from scheduling import Scheduling
-
-
-def set_node_characterstics(graph):
-    for node in graph.nodes:
-        for operators, func in handlers:
-            if isinstance(operators, str):
-                operators = [operators]
-            if node.operator in operators:
-                if func is not None:
-                    print(node.operator)
-                    node.compute_expense, node.read_access, node.write_access = func(
-                        node
-                    )
 
 
 def runner():
