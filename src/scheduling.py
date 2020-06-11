@@ -1,3 +1,11 @@
+import collections
+
+import yaml
+import yamlordereddictloader
+
+from utils.logger import create_logger
+
+
 class Scheduling:
     def __init__(
         self,
@@ -6,8 +14,9 @@ class Scheduling:
         hwfile="defaulthw.yaml",
         opts=None,
     ):
-        total_cycles = 0
         base_dir = "configs/"
+        self.total_cycles = 0
+
         self.maxval = yaml.load(
             open(base_dir + constraintfiles[0]), Loader=yamlordereddictloader.Loader
         )
@@ -17,8 +26,8 @@ class Scheduling:
         self.primitives = yaml.load(
             open(base_dir + prim_file), Loader=yamlordereddictloader.Loader
         )
-        self.config = yaml.load(
-            open(base_dir + hwfile), Loader=yamlordereddictloader.Loader
+        self.config = self.create_config(
+            yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
         )
 
     def run(self, graph):
@@ -36,13 +45,13 @@ class Scheduling:
         stats_logger = create_logger("logs/stats.txt")
         for node in graph.nodes:
             compute_expense, read_access, write_access = node.get_stats()
-            execution_logger.info("Execution Node %d", node)
+            execution_logger.info("Execution Node %r", node)
             # what will be time taken in compute
             time_compute = compute_expense / config["compute"]
             read_bw = read_access / time_compute
             write_bw = write_access / time_compute
             if read_bw < config["read_bw"] or write_bw < config["write_bw"]:
-                execution_logger.info("Node has Memory Bottleneck %b", True)
+                execution_logger.info("Node has Memory Bottleneck %r", True)
                 step_cycles = time_compute
                 # Check the Data Dependence Graph and Prefetch more nodes bandwidth
             elif read_bw < config["read_bw"] and write_bw > config["write_bw"]:
@@ -54,7 +63,17 @@ class Scheduling:
                     read_bw / config["read_bw"], write_bw / config["write_bw"]
                 )
             stats_logger.info(
-                "%d %d %d %d %d", node, step_cycles, read_access, write_access, bw_req
+                "%r %d %d %d %d %d",
+                node,
+                step_cycles,
+                read_access,
+                write_access,
+                read_bw,
+                write_bw,
             )
-            total_cycles += step_cycles
-        stats_logger.info("No of cycles %d - ", total_cycles)
+            self.total_cycles += step_cycles
+        stats_logger.info("Total No of cycles  = %d ", self.total_cycles)
+
+    def create_config(self, hwdict):
+        config = collections.OrderedDict()
+        return config
