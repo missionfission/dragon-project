@@ -1,9 +1,9 @@
 class Scheduling:
     def __init__(
         self,
-        primitive="primtive.yaml",
+        prim_file="primitive.yaml",
         constraintfiles=["max.yaml", "min.yaml"],
-        hwfile="default.yaml",
+        hwfile="defaulthw.yaml",
         opts=None,
     ):
         total_cycles = 0
@@ -15,7 +15,10 @@ class Scheduling:
             open(base_dir + constraintfiles[1]), Loader=yamlordereddictloader.Loader
         )
         self.primitives = yaml.load(
-            open(base_dir + primitive_file), Loader=yamlordereddictloader.Loader
+            open(base_dir + prim_file), Loader=yamlordereddictloader.Loader
+        )
+        self.config = yaml.load(
+            open(base_dir + hwfile), Loader=yamlordereddictloader.Loader
         )
 
     def run(self, graph):
@@ -28,26 +31,30 @@ class Scheduling:
         max, min values are not violated -> Values/Analyses for a different/unavailable point will require full 
         integration of plugins -> Currently using a table at 40nm.
         """
+        config = self.config
+        execution_logger = create_logger("logs/execution.txt")
+        stats_logger = create_logger("logs/stats.txt")
         for node in graph.nodes:
-            read_access, write_access, compute_expense = node.get_stats()
+            compute_expense, read_access, write_access = node.get_stats()
             execution_logger.info("Execution Node %d", node)
-            if bw_req < self.maxval[""]:
+            # what will be time taken in compute
+            time_compute = compute_expense / config["compute"]
+            read_bw = read_access / time_compute
+            write_bw = write_access / time_compute
+            if read_bw < config["read_bw"] or write_bw < config["write_bw"]:
                 execution_logger.info("Node has Memory Bottleneck %b", True)
-                step_cycles = get_number_cycles(node, True)
+                step_cycles = time_compute
+                # Check the Data Dependence Graph and Prefetch more nodes bandwidth
+            elif read_bw < config["read_bw"] and write_bw > config["write_bw"]:
+                step_cycles = write_bw / config["write_bw"]
+            elif read_bw > config["read_bw"] and write_bw < config["write_bw"]:
+                step_cycles = read_bw / config["read_bw"]
             else:
-                step_cycles = get_number_cycles(node, False)
-
+                step_cycles = max(
+                    read_bw / config["read_bw"], write_bw / config["write_bw"]
+                )
             stats_logger.info(
                 "%d %d %d %d %d", node, step_cycles, read_access, write_access, bw_req
             )
             total_cycles += step_cycles
-
         stats_logger.info("No of cycles %d - ", total_cycles)
-
-    def get_number_cycles(self, membtlnck, *args, **kwargs):
-        if membtlnck != True:
-            return (
-                node.computational_expense // maxval[self.compute_primitive]["latency"]
-            )
-        else:
-            return total_memory_accesses // memory_bandwidth
