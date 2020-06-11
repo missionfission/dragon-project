@@ -81,6 +81,5 @@ class Scheduling:
                 if k["name"]["class"] == "SRAM":
                     config["sram"] = k["name"]["class"]["attributes"]
                 if k["name"]["class"] == "regfile":
-        
-        
+                config['regfile']=k["name"]["class"]["attributes"]
         return config
