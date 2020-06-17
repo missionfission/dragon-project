@@ -31,12 +31,12 @@ class Generator:
         Where is area getting consumed the most?
         """
         compute_idle_time()
-        increase_memory_size()
-        increase_memory_bandwidth()
-        increase_compute_arrays()
+        increase_memory_size
+        increase_memory_bandwidth
+        increase_compute_arrays
         # Check if noc time is ever going to be a problem ?
         # Check whether minval and maxval satisfy here ?
-        arevaluesrealistic()
+        arevaluesrealistic
         return newhw
 
     def save_statistics(self, scheduler):
