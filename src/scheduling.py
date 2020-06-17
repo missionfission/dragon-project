@@ -7,53 +7,33 @@ from utils.logger import create_logger
 
 
 class Scheduling:
-    def __init__(
-        self,
-        constraintfiles=["max.yaml", "min.yaml"],
-        hwfile="default.yaml",
-        opts=None,
-    ):
+    def __init__(self, hwfile="default.yaml"):
         base_dir = "configs/"
         self.total_cycles = 0
         self.logger = create_logger("logs/stats.txt")
-
-        self.maxval = yaml.load(
-            open(base_dir + constraintfiles[0]), Loader=yamlordereddictloader.Loader
-        )
-        self.minval = yaml.load(
-            open(base_dir + constraintfiles[1]), Loader=yamlordereddictloader.Loader
-        )
         self.config = self.create_config(
             yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
         )
 
     def run(self, graph):
+
         """
-        Scheduling works in the following way :
-        1. Start with a given/random Hardware point -> Nodes of the graph are scheduled (prefetching)
-        2. Do the Scheduling with that Point -> Mapping stops here -> Further evaluation is done using accelergy 
-        (with values taken from ERT/ART) -> If values not available -> Use plugins for generating these values 
-        3. Log bottlenecks and work on a different Hardware point -> do this till some realistically
-        max, min values are not violated -> Values/Analyses for a different/unavailable point will require full 
-        integration of plugins -> Currently using a table at 40nm.
-        """
+        Check both size, utilization and bandwidths at every node
+        What about memory size that can also get exhausted ?
+        So if memory size is exhausted, then have to go to a previous level and write there ?
+        if any level utilization is exhausted then only the immediate memory required will be kept.
+        if the memory is empty in size, but is not bandwidth, it is useless?
+        Cannot do prefetching
+        Read access of the next node will decrease
+        Bandwidth is available but size is not?, can do prefetching, but now the memory fetches have to check, 
+        whether to do fetches of the same node or a different node
+        Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+        slower so it will take its own time
+        Do vector operations in the meantime perhaps ? 
+
+    """
+
         config = self.config
-        mem_util = np.zeros((self.mle))
-
-        # Read access of the next node will decrease
-        # Check both size, utilization and bandwidths at every node
-        # What about memory size that can also get exhausted ?
-        # So if memory size is exhausted, then have to go to a previous level and write there ?
-        # if any level utilization is exhausted then only the immediate memory required will be kept.
-        # if the memory is empty in size, but is not bandwidth, it is useless?
-        # Cannot do prefetching, if it is empty in both
-        # size and bandwidth, can do prefetching, but now the memory fetches have to check,
-        # whether to do fetches of the same
-        # node or a different node
-        # say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
-        # slower so it will take its own time
-        # Do vector operations in the meantime perhaps ?
-
         for node in graph.nodes:
             compute_expense, read_access, write_access = node.get_stats()
             self.logger.info(node.get_stats())
@@ -94,17 +74,20 @@ class Scheduling:
                 "Node operator %r, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
                 node.operator,
                 step_cycles,
-                read_access,
-                write_access,
+                read_accesses,
+                write_accesses,
             )
             self.total_cycles += step_cycles
-        self.logger.info("Total No of cycles  = %d ", self.total_cycles)
 
     def create_config(self, hwdict):
         config = hwdict["architecture"]
+
         self.logger.info("Config Statistics : ")
 
         self.mle = config["memory_levels"]
+
+        self.read_accesses = np.zeros((self.mle))
+        self.write_accesses = np.zeros((self.mle))
         self.mem_size = np.zeros((self.mle))
         self.mem_util = np.zeros((self.mle))
         self.mem_read_bw = np.zeros((self.mle))
