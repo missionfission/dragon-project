@@ -18,20 +18,15 @@ class Scheduling:
     def run(self, graph):
 
         """
-        Check both size, utilization and bandwidths at every node
-        What about memory size that can also get exhausted ?
-        So if memory size is exhausted, then have to go to a previous level and write there ?
-        if any level utilization is exhausted then only the immediate memory required will be kept.
-        if the memory is empty in size, but is not bandwidth, it is useless?
-        Cannot do prefetching
-        Read access of the next node will decrease
-        Bandwidth is available but size is not?, can do prefetching, but now the memory fetches have to check, 
-        whether to do fetches of the same node or a different node
-        Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
-        slower so it will take its own time
-        Do vector operations in the meantime perhaps ? 
-
-    """
+        Memory State = Utilization, Bandwidth Use
+        Memory Statistics = Size and Maximum Bandwidth 
+        Scenario 1 : Utilization is high/low, Bandwidth Use is High ?
+        Then : Cannot Prefetch
+        Scenario 2 : Utilization is High, Bandwidth Use is Low ?
+        Then : Stream Current Node
+        Scenario 3 : Utilization is Low, Bandwidth Use is Low ?
+        Then : Can Prefetch Next Node, Read access of the next node will decrease
+        """
 
         config = self.config
         for node in graph.nodes:
