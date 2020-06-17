@@ -5,6 +5,7 @@ import torch.jit
 
 from ir.flatten import Flatten, flatten
 from ir.graph import Graph
+from ir.handlers import handlers
 from ir.node import Node
 from ir.variable import Variable
 
@@ -41,7 +42,16 @@ def trace(model, args=(), kwargs=None):
             outputs=[variables[v] for v in x.outputs() if v in variables],
             scope=x.scopeName().replace("Flatten/", "", 1).replace("Flatten", "", 1),
         )
-        nodes.append(node)
+        for operators, func in handlers:
+            if isinstance(operators, str):
+                operators = [operators]
+            if node.operator in operators:
+                if func is not None:
+                    node.compute_expense, node.read_access, node.write_access = func(
+                        node
+                    )
+                    if node.compute_expense > 0:
+                        nodes.append(node)
 
     graph = Graph(
         name=model.__class__.__module__ + "." + model.__class__.__name__,
