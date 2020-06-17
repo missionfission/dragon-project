@@ -74,8 +74,8 @@ class Scheduling:
                 "Node operator %r, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
                 node.operator,
                 step_cycles,
-                read_accesses,
-                write_accesses,
+                read_access,
+                write_access,
             )
             self.total_cycles += step_cycles
 
