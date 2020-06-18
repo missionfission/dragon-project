@@ -1,5 +1,6 @@
 import collections
 
+import numpy as np
 import yaml
 import yamlordereddictloader
 
@@ -55,18 +56,18 @@ class Scheduling:
                 read_bw_ll < self.mem_read_bw[self.mle - 1]
                 and write_bw_ll > self.mem_write_bw[self.mle - 1]
             ):
-                step_cycles = write_bw / self.mem_write_bw[self.mle - 1]
+                step_cycles = write_bw_ll / self.mem_write_bw[self.mle - 1]
 
             elif (
                 read_bw_ll > self.mem_read_bw[self.mle - 1]
                 and write_bw_ll < self.mem_write_bw[self.mle - 1]
             ):
-                step_cycles = read_bw / self.mem_read_bw[self.mle - 1]
+                step_cycles = read_bw_ll / self.mem_read_bw[self.mle - 1]
 
             else:
                 step_cycles = max(
-                    read_bw / self.mem_read_bw[self.mle - 1],
-                    write_bw / self.mem_write_bw[self.mle - 1],
+                    read_bw_ll / self.mem_read_bw[self.mle - 1],
+                    write_bw_ll / self.mem_write_bw[self.mle - 1],
                 )
             self.logger.info(
                 "Node operator %r, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
