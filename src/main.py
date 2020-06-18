@@ -47,12 +47,13 @@ def runner(graph_set):
     for graph in graph_set:
         scheduler = Scheduling()
         scheduler.run(graph)
+        generator.save_statistics(scheduler)
         for i in range(num_iterations):
-            generator.save_statistics(scheduler)
             nexthw = generator.findnext(scheduler)
-            generator.writehwfile("iter" + str(i) + "hw.yaml")
-            scheduler.create_config(newhw)
+            generator.writehwfile(nexthw, "iter" + str(i) + "hw.yaml")
+            scheduler.create_config(nexthw)
             scheduler.run(graph)
+            generator.save_statistics(scheduler)
 
 
 ####################################

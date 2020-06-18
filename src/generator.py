@@ -13,11 +13,18 @@ class Generator:
             open(base_dir + constraintfiles[1]), Loader=yamlordereddictloader.Loader
         )
 
-    def writehwfile(self, filename):
+    def writehwfile(self, content, filename):
         """
         Generate Hardware Description Yaml File 
         """
-        pass
+        outfile = open(filename, "w")
+        outfile.write(
+            yaml.dump(
+                content,
+                default_flow_style=False,
+                Dumper=yamlordereddictloader.SafeDumper,
+            )
+        )
 
     def findnext(self, scheduler, opts=None):
         opts = ["energy", "time", "area", "edp"]
