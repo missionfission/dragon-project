@@ -13,7 +13,7 @@ architecture:
       size: 10
     level1:
       class: DRAM
-      frequency: 1000
+      frequency: 10000
       banks: 4
       read_ports: 1
       write_ports: 1
