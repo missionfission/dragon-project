@@ -8,7 +8,7 @@ class Generator:
         base_dir = "configs/"
 
         self.maxval = yaml.load(
-            open(base_dir + constraintfiles[0]), Loader=yamlordereddictloader.Loader
+            open(base_dir + constraintfiles), Loader=yamlordereddictloader.Loader
         )
 
     def writehwfile(self, content, filename):
@@ -35,16 +35,18 @@ class Generator:
         Energy high due to high of everything but compute is slow
         Where is area getting consumed the most?
         """
-        # compute_idle_time
-        # increase_memory_size
-        # increase_memory_bandwidth/memory_connections
-        # increase number of compute_arrays
-        # change size of compute_arrays
-        # change number of memory banks
-        # Are Values Realistic : is the value of bandwidth and number of connections etc < maxval
-        # Is the size of memory array < maxval
-        # Check if noc time is ever going to be a problem ?
-        # Check whether minval and maxval satisfy here ?
+        """
+        compute_idle_time
+        increase_memory_size
+        increase_memory_bandwidth/memory_connections
+        increase number of compute_arrays
+        change size of compute_arrays
+        change number of memory banks
+        Are Values Realistic : is the value of bandwidth and number of connections etc < maxval
+        Is the size of memory array < maxval
+        Check if noc time is ever going to be a problem ?
+        Check whether minval and maxval satisfy here ?
+        """
         newhw = scheduler.config
         mm_compute = config["mm_compute"]
         vector_compute = config["vector_compute"]

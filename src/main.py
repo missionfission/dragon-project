@@ -63,7 +63,7 @@ for name, model in models.__dict__.items():
         continue
     model = model().eval()
     if "resnet50" in name:
-        inputs = torch.randn(1, 3, 299, 299)
+        inputs = torch.randn(1, 3, 100, 100)
         graph = trace(model, inputs)
 
 runner([graph])

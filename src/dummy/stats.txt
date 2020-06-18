@@ -1,0 +1,239 @@
+Config Statistics : 
+MM Compute per cycle : 131072
+Compute Bandwidth Required : 2048000
+Memory at Level 0, Read Bandwidth 128000 Write Bandwidth 128000
+Memory at Level 1, Read Bandwidth 256000 Write Bandwidth 256000
+Config Statistics : 
+MM Compute per cycle : 131072
+Compute Bandwidth Required : 2048000
+Memory at Level 0, Read Bandwidth 128000 Write Bandwidth 128000
+Memory at Level 1, Read Bandwidth 256000 Write Bandwidth 256000
+(23520000, 480147, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 179, Read Accesses 480147, Write Accesses 0 
+(5120000, 5120064, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 39, Read Accesses 5120064, Write Accesses 0 
+(92160000, 10241152, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 703, Read Accesses 10241152, Write Accesses 0 
+(20480000, 20480128, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 156, Read Accesses 20480128, Write Accesses 0 
+(10240000, 10240064, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 78, Read Accesses 10240064, Write Accesses 0 
+(20480000, 20480256, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 156, Read Accesses 20480256, Write Accesses 0 
+(92160000, 10241152, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 703, Read Accesses 10241152, Write Accesses 0 
+(20480000, 20480128, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 156, Read Accesses 20480128, Write Accesses 0 
+(20480000, 20480256, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 156, Read Accesses 20480256, Write Accesses 0 
+(92160000, 10241152, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 703, Read Accesses 10241152, Write Accesses 0 
+(20480000, 20480128, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 156, Read Accesses 20480128, Write Accesses 0 
+(40960000, 40960256, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 312, Read Accesses 40960256, Write Accesses 0 
+(99680256, 11077888, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 760, Read Accesses 11077888, Write Accesses 0 
+(22151168, 22151424, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151424, Write Accesses 0 
+(22151168, 22151424, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151424, Write Accesses 0 
+(22151168, 22151680, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151680, Write Accesses 0 
+(99680256, 11077888, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 760, Read Accesses 11077888, Write Accesses 0 
+(22151168, 22151424, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151424, Write Accesses 0 
+(22151168, 22151680, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151680, Write Accesses 0 
+(99680256, 11077888, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 760, Read Accesses 11077888, Write Accesses 0 
+(22151168, 22151424, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151424, Write Accesses 0 
+(22151168, 22151680, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151680, Write Accesses 0 
+(99680256, 11077888, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 760, Read Accesses 11077888, Write Accesses 0 
+(22151168, 22151424, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 169, Read Accesses 22151424, Write Accesses 0 
+(44302336, 44302848, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 338, Read Accesses 44302848, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25691136, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25691136, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25691136, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25691136, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25691136, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25691136, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25691136, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25691136, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(25690112, 25691136, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25691136, Write Accesses 0 
+(115605504, 12849664, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 882, Read Accesses 12849664, Write Accesses 0 
+(25690112, 25690624, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 196, Read Accesses 25690624, Write Accesses 0 
+(51380224, 51381248, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 392, Read Accesses 51381248, Write Accesses 0 
+(150994944, 16786432, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 1152, Read Accesses 16786432, Write Accesses 0 
+(33554432, 33555456, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33555456, Write Accesses 0 
+(33554432, 33555456, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33555456, Write Accesses 0 
+(33554432, 33556480, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33556480, Write Accesses 0 
+(150994944, 16786432, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 1152, Read Accesses 16786432, Write Accesses 0 
+(33554432, 33555456, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33555456, Write Accesses 0 
+(33554432, 33556480, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33556480, Write Accesses 0 
+(150994944, 16786432, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 1152, Read Accesses 16786432, Write Accesses 0 
+(33554432, 33555456, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::_convolution', Step Cycles 256, Read Accesses 33555456, Write Accesses 0 
+(2048, 0, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::adaptive_avg_pool2d', Step Cycles 0, Read Accesses 0, Write Accesses 0 
+(2048000, 2051048, 0)
+node has memory bottleneck at level  0
+memory size is too small  0
+Node operator 'aten::addmm', Step Cycles 15, Read Accesses 2051048, Write Accesses 0 
+Tool Output
+===========================
+Total No of cycles  = 21275 
+Memory Energy Consumption  = 0 
+Compute Energy Consumption  = 0 
+ Total Energy Consumption  = 0 
+Memory Area Consumption  = 0 
+Compute Area Consumption  = 0 
+Total Area Consumption  = 0 

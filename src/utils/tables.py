@@ -5,13 +5,14 @@ import pandas as pd
 ## Load Area Tables 
 
 
-class plugins():
+class tables():
     
     def __init__(self):
         
-    
-    @staticmethod
-    def instantiate_plugins():
+    pass 
+
+    def create_tables(self):
     """
     InstantiatePlugins here
     """
+    pass 
