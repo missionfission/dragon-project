@@ -32,7 +32,9 @@ class Scheduling:
         """
 
         config = self.config
+
         graph = self.merge_nodes(graph)
+
         for node in graph.nodes:
             compute_expense, read_access, write_access = node.get_stats()
             self.logger.info(node.get_stats())
