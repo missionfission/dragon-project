@@ -18,6 +18,8 @@ class Scheduling:
     def run(self, graph):
 
         """
+        Compute is Excessive at Some Nodes ?
+        Do a Hardware Pass and Try to Small Nodes Together ?
         Memory State = Utilization, Bandwidth Use
         Memory Statistics = Size and Maximum Bandwidth 
         Scenario 1 : Utilization is high/low, Bandwidth Use is High ?
@@ -29,6 +31,7 @@ class Scheduling:
         """
 
         config = self.config
+        graph = self.merge_nodes(graph)
         for node in graph.nodes:
             compute_expense, read_access, write_access = node.get_stats()
             self.logger.info(node.get_stats())
@@ -73,6 +76,10 @@ class Scheduling:
                 write_access,
             )
             self.total_cycles += step_cycles
+
+    def merge_nodes(self, graph):
+
+        return graph
 
     def create_config(self, hwdict):
         config = hwdict["architecture"]
