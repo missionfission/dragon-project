@@ -81,6 +81,17 @@ class Scheduling:
             self.total_cycles += step_cycles
 
     def merge_nodes(self, graph):
+        # Check nodes which are independent and parallel, can be merged ?
+        ## If the nodes combined compute is lesser than total available compute
+        nodes = graph.nodes
+        if node1.compute_expense + node2.compute_expense < total_compute:
+            node3 = [node1, node2]
+
+        self.logger.info("Merging Nodes %r %r", node1.operator, node2.operator)
+        self.logger.info(
+            "Merging Nodes %d %d", node1.compute_expense, node2.compute_expense
+        )
+        self.logger.info("")
 
         return graph
 
