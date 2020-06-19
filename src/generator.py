@@ -27,6 +27,8 @@ class Generator:
     def findnext(self, scheduler, opts=None):
         opts = ["energy", "time", "area", "edp"]
         """
+        We just create a contigous space of timing, area and memory of the various technologies : next 
+        we optimize it further ?
         Time lost due to small memory size ?
         Time lost due to small memory bandwidth ?
         Time lost due to high of everything but compute is slow
@@ -89,6 +91,13 @@ class Generator:
             self.mem_size[i] = memory["size"]
 
         return newhw
+
+    def findtechnologyparameters(self):
+        """
+
+        have to really think, what is the technology space, and how we can rapidly find our point there 
+        """
+        pass
 
     def save_statistics(self, scheduler):
         """
