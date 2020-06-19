@@ -27,17 +27,21 @@ class Generator:
     def findnext(self, scheduler, opts=None):
         opts = ["energy", "time", "area", "edp"]
         """
-        We just create a contigous space of timing, area and memory of the various technologies : next 
-        we optimize it further ?
-        Time lost due to small memory size ?
-        Time lost due to small memory bandwidth ?
-        Time lost due to high of everything but compute is slow
-        Energy high due to small memory size ?
-        Energy high due to small memory bandwidth ?
-        Energy high due to high of everything but compute is slow
-        Where is area getting consumed the most?
-        """
-        """
+        We parameterize the contigous space of timing, area and memory of the various technologies 
+        So, several technologies appear as different curves in this space : right ?
+        So, to find a better point in this multidimensional contigous space of technologies and hardware,
+        we can analyze the effects of various bottlenecks in the data-flow graph processing : Then we can do what wasn't possible 
+        The trade-offs of memory sizing and technology sizing are clearly visible in this space.
+        Then we combine this space, total architecture is the joint space of memory, compute and networking space 
+        Now the combination of this space is a space -> Convex Optimization 
+
+        Say, a memory bottleneck is encountered in the data-flow graph : that changes this contigous space, 
+        we also get a data-flow graph space ?, and from that data-flow graph space, we can get a new point of graphical representation ?
+
+
+
+        Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+
         compute_idle_time
         increase_memory_size
         increase_memory_bandwidth/memory_connections
@@ -48,6 +52,15 @@ class Generator:
         Is the size of memory array < maxval
         Check if noc time is ever going to be a problem ?
         Check whether minval and maxval satisfy here ?
+
+        Time lost due to small memory size ?
+        Time lost due to small memory bandwidth ?
+        Time lost due to high of everything but compute is slow
+        Energy high due to small memory size ?
+        Energy high due to small memory bandwidth ?
+        Energy high due to high of everything but compute is slow
+        
+        Where is area getting consumed the most?
         """
         newhw = scheduler.config
         mm_compute = config["mm_compute"]
