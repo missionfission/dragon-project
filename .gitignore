@@ -6,3 +6,4 @@ src/logs/
 src/.ipynb_checkpoints/
 src/configs/
 src/utils/__pycache__/*
+accel-sim-v2/*
