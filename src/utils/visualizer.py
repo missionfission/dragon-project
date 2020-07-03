@@ -21,14 +21,38 @@ def genvideologger():
     pass
 
 
-def bar_graph(filename, var, xticklabels=None, xlabel=None, ylabel=None, bar_width=0.2):
+def bar_graph(
+    filename,
+    var1,
+    var2,
+    var3,
+    xticklabels=None,
+    xlabel=None,
+    ylabel=None,
+    bar_width=0.2,
+):
     fig, ax = plt.subplots(figsize=(30, 10))
     base_dir = "figures/"
     error_config = {"ecolor": "0.3"}
-    index = np.arange((len(var)))
+    index = np.arange((len(var1)))
+    plt.axhline(y=var3, color="black", linestyle="-", label="Limit", linewidth=6)
     ax.bar(
-        index, var, bar_width, color="blue", error_kw=error_config, label="",
+        index,
+        var1,
+        bar_width,
+        color="blue",
+        error_kw=error_config,
+        label="Bandwidth Requirements",
     )
+    ax.bar(
+        index + 2 * bar_width,
+        var2,
+        bar_width,
+        color="red",
+        error_kw=error_config,
+        label="Actual Bandwidth in Execution",
+    )
+    ax.legend(fontsize=20)
     ax.set_xticks(index)
     ax.set_xticklabels(xticklabels)
     plt.xticks(rotation=80)
