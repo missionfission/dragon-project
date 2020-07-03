@@ -53,6 +53,7 @@ def bar_graph(
         label="Actual Bandwidth in Execution",
     )
     ax.legend(fontsize=20)
+    plt.yscale("log")
     ax.set_xticks(index)
     ax.set_xticklabels(xticklabels)
     plt.xticks(rotation=80)
