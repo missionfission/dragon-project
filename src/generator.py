@@ -116,12 +116,29 @@ class Generator:
         """
         Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
         """
+        config = scheduler.config
+        mm_compute = config["mm_compute"]
         mem_area = np.zeros((scheduler.mle))
-        compute_area = 0
-        total_area = np.sum(mem_area) + compute_area
 
+        compute_area = get_area(
+            mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
+        )
+        mem_energy_access = np.zeros((scheduler.mle, 2))
         mem_energy = np.zeros((scheduler.mle))
-        compute_energy = 0
+        compute_energy = get_energy(
+            mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
+        )
+
+        for i in range(scheduler.mle):
+            memory = config["memory"]["level" + str(i)]
+            mem_energy_access[i] = get_energy(
+                memory["size"], memory["read_ports"], memory["width"],
+            )
+            mem_area[i] = get_area(
+                memory["size"], memory["read_ports"], memory["width"], memory["banks"]
+            )
+
+        total_area = np.sum(mem_area) + compute_area
         total_energy = np.sum(mem_energy) + compute_energy
 
         scheduler.logger.info("Tool Output")
