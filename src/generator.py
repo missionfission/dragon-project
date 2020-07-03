@@ -144,6 +144,7 @@ class Generator:
         scheduler.logger.info("Tool Output")
         scheduler.logger.info("===========================")
         scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
+        # scheduler.logger.info("Frequency of Execution = %d ")
         scheduler.logger.info("Memory Energy Consumption  = %d ", np.sum(mem_energy))
         scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
         scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
