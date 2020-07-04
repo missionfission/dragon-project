@@ -59,8 +59,8 @@ def bar_graph(
     plt.xticks(rotation=80)
     plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
     plt.rc("ytick", labelsize=20)
-    ax.set_ylabel("Read Bandwidth", fontsize=20)
-    ax.set_xlabel("Graph Nodes", fontsize=20)
+    ax.set_ylabel("Read Bandwidth", fontsize=20, fontweight="bold")
+    ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
     fig.tight_layout()
     plt.savefig(base_dir + filename, bbox_inches="tight")
     plt.show()

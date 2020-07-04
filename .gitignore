@@ -8,3 +8,4 @@ src/configs/
 src/utils/__pycache__/*
 accel-sim-v2/*
 tables/
+figures/
