@@ -120,21 +120,21 @@ class Generator:
         mm_compute = config["mm_compute"]
         mem_area = np.zeros((scheduler.mle))
 
-        compute_area = get_area(
+        compute_area = self.get_compute_area(
             mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
         )
         mem_energy_access = np.zeros((scheduler.mle, 2))
         mem_energy = np.zeros((scheduler.mle))
-        compute_energy = get_energy(
+        compute_energy = self.get_compute_energy(
             mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
         )
 
         for i in range(scheduler.mle):
             memory = config["memory"]["level" + str(i)]
-            mem_energy_access[i] = get_energy(
+            mem_energy_access[i] = self.get_mem_energy(
                 memory["size"], memory["read_ports"], memory["width"],
             )
-            mem_area[i] = get_area(
+            mem_area[i] = self.get_mem_area(
                 memory["size"], memory["read_ports"], memory["width"], memory["banks"]
             )
 
@@ -151,3 +151,15 @@ class Generator:
         scheduler.logger.info("Memory Area Consumption  = %d ", np.sum(mem_area))
         scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
         scheduler.logger.info("Total Area Consumption  = %d ", total_area)
+
+    def get_mem_energy(self):
+        pass
+
+    def get_mem_area(self):
+        pass
+
+    def get_compute_energy(self):
+        pass
+
+    def get_compute_area(self):
+        pass
