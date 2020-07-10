@@ -1,6 +1,9 @@
 import numpy as np
+import pandas as pd
 import yaml
 import yamlordereddictloader
+
+mem_table = np.array(pd.read_csv("tables/sram.csv"))
 
 
 class Generator:
@@ -120,9 +123,11 @@ class Generator:
         mm_compute = config["mm_compute"]
         mem_area = np.zeros((scheduler.mle))
 
-        compute_area = self.get_compute_area(
-            mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
+        compute_area = (
+            self.get_compute_area(mm_compute["class"], mm_compute["size"])
+            * mm_compute["N_PE"]
         )
+
         mem_energy_access = np.zeros((scheduler.mle, 2))
         mem_energy = np.zeros((scheduler.mle))
         compute_energy = self.get_compute_energy(
@@ -132,10 +137,10 @@ class Generator:
         for i in range(scheduler.mle):
             memory = config["memory"]["level" + str(i)]
             mem_energy_access[i] = self.get_mem_energy(
-                memory["size"], memory["read_ports"], memory["width"],
+                memory["size"], memory["read_ports"], memory["banks"], connectivity,
             )
             mem_area[i] = self.get_mem_area(
-                memory["size"], memory["read_ports"], memory["width"], memory["banks"]
+                memory["size"], memory["read_ports"], memory["banks"], connectivity,
             )
 
         total_area = np.sum(mem_area) + compute_area
@@ -144,7 +149,6 @@ class Generator:
         scheduler.logger.info("Tool Output")
         scheduler.logger.info("===========================")
         scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
-        # scheduler.logger.info("Frequency of Execution = %d ")
         scheduler.logger.info("Memory Energy Consumption  = %d ", np.sum(mem_energy))
         scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
         scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
@@ -152,14 +156,14 @@ class Generator:
         scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
         scheduler.logger.info("Total Area Consumption  = %d ", total_area)
 
-    def get_mem_energy(self):
-        pass
+    # def get_mem_energy(self, *args, **kwargs):
+    #     pass
 
-    def get_mem_area(self):
-        pass
+    # def get_mem_area(self, *args, **kwargs):
+    #     pass
 
-    def get_compute_energy(self):
-        pass
+    # def get_compute_energy(self, *args, **kwargs):
+    #     pass
 
-    def get_compute_area(self):
-        pass
+    # def get_compute_area(self, *args, **kwargs):
+    #     pass
