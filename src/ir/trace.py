@@ -52,6 +52,9 @@ def trace(model, args=(), kwargs=None):
                     )
                     if node.compute_expense > 0:
                         nodes.append(node)
+    for i, node in enumerate(nodes):
+        if (i<len(nodes)-1):
+            node.next = nodes[i+1]
 
     graph = Graph(
         name=model.__class__.__module__ + "." + model.__class__.__name__,
