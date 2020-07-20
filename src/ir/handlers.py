@@ -79,6 +79,7 @@ def batch_norm(node):
 
 def instance_norm_or_layer_norm(node):
     os = node.outputs[0].shape
+
     return np.prod(os), 0, 0, 0, 0
 
 

@@ -11,7 +11,7 @@ class Node:
         self.mem_util = 0  # out_edge_mem + read_access
         self.in_edge_mem = 0
         self.out_edge_mem = 0
-        self.next = []
+        self.next = None
 
     @property
     def operator(self):
