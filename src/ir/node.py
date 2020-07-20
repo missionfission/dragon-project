@@ -8,7 +8,9 @@ class Node:
         self.compute_expense = 0
         self.read_access = 0
         self.write_access = 0
-        self.mem_util = 0
+        self.mem_util = 0  # out_edge_mem + read_access
+        self.in_edge_mem = 0
+        self.out_edge_mem = 0
         self.next = []
 
     @property

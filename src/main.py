@@ -13,7 +13,7 @@ from torchvision import models
 from yaml import dump
 
 from generator import Generator
-from ir.handlers import handlers, set_node_characterstics
+from ir.handlers import handlers
 from ir.trace import trace
 from scheduling import Scheduling
 
