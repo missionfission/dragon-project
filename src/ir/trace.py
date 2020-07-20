@@ -50,11 +50,13 @@ def trace(model, args=(), kwargs=None):
                     node.compute_expense, node.read_access, node.write_access = func(
                         node
                     )
+                    node.mem_util = node.read_access
                     if node.compute_expense > 0:
                         nodes.append(node)
+
     for i, node in enumerate(nodes):
-        if (i<len(nodes)-1):
-            node.next = nodes[i+1]
+        if i < len(nodes) - 1:
+            node.next = nodes[i + 1]
 
     graph = Graph(
         name=model.__class__.__module__ + "." + model.__class__.__name__,

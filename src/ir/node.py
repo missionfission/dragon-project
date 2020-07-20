@@ -8,6 +8,7 @@ class Node:
         self.compute_expense = 0
         self.read_access = 0
         self.write_access = 0
+        self.mem_util = 0
         self.next = []
 
     @property
