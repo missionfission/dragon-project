@@ -1,0 +1,67 @@
+==============================
+Analyzing vgg_net with (word, batchsize, memsize) = (16, 1, 512)
+{'node_1': {'conv01': {'Active time': 4.2336e-05, 'Stalled time': 1.7962e-05, 'Total time': 6.0298e-05, 'Compute active energy': 0.0001647378432, 'Register file energy': 0.00063814238208, 'Idle Energy': 0.000191162990592, 'Total Cache Energy': 5.01779174561128e-05, 'Total Mem Energy': 0.000137212108800035, 'Mem Reads': 416541.0, 'Mem Writes': 135168.0, 'Total Energy': 0.00118143324212815}, 'conv02': {'Active time': 0.000903168, 'Stalled time': 0.000294112, 'Total time': 0.00119728, 'Compute active energy': 0.0035144073216, 'Register file energy': 0.01361370415104, 'Idle Energy': 0.00379574157312, 'Total Cache Energy': 8.70910595070597e-05, 'Total Mem Energy': 0.000200202444800671, 'Mem Reads': 724111.0, 'Mem Writes': 135168.0, 'Total Energy': 0.0212111465500677}, 'conv03': {'Active time': 0.000451584, 'Stalled time': 0.000127348, 'Total time': 0.000578932, 'Compute active energy': 0.0017572036608, 'Register file energy': 0.00680685207552, 'Idle Energy': 0.001835390435328, 'Total Cache Energy': 4.43810023854146e-05, 'Total Mem Energy': 8.89387008003178e-05, 'Mem Reads': 368991.0, 'Mem Writes': 34816.0, 'Total Energy': 0.0105327658748337}, 'conv04': {'Active time': 0.000903168, 'Stalled time': 0.00029152, 'Total time': 0.001194688, 'Compute active energy': 0.0035144073216, 'Register file energy': 0.01361370415104, 'Idle Energy': 0.003787524145152, 'Total Cache Energy': 6.46102454259924e-05, 'Total Mem Energy': 0.000123404083200669, 'Mem Reads': 537279.0, 'Mem Writes': 34816.0, 'Total Energy': 0.0211036499464187}, 'conv05': {'Active time': 0.00045864, 'Stalled time': 6.118e-05, 'Total time': 0.00051982, 'Compute active energy': 0.001784659968, 'Register file energy': 0.0069132091392, 'Idle Energy': 0.00164798742528, 'Total Cache Energy': 5.61502849196209e-05, 'Total Mem Energy': 8.49508352002615e-05, 'Mem Reads': 414799.0, 'Mem Writes': 0.0, 'Total Energy': 0.0104869576525999}, 'conv06': {'Active time': 0.00091728, 'Stalled time': 0.00016076, 'Total time': 0.00107804, 'Compute active energy': 0.003569319936, 'Register file energy': 0.0138264182784, 'Idle Energy': 0.00341771452416, 'Total Cache Energy': 0.000100222262015054, 'Total Mem Energy': 0.000159625830400557, 'Mem Reads': 779423.0, 'Mem Writes': 0.0, 'Total Energy': 0.0210733008309756}, 'conv07': {'Active time': 0.00091728, 'Stalled time': 0.00016076, 'Total time': 0.00107804, 'Compute active energy': 0.003569319936, 'Register file energy': 0.0138264182784, 'Idle Energy': 0.00341771452416, 'Total Cache Energy': 0.000100222262015054, 'Total Mem Energy': 0.000159625830400557, 'Mem Reads': 779423.0, 'Mem Writes': 0.0, 'Total Energy': 0.0210733008309756}, 'conv08': {'Active time': 0.00045864, 'Stalled time': 0.000154796, 'Total time': 0.000613436, 'Compute active energy': 0.001784659968, 'Register file energy': 0.0069132091392, 'Idle Energy': 0.001944778604544, 'Total Cache Energy': 0.00015461615887817, 'Total Mem Energy': 0.000260747878400346, 'Mem Reads': 1249663.0, 'Mem Writes': 12544.0, 'Total Energy': 0.0110580117490225}, 'conv09': {'Active time': 0.00090846, 'Stalled time': 0.00030737, 'Total time': 0.00121583, 'Compute active energy': 0.003534999552, 'Register file energy': 0.0136934719488, 'Idle Energy': 0.00385455071232, 'Total Cache Energy': 0.000303191350073609, 'Total Mem Energy': 0.000513949491200685, 'Mem Reads': 2474239.0, 'Mem Writes': 18816.0, 'Total Energy': 0.0219001630543943}, 'conv10': {'Active time': 0.00090846, 'Stalled time': 0.00030737, 'Total time': 0.00121583, 'Compute active energy': 0.003534999552, 'Register file energy': 0.0136934719488, 'Idle Energy': 0.00385455071232, 'Total Cache Energy': 0.000303191350073609, 'Total Mem Energy': 0.000513949491200685, 'Mem Reads': 2474239.0, 'Mem Writes': 18816.0, 'Total Energy': 0.0219001630543943}, 'conv11': {'Active time': 0.00029664, 'Stalled time': 0.000214352, 'Total time': 0.000510992, 'Compute active energy': 0.001154285568, 'Register file energy': 0.0044713377792, 'Idle Energy': 0.001619999981568, 'Total Cache Energy': 0.00029230090510934, 'Total Mem Energy': 0.000494767923200326, 'Mem Reads': 2407039.0, 'Mem Writes': 4704.0, 'Total Energy': 0.00803269215707767}, 'conv12': {'Active time': 0.00029664, 'Stalled time': 0.000214352, 'Total time': 0.000510992, 'Compute active energy': 0.001154285568, 'Register file energy': 0.0044713377792, 'Idle Energy': 0.001619999981568, 'Total Cache Energy': 0.00029230090510934, 'Total Mem Energy': 0.000494767923200326, 'Mem Reads': 2407039.0, 'Mem Writes': 4704.0, 'Total Energy': 0.00803269215707767}, 'conv13': {'Active time': 0.00029664, 'Stalled time': 0.000214352, 'Total time': 0.000510992, 'Compute active energy': 0.001154285568, 'Register file energy': 0.0044713377792, 'Idle Energy': 0.001619999981568, 'Total Cache Energy': 0.00029230090510934, 'Total Mem Energy': 0.000494767923200326, 'Mem Reads': 2407039.0, 'Mem Writes': 4704.0, 'Total Energy': 0.00803269215707767}, 'fc1': {'Active time': 5.0176e-05, 'Stalled time': 0.000424426, 'Total time': 0.000474602, 'Compute active energy': 0.0001952448512, 'Register file energy': 0.00075631689728, 'Idle Energy': 0.001504632619008, 'Total Cache Energy': 0.000775842552505099, 'Total Mem Energy': 0.0013206222848004, 'Mem Reads': 6447871.0, 'Mem Writes': 256.0, 'Total Energy': 0.0045526592047935}, 'fc2': {'Active time': 8.192e-06, 'Stalled time': 9.738e-05, 'Total time': 0.000105572, 'Compute active energy': 3.18767104e-05, 'Register file energy': 0.00012348030976, 'Idle Energy': 0.000334695333888, 'Total Cache Energy': 0.000126733376041785, 'Total Mem Energy': 0.000215737753600091, 'Mem Reads': 1052927.0, 'Mem Writes': 256.0, 'Total Energy': 0.000832523483689876}, 'fc3': {'Active time': 2.048e-06, 'Stalled time': 4.127e-06, 'Total time': 6.175e-06, 'Compute active energy': 7.9691776e-06, 'Register file energy': 3.087007744e-05, 'Idle Energy': 1.95766272e-05, 'Total Cache Energy': 3.13182028821211e-05, 'Total Mem Energy': 5.32805632000046e-05, 'Mem Reads': 260159.0, 'Mem Writes': 0.0, 'Total Energy': 0.000143014648322126}, 'Total': {'Active time': 0.007819352, 'Stalled time': 0.003052167, 'Total time': 0.010871519, 'Compute active energy': 0.0304266625024, 'Register file energy': 0.11786328211456, 'Idle Energy': 0.034466020171776, 'Total Cache Energy': 0.00307465073950672, 'Total Mem Energy': 0.00531655106560626, 'Mem Reads': 25200782.0, 'Mem Writes': 404768.0, 'Total Energy': 0.191147166593849}}}
+Time Cost:  {
+  "Total time": 0.010871519,
+  "Active time": 0.007819352,
+  "Stalled time": 0.003052167
+}
+Energy Cost:  {
+  "Compute active energy": 0.0304266625024,
+  "Register file energy": 0.11786328211456,
+  "Idle energy": 0.034466020171776,
+  "Total Cache Energy": 0.00307465073950672,
+  "Total Mem Energy": 0.00531655106560626,
+  "Total Energy": 0.191147166593849,
+  "System-wide Idle Energy": 0.0,
+  "System-wide Total Energy": 0.191147166593849
+}
+Message Passing Cost:  {
+  "Message Size": 308456,
+  "Total Message Size": 308456,
+  "Total Input Size": 306456,
+  "Total Output Size": 2000,
+  "Inputs": [
+    306456
+  ],
+  "Outputs": [
+    2000
+  ],
+  "is_resnet": false,
+  "Bypassing Residual Message Size": 0,
+  "Non-bypassing Residual Message Size": 0,
+  "Time Cost": 9.077251127362252e-06,
+  "Energy Cost": 7.8964736e-05,
+  "Extra Shutdown Energy Cost": 2.810316949031353e-08
+}
+Group Info: {
+  "group_to_nodes": {
+    "1": [
+      "node_1"
+    ]
+  },
+  "node_to_group": {
+    "node_1": 1
+  },
+  "group_info": {
+    "1": {
+      "max_time": 0.010871519,
+      "sum_time": 0.010871519
+    }
+  }
+}
+Pipe Cost:  {
+  "Per Cycle Energy": 0.191147166593849,
+  "time": 0.010871519,
+  "throughput": 91.98346615592541
+}
+Parallel Cost:  {
+  "Total Energy": 0.191147166593849,
+  "time": 0.010871519,
+  "throughput": 91.98346615592541
+}
+PipeParallel Cost:  {
+  "Per Cycle Energy": 0.191147166593849,
+  "time": 0.010871519,
+  "throughput": 91.98346615592541
+}

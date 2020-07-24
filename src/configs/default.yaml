@@ -10,15 +10,15 @@ architecture:
       read_ports: 1
       write_ports: 1
       width: 32
-      size: 10
+      size: 10000000
     level1:
       class: DRAM
-      frequency: 1000
-      banks: 4
+      frequency: 100
+      banks: 1
       read_ports: 1
       write_ports: 1
       width: 64
-      size: 1000
+      size: 100000000000
   mm_compute:
     class: systolic_array
     frequency: 1000

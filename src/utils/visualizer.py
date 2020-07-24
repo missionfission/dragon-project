@@ -26,6 +26,7 @@ def bar_graph(
     var1,
     var2,
     var3,
+    cycles,
     xticklabels=None,
     xlabel=None,
     ylabel=None,
