@@ -49,13 +49,9 @@ def trace(model, args=(), kwargs=None):
             if node.operator in operators:
                 if func is not None:
                     # TODO Merge Small Node
-                    (
-                        node.compute_expense,
-                        node.read_access,
-                        node.write_access,
-                        node.in_edge_mem,
-                        node.out_edge_mem,
-                    ) = func(node)
+                    (node.compute_expense, node.read_access, node.write_access,) = func(
+                        node
+                    )
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.read_access + node.out_edge_mem

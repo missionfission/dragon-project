@@ -1,5 +1,6 @@
 import collections
 
+import numpy as np
 import yaml
 import yamlordereddictloader
 
@@ -139,6 +140,7 @@ class Scheduling:
                 write_access,
             )
             self.total_cycles += step_cycles
+            print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
             cycles.append(step_cycles)
             read_bw_actual.append(read_access / step_cycles)
             write_bw_actual.append(write_access / step_cycles)
