@@ -10,7 +10,7 @@ architecture:
       read_ports: 1
       write_ports: 1
       width: 32
-      size: 10000000
+      size: 50000000
     level1:
       class: DRAM
       frequency: 100
