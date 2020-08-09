@@ -66,13 +66,14 @@ def findnext(self, scheduler, opts=None):
         self.findmemtechnology("frequency")
 
     if opts == "energy":
+        print(scheduler.mem_energy, scheduler.compute_energy)
         # Compute_energy is too high, check if compute is larger than required, or slower than required
         # compute_array size can be reduced -> how does compute array size effect energy consumption ->
         # it may be due to a lot of compute or bad-sized compute arrays
 
+        # if mem energy consumption is too high at level 1, bandwidth->frequency can be reduced
         self.findmemtechnology("read_energy")
 
-        # if mem energy consumption is too high at level 1, bandwidth->frequency can be reduced
         ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
         # If leakage energy, read or write energy-> can change the technology type
 
