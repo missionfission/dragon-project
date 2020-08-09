@@ -4,7 +4,7 @@ import yaml
 import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv"))
-compute_table = np.array(pd.read_csv("tables/compute.csv"))
+# compute_table = np.array(pd.read_csv("tables/compute.csv"))
 
 
 class Generator:
@@ -68,34 +68,39 @@ class Generator:
         """
         ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck
 
+        ## Force Connectivity : External bandwidth is forced
 
+        if opts == "energy":
+            pass
+            #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more energy
 
+            # if Energy is too high due to the leakage time :
 
+            # Compute_energy is too high, check if compute is larger than required,
+            # compute_array size can be reduced -> how does compute array size effect energy consumption -> it may also increase compute bottleneck
 
-        
-        
-        ## Force Connectivity : External bandwidth is forced 
-
-
-
-        
-        
-        if (opts == "energy"):
-            # if mem_energy is too high vs compute_energy is too high, compute_array size can be reduced
+            # If mem energy consumption is high -> which level ?, is there a lot of prefetching in terms of compute_idle_time or
+            # underutilized bandwidth/size
 
             # if mem_energy consumption is too high at level 0, its size can be reduced
 
-            # if mem energy consumption is too high at level 1, bandwidth can be reduced
+            # if mem energy consumption is too high at level 1, bandwidth/frequency can be reduced
 
-        
-        if (opts == "time"):
-            print(scheduler.bandwidth_idle_time, scheduler.compute_idle_time, scheduler.mem_size_idle_time)
+            ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
+            # If leakage energy, read or write energy-> can change the technology type
 
-        ## If compute idle time, Update Compute 
-        
-        ## If Bandwith Limited update memory banks, only if memory banks are off chip then connectivity is forced 
-        ## Frequency can be increased, Have a number of smaller arrays, increases energy consumption -> 
-        ## find the technology space that reduces frequency 
+        if opts == "time":
+            print(
+                scheduler.bandwidth_idle_time,
+                scheduler.compute_idle_time,
+                scheduler.mem_size_idle_time,
+            )
+
+        ## If compute idle time, Update Compute
+
+        ## If Bandwith Limited update memory banks, only if memory banks are off chip then connectivity is forced
+        ## Frequency can be increased, Have a number of smaller arrays, increases energy consumption ->
+        ## find the technology space that reduces frequency
 
         for i in range(self.mle):
             memory = config["memory"]["level" + str(i)]
@@ -111,31 +116,24 @@ class Generator:
                 * memory["write_ports"]
                 * memory["width"]
             )
-        
+
         ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
-          
-        
-        
-        
+
         newhw = scheduler.config
 
         return newhw
 
-    def findtechnologyparameters(self, opts):
+    def findtechnology(self, opts):
 
         """
         opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
         The technology space can be loaded from the file, and how we can rapidly find our point there
         The wire space is also loaded, and the joint technology and wire space can also be loaded
         """
-        ## For joint optimization of technology space and wire space, we produce the sensitivity analysis, 
+        ## For joint optimization of technology space and wire space, we produce the sensitivity analysis,
         # of technology space and wire space
-        ## and how it affects the design space in energy of access 
+        ## and how it affects the design space in energy of access
         ## It can affect the frequency in the sizing of the memory arrays, it affect the energy of accesses also
-
-
-
-
 
     def save_statistics(self, scheduler):
         """
