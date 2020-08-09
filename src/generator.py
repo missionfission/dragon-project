@@ -4,6 +4,7 @@ import yaml
 import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv"))
+compute_table = np.array(pd.read_csv("tables/compute.csv"))
 
 
 class Generator:
@@ -28,7 +29,7 @@ class Generator:
         )
 
     def findnext(self, scheduler, opts=None):
-        opts = ["energy", "time", "area", "edp"]
+        # opts = ["energy", "time", "area", "edp"]
         """
         We parameterize the contigous space of timing, area and memory of the various technologies 
         So, several technologies appear as different curves in this space : right ?
@@ -65,30 +66,36 @@ class Generator:
         
         Where is area getting consumed the most?
         """
-        newhw = scheduler.config
-        mm_compute = config["mm_compute"]
-        vector_compute = config["vector_compute"]
+        ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck
 
-        if config["mm_compute"]["class"] == "systolic_array":
-            config["mm_compute_per_cycle"] = (
-                ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / 2
-            )
-            config["comp_bw"] = (
-                mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
-            )
 
-            self.logger.info(
-                "MM Compute per cycle : %d", config["mm_compute_per_cycle"]
-            )
-            self.logger.info("Compute Bandwidth Required : %d", config["comp_bw"])
 
-        if config["mm_compute"]["class"] == "mac":
-            config["mm_compute_per_cycle"] = (
-                ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / 2
-            )
-            config["comp_read_bw"] = (
-                mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
-            )
+
+
+        
+        
+        ## Force Connectivity : External bandwidth is forced 
+
+
+
+        
+        
+        if (opts == "energy"):
+            # if mem_energy is too high vs compute_energy is too high, compute_array size can be reduced
+
+            # if mem_energy consumption is too high at level 0, its size can be reduced
+
+            # if mem energy consumption is too high at level 1, bandwidth can be reduced
+
+        
+        if (opts == "time"):
+            print(scheduler.bandwidth_idle_time, scheduler.compute_idle_time, scheduler.mem_size_idle_time)
+
+        ## If compute idle time, Update Compute 
+        
+        ## If Bandwith Limited update memory banks, only if memory banks are off chip then connectivity is forced 
+        ## Frequency can be increased, Have a number of smaller arrays, increases energy consumption -> 
+        ## find the technology space that reduces frequency 
 
         for i in range(self.mle):
             memory = config["memory"]["level" + str(i)]
@@ -104,16 +111,31 @@ class Generator:
                 * memory["write_ports"]
                 * memory["width"]
             )
-            self.mem_size[i] = memory["size"]
+        
+        ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
+          
+        
+        
+        
+        newhw = scheduler.config
 
         return newhw
 
-    def findtechnologyparameters(self):
-        """
+    def findtechnologyparameters(self, opts):
 
-        have to really think, what is the technology space, and how we can rapidly find our point there 
         """
-        pass
+        opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
+        The technology space can be loaded from the file, and how we can rapidly find our point there
+        The wire space is also loaded, and the joint technology and wire space can also be loaded
+        """
+        ## For joint optimization of technology space and wire space, we produce the sensitivity analysis, 
+        # of technology space and wire space
+        ## and how it affects the design space in energy of access 
+        ## It can affect the frequency in the sizing of the memory arrays, it affect the energy of accesses also
+
+
+
+
 
     def save_statistics(self, scheduler):
         """
@@ -130,17 +152,15 @@ class Generator:
 
         mem_energy_access = np.zeros((scheduler.mle, 2))
         mem_energy = np.zeros((scheduler.mle))
-        compute_energy = self.get_compute_energy(
-            mm_compute["class"], mm_compute["size"], mm_compute["N_PE"]
-        )
+        compute_energy = macs * unit_energy
 
         for i in range(scheduler.mle):
             memory = config["memory"]["level" + str(i)]
-            mem_energy_access[i] = self.get_mem_energy(
-                memory["size"], memory["read_ports"], memory["banks"], connectivity,
+            mem_energy_access[i] = mem_access[i] * self.get_mem_energy(
+                memory["size"], memory["read_ports"], memory["banks"]
             )
             # mem_area[i] = self.get_mem_area(
-                # memory["size"], memory["read_ports"], memory["banks"], connectivity,
+            # memory["size"], memory["read_ports"], memory["banks"], connectivity,
             # )
 
         # total_area = np.sum(mem_area) + compute_area
@@ -156,8 +176,9 @@ class Generator:
         # scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
         # scheduler.logger.info("Total Area Consumption  = %d ", total_area)
 
-    # def get_mem_energy(self, *args, **kwargs):
-    #     pass
+    def get_mem_energy(self, size, read_ports, banks):
+        return mem_table[i]
+
     # def get_compute_energy(self, *args, **kwargs):
     #     pass
 
@@ -165,4 +186,3 @@ class Generator:
     #     pass
     # def get_mem_area(self, *args, **kwargs):
     #     pass
-
