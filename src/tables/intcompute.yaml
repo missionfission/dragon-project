@@ -1,0 +1,129 @@
+ADD_0_5ns
+int_power                           9.364555e-02
+switch_power                        1.900256e-01
+dynamic_power                       2.836642e-01
+dynamic_energy                      1.418321e-01
+leakage_power                       3.265969e-03
+area                                3.793488e+02
+
+ADD_1ns
+int_power                             5.523790e-02
+switch_power                          1.551852e-01
+dynamic_power                         2.104162e-01
+dynamic_energy                        2.104162e-01
+leakage_power                         2.249908e-03
+area                                  2.779792e+02
+
+ADD_2ns
+int_power                             2.436880e-02
+switch_power                          1.850702e-02
+dynamic_power                         4.287582e-02
+dynamic_energy                        8.575164e-02
+leakage_power                         2.380803e-03
+area                                  1.794430e+02
+
+ADD_3ns
+int_power                             1.626669e-02
+switch_power                          1.235638e-02
+dynamic_power                         2.862321e-02
+dynamic_energy                        8.586963e-02
+leakage_power                         2.380803e-03
+area                                  1.794430e+02
+
+ADD_4ns
+int_power                             1.217552e-02
+switch_power                          9.249207e-03
+dynamic_power                         2.142472e-02
+dynamic_energy                        8.569890e-02
+leakage_power                         2.380803e-03
+area                                  1.794430e+02
+
+ADD_5ns
+int_power                             9.743773e-03
+switch_power                          7.400587e-03
+dynamic_power                         1.714394e-02
+dynamic_energy                        8.572111e-02
+leakage_power                         2.380803e-03
+area                                  1.794430e+02
+
+ADD_6ns
+int_power                             8.115300e-03
+switch_power                          6.162853e-03
+dynamic_power                         1.427760e-02
+dynamic_energy                        8.566836e-02
+leakage_power                         2.380803e-03
+area                                  1.794430e+02
+
+ADD_10ns
+int_power                            4.832257e-03
+switch_power                         3.701820e-03
+dynamic_power                        8.534078e-03
+dynamic_energy                       8.534078e-02
+leakage_power                        2.380803e-03
+area                                 1.794430e+02
+
+MUL_0_5_ns
+int_power                    7.500944e+00
+switch_power                 5.127359e+00
+dynamic_power                1.262844e+01
+dynamic_energy               1.894266e+01
+leakage_power                1.086401e-01
+area                         8.340007e+03
+
+MUL_1_ns
+int_power                             4.979808e+00
+switch_power                          7.703601e+00
+dynamic_power                         1.268341e+01
+dynamic_energy                        1.268341e+01
+leakage_power                         7.786052e-02
+area                                  6.351338e+03
+critical_path_delay                   0.98
+
+MUL_2_ns
+int_power                             1.748818e+00
+switch_power                          3.028611e+00
+dynamic_power                         4.777429e+00
+dynamic_energy                        9.554858e+00
+leakage_power                         4.831147e-02
+area                                  5.137736e+03
+critical_path_delay                   1.97
+
+MUL_3_ns
+int_power                             1.125718e+00
+switch_power                          1.808644e+00
+dynamic_power                         2.934361e+00
+dynamic_energy                        8.803084e+00
+leakage_power                         4.668189e-02
+area                                  4.974349e+03
+
+MUL_4_ns
+int_power                             8.601815e-01
+switch_power                          1.305749e+00
+dynamic_power                         2.165931e+00
+dynamic_energy                        8.663723e+00
+leakage_power                         4.853217e-02
+area                                  4.619555e+03
+
+MUL_5_ns
+int_power                             6.866739e-01
+switch_power                          1.038409e+00
+dynamic_power                         1.725082e+00
+dynamic_energy                        8.625412e+00
+leakage_power                         4.817683e-02
+area                                  4.595000e+03
+
+MUL_6_ns
+int_power                             5.725752e-01
+switch_power                          8.662890e-01
+dynamic_power                         1.438864e+00
+dynamic_energy                        8.633185e+00
+leakage_power                         4.817683e-02
+area                                  4.595000e+03
+
+MUL_10_ns
+int_power                            3.459049e-01
+switch_power                         5.337095e-01
+dynamic_power                        8.796144e-01
+dynamic_energy                       8.796144e+00
+leakage_power                        4.817683e-02
+area                                 4.595000e+03

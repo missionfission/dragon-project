@@ -5,17 +5,12 @@ import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv"))
 # compute_table = np.array(pd.read_csv("tables/compute.csv"))
-tech_table = np.array(pd.read_csv("tables/tech.csv"))
+# tech_table = np.array(pd.read_csv("tables/tech.csv"))
+
 """
-
 Hyperparameters of Gradient Descent 
-
 alpha
-
-
 beta 
-
-
 """
 
 
@@ -80,7 +75,6 @@ def findnext(self, scheduler, opts=None):
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
-
     return newhw
 
 
@@ -147,7 +141,7 @@ def save_statistics(self, scheduler):
 
     for i in range(scheduler.mle):
         memory = config["memory"]["level" + str(i)]
-        mem_energy_access[i] = mem_access[i] * self.get_mem_energy(
+        mem_energy_access[i] = scheduler.mem_access[i] * self.get_mem_energy(
             memory["size"], memory["read_ports"], memory["banks"]
         )
         # mem_area[i] = self.get_mem_area(
