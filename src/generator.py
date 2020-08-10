@@ -5,7 +5,7 @@ import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv"))
 # compute_table = np.array(pd.read_csv("tables/compute.csv"))
-
+tech_table = np.array(pd.read_csv("tables/tech.csv"))
 """
 
 Hyperparameters of Gradient Descent 
