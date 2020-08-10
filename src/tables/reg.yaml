@@ -1,55 +1,55 @@
-REG_1ns
-int_power                             7.936518e-03
-switch_power                          1.062977e-03
-dynamic_power                         8.999495e-03
-dynamic_energy                        8.999495e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_1ns:
+  int_power: 7.936518e-03
+  switch_power: 1.062977e-03
+  dynamic_power: 8.999495e-03
+  dynamic_energy: 8.999495e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_2ns
-int_power                             3.967495e-03
-switch_power                          5.381930e-04
-dynamic_power                         4.505785e-03
-dynamic_energy                        9.011432e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_2ns:
+  int_power: 3.967495e-03
+  switch_power: 5.381930e-04
+  dynamic_power: 4.505785e-03
+  dynamic_energy: 9.011432e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_3ns
-int_power                             2.644534e-03
-switch_power                          3.584390e-04
-dynamic_power                         3.002932e-03
-dynamic_energy                        9.008934e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_3ns:
+  int_power: 2.644534e-03
+  switch_power: 3.584390e-04
+  dynamic_power: 3.002932e-03
+  dynamic_energy: 9.008934e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_4ns
-int_power                             1.982290e-03
-switch_power                          2.685621e-04
-dynamic_power                         2.250880e-03
-dynamic_energy                        9.003520e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_4ns:
+  int_power: 1.982290e-03
+  switch_power: 2.685621e-04
+  dynamic_power: 2.250880e-03
+  dynamic_energy: 9.003520e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_5ns
-int_power                             1.586138e-03
-switch_power                          2.146359e-04
-dynamic_power                         1.800732e-03
-dynamic_energy                        9.003937e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_5ns:
+  int_power: 1.586138e-03
+  switch_power: 2.146359e-04
+  dynamic_power: 1.800732e-03
+  dynamic_energy: 9.003937e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_6ns
-int_power                             1.322600e-03
-switch_power                          1.792126e-04
-dynamic_power                         1.501882e-03
-dynamic_energy                        9.011016e-03
-leakage_power                         7.395312e-05
-area                                  5.981433e+00
+REG_6ns:
+  int_power: 1.322600e-03
+  switch_power: 1.792126e-04
+  dynamic_power: 1.501882e-03
+  dynamic_energy: 9.011016e-03
+  leakage_power: 7.395312e-05
+  area: 5.981433e+00
 
-REG_10ns
-int_power                            5.535310e-04
-switch_power                         0.000000e+00
-dynamic_power                        5.535310e-04
-dynamic_energy                       5.535310e-03
-leakage_power                        7.358945e-05
-area                                 5.981433e+00
+REG_10ns:
+  int_power: 5.535310e-04
+  switch_power: 0.000000e+00
+  dynamic_power: 5.535310e-04
+  dynamic_energy: 5.535310e-03
+  leakage_power: 7.358945e-05
+  area: 5.981433e+00
