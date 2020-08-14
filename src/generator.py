@@ -54,17 +54,19 @@ def findnext(self, scheduler, opts=None):
 
     # newhw["compute"] = self.updatecomputedesign(scheduler, scheduler.config["compute"])
     newhw["memory"] = self.updatememdesign(scheduler, scheduler.config["memory"])
-
+    mem_config  = newhw["memory"]
     if opts == "time":
         self.findmemtechnology("frequency")
 
     if opts == "energy":
-        print(scheduler.mem_energy, scheduler.compute_energy)
+        mem_config["level0"]["banks"] += (int)(
+                beta * scheduler.mem_energy / (np.sum(scheduler.mem_energy)+scheduler.compute_energy)
+            )
         # Compute_energy is too high, check if compute is larger than required, or slower than required
         # compute_array size can be reduced -> how does compute array size effect energy consumption ->
         # it may be due to a lot of compute or bad-sized compute arrays
 
-        # if mem energy consumption is too high at level 1, bandwidth->frequency can be reduced
+        # if mem energy consumption is too high at level 1, banks can be increased
         self.findmemtechnology("read_energy")
         self.findmemtechnology("write_energy")
 
@@ -74,6 +76,7 @@ def findnext(self, scheduler, opts=None):
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
+    newhw["memory"] = mem_config
     return newhw
 
 
@@ -190,7 +193,8 @@ def save_statistics(self, scheduler):
 
     # total_area = np.sum(mem_area) + compute_area
     total_energy = np.sum(mem_energy) + compute_energy
-
+    scheduler.mem_energy = mem_energy
+    scheduler.conpute_energy = compute_energy
     scheduler.logger.info("Tool Output")
     scheduler.logger.info("===========================")
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
