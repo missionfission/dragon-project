@@ -7,4 +7,4 @@ src/.ipynb_checkpoints/
 src/utils/__pycache__/*
 accel-sim-v2/*
 figures/
-configs/iter*
+configs/
