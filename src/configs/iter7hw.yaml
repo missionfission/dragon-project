@@ -9,11 +9,11 @@ memory:
     read_ports: 1
     write_ports: 1
     width: 32
-    size: 100000
+    size: 179327
   level1:
     class: DRAM
     frequency: 100
-    banks: 5
+    banks: 6
     read_ports: 1
     write_ports: 1
     width: 64
@@ -28,3 +28,5 @@ vector_compute:
   frequency: 1000
   size: 256
   N_PE: 1
+mm_compute_per_cycle: 131072.0
+comp_bw: 2048000
