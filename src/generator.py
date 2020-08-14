@@ -13,6 +13,9 @@ alpha
 beta 
 """
 
+alpha = 20000
+beta = 4
+
 
 class Generator:
     def __init__(self, constraintfiles="max.yaml"):
@@ -27,7 +30,7 @@ def writehwfile(self, content, filename):
     """
     Generate Hardware Description Yaml File 
     """
-    outfile = open(filename, "w")
+    outfile = open("configs/" + filename, "w")
     outfile.write(
         yaml.dump(
             content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,
@@ -49,13 +52,9 @@ def findnext(self, scheduler, opts=None):
     Where is area getting consumed the most?
     """
     newhw = scheduler.config
-    print(
-        scheduler.bandwidth_idle_time,
-        scheduler.compute_idle_time,
-        scheduler.mem_size_idle_time,
-    )
-    self.updatecomputedesign()
-    self.updatememdesign()
+
+    # newhw["compute"] = self.updatecomputedesign(scheduler, scheduler.config["compute"])
+    newhw["memory"] = self.updatememdesign(scheduler, scheduler.config["memory"])
 
     if opts == "time":
         self.findmemtechnology("frequency")
@@ -89,25 +88,39 @@ def updatecomputedesign(self, scheduler):
 def updatememdesign(self, scheduler, mem_config):
 
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
-
+    print("Bandwidth Idle Time", scheduler.bandwidth_idle_time)
+    print("Compute Idle Time", scheduler.compute_idle_time)
+    print("Memory Size Idle Time", scheduler.mem_size_idle_time)
     ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
-    if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_time:
+    if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
         if scheduler.force_connectivity is False:
-            mem_banks = mem_config["level" + str(scheduler.mle - 1)]["banks"]
-            mem_size = mem_config["level0"]["size"]
-            mem_banks += beta * scheduler.bandwidth_idle_time / scheduler.total_time
+
+            print(mem_config["level" + str(scheduler.mle - 1)]["banks"])
+            mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
+                beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+            )
+            print(mem_config["level" + str(scheduler.mle - 1)]["banks"])
         ## Force Connectivity : External bandwidth is forced, then cannot change anything
         ## Internal connectivity can change, memory banks can change
         if scheduler.internal_bandwidth_time > 0:
             mem_banks = mem_config["level1"]["banks"]
-            mem_banks += beta * scheduler.bandwidth_idle_time / scheduler.total_time
+            mem_config["level1"]["banks"] += (
+                beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+            )
 
     ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
-    if scheduler.size_idle_time > 0.1 * scheduler.total_time:
-        mem_size += alpha * scheduler.size_idle_time / scheduler.total_time
+    print("Memory Size old", mem_config["level0"]["size"])
+
+    if scheduler.mem_size_idle_time > 0.1 * scheduler.total_cycles:
+        mem_config["level0"]["size"] += (int)(
+            alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+        )
+    print("Memory Size new", mem_config["level0"]["size"])
+
+    return mem_config
 
 
-def findmemtechnology(self, opts, time_grads, energy_grads):
+def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
 
     """
     opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
@@ -120,6 +133,7 @@ def findmemtechnology(self, opts, time_grads, energy_grads):
     ## It can affect the frequency in the sizing of the memory arrays, it affect the energy of accesses also
 
     ## Figure out sensitivity from the differentiable models, how much does tech and wire parameters affect the design space.
+    pass
 
 
 def save_statistics(self, scheduler):
@@ -129,7 +143,11 @@ def save_statistics(self, scheduler):
     config = scheduler.config
     mm_compute = config["mm_compute"]
     mem_area = np.zeros((scheduler.mle))
-
+    print(
+        scheduler.bandwidth_idle_time,
+        scheduler.compute_idle_time,
+        scheduler.mem_size_idle_time,
+    )
     # compute_area = (
     #     self.get_compute_area(mm_compute["class"], mm_compute["size"])
     #     * mm_compute["N_PE"]
@@ -137,13 +155,15 @@ def save_statistics(self, scheduler):
 
     mem_energy_access = np.zeros((scheduler.mle, 2))
     mem_energy = np.zeros((scheduler.mle))
-    compute_energy = macs * unit_energy
+    # compute_energy = macs * unit_energy
+    compute_energy = 0
 
     for i in range(scheduler.mle):
         memory = config["memory"]["level" + str(i)]
-        mem_energy_access[i] = scheduler.mem_access[i] * self.get_mem_energy(
-            memory["size"], memory["read_ports"], memory["banks"]
-        )
+        # mem_energy_access[i] = scheduler.mem_access[i] * self.get_mem_energy(
+        #     memory["size"], memory["read_ports"], memory["banks"]
+        # )
+        mem_energy_access[i] = 0
         # mem_area[i] = self.get_mem_area(
         # memory["size"], memory["read_ports"], memory["banks"], connectivity,
         # )

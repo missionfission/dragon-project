@@ -21,12 +21,11 @@ def genvideologger():
     pass
 
 
-def bar_graph(
+def bandwidth_bar_graph(
     filename,
     var1,
     var2,
     var3,
-    cycles,
     xticklabels=None,
     xlabel=None,
     ylabel=None,
@@ -61,6 +60,48 @@ def bar_graph(
     plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
     plt.rc("ytick", labelsize=20)
     ax.set_ylabel("Read Bandwidth", fontsize=20, fontweight="bold")
+    ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
+    fig.tight_layout()
+    plt.savefig(base_dir + filename, bbox_inches="tight")
+    plt.show()
+
+
+def cycles_bar_graph(
+    filename,
+    cycles,
+    free_cycles,
+    xticklabels=None,
+    xlabel=None,
+    ylabel=None,
+    bar_width=0.2,
+):
+    fig, ax = plt.subplots(figsize=(30, 10))
+    base_dir = "figures/"
+    error_config = {"ecolor": "0.3"}
+    index = np.arange((len(cycles)))
+    ax.bar(
+        index,
+        cycles,
+        bar_width,
+        color="blue",
+        error_kw=error_config,
+        label="Actual Cycles Required for Execution",
+    )
+    ax.bar(
+        index + 2 * bar_width,
+        free_cycles,
+        bar_width,
+        color="red",
+        error_kw=error_config,
+        label="Free Cycles for Execution",
+    )
+    ax.legend(fontsize=20)
+    # plt.yscale("log")
+    ax.set_xticks(index)
+    ax.set_xticklabels(xticklabels)
+    plt.xticks(rotation=80)
+    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
+    plt.rc("ytick", labelsize=20)
     ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
     fig.tight_layout()
     plt.savefig(base_dir + filename, bbox_inches="tight")
