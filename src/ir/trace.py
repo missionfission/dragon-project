@@ -52,16 +52,23 @@ def trace(model, args=(), kwargs=None):
                     (node.compute_expense, node.read_access, node.write_access,) = func(
                         node
                     )
+                    print(node.compute_expense)
+                    if not isinstance(node.read_access, int):
+                        if len(node.read_access) > 1:
+                            node.read_access = node.read_access[0]
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.read_access + node.out_edge_mem
+                    if not isinstance(node.mem_util, np.int64):
+                        if (node.mem_util).shape[0] > 1:
+                            node.mem_util = node.mem_util[0]
                     if node.compute_expense > 0:
                         nodes.append(node)
 
     for i, node in enumerate(nodes):
         if i < len(nodes) - 1:
             node.next = nodes[i + 1]
-
+        # print(node.next, node.mem_util)
     graph = Graph(
         name=model.__class__.__module__ + "." + model.__class__.__name__,
         variables=[v for v in variables.values()],
