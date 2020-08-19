@@ -84,7 +84,8 @@ def make_dot(var, params=None):
         add_nodes(var.grad_fn)
 
     resize_graph(dot)
-
+    # dot.format = "png"
+    # dot.render("bert")
     return dot
 
 
