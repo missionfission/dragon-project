@@ -29,7 +29,7 @@ def writehwfile(self, content, filename):
     """
     Generate Hardware Description Yaml File 
     """
-    outfile = open("configs/" + filename, "w")
+    outfile = open("iters/" + filename, "w")
     outfile.write(
         yaml.dump(
             content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,

@@ -12,8 +12,8 @@ memory:
     size: 100000
   level1:
     class: DRAM
-    frequency: 100
-    banks: 5
+    frequency: 5
+    banks: 100
     read_ports: 1
     write_ports: 1
     width: 64
@@ -26,5 +26,5 @@ mm_compute:
 vector_compute:
   class: systolic_array
   frequency: 1000
-  size: 256
-  N_PE: 1
+  size: 64
+  N_PE: 4

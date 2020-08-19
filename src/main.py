@@ -61,9 +61,10 @@ def runner(graph_set):
 for name, model in models.__dict__.items():
     if not name.islower() or name.startswith("__") or not callable(model):
         continue
-    model = model().eval()
+    # model = model().eval()
     if "resnet50" in name:
         inputs = torch.randn(1, 3, 100, 100)
-        graph = trace(model, inputs)
+        graph = trace(model().train(), inputs)
 
+print(graph)
 runner([graph])
