@@ -98,15 +98,6 @@ def updatememdesign(self, scheduler, mem_config):
     #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
     # )
 
-    print(
-        int(scheduler.total_cycles),
-        int(scheduler.bandwidth_idle_time),
-        scheduler.compute_idle_time,
-        int(scheduler.mem_size_idle_time),
-        mem_config["level" + str(scheduler.mle - 1)]["banks"],
-        mem_config["level0"]["size"],
-    )
-
     if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
         if scheduler.force_connectivity is False:
 
@@ -153,11 +144,12 @@ def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
     pass
 
 
-def save_statistics(self, scheduler):
+def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
     """
     Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
     """
     config = scheduler.config
+    mem_config = config["memory"]
     mm_compute = config["mm_compute"]
     mem_area = np.zeros((scheduler.mle))
     # compute_area = (
@@ -206,7 +198,25 @@ def save_statistics(self, scheduler):
     # scheduler.logger.info("Memory Area Consumption  = %d ", np.sum(mem_area))
     # scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
     # scheduler.logger.info("Total Area Consumption  = %d ", total_area)
+    if backprop:
+        scheduler.total_cycles = (
+            2 * scheduler.total_cycles
+            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+        scheduler.bandwidth_idle_time += (
+            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
     print(
+        "Time",
+        int(scheduler.total_cycles),
+        int(scheduler.bandwidth_idle_time),
+        scheduler.compute_idle_time,
+        int(scheduler.mem_size_idle_time),
+        mem_config["level" + str(scheduler.mle - 1)]["banks"],
+        mem_config["level0"]["size"],
+    )
+    print(
+        "Energy",
         int(total_energy),
         int(compute_energy),
         int(scheduler.mem_read_access[0] * read_energy / 100),

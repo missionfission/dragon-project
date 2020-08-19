@@ -13,6 +13,14 @@ from ir.variable import Variable
 __all__ = ["trace"]
 
 
+def get_backprop_memory(nodes):
+    total_backprop_mem = 0
+    for i, node in enumerate(nodes):
+        total_backprop_mem += node.in_edge_mem + node.out_edge_mem + node.read_access
+
+    return total_backprop_mem
+
+
 def trace(model, args=(), kwargs=None):
     assert kwargs is None, (
         "Keyword arguments are not supported for now. "
@@ -49,19 +57,20 @@ def trace(model, args=(), kwargs=None):
             if node.operator in operators:
                 if func is not None:
                     # TODO Merge Small Node
+                    # read access are weight read access
                     (node.compute_expense, node.read_access, node.write_access,) = func(
                         node
                     )
-                    print(node.compute_expense)
-                    if not isinstance(node.read_access, int):
-                        if len(node.read_access) > 1:
-                            node.read_access = node.read_access[0]
+                    # print(node.read_access)
+                    # if not isinstance(node.read_access, int):
+                    #     if len(node.read_access) > 1:
+                    #         node.read_access = node.read_access[0]
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.read_access + node.out_edge_mem
-                    if not isinstance(node.mem_util, np.int64):
-                        if (node.mem_util).shape[0] > 1:
-                            node.mem_util = node.mem_util[0]
+                    # if not isinstance(node.mem_util, np.int64):
+                    #     if (node.mem_util).shape[0] > 1:
+                    #         node.mem_util = node.mem_util[0]
                     if node.compute_expense > 0:
                         nodes.append(node)
 

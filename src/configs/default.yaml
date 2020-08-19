@@ -9,19 +9,19 @@ memory:
     read_ports: 1
     write_ports: 1
     width: 32
-    size: 100000
+    size: 1000000
   level1:
     class: DRAM
     frequency: 5
     banks: 100
     read_ports: 1
     write_ports: 1
-    width: 64
+    width: 2
     size: 100000000000
 mm_compute:
   class: systolic_array
   frequency: 1000
-  size: 256
+  size: 64
   N_PE: 4
 vector_compute:
   class: systolic_array
