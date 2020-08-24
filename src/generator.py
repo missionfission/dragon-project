@@ -5,7 +5,7 @@ import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
 mem_space = 0
-wire space = 0
+wire_space = 0
 cmos_space = 0
 
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
