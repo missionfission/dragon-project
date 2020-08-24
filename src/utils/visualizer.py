@@ -4,7 +4,9 @@ from collections import namedtuple
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import MaxNLocator
+from matplotlib import cm
+from matplotlib.ticker import FormatStrFormatter, LinearLocator, MaxNLocator
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
 
 def roofline_model():
@@ -148,3 +150,39 @@ def mem_util_bar_graph(
     fig.tight_layout()
     plt.savefig(base_dir + filename, bbox_inches="tight")
     plt.show()
+
+
+def tech_space_graph(
+    filename,
+    wire_space,
+    memory_cell_space,
+    cmos_space,
+    xticklabels=None,
+    xlabel=None,
+    ylabel=None,
+    bar_width=0.2,
+):
+    fig = plt.figure()
+    ax = fig.gca(projection="3d")
+
+    # Plot the surface.
+    surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    ax.set_zlim(-1.01, 1.01)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
+
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
+    plt.show()
+
+    # ax.legend(fontsize=20)
+    # plt.yscale("log")
+    # ax.set_xticks(index)
+    # ax.set_xticklabels(xticklabels)
+    # plt.xticks(rotation=80)
+    # plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
+    # plt.rc("ytick", labelsize=20)
+    # ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
+    # fig.tight_layout()
+    # plt.savefig(base_dir + filename, bbox_inches="tight")

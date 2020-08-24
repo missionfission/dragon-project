@@ -136,12 +136,15 @@ def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
-    ## For joint optimization of technology space and wire space, we produce the sensitivity analysis,
-    ## of technology space and wire space and how it affects the design space in energy of access
-    ## It can affect the frequency in the sizing of the memory arrays, it affect the energy of accesses also
-
-    ## Figure out sensitivity from the differentiable models, how much does tech and wire parameters affect the design space.
-    pass
+    ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
+    ## because above this interval it does not matter whether we can create a better technology or not.
+    ## Joint sweep of tech space in cmos, memory cell and wires
+    if opts == "energy":
+        pass
+        # Make a diagram in the joint tech space that shows that it sweeping wire space makes the real difference here
+    if opts == "time":
+        pass
+        # Make a diagram in the joint time space that shows that it sweeping cmos space makes the real difference
 
 
 def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
