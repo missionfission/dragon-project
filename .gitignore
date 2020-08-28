@@ -10,3 +10,5 @@ figures/
 configs/
 data/
 iters/
+dlrm/
+src/dlrm/
