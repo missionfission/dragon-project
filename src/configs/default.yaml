@@ -13,7 +13,7 @@ memory:
   level1:
     class: DRAM
     frequency: 5
-    banks: 100
+    banks: 5
     read_ports: 1
     write_ports: 1
     width: 2

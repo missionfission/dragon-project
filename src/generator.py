@@ -213,25 +213,46 @@ def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
         scheduler.bandwidth_idle_time += (
             backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
         )
+        # print(
+        #     "Time",
+        #     int(scheduler.total_cycles),
+        #     int(scheduler.bandwidth_idle_time),
+        #     scheduler.compute_idle_time,
+        #     int(scheduler.mem_size_idle_time),
+        #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
+        #     mem_config["level0"]["size"],
+        # )
+        # print(
+        #     "Energy",
+        #     int(total_energy),
+        #     int(compute_energy),
+        #     int(scheduler.mem_read_access[0] * read_energy / 100),
+        #     int(scheduler.mem_write_access[0] * write_energy / 100),
+        #     int(leakage_power * scheduler.total_cycles / 1000),
+        #     int(scheduler.mem_read_access[1] / 5000),
+        #     int(scheduler.mem_write_access[1] / 5000),
+        #     int(1 * scheduler.total_cycles),
+        # )
+
     print(
         "Time",
-        int(scheduler.total_cycles),
-        int(scheduler.bandwidth_idle_time),
+        (scheduler.total_cycles),
+        (scheduler.bandwidth_idle_time),
         scheduler.compute_idle_time,
-        int(scheduler.mem_size_idle_time),
+        (scheduler.mem_size_idle_time),
         mem_config["level" + str(scheduler.mle - 1)]["banks"],
         mem_config["level0"]["size"],
     )
     print(
         "Energy",
-        int(total_energy),
-        int(compute_energy),
-        int(scheduler.mem_read_access[0] * read_energy / 100),
-        int(scheduler.mem_write_access[0] * write_energy / 100),
-        int(leakage_power * scheduler.total_cycles / 1000),
-        int(scheduler.mem_read_access[1] / 5000),
-        int(scheduler.mem_write_access[1] / 5000),
-        int(1 * scheduler.total_cycles),
+        (total_energy),
+        (compute_energy),
+        (scheduler.mem_read_access[0] * read_energy / 100),
+        (scheduler.mem_write_access[0] * write_energy / 100),
+        (leakage_power * scheduler.total_cycles / 1000),
+        (scheduler.mem_read_access[1] / 5000),
+        (scheduler.mem_write_access[1] / 5000),
+        (1 * scheduler.total_cycles),
     )
 
 
