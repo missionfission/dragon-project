@@ -19,3 +19,5 @@ Write Time : 1ns -100ns
 
 Write Energy : 1pJ
 Write Time : 0.5-1ns
+
+![](2020-08-31-21-42-52.png)
