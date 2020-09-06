@@ -145,10 +145,10 @@ def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
     ## Joint sweep of tech space in cmos, memory cell and wires
     if opts == "energy":
         pass
-        # Make a diagram in the joint tech space that shows that it sweeping wire space makes the real difference here
+        # Make a diagram in the joint tech space that shows that sweeping wire space makes the real difference here
     if opts == "time":
         pass
-        # Make a diagram in the joint time space that shows that it sweeping cmos space makes the real difference
+        # Make a diagram in the joint time space that shows that sweeping cmos space makes the real difference
 
 
 def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
