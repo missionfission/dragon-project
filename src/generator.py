@@ -29,7 +29,7 @@ class Generator:
         )
 
 
-def writehwfile(self, content, filename):
+def writeconfig(self, content, filename):
     """
     Generate Hardware Description Yaml File 
     """
@@ -41,7 +41,7 @@ def writehwfile(self, content, filename):
     )
 
 
-def findnext(self, scheduler, opts=None):
+def backward_pass(self, scheduler, opts=None):
 
     """
     opts = ["energy", "time", "area", "edp"]
@@ -54,13 +54,14 @@ def findnext(self, scheduler, opts=None):
     Energy high due to high of everything but compute is slow  
     Where is area getting consumed the most?
     """
-    newhw = scheduler.config
+    config = scheduler.config
+    technology = config.technology
+    # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
+    config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
+    mem_config = config["memory"]
 
-    # newhw["compute"] = self.updatecomputedesign(scheduler, scheduler.config["compute"])
-    newhw["memory"] = self.updatememdesign(scheduler, scheduler.config["memory"])
-    mem_config = newhw["memory"]
     if opts == "time":
-        self.findmemtechnology("frequency")
+        technology=self.update_mem_tech("frequency",technology)
 
     if opts == "energy":
         mem_config["level0"]["banks"] += (int)(
@@ -73,8 +74,8 @@ def findnext(self, scheduler, opts=None):
         # it may be due to a lot of compute or bad-sized compute arrays
 
         # if mem energy consumption is too high at level 1, banks can be increased
-        self.findmemtechnology("read_energy")
-        self.findmemtechnology("write_energy")
+        technology = self.update_mem_tech("read_energy", technology)
+        technology = self.update_mem_tech("write_energy", technology)
 
         ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
         # If leakage energy, read or write energy-> can change the technology type
@@ -82,15 +83,16 @@ def findnext(self, scheduler, opts=None):
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
-    newhw["memory"] = mem_config
-    return newhw
+    mem_config = mem_space(mem_config,technology)
+    config["memory"] = mem_config
+    return config
 
 
-def updatecomputedesign(self, scheduler):
+def update_comp_design(self, scheduler):
     pass
 
 
-def updatememdesign(self, scheduler, mem_config):
+def update_mem_design(self, scheduler, mem_config):
 
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
     # print("Bandwidth Idle Time", scheduler.bandwidth_idle_time)
@@ -132,7 +134,7 @@ def updatememdesign(self, scheduler, mem_config):
     return mem_config
 
 
-def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
+def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
     """
     opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
@@ -140,25 +142,32 @@ def findmemtechnology(self, opts, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
+    beta_wire=1
+    beta_time=1
+    wire_cap, sense_amp_time = technology
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
-    if opts == "energy":
-        pass
-        # Make a diagram in the joint tech space that shows that sweeping wire space makes the real difference here
+    if opts == "energy" || opts == "read_energy":
+        # In the joint tech space that shows that sweeping wire space makes the real difference here
+        wire_cap -= energy_grads * beta_wire
     if opts == "time":
-        pass
-        # Make a diagram in the joint time space that shows that sweeping cmos space makes the real difference
+        # In the joint time space that shows that sweeping cmos space makes the real difference
+        sense_amp_time -= time_grads * beta_time
+    return [wire_cap, sense_amp_time]
 
+def mem_space(mem_config, technology):
+   
+    return mem_config
 
-def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
+def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     """
     Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
     """
     config = scheduler.config
     mem_config = config["memory"]
     mm_compute = config["mm_compute"]
-    mem_area = np.zeros((scheduler.mle))
+    # mem_area = np.zeros((scheduler.mle))
     # compute_area = (
     #     self.get_compute_area(mm_compute["class"], mm_compute["size"])
     #     * mm_compute["N_PE"]
@@ -213,27 +222,6 @@ def save_statistics(self, scheduler, backprop=False, backprop_memory=0):
         scheduler.bandwidth_idle_time += (
             backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
         )
-        # print(
-        #     "Time",
-        #     int(scheduler.total_cycles),
-        #     int(scheduler.bandwidth_idle_time),
-        #     scheduler.compute_idle_time,
-        #     int(scheduler.mem_size_idle_time),
-        #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
-        #     mem_config["level0"]["size"],
-        # )
-        # print(
-        #     "Energy",
-        #     int(total_energy),
-        #     int(compute_energy),
-        #     int(scheduler.mem_read_access[0] * read_energy / 100),
-        #     int(scheduler.mem_write_access[0] * write_energy / 100),
-        #     int(leakage_power * scheduler.total_cycles / 1000),
-        #     int(scheduler.mem_read_access[1] / 5000),
-        #     int(scheduler.mem_write_access[1] / 5000),
-        #     int(1 * scheduler.total_cycles),
-        # )
-
     print(
         "Time",
         (scheduler.total_cycles),
@@ -301,12 +289,12 @@ def endurance_writes_schedule():
     #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 
 
-Generator.save_statistics = save_statistics
-Generator.findmemtechnology = findmemtechnology
-Generator.updatecomputedesign = updatecomputedesign
-Generator.updatememdesign = updatememdesign
-Generator.findnext = findnext
-Generator.writehwfile = writehwfile
+Generator.save_stats = save_stats
+Generator.update_mem_tech = update_mem_tech
+Generator.update_comp_design = update_comp_design
+Generator.update_mem_design = update_mem_design
+Generator.backward_pass = backward_pass
+Generator.writeconfig = writeconfig
 Generator.get_mem_props = get_mem_props
 Generator.get_compute_props = get_compute_props
 Generator.analyze3d = analyze3d
