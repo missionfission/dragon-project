@@ -4,9 +4,7 @@ import yaml
 import yamlordereddictloader
 
 mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
-mem_space = 0
-wire_space = 0
-cmos_space = 0
+
 
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
 
@@ -55,13 +53,18 @@ def backward_pass(self, scheduler, opts=None):
     Where is area getting consumed the most?
     """
     config = scheduler.config
-    technology = config.technology
+    technology = config["technology"]
+    technology = [
+        technology["wire_cap"],
+        technology["sense_amp_time"],
+        technology["plogic_node"],
+    ]
     # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
     config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
     mem_config = config["memory"]
 
     if opts == "time":
-        technology=self.update_mem_tech("frequency",technology)
+        technology = self.update_mem_tech("frequency", technology)
 
     if opts == "energy":
         mem_config["level0"]["banks"] += (int)(
@@ -83,7 +86,7 @@ def backward_pass(self, scheduler, opts=None):
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
-    mem_config = mem_space(mem_config,technology)
+    mem_config = mem_space(mem_config, technology)
     config["memory"] = mem_config
     return config
 
@@ -142,23 +145,39 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
-    beta_wire=1
-    beta_time=1
-    wire_cap, sense_amp_time = technology
+    beta_wire = 1
+    beta_time = 1
+    wire_cap, sense_amp_time, plogic_node = technology
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
-    if opts == "energy" || opts == "read_energy":
+    if opts == "energy" or opts == "read_energy":
         # In the joint tech space that shows that sweeping wire space makes the real difference here
         wire_cap -= energy_grads * beta_wire
     if opts == "time":
         # In the joint time space that shows that sweeping cmos space makes the real difference
         sense_amp_time -= time_grads * beta_time
-    return [wire_cap, sense_amp_time]
+    return [wire_cap, sense_amp_time, plogic_node]
+
 
 def mem_space(mem_config, technology):
-   
+    wire_cap, sense_amp_time, plogic_node = technology
+    beta_read, beta_write, beta_frequency, beta_cap = [0, 0, 0, 0]
+    alpha_memory, alpha_cap = [1, 1]
+    mem_config["read_energy"] = (
+        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        + beta_read
+    )
+    mem_config["write_energy"] = (
+        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        + beta_write
+    )
+    mem_config["frequency"] = (
+        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        + beta_frequency
+    )
     return mem_config
+
 
 def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     """

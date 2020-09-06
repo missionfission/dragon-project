@@ -1,4 +1,7 @@
-technology: 40nm
+technology:
+  wire_cap: 1e-12
+  sense_amp_time: 1e-9
+  plogic_node: 40nm
 voltage: 1
 memory_levels: 2
 memory:
