@@ -148,6 +148,7 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     beta_wire = 1
     beta_time = 1
     wire_cap, sense_amp_time, plogic_node = technology
+    print(wire_cap, sense_amp_time)
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
@@ -157,23 +158,26 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     if opts == "time":
         # In the joint time space that shows that sweeping cmos space makes the real difference
         sense_amp_time -= time_grads * beta_time
+    print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
 
 
 def mem_space(mem_config, technology):
     wire_cap, sense_amp_time, plogic_node = technology
+    wire_cap = float(wire_cap)
+    sense_amp_time = float(sense_amp_time)
     beta_read, beta_write, beta_frequency, beta_cap = [0, 0, 0, 0]
     alpha_memory, alpha_cap = [1, 1]
     mem_config["read_energy"] = (
-        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
         + beta_read
     )
     mem_config["write_energy"] = (
-        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
         + beta_write
     )
     mem_config["frequency"] = (
-        mem_config["level0"]["size"] * alpha_memory(beta_cap + wire_cap * alpha_cap)
+        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
         + beta_frequency
     )
     return mem_config
@@ -203,12 +207,11 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         )
         * 12.75
     ) / 1000
-    read_energy, write_energy, leakage_power = 0, 0, 0
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
-        read_energy, write_energy, leakage_power = self.get_mem_props(
-            memory["size"], memory["width"], memory["banks"]
-        )
+        read_energy = float(memory["read_energy"])
+        write_energy = float(memory["write_energy"])
+        leakage_power = float(memory["leakage_power"])
         mem_energy[i] = (
             scheduler.mem_read_access[i] * read_energy
             + scheduler.mem_write_access[i] * write_energy
@@ -266,11 +269,11 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
 #############################################################################################################################
 
 
-def get_compute_props(self, *args, **kwargs):
+def get_compute_props(*args, **kwargs):
     pass
 
 
-def get_mem_props(self, size, width, banks):
+def get_mem_props(size, width, banks):
     for i in range(11, 25):
         if (size // 2 ** i) < 1:
             break
@@ -314,6 +317,4 @@ Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
 Generator.backward_pass = backward_pass
 Generator.writeconfig = writeconfig
-Generator.get_mem_props = get_mem_props
-Generator.get_compute_props = get_compute_props
 Generator.analyze3d = analyze3d
