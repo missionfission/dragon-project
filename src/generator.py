@@ -62,9 +62,10 @@ def backward_pass(self, scheduler, opts=None):
     # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
     config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
     mem_config = config["memory"]
-
+    time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
+    print("time_grads", time_grads)
     if opts == "time":
-        technology = self.update_mem_tech("frequency", technology)
+        technology = self.update_mem_tech("time", technology, time_grads=time_grads)
 
     if opts == "energy":
         mem_config["level0"]["banks"] += (int)(
@@ -77,8 +78,13 @@ def backward_pass(self, scheduler, opts=None):
         # it may be due to a lot of compute or bad-sized compute arrays
 
         # if mem energy consumption is too high at level 1, banks can be increased
-        technology = self.update_mem_tech("read_energy", technology)
-        technology = self.update_mem_tech("write_energy", technology)
+        energy_grads = scheduler.mem_energy[0] / scheduler.total_energy
+        technology = self.update_mem_tech(
+            "read_energy", technology, energy_grads=energy_grads
+        )
+        technology = self.update_mem_tech(
+            "write_energy", technology, energy_grads=energy_grads
+        )
 
         ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
         # If leakage energy, read or write energy-> can change the technology type
@@ -157,6 +163,7 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
         wire_cap -= energy_grads * beta_wire
     if opts == "time":
         # In the joint time space that shows that sweeping cmos space makes the real difference
+        print("updating for time")
         sense_amp_time -= time_grads * beta_time
     print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
