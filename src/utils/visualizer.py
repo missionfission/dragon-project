@@ -229,14 +229,13 @@ def plot_parameter_change(bank_list, mem_size_list, compute_list, *args, **kwarg
 def plot_parameter_change_multiple(
     ax, bank_list, mem_size_list, compute_list, *args, **kwargs
 ):
-    # ax.plot(bank_list, "go-")
-    ax.plot(mem_size_list[1:], "go-")
-    # plt.plot(mem_size_idle_time_list, color="gree
+    ax.plot(bank_list, "go-")
+    # ax.plot(mem_size_list[1:], "go-")
 
 
 def plot_descent_multiple(
     ax, time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
 ):
     ax.plot(time_list[1:], "ro-")
-    # ax.plot(bandwidth_time_list, "bo-")
-    ax.plot(mem_size_idle_time_list[1:], "bo-")
+    ax.plot(bandwidth_time_list, "bo-")
+    # ax.plot(mem_size_idle_time_list[1:], "bo-")
