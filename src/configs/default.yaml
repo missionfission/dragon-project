@@ -15,8 +15,8 @@ memory:
     size: 1000000
   level1:
     class: DRAM
-    frequency: 5
-    banks: 5
+    frequency: 80
+    banks: 2
     read_ports: 1
     write_ports: 1
     width: 2

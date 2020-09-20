@@ -63,7 +63,7 @@ def backward_pass(self, scheduler, opts=None):
     config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
     mem_config = config["memory"]
     time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
-    print("time_grads", time_grads)
+    # print("time_grads", time_grads)
     if opts == "time":
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
 
@@ -154,7 +154,10 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     beta_wire = 1
     beta_time = 1
     wire_cap, sense_amp_time, plogic_node = technology
-    print(wire_cap, sense_amp_time)
+    wire_cap = float(wire_cap)
+    sense_amp_time = float(sense_amp_time)
+    # print(wire_cap, sense_amp_time)
+
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
@@ -163,9 +166,9 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
         wire_cap -= energy_grads * beta_wire
     if opts == "time":
         # In the joint time space that shows that sweeping cmos space makes the real difference
-        print("updating for time")
+        # print("updating for time")
         sense_amp_time -= time_grads * beta_time
-    print(wire_cap, sense_amp_time)
+    # print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
 
 
@@ -251,25 +254,49 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         scheduler.bandwidth_idle_time += (
             backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
         )
-    print(
-        "Time",
-        (scheduler.total_cycles),
-        (scheduler.bandwidth_idle_time),
-        scheduler.compute_idle_time,
-        (scheduler.mem_size_idle_time),
-        mem_config["level" + str(scheduler.mle - 1)]["banks"],
-        mem_config["level0"]["size"],
-    )
-    print(
-        "Energy",
-        (total_energy),
-        (compute_energy),
-        (scheduler.mem_read_access[0] * read_energy / 100),
-        (scheduler.mem_write_access[0] * write_energy / 100),
-        (leakage_power * scheduler.total_cycles / 1000),
-        (scheduler.mem_read_access[1] / 5000),
-        (scheduler.mem_write_access[1] / 5000),
-        (1 * scheduler.total_cycles),
+    # print(
+    #     "Time",
+    #     int(scheduler.total_cycles),
+    #     int(scheduler.bandwidth_idle_time),
+    #     scheduler.compute_idle_time,
+    #     int(scheduler.mem_size_idle_time),
+    #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
+    #     mem_config["level0"]["size"],
+    # )
+    # print(
+    #     "Energy",
+    #     int(total_energy),
+    #     int(compute_energy),
+    #     int(scheduler.mem_read_access[0] * read_energy / 100),
+    #     int(scheduler.mem_write_access[0] * write_energy / 100),
+    #     int(leakage_power * scheduler.total_cycles / 1000),
+    #     int(scheduler.mem_read_access[1] / 5000),
+    #     int(scheduler.mem_write_access[1] / 5000),
+    #     int(1 * scheduler.total_cycles),
+    # )
+    assert scheduler.total_cycles > scheduler.bandwidth_idle_time
+    assert scheduler.total_cycles > scheduler.mem_size_idle_time
+    assert scheduler.bandwidth_idle_time > 0
+    assert scheduler.mem_size_idle_time > 0
+    return (
+        [
+            int(scheduler.total_cycles),
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),  #
+            scheduler.compute_idle_time,
+            mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            mem_config["level0"]["size"],
+        ],
+        [
+            int(total_energy),
+            int(compute_energy),
+            int(scheduler.mem_read_access[0] * read_energy / 100),
+            int(scheduler.mem_write_access[0] * write_energy / 100),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(scheduler.mem_read_access[1] / 5000),
+            int(scheduler.mem_write_access[1] / 5000),
+            int(1 * scheduler.total_cycles),
+        ],
     )
 
 

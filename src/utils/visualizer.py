@@ -10,7 +10,6 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
 
 def roofline_model():
-
     pass
 
 
@@ -19,7 +18,6 @@ def generate_execution_movie():
 
 
 def genvideologger():
-
     pass
 
 
@@ -186,3 +184,59 @@ def tech_space_graph(
     # ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
     # fig.tight_layout()
     # plt.savefig(base_dir + filename, bbox_inches="tight")
+
+
+def plot_descent(
+    time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
+):
+    fig, ax = plt.subplots(figsize=(30, 10))
+    base_dir = "figures/"
+    error_config = {"ecolor": "0.3"}
+    index = np.arange((len(time_list)))
+    plt.plot(time_list)
+    plt.plot(bandwidth_time_list)
+    plt.plot(mem_size_idle_time_list)
+    ax.legend(fontsize=20)
+    ax.set_xticks(index)
+    plt.xticks(rotation=80)
+    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
+    plt.rc("ytick", labelsize=20)
+    ax.set_xlabel("Grad descent time", fontsize=20, fontweight="bold")
+    fig.tight_layout()
+    plt.savefig(base_dir + "time.png", bbox_inches="tight")
+    plt.show()
+
+
+def plot_parameter_change(bank_list, mem_size_list, compute_list, *args, **kwargs):
+    fig, ax = plt.subplots(figsize=(30, 10))
+    base_dir = "figures/"
+    error_config = {"ecolor": "0.3"}
+    index = np.arange((len(bank_list)))
+    plt.plot(bank_list)
+    # plt.plot(mem_size_list)
+    # plt.plot(mem_size_idle_time_list)
+    ax.legend(fontsize=20)
+    ax.set_xticks(index)
+    plt.xticks(rotation=80)
+    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
+    plt.rc("ytick", labelsize=20)
+    ax.set_xlabel("Grad descent time", fontsize=20, fontweight="bold")
+    fig.tight_layout()
+    plt.savefig(base_dir + "banks.png", bbox_inches="tight")
+    plt.show()
+
+
+def plot_parameter_change_multiple(
+    ax, bank_list, mem_size_list, compute_list, *args, **kwargs
+):
+    # ax.plot(bank_list, "go-")
+    ax.plot(mem_size_list[1:], "go-")
+    # plt.plot(mem_size_idle_time_list, color="gree
+
+
+def plot_descent_multiple(
+    ax, time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
+):
+    ax.plot(time_list[1:], "ro-")
+    # ax.plot(bandwidth_time_list, "bo-")
+    ax.plot(mem_size_idle_time_list[1:], "bo-")
