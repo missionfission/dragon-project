@@ -207,7 +207,7 @@ def plot_descent(
     plt.show()
 
 
-def plot_parameter_change(bank_list, mem_size_list, compute_list, *args, **kwargs):
+def plot_design_param_change(bank_list, mem_size_list, compute_list, *args, **kwargs):
     fig, ax = plt.subplots(figsize=(30, 10))
     base_dir = "figures/"
     error_config = {"ecolor": "0.3"}
@@ -223,6 +223,25 @@ def plot_parameter_change(bank_list, mem_size_list, compute_list, *args, **kwarg
     ax.set_xlabel("Grad descent time", fontsize=20, fontweight="bold")
     fig.tight_layout()
     plt.savefig(base_dir + "banks.png", bbox_inches="tight")
+    plt.show()
+
+
+def plot_tech_param_change(time_list, bandwidth_time_list, tech_params, *args, **kwargs):
+    fig, ax = plt.subplots(figsize=(30, 10))
+    base_dir = "figures/"
+    error_config = {"ecolor": "0.3"}
+    index = np.arange((len(time_list)))
+    plt.plot(time_list)
+    # plt.plot(mem_size_list)
+    # plt.plot(mem_size_idle_time_list)
+    ax.legend(fontsize=20)
+    ax.set_xticks(index)
+    plt.xticks(rotation=80)
+    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
+    plt.rc("ytick", labelsize=20)
+    ax.set_xlabel("Grad descent tech", fontsize=20, fontweight="bold")
+    fig.tight_layout()
+    plt.savefig(base_dir + "tech.png", bbox_inches="tight")
     plt.show()
 
 

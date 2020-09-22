@@ -274,6 +274,13 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     #     int(scheduler.mem_write_access[1] / 5000),
     #     int(1 * scheduler.total_cycles),
     # )
+    config = scheduler.config
+    technology = config["technology"]
+    technology = [
+        float(technology["wire_cap"]),
+        float(technology["sense_amp_time"]),
+        float(technology["plogic_node"]),
+    ]
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time > 0
@@ -284,8 +291,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             int(scheduler.bandwidth_idle_time),
             int(scheduler.mem_size_idle_time),  #
             scheduler.compute_idle_time,
-            mem_config["level" + str(scheduler.mle - 1)]["banks"],
-            mem_config["level0"]["size"],
+         
         ],
         [
             int(total_energy),
@@ -297,6 +303,8 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             int(scheduler.mem_write_access[1] / 5000),
             int(1 * scheduler.total_cycles),
         ],
+          [mem_config["level" + str(scheduler.mle - 1)]["banks"],
+           mem_config["level0"]["size"]], technology
     )
 
 
