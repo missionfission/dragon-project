@@ -213,8 +213,6 @@ def plot_design_param_change(bank_list, mem_size_list, compute_list, *args, **kw
     error_config = {"ecolor": "0.3"}
     index = np.arange((len(bank_list)))
     plt.plot(bank_list)
-    # plt.plot(mem_size_list)
-    # plt.plot(mem_size_idle_time_list)
     ax.legend(fontsize=20)
     ax.set_xticks(index)
     plt.xticks(rotation=80)
@@ -226,14 +224,13 @@ def plot_design_param_change(bank_list, mem_size_list, compute_list, *args, **kw
     plt.show()
 
 
-def plot_tech_param_change(time_list, bandwidth_time_list, tech_params, *args, **kwargs):
+def plot_tech_param_change(tech_params, *args, **kwargs):
     fig, ax = plt.subplots(figsize=(30, 10))
     base_dir = "figures/"
     error_config = {"ecolor": "0.3"}
-    index = np.arange((len(time_list)))
-    plt.plot(time_list)
-    # plt.plot(mem_size_list)
-    # plt.plot(mem_size_idle_time_list)
+    wire_cap, sense_amp_time, plogic_node = tech_params
+    index = np.arange((len(wire_cap)))
+    plt.plot(tech_params)
     ax.legend(fontsize=20)
     ax.set_xticks(index)
     plt.xticks(rotation=80)
@@ -245,16 +242,10 @@ def plot_tech_param_change(time_list, bandwidth_time_list, tech_params, *args, *
     plt.show()
 
 
-def plot_parameter_change_multiple(
-    ax, bank_list, mem_size_list, compute_list, *args, **kwargs
-):
-    ax.plot(bank_list, "go-")
-    # ax.plot(mem_size_list[1:], "go-")
+def plot_parameter_change_multiple(ax, param_list, *args, **kwargs):
+    ax.plot(param_list, "go-")
 
 
-def plot_descent_multiple(
-    ax, time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
-):
-    ax.plot(time_list[1:], "ro-")
-    ax.plot(bandwidth_time_list, "bo-")
-    # ax.plot(mem_size_idle_time_list[1:], "bo-")
+def plot_time_descent_multiple(ax, time_list, descent_list, *args, **kwargs):
+    ax.plot(time_list, "ro-")
+    ax.plot(descent_list, "bo-")
