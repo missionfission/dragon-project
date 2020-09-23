@@ -178,6 +178,7 @@ def mem_space(mem_config, technology):
     sense_amp_time = float(sense_amp_time)
     beta_read, beta_write, beta_frequency, beta_cap = [0, 0, 0, 0]
     alpha_memory, alpha_cap = [1, 1]
+
     mem_config["read_energy"] = (
         mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
         + beta_read
@@ -291,7 +292,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             int(scheduler.bandwidth_idle_time),
             int(scheduler.mem_size_idle_time),  #
             scheduler.compute_idle_time,
-         
         ],
         [
             int(total_energy),
@@ -303,8 +303,11 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             int(scheduler.mem_write_access[1] / 5000),
             int(1 * scheduler.total_cycles),
         ],
-          [mem_config["level" + str(scheduler.mle - 1)]["banks"],
-           mem_config["level0"]["size"]], technology
+        [
+            mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            mem_config["level0"]["size"],
+        ],
+        technology,
     )
 
 
