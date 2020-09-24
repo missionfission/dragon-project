@@ -255,26 +255,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         scheduler.bandwidth_idle_time += (
             backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
         )
-    # print(
-    #     "Time",
-    #     int(scheduler.total_cycles),
-    #     int(scheduler.bandwidth_idle_time),
-    #     scheduler.compute_idle_time,
-    #     int(scheduler.mem_size_idle_time),
-    #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
-    #     mem_config["level0"]["size"],
-    # )
-    # print(
-    #     "Energy",
-    #     int(total_energy),
-    #     int(compute_energy),
-    #     int(scheduler.mem_read_access[0] * read_energy / 100),
-    #     int(scheduler.mem_write_access[0] * write_energy / 100),
-    #     int(leakage_power * scheduler.total_cycles / 1000),
-    #     int(scheduler.mem_read_access[1] / 5000),
-    #     int(scheduler.mem_write_access[1] / 5000),
-    #     int(1 * scheduler.total_cycles),
-    # )
     config = scheduler.config
     technology = config["technology"]
     technology = [
@@ -282,6 +262,32 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         float(technology["sense_amp_time"]),
         float(technology["plogic_node"]),
     ]
+    print(
+        "Time",
+        int(scheduler.total_cycles),
+        int(scheduler.bandwidth_idle_time),
+        scheduler.compute_idle_time,
+        int(scheduler.mem_size_idle_time),
+    )
+    print(
+        "Energy",
+        int(total_energy),
+        int(compute_energy),
+        int(scheduler.mem_read_access[0] * read_energy / 100),
+        int(scheduler.mem_write_access[0] * write_energy / 100),
+        int(leakage_power * scheduler.total_cycles / 1000),
+        int(scheduler.mem_read_access[1] / 5000),
+        int(scheduler.mem_write_access[1] / 5000),
+        int(1 * scheduler.total_cycles),
+    )
+    print(
+        "Design Params",
+        mem_config["level" + str(scheduler.mle - 1)]["banks"],
+        mem_config["level0"]["size"],
+    )
+
+    print("Tech Params", technology)
+
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time > 0
