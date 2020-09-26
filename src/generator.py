@@ -53,17 +53,22 @@ def backward_pass(self, scheduler, opts=None):
     Where is area getting consumed the most?
     """
     config = scheduler.config
+    # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
+    config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
+
+    return config
+
+
+def backward_pass_tech(self, scheduler, opts=None):
+    config = scheduler.config
     technology = config["technology"]
     technology = [
         technology["wire_cap"],
         technology["sense_amp_time"],
         technology["plogic_node"],
     ]
-    # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
-    config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
     mem_config = config["memory"]
     time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
-    # print("time_grads", time_grads)
     if opts == "time":
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
 
@@ -151,24 +156,32 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
-    beta_wire = 1
-    beta_time = 1
+    print("time_grads", time_grads)
     wire_cap, sense_amp_time, plogic_node = technology
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
-    # print(wire_cap, sense_amp_time)
-
+    steps = 30
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
     if opts == "energy" or opts == "read_energy":
+        beta_wire = 1 / 50.7
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
         # In the joint tech space that shows that sweeping wire space makes the real difference here
         wire_cap -= energy_grads * beta_wire
+        plogic_node -= energy_grads * beta_logic
+
     if opts == "time":
         # In the joint time space that shows that sweeping cmos space makes the real difference
         # print("updating for time")
-        sense_amp_time -= time_grads * beta_time
-    # print(wire_cap, sense_amp_time)
+        beta_wire = 1 / 0.558
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
+        sense_amp_time -= steps * time_grads * beta_sense_amp
+        wire_cap -= steps * time_grads * beta_wire
+
+    print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
 
 
@@ -176,21 +189,23 @@ def mem_space(mem_config, technology):
     wire_cap, sense_amp_time, plogic_node = technology
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
-    beta_read, beta_write, beta_frequency, beta_cap = [0, 0, 0, 0]
-    alpha_memory, alpha_cap = [1, 1]
-
-    mem_config["read_energy"] = (
-        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-        + beta_read
-    )
-    mem_config["write_energy"] = (
-        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-        + beta_write
-    )
-    mem_config["frequency"] = (
-        mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-        + beta_frequency
-    )
+    plogic_node = float(plogic_node)
+    # mem_config["read_energy"] = (
+    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
+    #     + beta_read
+    # )
+    # mem_config["write_energy"] = (
+    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
+    #     + beta_write
+    # )
+    # mem_config["frequency"] = (
+    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
+    #     + beta_frequency
+    # )
+    mem_config["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config["read_energy"] = 50.7 * wire_cap + 56.2
+    mem_config["write_energy"] = 47.8 * wire_cap + 20
+    mem_config["frequency"] = 1 / mem_config["read_latency"]
     return mem_config
 
 
@@ -262,6 +277,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         float(technology["sense_amp_time"]),
         float(technology["plogic_node"]),
     ]
+    print("==================================")
     print(
         "Time",
         int(scheduler.total_cycles),
@@ -291,7 +307,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time > 0
-    assert scheduler.mem_size_idle_time > 0
+    # assert scheduler.mem_size_idle_time > 0
     return (
         [
             int(scheduler.total_cycles),
@@ -367,5 +383,6 @@ Generator.update_mem_tech = update_mem_tech
 Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
 Generator.backward_pass = backward_pass
+Generator.backward_pass_tech = backward_pass_tech
 Generator.writeconfig = writeconfig
 Generator.analyze3d = analyze3d

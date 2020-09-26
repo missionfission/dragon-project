@@ -1,6 +1,6 @@
 technology:
-  wire_cap: 1e-12
-  sense_amp_time: 1e-9
+  wire_cap: 1
+  sense_amp_time: 1
   plogic_node: 40
 voltage: 1
 memory_levels: 2
