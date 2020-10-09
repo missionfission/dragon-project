@@ -291,17 +291,17 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         "Energy",
         int(total_energy),
         int(compute_energy),
-        int(scheduler.mem_read_access[0] * read_energy / 100),
-        int(scheduler.mem_write_access[0] * write_energy / 100),
+        int(scheduler.mem_read_access[0] * read_energy),
+        int(scheduler.mem_write_access[0] * write_energy),
         int(leakage_power * scheduler.total_cycles / 1000),
-        int(scheduler.mem_read_access[1] / 5000),
-        int(scheduler.mem_write_access[1] / 5000),
+        int(scheduler.mem_read_access[1] / 50),
+        int(scheduler.mem_write_access[1] / 50),
         int(1 * scheduler.total_cycles),
     )
     print(
         "memory accesses",
-        int(scheduler.mem_read_access[0] / 100),
-        int(scheduler.mem_write_access[0] / 100),
+        int(scheduler.mem_read_access[0]),
+        int(scheduler.mem_write_access[0]),
         int(scheduler.total_cycles),
         int(scheduler.mem_read_access[1]),
     )
