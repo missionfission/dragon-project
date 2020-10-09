@@ -6,8 +6,9 @@ class Node:
         self.outputs = outputs
         self.scope = scope
         self.compute_expense = 0
-        self.read_access = 0
+        self.weights = 0
         self.write_access = 0
+        self.read_access = 0
         self.mem_util = 0  # out_edge_mem + read_access
         self.in_edge_mem = 0
         self.out_edge_mem = 0
@@ -54,7 +55,7 @@ class Node:
         self._scope = scope
 
     def get_stats(self):
-        return self.compute_expense, self.read_access, self.write_access
+        return self.compute_expense, self.weights
 
     def __repr__(self):
 

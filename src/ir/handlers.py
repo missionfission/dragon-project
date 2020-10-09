@@ -21,7 +21,7 @@ def bmm(node):
     # [b, n, p] = aten::bmm([b, n, m], [b, m, p])
     b, n, m = node.inputs[0].shape
     b, m, p = node.inputs[1].shape
-    return (b * n * m * p, b * n * m + b * m * p, 0)
+    return (b * n * m * p, b * m * p, 0)
 
 
 def matmul(node):
@@ -29,11 +29,11 @@ def matmul(node):
     if node.inputs[0].ndim == 1 and node.inputs[1].ndim == 1:
         # [] = aten::matmul([n], [n])
         n = node.inputs[0].shape[0]
-        return (n, 0, 0)
+        return (n, n, 0)
     elif node.inputs[0].ndim == 1 and node.inputs[1].ndim == 2:
         # [m] = aten::matmul([n], [n, m])
         n, m = node.inputs[1].shape
-        return n * m, 0, 0
+        return n * m, n * m, 0
     elif node.inputs[0].ndim == 2 and node.inputs[1].ndim == 1:
         # [n] = aten::matmul([n, m], [m])
         n, m = node.inputs[0].shape
@@ -42,11 +42,11 @@ def matmul(node):
         # [n, p] = aten::matmul([n, m], [m, p])
         n, m = node.inputs[0].shape
         m, p = node.inputs[1].shape
-        return n * m * p, 0, 0
+        return n * m * p, m * p, 0
     elif node.inputs[0].ndim == 1:
         # [..., m] = aten::matmul([n], [..., n, m])
         *b, n, m = node.inputs[1].shape
-        return np.prod(b) * n * m, 0, 0
+        return np.prod(b) * n * m, np.prod(b) * n * m, 0
     elif node.inputs[1].ndim == 1:
         # [..., n] = aten::matmul([..., n, m], [m])
         *b, n, m = node.inputs[0].shape
@@ -61,6 +61,7 @@ def matmul(node):
 
 def mul(node):
     os = node.outputs[0].shape
+    print("used")
     return np.prod(os), 0, 0
 
 
@@ -70,7 +71,7 @@ def convolution(node):
     else:
         ic, oc, *ks = node.inputs[1].shape
     os = node.outputs[0].shape
-    return np.prod(os) * ic * np.prod(ks), ic * np.prod(ks) + np.prod(os) * ic, 0
+    return np.prod(os) * ic * np.prod(ks), np.prod(ks) * ic * oc, 0
 
 
 def batch_norm(node):

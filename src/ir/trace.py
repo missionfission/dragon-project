@@ -16,7 +16,7 @@ __all__ = ["trace"]
 def get_backprop_memory(nodes):
     total_backprop_mem = 0
     for i, node in enumerate(nodes):
-        total_backprop_mem += node.in_edge_mem + node.out_edge_mem + node.read_access
+        total_backprop_mem += node.in_edge_mem + node.out_edge_mem + node.weights
 
     return total_backprop_mem
 
@@ -58,16 +58,23 @@ def trace(model, args=(), kwargs=None):
                 if func is not None:
                     # TODO Merge Small Node
                     # read access are weight read access
-                    (node.compute_expense, node.read_access, node.write_access,) = func(
-                        node
-                    )
-                    # print(node.read_access)
-                    # if not isinstance(node.read_access, int):
-                    #     if len(node.read_access) > 1:
-                    #         node.read_access = node.read_access[0]
+                    node.compute_expense, node.weights, _ = func(node)
+                    # print(node.weights)
+                    # if not isinstance(node.weights, int):
+                    #     if len(node.weights) > 1:
+                    #         node.weights = node.weights[0]
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
-                    node.mem_util = node.read_access + node.out_edge_mem
+                    node.mem_util = node.weights + node.out_edge_mem
+                    node.read_access = node.weights + node.in_edge_mem
+                    # print(
+                    # "inputs",
+                    # node.inputs[0].shape,
+                    # "outputs",
+                    # node.outputs[0].shape,
+                    # "weights",
+                    # node.weights,
+                    # )
                     # if not isinstance(node.mem_util, np.int64):
                     #     if (node.mem_util).shape[0] > 1:
                     #         node.mem_util = node.mem_util[0]

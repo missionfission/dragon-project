@@ -202,10 +202,12 @@ def mem_space(mem_config, technology):
     #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
     #     + beta_frequency
     # )
-    mem_config["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    mem_config["read_energy"] = 50.7 * wire_cap + 56.2
-    mem_config["write_energy"] = 47.8 * wire_cap + 20
-    mem_config["frequency"] = 1 / mem_config["read_latency"]
+    mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
+    mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
+    mem_config["level0"]["frequency"] = 4000 * (
+        1 / mem_config["level0"]["read_latency"]
+    )
     return mem_config
 
 
@@ -297,9 +299,19 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         int(1 * scheduler.total_cycles),
     )
     print(
+        "memory accesses",
+        int(scheduler.mem_read_access[0] / 100),
+        int(scheduler.mem_write_access[0] / 100),
+        int(scheduler.total_cycles),
+        int(scheduler.mem_read_access[1]),
+    )
+
+    print(
         "Design Params",
         mem_config["level" + str(scheduler.mle - 1)]["banks"],
         mem_config["level0"]["size"],
+        mem_config["level0"]["frequency"],
+        mem_config["level0"]["read_energy"],
     )
 
     print("Tech Params", technology)
@@ -307,7 +319,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time > 0
-    # assert scheduler.mem_size_idle_time > 0
+    assert scheduler.mem_size_idle_time > 0
     return (
         [
             int(scheduler.total_cycles),
@@ -328,6 +340,8 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         [
             mem_config["level" + str(scheduler.mle - 1)]["banks"],
             mem_config["level0"]["size"],
+            mem_config["level0"]["frequency"],
+            mem_config["level0"]["read_energy"],
         ],
         technology,
     )
