@@ -16,6 +16,8 @@ beta
 
 alpha = 20000
 beta = 4
+logic_energy = 12.75
+logic_speed = 1
 
 
 class Generator:
@@ -160,7 +162,7 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     wire_cap, sense_amp_time, plogic_node = technology
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
-    steps = 30
+    steps = 1
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
@@ -183,6 +185,10 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
     print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
+
+
+def update_compute_tech(self, opts, technology, time_grads=0, energy_grads=0):
+    print("time_grads", time_grads)
 
 
 def mem_space(mem_config, technology):
@@ -226,15 +232,19 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     total_energy = 0
     mem_energy = np.zeros((scheduler.mle))
     compute_energy = (
-        mm_compute["N_PE"]
-        * mm_compute["size"]
-        * (
-            scheduler.total_cycles
-            - scheduler.bandwidth_idle_time
-            - scheduler.mem_size_idle_time
+        (
+            mm_compute["N_PE"]
+            * mm_compute["size"] ** 2
+            * (
+                scheduler.total_cycles
+                - scheduler.bandwidth_idle_time
+                - scheduler.mem_size_idle_time
+            )
+            * 12.75
         )
-        * 12.75
-    ) / 1000
+        / 8
+        / 1000
+    )
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
@@ -318,7 +328,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
 
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
-    assert scheduler.bandwidth_idle_time > 0
+    assert scheduler.bandwidth_idle_time >= 0
     assert scheduler.mem_size_idle_time > 0
     return (
         [
