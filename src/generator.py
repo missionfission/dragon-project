@@ -62,17 +62,13 @@ def backward_pass(self, scheduler, opts=None):
 
 
 def backward_pass_tech(self, scheduler, opts=None):
+    technology = scheduler.technology
     config = scheduler.config
-    technology = config["technology"]
-    technology = [
-        technology["wire_cap"],
-        technology["sense_amp_time"],
-        technology["plogic_node"],
-    ]
     mem_config = config["memory"]
     time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
     if opts == "time":
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
+        technology = self.update_logic_tech("time", technology, time_grads=time_grads)
 
     if opts == "energy":
         mem_config["level0"]["banks"] += (int)(
@@ -92,6 +88,10 @@ def backward_pass_tech(self, scheduler, opts=None):
         technology = self.update_mem_tech(
             "write_energy", technology, energy_grads=energy_grads
         )
+        energy_grads = scheduler.compute_energy / scheduler.total_energy
+        technology = self.update_logic_tech(
+            "energy", technology, energy_grads=energy_grads
+        )
 
         ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
         # If leakage energy, read or write energy-> can change the technology type
@@ -100,6 +100,7 @@ def backward_pass_tech(self, scheduler, opts=None):
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
     mem_config = mem_space(mem_config, technology)
+    scheduler.technology = technology
     config["memory"] = mem_config
     return config
 
@@ -183,12 +184,16 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
         sense_amp_time -= steps * time_grads * beta_sense_amp
         wire_cap -= steps * time_grads * beta_wire
 
-    print(wire_cap, sense_amp_time)
+    # print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
 
 
-def update_compute_tech(self, opts, technology, time_grads=0, energy_grads=0):
-    print("time_grads", time_grads)
+def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
+    if opts == "energy":
+        pass
+    if opts == "time":
+        pass
+    # print("time_grads", time_grads)
 
 
 def mem_space(mem_config, technology):
@@ -264,7 +269,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     # total_area = np.sum(mem_area) + compute_area
     total_energy = np.sum(mem_energy) + compute_energy
     scheduler.mem_energy = mem_energy
-    scheduler.conpute_energy = compute_energy
+    scheduler.compute_energy = compute_energy
     scheduler.logger.info("Tool Output")
     scheduler.logger.info("===========================")
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
@@ -283,12 +288,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
         )
     config = scheduler.config
-    technology = config["technology"]
-    technology = [
-        float(technology["wire_cap"]),
-        float(technology["sense_amp_time"]),
-        float(technology["plogic_node"]),
-    ]
+
     print("==================================")
     print(
         "Time",
@@ -324,7 +324,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         mem_config["level0"]["read_energy"],
     )
 
-    print("Tech Params", technology)
+    print("Tech Params", scheduler.technology)
 
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
@@ -353,7 +353,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             mem_config["level0"]["frequency"],
             mem_config["level0"]["read_energy"],
         ],
-        technology,
+        scheduler.technology,
     )
 
 
