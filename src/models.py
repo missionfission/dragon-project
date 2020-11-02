@@ -1,10 +1,12 @@
 import argparse
 import sys
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torchvision.models as models
 
+from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
 
 
