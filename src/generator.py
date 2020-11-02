@@ -410,3 +410,4 @@ Generator.backward_pass = backward_pass
 Generator.backward_pass_tech = backward_pass_tech
 Generator.writeconfig = writeconfig
 Generator.analyze3d = analyze3d
+Generator.update_logic_tech = update_logic_tech

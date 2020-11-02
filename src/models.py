@@ -1,8 +1,16 @@
-import sys
 import argparse
+import sys
+
+import torch
+import torch.nn as nn
+import torchvision.models as models
+
+from ir.trace import trace
+
 
 def dlrm_graph():
     import dlrm.dlrm_data_pytorch as dp
+
     # ### parse arguments ###
     parser = argparse.ArgumentParser(
         description="Train Deep Learning Recommendation Model (DLRM)"
@@ -245,7 +253,7 @@ def dlrm_graph():
 
 def resnet_graph():
     for name, model in models.__dict__.items():
-    #     print(name)
+        #     print(name)
         if not name.islower() or name.startswith("__") or not callable(model):
             continue
         if "resnet50" in name:
@@ -255,20 +263,23 @@ def resnet_graph():
             break
     return resnet_graph
 
+
 def vggnet_graph():
     for name, model in models.__dict__.items():
-    #     print(name)
+        #     print(name)
         if not name.islower() or name.startswith("__") or not callable(model):
             continue
-        if "vgg11" in name and "vgg11_bn" not in name :
+        if "vgg11" in name and "vgg11_bn" not in name:
             inputs = torch.randn(1, 3, 299, 299)
-            vgg11_graph = trace(model().eval(), inputs) 
+            vgg11_graph = trace(model().eval(), inputs)
             # print(vgg11_graph)
             break
     return vgg11_graph
 
+
 def bert_graph():
     from transformers import BertModel, BertConfig
+
     # model.configMM
 
     # tokenizer = torch.hub.load('huggingface/pytorch-pretrained-BERT', 'tokenizer', 'bert-base-cased', do_basic_tokenize=False)
@@ -281,7 +292,24 @@ def bert_graph():
     ### Get the hidden states computed by `bertModel`
     # Define sentence A and B indices associated to 1st and 2nd sentences (see paper)
     segments_ids = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
-    indexed_tokens = [101, 2627, 1108, 3104, 1124, 15703, 136, 102, 3104, 1124, 15703, 1108, 170, 16797, 8284, 102]
+    indexed_tokens = [
+        101,
+        2627,
+        1108,
+        3104,
+        1124,
+        15703,
+        136,
+        102,
+        3104,
+        1124,
+        15703,
+        1108,
+        170,
+        16797,
+        8284,
+        102,
+    ]
 
     # Convert inputs to PyTorch tensors
     segments_tensors = torch.tensor([segments_ids])
@@ -297,11 +325,28 @@ def bert_graph():
     return bert_graph
 
 
-
 def gpt2_graph():
     from transformers import GPT2Model, GPT2Config
+
     segments_ids = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
-    indexed_tokens = [101, 2627, 1108, 3104, 1124, 15703, 136, 102, 3104, 1124, 15703, 1108, 170, 16797, 8284, 102]
+    indexed_tokens = [
+        101,
+        2627,
+        1108,
+        3104,
+        1124,
+        15703,
+        136,
+        102,
+        3104,
+        1124,
+        15703,
+        1108,
+        170,
+        16797,
+        8284,
+        102,
+    ]
 
     # Convert inputs to PyTorch tensors
     segments_tensors = torch.tensor([segments_ids])
