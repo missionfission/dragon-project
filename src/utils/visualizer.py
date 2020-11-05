@@ -243,9 +243,9 @@ def plot_tech_param_change(tech_params, *args, **kwargs):
 
 
 def plot_parameter_change_multiple(ax, param_list, *args, **kwargs):
-    ax.plot(param_list, "go-")
+    ax.plot(param_list, "go-", label="No. of Memory Banks")
 
 
 def plot_time_descent_multiple(ax, time_list, descent_list, *args, **kwargs):
-    ax.plot(time_list, "ro-")
-    ax.plot(descent_list, "bo-")
+    ax.plot(time_list, "ro-", label="Execution time")
+    ax.plot(descent_list, "bo-", label="Gradients Calculated")
