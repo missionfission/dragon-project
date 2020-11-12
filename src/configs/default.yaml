@@ -2,6 +2,7 @@ technology:
   wire_cap: 1
   sense_amp_time: 1
   plogic_node: 40
+  logic_node: 22
 voltage: 1
 memory_levels: 2
 memory:
@@ -27,7 +28,7 @@ mm_compute:
   size: 64
   N_PE: 64
 vector_compute:
-  class: systolic_array
+  class: vector_array
   frequency: 1000
-  size: 64
-  N_PE: 4
+  size: 1
+  N_PE: 128
