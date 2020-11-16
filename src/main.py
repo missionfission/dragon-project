@@ -12,13 +12,15 @@ import yamlordereddictloader
 from torchvision import models
 from yaml import dump
 
+from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from generator import *
 from generator import Generator, get_compute_props, get_mem_props
 from ir.handlers import handlers
-from ir.trace import trace
+from ir.trace import get_backprop_memory, trace
 from scheduling import Scheduling
 from utils.logger import create_logger
 from utils.visualizer import *
+from utils.visualizer import plot_descent
 
 
 ####################################

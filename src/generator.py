@@ -69,7 +69,7 @@ def backward_pass_tech(self, scheduler, opts=None):
     if opts == "time":
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
         technology = self.update_logic_tech("time", technology, time_grads=time_grads)
-
+    print(technology)
     if opts == "energy":
         mem_config["level0"]["banks"] += (int)(
             beta
@@ -190,9 +190,9 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
 def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
     if opts == "energy":
-        pass
+        return technology
     if opts == "time":
-        pass
+        return technology
     # print("time_grads", time_grads)
 
 

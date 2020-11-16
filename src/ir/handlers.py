@@ -60,9 +60,10 @@ def matmul(node):
 
 
 def mul(node):
+    print(node.outputs[0].shape, node.inputs[0].shape, node.inputs[1].shape)
     os = node.outputs[0].shape
-    print("used")
-    return np.prod(os), 0, 0
+    # print("used")
+    return np.prod(os), np.prod(node.inputs[0].shape), 0
 
 
 def convolution(node):
