@@ -106,6 +106,8 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler):
+    if (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time) < 0.1 * scheduler.total_cycles:
+        config["compute"] = compute_config
     pass
 
 
@@ -190,8 +192,9 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
 def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
     if opts == "energy":
-        return technology
+        return technology 
     if opts == "time":
+        # compute_technology = alpha*time_grads*number of processing elements*size of systolic array
         return technology
     # print("time_grads", time_grads)
 
@@ -247,8 +250,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
             )
             * 12.75
         )
-        / 8
-        / 1000
+        / 8000
     )
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
@@ -329,7 +331,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time >= 0
-    assert scheduler.mem_size_idle_time > 0
+    # assert scheduler.mem_size_idle_time > 0
     return (
         [
             int(scheduler.total_cycles),
