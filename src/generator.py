@@ -312,7 +312,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         "memory accesses",
         int(scheduler.mem_read_access[0]),
         int(scheduler.mem_write_access[0]),
-        int(scheduler.total_cycles),
         int(scheduler.mem_read_access[1]),
     )
 
@@ -329,10 +328,10 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time >= 0
-    assert scheduler.mem_size_idle_time > 0
+    assert scheduler.mem_size_idle_time >= 0
     return (
         [
-            int(scheduler.total_cycles),
+            scheduler.total_cycles,
             int(scheduler.bandwidth_idle_time),
             int(scheduler.mem_size_idle_time),  #
             scheduler.compute_idle_time,

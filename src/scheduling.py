@@ -139,7 +139,9 @@ def run(self, graph):
         read_access = node.mem_fetch
         write_access = 0
         self.mem_read_access[1] += weights
+        # print(self.mem_util[0], self.mem_size[0])
 
+        assert self.mem_util[0] < self.mem_size[0]
         self.mem_util[0] += node.in_edge_mem
         node.mem_util = node.out_edge_mem + node.mem_fetch
         # Total Free memory
@@ -155,7 +157,6 @@ def run(self, graph):
         write_bw_req.append(write_bw_ll)
         free_cycles.append(step_cycles)
         #         print("bandwidth",read_bw_ll, write_bw_ll, step_cycles)
-
         if self.mem_free[0] < node.mem_util:
             mem_free = False
             # node mem_util = output edge
@@ -163,10 +164,26 @@ def run(self, graph):
             self.logger.info("Node or Node memory Requirements too high")
             # Rearrange the checkpointed_nodes
             # rearrange = True
-
-            # Is it possible now : Otherwise update the last level memory bandwidth requirements
+            # if (self.mem_free[0] + node.in_edge_mem) < 0:
+            #     used_pe_ratio = (self.mem_free[0] + node.in_edge_mem) / (
+            #         node.mem_util + node.in_edge_mem
+            #     )
+            #     n_swaps = int(1 / used_pe_ratio + 1)
+            #     swap_time = max(
+            #         config["mm_compute"]["size"] * 4, time_compute // n_swaps
+            #     )
+            #     self.mem_size_idle_time += (
+            #         swap_time * n_swaps
+            #         + (node.mem_util + node.in_edge_mem)
+            #         // self.mem_read_bw[self.mle - 1]
+            #     )
+            #     step_cycles += self.mem_size_idle_time
+            #     self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            #     self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            # # Is it possible now : Otherwise update the last level memory bandwidth requirements
             assert (self.mem_free[0] + node.in_edge_mem) > 0
             # Change this later with the number of solid total cycles
+            # else:
             used_pe_ratio = (self.mem_free[0] + node.in_edge_mem) / (
                 node.mem_util + node.in_edge_mem
             )
