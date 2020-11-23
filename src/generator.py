@@ -106,6 +106,10 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler):
+    if (
+        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    ) < 0.1 * scheduler.total_cycles:
+        config["compute"] = compute_config
     pass
 
 
@@ -192,6 +196,7 @@ def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
     if opts == "energy":
         return technology
     if opts == "time":
+        # compute_technology = alpha*time_grads*number of processing elements*size of systolic array
         return technology
     # print("time_grads", time_grads)
 
@@ -237,19 +242,15 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
     total_energy = 0
     mem_energy = np.zeros((scheduler.mle))
     compute_energy = (
-        (
-            mm_compute["N_PE"]
-            * mm_compute["size"] ** 2
-            * (
-                scheduler.total_cycles
-                - scheduler.bandwidth_idle_time
-                - scheduler.mem_size_idle_time
-            )
-            * 12.75
+        mm_compute["N_PE"]
+        * mm_compute["size"] ** 2
+        * (
+            scheduler.total_cycles
+            - scheduler.bandwidth_idle_time
+            - scheduler.mem_size_idle_time
         )
-        / 8
-        / 1000
-    )
+        * 12.75
+    ) / 8000
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
