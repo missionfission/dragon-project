@@ -218,6 +218,9 @@ def mem_space(mem_config, technology):
     #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
     #     + beta_frequency
     # )
+    mem_config["level0"]["write_latency"] = (
+        0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    )
     mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
     mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
     mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
@@ -227,7 +230,7 @@ def mem_space(mem_config, technology):
     return mem_config
 
 
-def save_stats(self, scheduler, backprop=False, backprop_memory=0):
+def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     """
     Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
     """
@@ -290,41 +293,42 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0):
         )
     config = scheduler.config
 
-    print("==================================")
-    print(
-        "Time",
-        int(scheduler.total_cycles),
-        int(scheduler.bandwidth_idle_time),
-        scheduler.compute_idle_time,
-        int(scheduler.mem_size_idle_time),
-    )
-    print(
-        "Energy",
-        int(total_energy),
-        int(compute_energy),
-        int(scheduler.mem_read_access[0] * read_energy),
-        int(scheduler.mem_write_access[0] * write_energy),
-        int(leakage_power * scheduler.total_cycles / 1000),
-        int(scheduler.mem_read_access[1] / 50),
-        int(scheduler.mem_write_access[1] / 50),
-        int(1 * scheduler.total_cycles),
-    )
-    print(
-        "memory accesses",
-        int(scheduler.mem_read_access[0]),
-        int(scheduler.mem_write_access[0]),
-        int(scheduler.mem_read_access[1]),
-    )
+    if print_stats:
+        print("==================================")
+        print(
+            "Time",
+            int(scheduler.total_cycles),
+            int(scheduler.bandwidth_idle_time),
+            scheduler.compute_idle_time,
+            int(scheduler.mem_size_idle_time),
+        )
+        print(
+            "Energy",
+            int(total_energy),
+            int(compute_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(scheduler.mem_read_access[1] / 50),
+            int(scheduler.mem_write_access[1] / 50),
+            int(1 * scheduler.total_cycles),
+        )
+        print(
+            "memory accesses",
+            int(scheduler.mem_read_access[0]),
+            int(scheduler.mem_write_access[0]),
+            int(scheduler.mem_read_access[1]),
+        )
 
-    print(
-        "Design Params",
-        mem_config["level" + str(scheduler.mle - 1)]["banks"],
-        mem_config["level0"]["size"],
-        mem_config["level0"]["frequency"],
-        mem_config["level0"]["read_energy"],
-    )
+        print(
+            "Design Params",
+            mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            mem_config["level0"]["size"],
+            mem_config["level0"]["frequency"],
+            mem_config["level0"]["read_energy"],
+        )
 
-    print("Tech Params", scheduler.technology)
+        print("Tech Params", scheduler.technology)
 
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time

@@ -24,7 +24,7 @@ from utils.visualizer import plot_descent
 
 
 ####################################
-def runner_forward(graph_set):
+def design_tech_runner(graph_set, backprop=False, print_stats=False):
     """
     Runs the Input Graph
     """
@@ -32,9 +32,7 @@ def runner_forward(graph_set):
     bandwidth = [2, 10, 50, 75, 100]
     num_iterations = 50
     for graph in graph_set:
-        #     for i in range(len(bandwidth)):
         scheduler = Scheduling()
-        #         scheduler.mem_read_bw[1] = 10*bandwidth[i]
         (
             read_bw_req,
             write_bw_req,
@@ -52,7 +50,7 @@ def runner_forward(graph_set):
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
         #         in_time, in_energy, design, tech = generator.save_stats(scheduler)
         in_time, in_energy, design, tech = generator.save_stats(
-            scheduler, True, get_backprop_memory(graph.nodes)
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         print("======Optimizing Design and Connectivity=========")
         for i in range(num_iterations):
@@ -60,9 +58,8 @@ def runner_forward(graph_set):
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.create_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            #             time, energy, design, tech = generator.save_stats(scheduler)
             time, energy, design, tech = generator.save_stats(
-                scheduler, True, get_backprop_memory(graph.nodes)
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
         print(in_time[0] // time[0], in_energy[0] // energy[0])
         print("===============Optimizing Technology=============")
@@ -71,14 +68,13 @@ def runner_forward(graph_set):
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.create_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            #             time, energy, design, tech = generator.save_stats(scheduler)
             time, energy, design, tech = generator.save_stats(
-                scheduler, True, get_backprop_memory(graph.nodes)
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
         print(in_time[0] // time[0], in_energy[0] // energy[0])
 
 
-def runner(graph_set, scheduler):
+def runner_save_all(graph_set, scheduler, backprop=False, print_stats=False):
     """
     Runs the Input Graph
     """
@@ -94,8 +90,6 @@ def runner(graph_set, scheduler):
     generator = Generator()
     bandwidth = [2, 10, 50, 75, 100]
     for graph in graph_set:
-        #     for i in range(len(bandwidth)):
-        #         scheduler.mem_read_bw[1] = 10*bandwidth[i]
         (
             read_bw_req,
             write_bw_req,
@@ -111,8 +105,9 @@ def runner(graph_set, scheduler):
         #         bandwidth_bar_graph("read_full.png", read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
         #         cycles_bar_graph("cycles.png", cycles, free_cycles, graph.nodes)
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
-        #         generator.save_statistics(scheduler, True, get_backprop_memory(graph.nodes))
-        time, energy, design, tech = generator.save_stats(scheduler)
+        time, energy, design, tech = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
         time_list.append(time[0])
         energy_list.append(energy[0])
         bandwidth_time_list.append(time[1])
@@ -135,7 +130,9 @@ def runner(graph_set, scheduler):
             ) = scheduler.run(graph)
             #             read_bw_limit, write_bw_limit = scheduler.mem_read_bw[scheduler.mle - 1], scheduler.mem_write_bw[scheduler.mle - 1]
             # #             bandwidth_bar_graph("read_full.png", read_bw_req, read_bw_actual, read_bw_limit, graph.nodes, cycles)
-            time, energy, design, tech = generator.save_stats(scheduler)
+            time, energy, design, tech = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
             time_list.append(time[0])
             energy_list.append(energy[0])
             bandwidth_time_list.append(time[1])
@@ -152,3 +149,41 @@ def runner(graph_set, scheduler):
             compute_list,
             tech_params_list,
         ]
+
+
+def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
+    """
+    Runs the Input Graph
+    """
+    generator = Generator()
+    bandwidth = [2, 10, 50, 75, 100]
+    num_iterations = 50
+    for graph in graph_set:
+        (
+            read_bw_req,
+            write_bw_req,
+            read_bw_actual,
+            write_bw_actual,
+            cycles,
+            free_cycles,
+        ) = scheduler.run(graph)
+        read_bw_limit, write_bw_limit = (
+            scheduler.mem_read_bw[scheduler.mle - 1],
+            scheduler.mem_write_bw[scheduler.mle - 1],
+        )
+        #         bandwidth_bar_graph("read_full.png", read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
+        #         cycles_bar_graph("cycles.png", cycles, free_cycles, graph.nodes)
+        #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        in_time, in_energy, design, tech = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes)
+        )
+        print("======Optimizing Design and Connectivity=========")
+        for i in range(num_iterations):
+            config = generator.backward_pass(scheduler)
+            generator.writeconfig(config, str(i) + "hw.yaml")
+            scheduler.create_config(config)
+            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+            time, energy, design, tech = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+        print(in_time[0] // time[0], in_energy[0] // energy[0])
