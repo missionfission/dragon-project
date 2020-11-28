@@ -14,6 +14,11 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 
+from ir.handlers import handlers
+from ir.trace import get_backprop_memory, trace
+from utils.logger import create_logger
+from utils.visualizer import plot_descent
+
 parser = argparse.ArgumentParser()
 # parser.add_argument('--dataset', required=True, help='cifar10 | lsun | mnist |imagenet | folder | lfw | fake')
 # parser.add_argument('--dataroot', required=True, help='path to dataset')
@@ -121,10 +126,9 @@ class Generator(nn.Module):
         return output
 
 
-netG = Generator(ngpu).to(device)
-netG.apply(weights_init)
-if opt.netG != "":
-    netG.load_state_dict(torch.load(opt.netG))
+# netG.apply(weights_init)
+# if opt.netG != "":
+#     netG.load_state_dict(torch.load(opt.netG))
 
 
 class Discriminator(nn.Module):
@@ -161,66 +165,72 @@ class Discriminator(nn.Module):
         return output.view(-1, 1).squeeze(1)
 
 
-netD = Discriminator(ngpu).to(device)
-netD.apply(weights_init)
-if opt.netD != "":
-    netD.load_state_dict(torch.load(opt.netD))
+def gan_graph(training=False):
+    netD = Discriminator(ngpu).to(device)
+    netG = Generator(ngpu).to(device)
 
-criterion = nn.BCELoss()
+    # netD.apply(weights_init)
+    # if opt.netD != "":
+    #     netD.load_state_dict(torch.load(opt.netD))
 
-fixed_noise = torch.randn(opt.batchSize, nz, 1, 1, device=device)
-real_label = 1
-fake_label = 0
+    # criterion = nn.BCELoss()
 
-# setup optimizer
-optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-optimizerG = optim.Adam(netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+    # fixed_noise = torch.randn(opt.batchSize, nz, 1, 1, device=device)
+    # real_label = 1
+    # fake_label = 0
 
-############################
-# (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
-###########################
-# train with real
-netD.zero_grad()
-real_cpu = data[0].to(device)
-batch_size = real_cpu.size(0)
-label = torch.full((batch_size,), real_label, device=device)
+    # # setup optimizer
+    # optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+    # optimizerG = optim.Adam(netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 
+    # ############################
+    # # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+    # ###########################
+    # # train with real
+    # netD.zero_grad()
+    # # real_cpu = data[0].to(device)
+    # batch_size = real_cpu.size(0)
+    # label = torch.full((batch_size,), real_label, device=device)
 
-errD_real = criterion(output, label)
+    # errD_real = criterion(output, label)
 
+    # D_x = output.mean().item()
 
-D_x = output.mean().item()
+    # # train with fake
+    # noise = torch.randn(batch_size, nz, 1, 1, device=device)
 
-# train with fake
-noise = torch.randn(batch_size, nz, 1, 1, device=device)
+    # label.fill_(fake_label)
 
-label.fill_(fake_label)
+    # errD_fake = criterion(output, label)
 
-errD_fake = criterion(output, label)
+    # D_G_z1 = output.mean().item()
+    # errD = errD_real + errD_fake
+    # optimizerD.step()
 
-D_G_z1 = output.mean().item()
-errD = errD_real + errD_fake
-optimizerD.step()
+    # ############################
+    # # (2) Update G network: maximize log(D(G(z)))
+    # ###########################
+    # netG.zero_grad()
+    # label.fill_(real_label)  # fake labels are real for generator cost
 
-############################
-# (2) Update G network: maximize log(D(G(z)))
-###########################
-netG.zero_grad()
-label.fill_(real_label)  # fake labels are real for generator cost
+    # errG = criterion(output, label)
 
-errG = criterion(output, label)
-
-D_G_z2 = output.mean().item()
-optimizerG.step()
-
-# graph1 = trace(netD, real_cpu)
-# output = netD(real_cpu)
-# errD_real.backward()
-# graph2 = trace(netG, noise)
-# fake = netG(noise)
-# graph3 = trace(netD, fake.detach())
-# output = netD(fake.detach())
-# errD_fake.backward()
-# output = netD(fake)
-# graph4 = trace(netD, fake)
-# errG.backward()
+    # D_G_z2 = output.mean().item()
+    # optimizerG.step()
+    # inputs = torch.randn(1, 100, 3, 3)
+    graph1 = trace(netD, inputs)
+    graph2 = trace(netG, inputs)
+    # # output = netD(real_cpu)
+    # # errD_real.backward()
+    # # graph2 = trace(netG, noise)
+    # fake = netG(noise)
+    # # graph3 = trace(netD, fake.detach())
+    # output = netD(fake.detach())
+    # errD_fake.backward()
+    # output = netD(fake)
+    # # graph4 = trace(netD, fake)
+    # errG.backward()
+    if training:
+        return graph1, graph2
+    else:
+        return trace(netG, inputs)
