@@ -1,8 +1,5 @@
 sytolic_array:
-  size: 512
-  area: 50000
-  latency: 300
-  energy: 2000
+  size: 24
 
 sram_memory:
   size: 25000
