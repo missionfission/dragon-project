@@ -177,7 +177,7 @@ def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
         in_time, in_energy, design, tech = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes)
         )
-        print("======Optimizing Design and Connectivity=========")
+        print("======Optimizing Design=========")
         for i in range(num_iterations):
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")

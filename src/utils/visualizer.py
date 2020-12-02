@@ -253,3 +253,8 @@ def plot_time_descent_multiple(
 ):
     ax.plot(time_list[1:], "ro-", label=time_list_label)
     # ax.plot(descent_list, "bo-", label=descent_list_label)
+
+
+def plot_connectivity_sweep(ax, time_list, name, **kwargs):
+    ax.plot(time_list, "o-", label=name)
+    print("function call")

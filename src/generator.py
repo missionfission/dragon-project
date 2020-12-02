@@ -65,12 +65,14 @@ def backward_pass_tech(self, scheduler, opts=None):
     technology = scheduler.technology
     config = scheduler.config
     mem_config = config["memory"]
-    time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
     if opts == "time":
+        time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
+        time_grads = (scheduler.compute_time) / scheduler.total_cycles
         technology = self.update_logic_tech("time", technology, time_grads=time_grads)
-    print(technology)
+
     if opts == "energy":
+
         mem_config["level0"]["banks"] += (int)(
             beta
             * scheduler.mem_energy
@@ -85,9 +87,9 @@ def backward_pass_tech(self, scheduler, opts=None):
         technology = self.update_mem_tech(
             "read_energy", technology, energy_grads=energy_grads
         )
-        technology = self.update_mem_tech(
-            "write_energy", technology, energy_grads=energy_grads
-        )
+        # technology = self.update_mem_tech(
+        #     "write_energy", technology, energy_grads=energy_grads
+        # )
         energy_grads = scheduler.compute_energy / scheduler.total_energy
         technology = self.update_logic_tech(
             "energy", technology, energy_grads=energy_grads
@@ -95,7 +97,6 @@ def backward_pass_tech(self, scheduler, opts=None):
 
         ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
         # If leakage energy, read or write energy-> can change the technology type
-
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
@@ -106,11 +107,17 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler):
-    if (
+    scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
-    ) < 0.1 * scheduler.total_cycles:
-        config["compute"] = compute_config
-    pass
+    )
+    if scheduler.compute_time > 0.88 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            scheduler.config["mm_compute"]["N_PE"]
+            * scheduler.config["mm_compute"]["size"]
+            ^ 2
+        )
+        scheduler.config["mm_compute"]["N_PE"] += int(pe_descent * gamma)
 
 
 def update_mem_design(self, scheduler, mem_config):
@@ -193,12 +200,13 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
 
 def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
+    alpha = 1.1
+    beta = 1.4
     if opts == "energy":
-        return technology
+        technology -= beta * energy_grads
     if opts == "time":
-        # compute_technology = alpha*time_grads*number of processing elements*size of systolic array
-        return technology
-    # print("time_grads", time_grads)
+        technology -= alpha * time_grads
+    return technology
 
 
 def mem_space(mem_config, technology):
@@ -228,6 +236,10 @@ def mem_space(mem_config, technology):
         1 / mem_config["level0"]["read_latency"]
     )
     return mem_config
+
+
+def comp_space(comp_config, technology):
+    pass
 
 
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
@@ -364,10 +376,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 #############################################################################################################################
 
 
-def get_compute_props(*args, **kwargs):
-    pass
-
-
 def get_mem_props(size, width, banks):
     for i in range(11, 25):
         if (size // 2 ** i) < 1:
@@ -377,16 +385,6 @@ def get_mem_props(size, width, banks):
     element = min(a[:, 0], key=lambda x: abs(x - size))
     a = a[np.where(a[:, 0] == element)]
     return a[0, 5], a[0, 6], a[0, 7]
-
-
-def analyze3d(self, opts):
-    """
-    Are Values Realistic : is the value of bandwidth and number of connections etc < maxval
-    Is the size of memory array < maxval
-    Check if noc time is ever going to be a problem ?
-    Check whether minval and maxval satisfy here ?
-    """
-    pass
 
 
 def endurance_writes_schedule():
@@ -406,12 +404,11 @@ def endurance_writes_schedule():
     #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 
 
+Generator.writeconfig = writeconfig
 Generator.save_stats = save_stats
 Generator.update_mem_tech = update_mem_tech
 Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
 Generator.backward_pass = backward_pass
 Generator.backward_pass_tech = backward_pass_tech
-Generator.writeconfig = writeconfig
-Generator.analyze3d = analyze3d
 Generator.update_logic_tech = update_logic_tech

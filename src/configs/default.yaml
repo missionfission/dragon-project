@@ -1,9 +1,9 @@
 technology:
-    wire_cap: 1
-    sense_amp_time: 1
-    plogic_node: 40
-    logic_node: 22
-  voltage: 1
+  wire_cap: 1
+  sense_amp_time: 1
+  plogic_node: 40
+  logic_node: 22
+voltage: 1
 memory_levels: 2
 memory:
   level0:
