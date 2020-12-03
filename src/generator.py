@@ -21,7 +21,7 @@ logic_speed = 1
 
 
 class Generator:
-    def __init__(self, constraintfiles="max.yaml"):
+    def __init__(self, constraintfiles="max_constraints.yaml"):
         base_dir = "configs/"
 
         self.maxval = yaml.load(
@@ -252,6 +252,18 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     """
     Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
     """
+    if backprop:
+        scheduler.total_cycles = (
+            2 * scheduler.total_cycles
+            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+        scheduler.mem_read_access[0] *= 2
+        scheduler.mem_write_access[0] *= 2
+        scheduler.mem_read_access[1] += backprop_memory
+        scheduler.mem_write_access[1] += backprop_memory
+        scheduler.bandwidth_idle_time += (
+            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
     config = scheduler.config
     mem_config = config["memory"]
     mm_compute = config["mm_compute"]
@@ -271,7 +283,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             - scheduler.mem_size_idle_time
         )
         * 12.75
-    ) / 8000
+    ) / 80000
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
@@ -280,13 +292,13 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         mem_energy[i] = (
             scheduler.mem_read_access[i] * read_energy
             + scheduler.mem_write_access[i] * write_energy
-            + leakage_power * scheduler.total_cycles
-        ) / 100
+            + leakage_power * scheduler.total_cycles / 100
+        )
         # print(read_energy, write_energy, leakage_power)
         # print(mem_energy)
     mem_energy[scheduler.mle - 1] = (
         scheduler.mem_read_access[i] + scheduler.mem_write_access[i]
-    ) / 5000
+    ) / 50 + scheduler.total_cycles
 
     # total_area = np.sum(mem_area) + compute_area
     total_energy = np.sum(mem_energy) + compute_energy
@@ -301,14 +313,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     # scheduler.logger.info("Memory Area Consumption  = %d ", np.sum(mem_area))
     # scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
     # scheduler.logger.info("Total Area Consumption  = %d ", total_area)
-    if backprop:
-        scheduler.total_cycles = (
-            2 * scheduler.total_cycles
-            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
-        )
-        scheduler.bandwidth_idle_time += (
-            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
-        )
+
     config = scheduler.config
 
     if print_stats:
@@ -326,7 +331,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             int(compute_energy),
             int(scheduler.mem_read_access[0] * read_energy),
             int(scheduler.mem_write_access[0] * write_energy),
-            int(leakage_power * scheduler.total_cycles / 1000),
+            int(leakage_power * scheduler.total_cycles / 100),
             int(scheduler.mem_read_access[1] / 50),
             int(scheduler.mem_write_access[1] / 50),
             int(1 * scheduler.total_cycles),
