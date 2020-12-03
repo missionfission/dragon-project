@@ -1,0 +1,21 @@
+sytolic_array:
+  size: 512
+  # area: 50000
+  # latency: 300
+  # energy: 2000
+
+sram_memory:
+  size: 2500000
+  # area: 100000
+  # latency: 200
+  # energy: 6000
+  # connectivity: 300
+
+dram_memory:
+  size: 300000000
+  connectivity: 800
+# registerfile:
+#   size:
+#   area:
+#   latency:
+#   connectivity:

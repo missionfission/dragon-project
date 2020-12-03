@@ -55,7 +55,9 @@ def backward_pass(self, scheduler, opts=None):
     Where is area getting consumed the most?
     """
     config = scheduler.config
-    # config["compute"] = self.update_comp_design(scheduler, scheduler.config["compute"])
+    config["mm_compute"] = self.update_comp_design(
+        scheduler, scheduler.config["mm_compute"]
+    )
     config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
 
     return config
@@ -65,6 +67,8 @@ def backward_pass_tech(self, scheduler, opts=None):
     technology = scheduler.technology
     config = scheduler.config
     mem_config = config["memory"]
+    comp_config = config["mm_compute"]
+    scheduler.compute_time = 0
     if opts == "time":
         time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
@@ -106,18 +110,16 @@ def backward_pass_tech(self, scheduler, opts=None):
     return config
 
 
-def update_comp_design(self, scheduler):
+def update_comp_design(self, scheduler, comp_config):
     scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
     )
     if scheduler.compute_time > 0.88 * scheduler.total_cycles:
         gamma = 3
         pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-            scheduler.config["mm_compute"]["N_PE"]
-            * scheduler.config["mm_compute"]["size"]
-            ^ 2
+            comp_config["N_PE"] * comp_config["size"] ^ 2
         )
-        scheduler.config["mm_compute"]["N_PE"] += int(pe_descent * gamma)
+        comp_config["N_PE"] += int(pe_descent * gamma)
 
 
 def update_mem_design(self, scheduler, mem_config):
@@ -239,6 +241,10 @@ def mem_space(mem_config, technology):
 
 
 def comp_space(comp_config, technology):
+    pass
+
+
+def get_compute_props(comp_config, technology):
     pass
 
 
