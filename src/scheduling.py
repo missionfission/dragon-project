@@ -48,7 +48,7 @@ def create_config(self, config):
     mm_compute = config["mm_compute"]
     vector_compute = config["vector_compute"]
 
-    if config["mm_compute"]["class"] == "systolic_array":
+    if mm_compute["class"] == "systolic_array":
         config["mm_compute_per_cycle"] = (
             ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / (2 * 4)
         )
