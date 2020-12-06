@@ -5,6 +5,7 @@ import numpy as np
 import yaml
 import yamlordereddictloader
 
+from functions import complete_functional_config
 from generator import *
 from generator import Generator, get_compute_props, get_mem_props
 from utils.logger import create_logger
@@ -19,12 +20,12 @@ class Scheduling:
         # maybe change this later to peripheral logic node or speed
         #     [wire_cap , sense_amp_time, plogic_node],
         self.logger = create_logger("logs/stats.txt")
-        self.config = self.create_config(
+        self.config = self.complete_config(
             yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
         )
 
 
-def create_config(self, config):
+def complete_config(self, config):
 
     self.logger.info("Config Statistics : ")
 
@@ -87,6 +88,9 @@ def create_config(self, config):
             self.mem_read_bw[i],
             self.mem_write_bw[i],
         )
+    # complete_functional_config
+    # complete_performance_config
+    # memory
     for i in range(self.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy, write_energy, leakage_power = get_mem_props(
@@ -95,6 +99,9 @@ def create_config(self, config):
         config["memory"]["level" + str(i)]["read_energy"] = str(read_energy)
         config["memory"]["level" + str(i)]["write_energy"] = str(write_energy)
         config["memory"]["level" + str(i)]["leakage_power"] = str(leakage_power)
+    # compute
+    # config["memory"] = mem_space(config["memory"], technology)
+    # config["mm_compute"] = comp_space(config["mm_compute"], technology)
     return config
 
 
@@ -283,5 +290,5 @@ def run(self, graph):
     )
 
 
-Scheduling.create_config = create_config
+Scheduling.complete_config = complete_config
 Scheduling.run = run

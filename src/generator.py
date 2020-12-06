@@ -69,6 +69,7 @@ def backward_pass_tech(self, scheduler, opts=None):
     mem_config = config["memory"]
     comp_config = config["mm_compute"]
     scheduler.compute_time = 0
+
     if opts == "time":
         time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
@@ -104,22 +105,22 @@ def backward_pass_tech(self, scheduler, opts=None):
         # if Energy is too high due to the leakage time : change sizing to energy efficient
         # If mem energy consumption is high -> which level ?
         # if mem_energy consumption is too high at level 0, its size can be reduced
-    mem_config = mem_space(mem_config, technology)
     scheduler.technology = technology
-    config["memory"] = mem_config
     return config
 
 
 def update_comp_design(self, scheduler, comp_config):
-    scheduler.compute_time = scheduler.total_cycles - (
-        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
-    )
-    if scheduler.compute_time > 0.88 * scheduler.total_cycles:
-        gamma = 3
-        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-            comp_config["N_PE"] * comp_config["size"] ^ 2
-        )
-        comp_config["N_PE"] += int(pe_descent * gamma)
+    # scheduler.compute_time = scheduler.total_cycles - (
+    #     scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    # )
+    # if scheduler.compute_time > 0.88 * scheduler.total_cycles:
+    #     gamma = 3
+    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+    #         comp_config["N_PE"] * comp_config["size"] ^ 2
+    #     )
+    #     comp_config["N_PE"] += int(pe_descent * gamma)
+
+    return comp_config
 
 
 def update_mem_design(self, scheduler, mem_config):
@@ -216,32 +217,32 @@ def mem_space(mem_config, technology):
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
     plogic_node = float(plogic_node)
-    # mem_config["read_energy"] = (
-    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-    #     + beta_read
+    # mem_config["level0"]["write_latency"] = (
+    #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
     # )
-    # mem_config["write_energy"] = (
-    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-    #     + beta_write
+    # mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    # mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
+    # mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
+    # mem_config["level0"]["frequency"] = 4000 * (
+    #     1 / mem_config["level0"]["read_latency"]
     # )
-    # mem_config["frequency"] = (
-    #     mem_config["level0"]["size"] * alpha_memory * (beta_cap + wire_cap * alpha_cap)
-    #     + beta_frequency
-    # )
-    mem_config["level0"]["write_latency"] = (
-        0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    )
-    mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
-    mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
-    mem_config["level0"]["frequency"] = 4000 * (
-        1 / mem_config["level0"]["read_latency"]
-    )
+    # mem_config["level0"]["leakage_power"]
     return mem_config
 
 
 def comp_space(comp_config, technology):
-    pass
+    return comp_config
+
+
+def get_mem_props(size, width, banks):
+    for i in range(11, 25):
+        if (size // 2 ** i) < 1:
+            break
+    a = mem_table[np.where(mem_table[:, 1] == banks)]
+    a = a[np.where(a[:, 2] == width)]
+    element = min(a[:, 0], key=lambda x: abs(x - size))
+    a = a[np.where(a[:, 0] == element)]
+    return a[0, 5], a[0, 6], a[0, 7]
 
 
 def get_compute_props(comp_config, technology):
@@ -385,17 +386,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 
 
 #############################################################################################################################
-
-
-def get_mem_props(size, width, banks):
-    for i in range(11, 25):
-        if (size // 2 ** i) < 1:
-            break
-    a = mem_table[np.where(mem_table[:, 1] == banks)]
-    a = a[np.where(a[:, 2] == width)]
-    element = min(a[:, 0], key=lambda x: abs(x - size))
-    a = a[np.where(a[:, 0] == element)]
-    return a[0, 5], a[0, 6], a[0, 7]
 
 
 def endurance_writes_schedule():

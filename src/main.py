@@ -56,7 +56,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         for i in range(num_iterations):
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.create_config(config)
+            scheduler.complete_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
@@ -66,7 +66,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         for i in range(10):
             config = generator.backward_pass_tech(scheduler, "time")
             generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.create_config(config)
+            scheduler.complete_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
@@ -119,7 +119,7 @@ def runner_save_all(graph_set, scheduler, backprop=False, print_stats=False):
         for i in range(num_iterations):
             config = generator.backward_pass(scheduler, "time")
             generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.create_config(config)
+            scheduler.complete_config(config)
             (
                 read_bw_req,
                 write_bw_req,
@@ -181,7 +181,7 @@ def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
         for i in range(num_iterations):
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.create_config(config)
+            scheduler.complete_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
