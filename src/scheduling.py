@@ -1,4 +1,5 @@
 import collections
+import logging
 import pdb
 
 import numpy as np
@@ -19,7 +20,7 @@ class Scheduling:
         self.technology = [1, 1, 40]
         # maybe change this later to peripheral logic node or speed
         #     [wire_cap , sense_amp_time, plogic_node],
-        self.logger = create_logger("logs/stats.txt")
+        self.logger = create_logger()
         self.config = self.complete_config(
             yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
         )
@@ -51,7 +52,7 @@ def complete_config(self, config):
 
     if mm_compute["class"] == "systolic_array":
         config["mm_compute_per_cycle"] = (
-            ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / (2 * 4)
+            ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / (4)
         )
         config["comp_bw"] = (
             mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
@@ -125,7 +126,8 @@ def run(self, graph):
     """
 
     config = self.config
-
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
     read_bw_req = []
     write_bw_req = []
     read_bw_actual = []
@@ -240,7 +242,7 @@ def run(self, graph):
         #         print("3",self.mem_free[0], self.mem_util[0], self.mem_size[0])
         self.mem_util_full.append(self.mem_util[0])
 
-        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth  for a endurance purposes
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
         self.mem_util[0] -= node.in_edge_mem
         #         print("4",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 

@@ -432,4 +432,4 @@ Generator.backward_pass_tech = backward_pass_tech
 Generator.update_logic_tech = update_logic_tech
 
 
-# TODO Check smaller errors of floating point (32) to words comparison
+# TODO Check smaller errors of floating point (32) to words comparison in memory banks conversion
