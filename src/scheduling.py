@@ -141,6 +141,8 @@ def run(self, graph):
 
     mem_free = True
     for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
 
         # These are last level read/write accesses
         compute_expense, weights = node.get_stats()
@@ -216,12 +218,16 @@ def run(self, graph):
                         read_access = self.mem_read_bw[self.mle - 1] * step_cycles
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
-                        node.next.mem_fetch = read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch = (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
 
                 else:
                     read_access += self.mem_free[0]
                     if read_access / step_cycles < self.mem_read_bw[self.mle - 1]:
                         node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
                         self.mem_util[0] = self.mem_size[0]
                         self.mem_free[0] = 0
                     else:
@@ -229,6 +235,8 @@ def run(self, graph):
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
                         node.next.mem_fetch = read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
         #         print("3",self.mem_free[0], self.mem_util[0], self.mem_size[0])
         self.mem_util_full.append(self.mem_util[0])
 

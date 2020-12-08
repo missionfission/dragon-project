@@ -66,8 +66,6 @@ def trace(model, args=(), kwargs=None):
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.weights + node.out_edge_mem
-                    node.read_access = node.weights + node.in_edge_mem
-                    node.mem_fetch = node.weights
                     # print(
                     # "inputs",
                     # node.inputs[0].shape,
