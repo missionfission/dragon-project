@@ -181,23 +181,23 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
     ## because above this interval it does not matter whether we can create a better technology or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
-    if opts == "energy" or opts == "read_energy":
-        beta_wire = 1 / 50.7
-        beta_sense_amp = 1 / 1.4
-        beta_logic = 1
-        # In the joint tech space that shows that sweeping wire space makes the real difference here
-        wire_cap -= energy_grads * beta_wire
-        plogic_node -= energy_grads * beta_logic
+    if wire_cap > 0 and plogic_node > 0 and sense_amp_time > 0:
+        if opts == "energy" or opts == "read_energy":
+            beta_wire = 1 / 50.7
+            beta_sense_amp = 1 / 1.4
+            beta_logic = 1
+            # In the joint tech space that shows that sweeping wire space makes the real difference here
+            wire_cap -= energy_grads * beta_wire
+            plogic_node -= energy_grads * beta_logic
 
-    if opts == "time":
-        # In the joint time space that shows that sweeping cmos space makes the real difference
-        # print("updating for time")
-        beta_wire = 1 / 0.558
-        beta_sense_amp = 1 / 1.4
-        beta_logic = 1
-        sense_amp_time -= steps * time_grads * beta_sense_amp
-        wire_cap -= steps * time_grads * beta_wire
-
+        if opts == "time":
+            # In the joint time space that shows that sweeping cmos space makes the real difference
+            # print("updating for time")
+            beta_wire = 1 / 0.558
+            beta_sense_amp = 1 / 1.4
+            beta_logic = 1
+            sense_amp_time -= steps * time_grads * beta_sense_amp
+            wire_cap -= steps * time_grads * beta_wire
     # print(wire_cap, sense_amp_time)
     return [wire_cap, sense_amp_time, plogic_node]
 
@@ -268,6 +268,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     config = scheduler.config
     mem_config = config["memory"]
     mm_compute = config["mm_compute"]
+
     # mem_area = np.zeros((scheduler.mle))
     # compute_area = (
     #     self.get_compute_area(mm_compute["class"], mm_compute["size"])
@@ -275,16 +276,28 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     # )
     total_energy = 0
     mem_energy = np.zeros((scheduler.mle))
+    rf_accesses = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        - scheduler.mem_size_idle_time
+    )
+    rf_energy = (
+        mm_compute["N_PE"] * mm_compute["size"] * config["rf"]["energy"] * rf_accesses
+    )
     compute_energy = (
         mm_compute["N_PE"]
-        * mm_compute["size"] ** 2
+        * (mm_compute["size"] ** 2)
         * (
             scheduler.total_cycles
             - scheduler.bandwidth_idle_time
             - scheduler.mem_size_idle_time
         )
-        * 12.75
-    ) / 80000
+        * mm_compute["per_op_energy"]
+        + rf_energy
+    )
+    illusion_leakage = (
+        3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    )
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
@@ -293,16 +306,19 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         mem_energy[i] = (
             scheduler.mem_read_access[i] * read_energy
             + scheduler.mem_write_access[i] * write_energy
-            + leakage_power * scheduler.total_cycles / 100
+            + leakage_power * scheduler.total_cycles
         )
         # print(read_energy, write_energy, leakage_power)
         # print(mem_energy)
     mem_energy[scheduler.mle - 1] = (
-        scheduler.mem_read_access[i] + scheduler.mem_write_access[i]
-    ) / 50 + scheduler.total_cycles
+        (scheduler.mem_read_access[i] + scheduler.mem_write_access[i])
+        * config["memory"]["level1"]["read_energy"]
+        + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
+    )
 
     # total_area = np.sum(mem_area) + compute_area
-    total_energy = np.sum(mem_energy) + compute_energy
+    # total_energy = np.sum(mem_energy) + compute_energy
+    total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
     scheduler.mem_energy = mem_energy
     scheduler.compute_energy = compute_energy
     scheduler.logger.info("Tool Output")
@@ -332,10 +348,10 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             int(compute_energy),
             int(scheduler.mem_read_access[0] * read_energy),
             int(scheduler.mem_write_access[0] * write_energy),
-            int(leakage_power * scheduler.total_cycles / 100),
-            int(scheduler.mem_read_access[1] / 50),
-            int(scheduler.mem_write_access[1] / 50),
-            int(1 * scheduler.total_cycles),
+            int(leakage_power * scheduler.total_cycles),
+            int(scheduler.mem_read_access[1] * read_energy),
+            int(scheduler.mem_write_access[1] * read_energy),
+            int(leakage_power * scheduler.total_cycles),
         )
         print(
             "memory accesses",

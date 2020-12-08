@@ -9,18 +9,6 @@ from matplotlib.ticker import FormatStrFormatter, LinearLocator, MaxNLocator
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
 
-def roofline_model():
-    pass
-
-
-def generate_execution_movie():
-    pass
-
-
-def genvideologger():
-    pass
-
-
 def bandwidth_bar_graph(
     filename,
     var1,
@@ -174,19 +162,8 @@ def tech_space_graph(
 
     plt.show()
 
-    # ax.legend(fontsize=20)
-    # plt.yscale("log")
-    # ax.set_xticks(index)
-    # ax.set_xticklabels(xticklabels)
-    # plt.xticks(rotation=80)
-    # plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    # plt.rc("ytick", labelsize=20)
-    # ax.set_xlabel("Graph Nodes", fontsize=20, fontweight="bold")
-    # fig.tight_layout()
-    # plt.savefig(base_dir + filename, bbox_inches="tight")
 
-
-def plot_descent(
+def plot_gradient_descent(
     time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
 ):
     fig, ax = plt.subplots(figsize=(30, 10))
@@ -205,56 +182,3 @@ def plot_descent(
     fig.tight_layout()
     plt.savefig(base_dir + "time.png", bbox_inches="tight")
     plt.show()
-
-
-def plot_design_param_change(bank_list, mem_size_list, compute_list, *args, **kwargs):
-    fig, ax = plt.subplots(figsize=(30, 10))
-    base_dir = "figures/"
-    error_config = {"ecolor": "0.3"}
-    index = np.arange((len(bank_list)))
-    plt.plot(bank_list)
-    ax.legend(fontsize=20)
-    ax.set_xticks(index)
-    plt.xticks(rotation=80)
-    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=20)
-    ax.set_xlabel("Grad descent time", fontsize=20, fontweight="bold")
-    fig.tight_layout()
-    plt.savefig(base_dir + "banks.png", bbox_inches="tight")
-    plt.show()
-
-
-def plot_tech_param_change(tech_params, *args, **kwargs):
-    fig, ax = plt.subplots(figsize=(30, 10))
-    base_dir = "figures/"
-    error_config = {"ecolor": "0.3"}
-    wire_cap, sense_amp_time, plogic_node = tech_params
-    index = np.arange((len(wire_cap)))
-    plt.plot(tech_params)
-    ax.legend(fontsize=20)
-    ax.set_xticks(index)
-    plt.xticks(rotation=80)
-    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=20)
-    ax.set_xlabel("Grad descent tech", fontsize=20, fontweight="bold")
-    fig.tight_layout()
-    plt.savefig(base_dir + "tech.png", bbox_inches="tight")
-    plt.show()
-
-
-def plot_parameter_change_multiple(
-    ax, param_list, parameter_label=None, *args, **kwargs
-):
-    ax.plot(param_list[1:], "go-", label=parameter_label)
-
-
-def plot_time_descent_multiple(
-    ax, time_list, descent_list, time_list_label=None, descent_list_label=None, **kwargs
-):
-    ax.plot(time_list[1:], "ro-", label=time_list_label)
-    # ax.plot(descent_list, "bo-", label=descent_list_label)
-
-
-def plot_connectivity_sweep(ax, time_list, name, **kwargs):
-    ax.plot(time_list, "o-", label=name)
-    print("function call")

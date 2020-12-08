@@ -14,9 +14,10 @@ def complete_functional_config(graph, config, area_constraint=0):
 def generate_local_mem(graph, config):
     """
     fn(config)
-    generate register files and scratchpad config from HW config
+    scratchpad config from HW config
     return full_config
     """
+
     return config
 
 

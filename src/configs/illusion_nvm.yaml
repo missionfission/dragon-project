@@ -1,0 +1,39 @@
+memory_levels: 2
+memory:
+  level0:
+    class: SRAM
+    frequency: 500
+    banks: 1
+    read_ports: 1
+    write_ports: 1
+    width: 32
+    size: 2000000
+    read_energy: 5.12
+    write_energy: 5.12
+    leakage_power: 0
+  level1:
+    class: DRAM
+    frequency: 50
+    banks: 128
+    read_ports: 1
+    write_ports: 1
+    width: 64
+    size: 4000000000
+    read_energy: 6.4
+    write_energy: 6.4
+    leakage_power: 0
+mm_compute:
+  class: mac
+  frequency: 500
+  size: 1
+  N_PE: 4096
+  leakage_power: 0
+  per_op_energy: 1.9
+vector_compute:
+  class: vector_array
+  frequency: 1000
+  size: 1
+  N_PE: 128
+rf:
+  energy: 3.68
+  size: 256
