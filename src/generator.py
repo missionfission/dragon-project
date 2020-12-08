@@ -194,7 +194,6 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
         if opts == "time":
             # In the joint time space that shows that sweeping cmos space makes the real difference
-            # print("updating for time")
             beta_wire = 1 / 0.558
             beta_sense_amp = 1 / 1.4
             beta_logic = 1
@@ -247,10 +246,6 @@ def get_mem_props(size, width, banks):
     return a[0, 5], a[0, 6], a[0, 7], a[0, 8]
 
 
-def get_compute_props(comp_config, technology):
-    pass
-
-
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     """
     Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
@@ -271,11 +266,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     mem_config = config["memory"]
     mm_compute = config["mm_compute"]
 
-    # mem_area = np.zeros((scheduler.mle))
-    # compute_area = (
-    #     self.get_compute_area(mm_compute["class"], mm_compute["size"])
-    #     * mm_compute["N_PE"]
-    # )
     total_energy = 0
     mem_energy = np.zeros((scheduler.mle))
     rf_accesses = (
@@ -295,7 +285,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             - scheduler.mem_size_idle_time
         )
         * mm_compute["per_op_energy"]
-        + rf_energy
     )
     illusion_leakage = (
         3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
@@ -317,9 +306,15 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         * config["memory"]["level1"]["read_energy"]
         + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
     )
-
-    total_area = np.sum(mem_area) + compute_area
-    total_energy = np.sum(mem_energy) + compute_energy
+    rf_area = config["rf"]["area"] * mm_compute["N_PE"] * mm_compute["size"]
+    compute_area = (
+        config["mm_compute"]["area"]
+        * config["mm_compute"]["N_PE"]
+        * (config["mm_compute"]["size"] ^ 2)
+    )
+    mem_area = scheduler.config["memory"]["area"]
+    total_area = mem_area + compute_area + rf_area
+    total_energy = np.sum(mem_energy) + compute_energy + rf_energy
     # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
     scheduler.mem_energy = mem_energy
     scheduler.compute_energy = compute_energy
@@ -328,10 +323,12 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
     scheduler.logger.info("Memory Energy Consumption  = %d ", np.sum(mem_energy))
     scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
+    scheduler.logger.info("Register File Energy Consumption  = %d ", rf_energy)
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
-    # scheduler.logger.info("Memory Area Consumption  = %d ", np.sum(mem_area))
-    # scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
-    # scheduler.logger.info("Total Area Consumption  = %d ", total_area)
+    scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
+    scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
+    scheduler.logger.info("Register File Energy Consumption  = %d ", rf_area)
+    scheduler.logger.info("Total Area Consumption  = %d ", total_area)
 
     config = scheduler.config
 

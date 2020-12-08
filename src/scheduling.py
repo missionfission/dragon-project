@@ -7,7 +7,7 @@ import yamlordereddictloader
 
 from functions import complete_functional_config
 from generator import *
-from generator import Generator, get_compute_props, get_mem_props
+from generator import Generator, get_mem_props
 from utils.logger import create_logger
 from utils.visualizer import *
 
@@ -99,6 +99,7 @@ def complete_config(self, config):
         config["memory"]["level" + str(i)]["read_energy"] = str(read_energy)
         config["memory"]["level" + str(i)]["write_energy"] = str(write_energy)
         config["memory"]["level" + str(i)]["leakage_power"] = str(leakage_power)
+        config["memory"]["level" + str(i)]["area"] = str(area)
     # compute
     # config["memory"] = mem_space(config["memory"], technology)
     # config["mm_compute"] = comp_space(config["mm_compute"], technology)

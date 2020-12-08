@@ -14,7 +14,7 @@ from yaml import dump
 
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from generator import *
-from generator import Generator, get_compute_props, get_mem_props
+from generator import Generator, get_mem_props
 from ir.handlers import handlers
 from ir.trace import get_backprop_memory, trace
 from scheduling import Scheduling
