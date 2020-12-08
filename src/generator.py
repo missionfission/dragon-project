@@ -328,8 +328,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
 
-    config = scheduler.config
-
     if print_stats:
         print("==================================")
         print(
@@ -360,10 +358,14 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         )
 
         print(
-            "Design Params",
+            "Design Params \n",
+            "No. of PEs : ",
+            mm_compute["N_PE"],
+            "\n Memory Level-1 Connectivity : ",
             mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            "\n Memory Level-0 Size : ",
             mem_config["level0"]["size"],
-            mem_config["level0"]["frequency"],
+            "\n Memory Level-0 Read Energy : ",
             mem_config["level0"]["read_energy"],
         )
 

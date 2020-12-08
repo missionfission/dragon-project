@@ -32,33 +32,36 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
     """
     Runs the Input Graph
     """
-    generator = Generator()
+
     num_iterations = 50
     for graph in graph_set:
+        generator = Generator()
         scheduler = Scheduling()
         scheduler.run(graph)
         in_time, in_energy, design, tech = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
+        scheduler = Scheduling()
         print("======Optimizing Design and Connectivity=========")
         for i in range(num_iterations):
+            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+            time, energy, design, tech = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
-            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            time, energy, design, tech = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-            )
+
         print(in_time[0] // time[0], in_energy[0] // energy[0])
         print("===============Optimizing Technology=============")
         for i in range(10):
-            config = generator.backward_pass_tech(scheduler, "time")
-            generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.complete_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
+            config = generator.backward_pass_tech(scheduler, "time")
+            generator.writeconfig(config, str(i) + "hw.yaml")
+            scheduler.complete_config(config)
         print(in_time[0] // time[0], in_energy[0] // energy[0])
 
 
@@ -66,40 +69,45 @@ def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
     """
     Runs the Input Graph
     """
-    generator = Generator()
+
     time_list = []
     energy_list = []
     design_list = []
     tech_list = []
     num_iterations = 50
     for graph in graph_set:
-        (
-            read_bw_req,
-            write_bw_req,
-            read_bw_actual,
-            write_bw_actual,
-            cycles,
-            free_cycles,
-        ) = scheduler.run(graph)
-        read_bw_limit, write_bw_limit = (
-            scheduler.mem_read_bw[scheduler.mle - 1],
-            scheduler.mem_write_bw[scheduler.mle - 1],
-        )
+
+        # (
+        #     read_bw_req,
+        #     write_bw_req,
+        #     read_bw_actual,
+        #     write_bw_actual,
+        #     cycles,
+        #     free_cycles,
+        # ) = scheduler.run(graph)
+        # read_bw_limit, write_bw_limit = (
+        #     scheduler.mem_read_bw[scheduler.mle - 1],
+        #     scheduler.mem_write_bw[scheduler.mle - 1],
+        # )
         #         bandwidth_bar_graph("read_full.png", read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
         #         cycles_bar_graph("cycles.png", cycles, free_cycles, graph.nodes)
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        generator = Generator()
+        scheduler = Scheduling()
+        scheduler.run(graph)
         in_time, in_energy, in_design, in_tech = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes)
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
+        scheduler = Scheduling()
         print("======Optimizing Design=========")
         for i in range(num_iterations):
-            config = generator.backward_pass(scheduler)
-            generator.writeconfig(config, str(i) + "hw.yaml")
-            scheduler.complete_config(config)
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
+            config = generator.backward_pass(scheduler)
+            generator.writeconfig(config, str(i) + "hw.yaml")
+            scheduler.complete_config(config)
             time_list.append(time)
             energy_list.append(energy)
             design_list.append(design)
