@@ -7,7 +7,6 @@ import torch.nn as nn
 from ir.handlers import handlers
 from ir.trace import get_backprop_memory, trace
 from plugins.darts.cnn.operations import *
-from utils.logger import create_logger
 from utils.visualizer import *
 from utils.visualizer import plot_gradients
 

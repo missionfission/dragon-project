@@ -18,7 +18,6 @@ from generator import Generator, get_mem_props
 from ir.handlers import handlers
 from ir.trace import get_backprop_memory, trace
 from scheduling import Scheduling
-from utils.logger import create_logger
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,

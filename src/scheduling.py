@@ -27,7 +27,7 @@ class Scheduling:
 
 def complete_config(self, config):
 
-    self.logger.info("Config Statistics : ")
+    self.logger.debug("Config Statistics : ")
 
     self.mle = config["memory_levels"]
     self.mem_energy = np.zeros((self.mle))
@@ -57,8 +57,8 @@ def complete_config(self, config):
             mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
         )
 
-        self.logger.info("MM Compute per cycle : %d", config["mm_compute_per_cycle"])
-        self.logger.info("Compute Bandwidth Required : %d", config["comp_bw"])
+        self.logger.debug("MM Compute per cycle : %d", config["mm_compute_per_cycle"])
+        self.logger.debug("Compute Bandwidth Required : %d", config["comp_bw"])
 
     if config["mm_compute"]["class"] == "mac":
         config["mm_compute_per_cycle"] = ((mm_compute["size"])) * mm_compute["N_PE"]
@@ -82,7 +82,7 @@ def complete_config(self, config):
         )
         self.mem_size[i] = memory["size"]
 
-        self.logger.info(
+        self.logger.debug(
             "Memory at Level %d, Read Bandwidth %d Write Bandwidth %d",
             i,
             self.mem_read_bw[i],
@@ -168,8 +168,6 @@ def run(self, graph):
         if self.mem_free[0] < node.mem_util:
             mem_free = False
             # node mem_util = output edge
-            self.logger.info("Memory size is too low/ Memory is Full")
-            self.logger.info("Node or Node memory Requirements too high")
             # Rearrange the checkpointed_nodes
             # rearrange = True
             # if (self.mem_free[0] + node.in_edge_mem) < 0:
@@ -268,7 +266,7 @@ def run(self, graph):
             self.mem_util[0] -= node.mem_util
         #         print("5",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
-        self.logger.info(
+        self.logger.debug(
             "Node operator %r, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
             node.operator,
             step_cycles,

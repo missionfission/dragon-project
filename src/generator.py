@@ -175,7 +175,6 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
-    print("time_grads", time_grads)
     wire_cap, sense_amp_time, plogic_node = technology
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
@@ -302,17 +301,16 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         # print(read_energy, write_energy, leakage_power)
         # print(mem_energy)
     mem_energy[scheduler.mle - 1] = (
-        (scheduler.mem_read_access[i] + scheduler.mem_write_access[i])
-        * config["memory"]["level1"]["read_energy"]
-        + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
-    )
+        scheduler.mem_read_access[i] * config["memory"]["level1"]["read_energy"]
+        + scheduler.mem_write_access[i] * config["memory"]["level1"]["write_energy"]
+    ) + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
     rf_area = config["rf"]["area"] * mm_compute["N_PE"] * mm_compute["size"]
     compute_area = (
         config["mm_compute"]["area"]
         * config["mm_compute"]["N_PE"]
         * (config["mm_compute"]["size"] ^ 2)
     )
-    mem_area = scheduler.config["memory"]["area"]
+    mem_area = float(scheduler.config["memory"]["level0"]["area"])
     total_area = mem_area + compute_area + rf_area
     total_energy = np.sum(mem_energy) + compute_energy + rf_energy
     # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
@@ -325,9 +323,9 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
     scheduler.logger.info("Register File Energy Consumption  = %d ", rf_energy)
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
-    scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
     scheduler.logger.info("Register File Energy Consumption  = %d ", rf_area)
+    scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
 
     config = scheduler.config
@@ -344,6 +342,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             "Energy",
             int(total_energy),
             int(compute_energy),
+            int(rf_energy),
             int(scheduler.mem_read_access[0] * read_energy),
             int(scheduler.mem_write_access[0] * write_energy),
             int(leakage_power * scheduler.total_cycles),
@@ -351,11 +350,13 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             int(scheduler.mem_write_access[1] * read_energy),
             int(leakage_power * scheduler.total_cycles),
         )
+        print("Area", int(total_area), int(compute_area), int(rf_area), int(mem_area))
         print(
             "memory accesses",
             int(scheduler.mem_read_access[0]),
             int(scheduler.mem_write_access[0]),
             int(scheduler.mem_read_access[1]),
+            int(scheduler.mem_write_access[1]),
         )
 
         print(
@@ -427,3 +428,6 @@ Generator.update_mem_design = update_mem_design
 Generator.backward_pass = backward_pass
 Generator.backward_pass_tech = backward_pass_tech
 Generator.update_logic_tech = update_logic_tech
+
+
+# TODO Check smaller errors of floating point (32) to words comparison

@@ -5,7 +5,6 @@ from ir.handlers import handlers
 from ir.trace import get_backprop_memory, trace
 from torch_geometric.datasets import KarateClub
 from torch_geometric.nn import GCNConv
-from utils.logger import create_logger
 from utils.visualizer import *
 from utils.visualizer import plot_gradients
 
