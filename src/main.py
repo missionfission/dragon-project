@@ -43,14 +43,21 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         )
         scheduler = Scheduling()
         print("======Optimizing Design and Connectivity=========")
-        for i in range(num_iterations):
+        i = 0
+        while True:
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
+            if (
+                scheduler.bandwidth_idle_time < 0.1 * scheduler.total_cycles
+                and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles
+            ):
+                break
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
+            i += 1
 
         print(in_time[0] // time[0], in_energy[0] // energy[0])
         print("===============Optimizing Technology=============")

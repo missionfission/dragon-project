@@ -177,7 +177,10 @@ def run(self, graph):
                 swap_time * n_swaps
                 + (node.mem_util + node.in_edge_mem) // self.mem_read_bw[self.mle - 1]
             )
-            step_cycles += self.mem_size_idle_time
+            step_cycles += (
+                swap_time * n_swaps
+                + (node.mem_util + node.in_edge_mem) // self.mem_read_bw[self.mle - 1]
+            )
             self.mem_read_access[0] += node.mem_util + node.in_edge_mem
             self.mem_write_access[0] += node.mem_util + node.in_edge_mem
         else:
@@ -251,8 +254,10 @@ def run(self, graph):
         #         print("5",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
         self.logger.debug(
-            "Node operator %r, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
+            "Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
             node.operator,
+            compute_expense,
+            time_compute,
             step_cycles,
             read_access,
             write_access,

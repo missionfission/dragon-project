@@ -10,6 +10,7 @@ def create_logger(log_file=None, log_file_level=logging.INFO):
     file_handler = logging.FileHandler("logs/stats.txt", mode="w")
     file_handler.setLevel(logging.INFO)
     logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
     debug_file_handler = logging.FileHandler("logs/debug.txt", mode="w")
     debug_file_handler.setLevel(logging.DEBUG)
     logger.addHandler(debug_file_handler)

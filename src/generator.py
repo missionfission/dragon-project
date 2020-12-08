@@ -135,21 +135,15 @@ def update_mem_design(self, scheduler, mem_config):
     #     "Outside Memory Banks old",
     #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
     # )
-    alpha = 20000
-    beta = 4
-    if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
-        if scheduler.force_connectivity is False:
+    alpha = 30000
+    beta = 10
+    # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
+    # if scheduler.force_connectivity is False:
 
-            mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
-                beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
-            )
-        ## Force Connectivity : External bandwidth is forced, then cannot change anything
-        ## Internal connectivity can change, memory banks can change
-        if scheduler.internal_bandwidth_time > 0:
-            mem_banks = mem_config["level1"]["banks"]
-            mem_config["level1"]["banks"] += (
-                beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
-            )
+    mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
+        beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+    )
+    ## Force Connectivity : External bandwidth is forced, then cannot change anything
     # print(
     #     "Outside Memory Banks new",
     #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
@@ -158,10 +152,10 @@ def update_mem_design(self, scheduler, mem_config):
     ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
     # print("Memory Size old", mem_config["level0"]["size"])
 
-    if scheduler.mem_size_idle_time > 0.1 * scheduler.total_cycles:
-        mem_config["level0"]["size"] += (int)(
-            alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
-        )
+    # if scheduler.mem_size_idle_time > 0.1 * scheduler.total_cycles:
+    mem_config["level0"]["size"] += (int)(
+        alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+    )
     # print("Memory Size new", mem_config["level0"]["size"])
 
     return mem_config
@@ -316,9 +310,10 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
     scheduler.mem_energy = mem_energy
     scheduler.compute_energy = compute_energy
-    scheduler.logger.info("Tool Output")
     scheduler.logger.info("===========================")
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
+    scheduler.logger.info("Bandwidth Idle Time  = %d ", scheduler.bandwidth_idle_time)
+    scheduler.logger.info("Memory Size Idle Time = %d", scheduler.mem_size_idle_time)
     scheduler.logger.info("Memory Energy Consumption  = %d ", np.sum(mem_energy))
     scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
     scheduler.logger.info("Register File Energy Consumption  = %d ", rf_energy)
@@ -327,6 +322,12 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Register File Energy Consumption  = %d ", rf_area)
     scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
+    scheduler.logger.info("No. of PEs = %d", mm_compute["N_PE"])
+    scheduler.logger.info("Memory Level-0 Size = %d", mem_config["level0"]["size"])
+    scheduler.logger.info(
+        "Memory Level-1 Connectivity = %d",
+        mem_config["level" + str(scheduler.mle - 1)]["banks"],
+    )
 
     if print_stats:
         print("==================================")
