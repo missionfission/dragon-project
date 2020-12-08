@@ -286,9 +286,9 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         )
         * mm_compute["per_op_energy"]
     )
-    illusion_leakage = (
-        3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
-    )
+    # illusion_leakage = (
+    #     3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    # )
     for i in range(scheduler.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
@@ -338,7 +338,6 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             "Time",
             int(scheduler.total_cycles),
             int(scheduler.bandwidth_idle_time),
-            scheduler.compute_idle_time,
             int(scheduler.mem_size_idle_time),
         )
         print(
