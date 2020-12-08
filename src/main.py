@@ -24,7 +24,7 @@ from utils.visualizer import (
     bandwidth_bar_graph,
     cycles_bar_graph,
     mem_util_bar_graph,
-    plot_descent,
+    plot_gradients,
 )
 
 

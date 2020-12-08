@@ -14,8 +14,7 @@ alpha
 beta 
 """
 
-alpha = 20000
-beta = 4
+
 logic_energy = 12.75
 logic_speed = 1
 
@@ -64,6 +63,8 @@ def backward_pass(self, scheduler, opts=None):
 
 
 def backward_pass_tech(self, scheduler, opts=None):
+    alpha = 20000
+    beta = 4
     technology = scheduler.technology
     config = scheduler.config
     mem_config = config["memory"]
@@ -110,15 +111,15 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler, comp_config):
-    # scheduler.compute_time = scheduler.total_cycles - (
-    #     scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
-    # )
-    # if scheduler.compute_time > 0.88 * scheduler.total_cycles:
-    #     gamma = 3
-    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-    #         comp_config["N_PE"] * comp_config["size"] ^ 2
-    #     )
-    #     comp_config["N_PE"] += int(pe_descent * gamma)
+    scheduler.compute_time = scheduler.total_cycles - (
+        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    )
+    if scheduler.compute_time > 0.88 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config["N_PE"] * comp_config["size"] ^ 2
+        )
+        comp_config["N_PE"] += int(pe_descent * gamma)
 
     return comp_config
 
@@ -134,7 +135,8 @@ def update_mem_design(self, scheduler, mem_config):
     #     "Outside Memory Banks old",
     #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
     # )
-
+    alpha = 20000
+    beta = 4
     if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
         if scheduler.force_connectivity is False:
 
@@ -242,7 +244,7 @@ def get_mem_props(size, width, banks):
     a = a[np.where(a[:, 2] == width)]
     element = min(a[:, 0], key=lambda x: abs(x - size))
     a = a[np.where(a[:, 0] == element)]
-    return a[0, 5], a[0, 6], a[0, 7]
+    return a[0, 5], a[0, 6], a[0, 7], a[0, 8]
 
 
 def get_compute_props(comp_config, technology):
@@ -316,9 +318,9 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
     )
 
-    # total_area = np.sum(mem_area) + compute_area
-    # total_energy = np.sum(mem_energy) + compute_energy
-    total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
+    total_area = np.sum(mem_area) + compute_area
+    total_energy = np.sum(mem_energy) + compute_energy
+    # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
     scheduler.mem_energy = mem_energy
     scheduler.compute_energy = compute_energy
     scheduler.logger.info("Tool Output")

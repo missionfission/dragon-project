@@ -163,7 +163,7 @@ def tech_space_graph(
     plt.show()
 
 
-def plot_gradient_descent(
+def plot_gradients(
     time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
 ):
     fig, ax = plt.subplots(figsize=(30, 10))

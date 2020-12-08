@@ -61,9 +61,9 @@ def complete_config(self, config):
         self.logger.info("Compute Bandwidth Required : %d", config["comp_bw"])
 
     if config["mm_compute"]["class"] == "mac":
-        config["mm_compute_per_cycle"] = ((mm_compute["size"])) * mm_compute["N_PE"] / 2
+        config["mm_compute_per_cycle"] = ((mm_compute["size"])) * mm_compute["N_PE"]
         config["comp_read_bw"] = (
-            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
+            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"]
         )
 
     for i in range(self.mle):
@@ -91,18 +91,17 @@ def complete_config(self, config):
     # complete_functional_config
     # complete_performance_config
     # memory
-    # for i in range(self.mle - 1):
-    #     memory = config["memory"]["level" + str(i)]
-    #     read_energy, write_energy, leakage_power = get_mem_props(
-    #         memory["size"], memory["width"], memory["banks"]
-    #     )
-    #     config["memory"]["level" + str(i)]["read_energy"] = str(read_energy)
-    #     config["memory"]["level" + str(i)]["write_energy"] = str(write_energy)
-    #     config["memory"]["level" + str(i)]["leakage_power"] = str(leakage_power)
+    for i in range(self.mle - 1):
+        memory = config["memory"]["level" + str(i)]
+        read_energy, write_energy, leakage_power, area = get_mem_props(
+            memory["size"], memory["width"], memory["banks"]
+        )
+        config["memory"]["level" + str(i)]["read_energy"] = str(read_energy)
+        config["memory"]["level" + str(i)]["write_energy"] = str(write_energy)
+        config["memory"]["level" + str(i)]["leakage_power"] = str(leakage_power)
     # compute
     # config["memory"] = mem_space(config["memory"], technology)
     # config["mm_compute"] = comp_space(config["mm_compute"], technology)
-    # config["rf_energy"] = 1
     return config
 
 
