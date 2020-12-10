@@ -69,10 +69,15 @@ def backward_pass_tech(self, scheduler, opts=None):
     config = scheduler.config
     mem_config = config["memory"]
     comp_config = config["mm_compute"]
-    scheduler.compute_time = 0
+    scheduler.compute_time = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        + scheduler.mem_size_idle_time
+    )
 
     if opts == "time":
         time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
+        # time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
         technology = self.update_mem_tech("time", technology, time_grads=time_grads)
         time_grads = (scheduler.compute_time) / scheduler.total_cycles
         technology = self.update_logic_tech("time", technology, time_grads=time_grads)
@@ -214,12 +219,12 @@ def mem_space(mem_config, technology):
     # mem_config["level0"]["write_latency"] = (
     #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
     # )
-    # mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    # mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
-    # mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
-    # mem_config["level0"]["frequency"] = 4000 * (
-    #     1 / mem_config["level0"]["read_latency"]
-    # )
+    mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
+    mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
+    mem_config["level0"]["frequency"] = 4000 * (
+        1 / mem_config["level0"]["read_latency"]
+    )
     # mem_config["level0"]["leakage_power"]
     return mem_config
 
