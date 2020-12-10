@@ -31,11 +31,11 @@ mm_compute:
   frequency: 1000
   size: 64
   N_PE: 4
-  area: 100
+  area: 12.32e+03
   per_op_energy: 1.9
 rf:
   energy: 3.68
-  area: 10
+  area: 5.981433e+00
 
 vector_compute:
   class: vector_array
