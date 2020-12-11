@@ -14,13 +14,13 @@ from utils.visualizer import *
 
 
 class Scheduling:
-    def __init__(self, hwfile="default.yaml"):
+    def __init__(self, hwfile="default.yaml", stats_file="logs/stats.txt"):
         base_dir = "configs/"
         self.total_cycles = 0
         self.technology = [1, 1, 40]
         # maybe change this later to peripheral logic node or speed
         #     [wire_cap , sense_amp_time, plogic_node],
-        self.logger = create_logger()
+        self.logger = create_logger(stats_file=stats_file)
         self.config = self.complete_config(
             yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
         )
@@ -173,6 +173,9 @@ def run(self, graph):
             self.mem_util[0] -= node.weights - node.mem_fetch
             self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
             total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] <= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] > 0, self.mem_util[0]
             n_swaps = total_mem // self.mem_free[0] + 1
             # print("no of swaps is ", n_swaps)
             # assert (self.mem_free[0] + node.in_edge_mem) > 0
@@ -191,7 +194,8 @@ def run(self, graph):
             ) // self.mem_read_bw[self.mle - 1]
             step_cycles += (
                 swap_time * n_swaps
-                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
                 // self.mem_read_bw[self.mle - 1]
             )
             self.mem_read_access[0] += node.mem_util + node.in_edge_mem

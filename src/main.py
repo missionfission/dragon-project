@@ -28,7 +28,13 @@ from utils.visualizer import (
 
 
 ####################################
-def design_tech_runner(graph_set, backprop=False, print_stats=False):
+def design_tech_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file="default.yaml",
+    stats_file="logs/stats.txt",
+):
     """
     Runs the Input Graph
     """
@@ -36,12 +42,12 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
     num_iterations = 50
     for graph in graph_set:
         generator = Generator()
-        scheduler = Scheduling()
+        scheduler = Scheduling(stats_file=stats_file)
         scheduler.run(graph)
         in_time, in_energy, design, tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling()
+        scheduler = Scheduling(stats_file=stats_file)
         print("======Optimizing Design and Connectivity=========")
         i = 0
         while True:
@@ -60,7 +66,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
             scheduler.complete_config(config)
             i += 1
 
-        print(in_time[0] / time[0], in_energy[0] / energy[0])
+        print(in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
         print("===============Optimizing Technology=============")
         for j in range(10):
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
@@ -71,9 +77,16 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
             generator.writeconfig(config, str(j + i) + "hw.yaml")
             scheduler.complete_config(config)
         print(in_time[0] / time[0], in_energy[0] / energy[0])
+    return time, energy, area
 
 
-def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
+def design_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file="default.yaml",
+    stats_file="logs/stats.txt",
+):
     """
     Runs the Input Graph
     """
@@ -101,36 +114,46 @@ def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
         #         cycles_bar_graph("cycles.png", cycles, free_cycles, graph.nodes)
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
         generator = Generator()
-        scheduler = Scheduling()
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
         scheduler.run(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling()
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        i = 0
         print("======Optimizing Design=========")
-        for i in range(num_iterations):
+        while True:
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
+            if (
+                scheduler.bandwidth_idle_time < 0.1 * scheduler.total_cycles
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles:
+                break
+            # print(area / in_area)
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
             time_list.append(time)
             energy_list.append(energy)
             design_list.append(design)
-        print(in_time[0] // time[0], in_energy[0] // energy[0])
-    return time_list, energy_list, design_list
+            i += 1
+        print(in_time[0] / time[0], in_energy[0] / energy[0], in_area / area)
+
+    return time, energy, area
+    # return time_list, energy_list, design_list
 
 
-def run_illusion_sim(graph, backprop):
-    scheduler = Scheduling(hwfile="illusion_nvm.yaml")
+def run_single(graph, backprop, print_stats, filename):
+    scheduler = Scheduling(hwfile=filename)
     scheduler.run(graph)
     generator = Generator()
-    print_stats = True
     in_time, in_energy, design, tech, area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
+    return in_time, in_energy, area
 
 
 def all_design_updates(graph, backprop):

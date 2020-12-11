@@ -339,7 +339,25 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         "Memory Level 0 Energy Consumption  = %f ", (mem_energy[0]) / total_energy
     )
     scheduler.logger.info(
+        "Memory Level 0 Energy Consumption Stats Read = %f, Write %f, Leakage %f ",
+        scheduler.mem_read_access[0] * read_energy / (mem_energy[0]),
+        scheduler.mem_write_access[0] * write_energy / (mem_energy[0]),
+        leakage_power * scheduler.total_cycles / 1000 / (mem_energy[0]),
+    )
+    scheduler.logger.info(
         "Memory Level 1 Energy Consumption  = %f ", (mem_energy[1]) / total_energy
+    )
+    scheduler.logger.info(
+        "Memory Level 1 Energy Consumption Stats Read = %f, Write %f, Leakage %f ",
+        scheduler.mem_read_access[1]
+        * config["memory"]["level1"]["read_energy"]
+        / (mem_energy[1]),
+        scheduler.mem_write_access[1]
+        * config["memory"]["level1"]["write_energy"]
+        / (mem_energy[1]),
+        config["memory"]["level1"]["leakage_power"]
+        * scheduler.total_cycles
+        / (mem_energy[1]),
     )
     scheduler.logger.info(
         "Compute Energy Consumption  = %f ", compute_energy / total_energy
@@ -350,7 +368,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
     scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
-    scheduler.logger.info("Register File Energy Consumption  = %d ", rf_area)
+    scheduler.logger.info("Register File Area Consumption  = %d ", rf_area)
     scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
     scheduler.logger.info("No. of PEs = %d", mm_compute["N_PE"])
@@ -375,7 +393,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             int(rf_energy),
             int(scheduler.mem_read_access[0] * read_energy),
             int(scheduler.mem_write_access[0] * write_energy),
-            int(leakage_power * scheduler.total_cycles),
+            int(leakage_power * scheduler.total_cycles / 1000),
             int(scheduler.mem_read_access[1] * read_energy),
             int(scheduler.mem_write_access[1] * read_energy),
             int(leakage_power * scheduler.total_cycles),
@@ -417,12 +435,17 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         [
             int(total_energy),
             int(compute_energy),
-            int(scheduler.mem_read_access[0] * read_energy / 100),
-            int(scheduler.mem_write_access[0] * write_energy / 100),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
             int(leakage_power * scheduler.total_cycles / 1000),
-            int(scheduler.mem_read_access[1] / 5000),
-            int(scheduler.mem_write_access[1] / 5000),
-            int(1 * scheduler.total_cycles),
+            int(
+                scheduler.mem_read_access[1] * config["memory"]["level1"]["read_energy"]
+            ),
+            int(
+                scheduler.mem_write_access[1]
+                * config["memory"]["level1"]["write_energy"]
+            ),
+            int(config["memory"]["level1"]["leakage_power"] * scheduler.total_cycles),
         ],
         [
             mem_config["level" + str(scheduler.mle - 1)]["banks"],
