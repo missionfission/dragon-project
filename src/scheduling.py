@@ -14,7 +14,7 @@ from utils.visualizer import *
 
 
 class Scheduling:
-    def __init__(self, hwfile="tpu.yaml"):
+    def __init__(self, hwfile="default.yaml"):
         base_dir = "configs/"
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -46,7 +46,7 @@ def complete_config(self, config):
     self.compute_idle_time = 0
     self.mem_size_idle_time = 0
 
-    self.force_connectivity = False
+    self.force_connectivity = config["force_connectivity"]
     mm_compute = config["mm_compute"]
     vector_compute = config["vector_compute"]
 
@@ -196,6 +196,7 @@ def run(self, graph):
             )
             self.mem_read_access[0] += node.mem_util + node.in_edge_mem
             self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
         else:
             self.mem_util[0] += node.mem_util
             self.mem_free[0] -= node.mem_util
@@ -282,6 +283,7 @@ def run(self, graph):
         write_bw_actual.append(write_access / step_cycles)
     #         print("actual",read_access / step_cycles, write_access / step_cycles, step_cycles)
     #     print("The total cycles are ", self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
     return (
         read_bw_req,
         write_bw_req,

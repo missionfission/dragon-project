@@ -14,7 +14,7 @@ alpha
 beta 
 """
 
-
+eff = 0.5
 logic_energy = 12.75
 logic_speed = 1
 
@@ -151,11 +151,10 @@ def update_mem_design(self, scheduler, mem_config):
     alpha = 30000
     beta = 10
     # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
-    # if scheduler.force_connectivity is False:
-
-    # mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
-    #     beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
-    # )
+    if scheduler.force_connectivity is False:
+        mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
+            beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+        )
     ## Force Connectivity : External bandwidth is forced, then cannot change anything
     # print(
     #     "Outside Memory Banks new",
@@ -281,7 +280,12 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         - scheduler.mem_size_idle_time
     )
     rf_energy = (
-        mm_compute["N_PE"] * mm_compute["size"] * config["rf"]["energy"] * rf_accesses
+        mm_compute["N_PE"]
+        * mm_compute["size"]
+        * config["rf"]["energy"]
+        * rf_accesses
+        / 4
+        * eff
     )
     compute_energy = (
         mm_compute["N_PE"]
@@ -291,6 +295,8 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             - scheduler.bandwidth_idle_time
             - scheduler.mem_size_idle_time
         )
+        / 4
+        * eff
         * mm_compute["per_op_energy"]
     )
     # illusion_leakage = (
@@ -304,14 +310,15 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         mem_energy[i] = (
             scheduler.mem_read_access[i] * read_energy
             + scheduler.mem_write_access[i] * write_energy
-            + leakage_power * scheduler.total_cycles
+            + leakage_power * scheduler.total_cycles / 1000
         )
         # print(read_energy, write_energy, leakage_power)
         # print(mem_energy)
     mem_energy[scheduler.mle - 1] = (
-        scheduler.mem_read_access[i] * config["memory"]["level1"]["read_energy"]
-        + scheduler.mem_write_access[i] * config["memory"]["level1"]["write_energy"]
+        scheduler.mem_read_access[1] * config["memory"]["level1"]["read_energy"]
+        + scheduler.mem_write_access[1] * config["memory"]["level1"]["write_energy"]
     ) + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
+
     rf_area = config["rf"]["area"] * mm_compute["N_PE"] * mm_compute["size"]
     compute_area = (
         config["mm_compute"]["area"]
@@ -328,9 +335,19 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
     scheduler.logger.info("Bandwidth Idle Time  = %d ", scheduler.bandwidth_idle_time)
     scheduler.logger.info("Memory Size Idle Time = %d", scheduler.mem_size_idle_time)
-    scheduler.logger.info("Memory Energy Consumption  = %d ", np.sum(mem_energy))
-    scheduler.logger.info("Compute Energy Consumption  = %d ", compute_energy)
-    scheduler.logger.info("Register File Energy Consumption  = %d ", rf_energy)
+    scheduler.logger.info(
+        "Memory Level 0 Energy Consumption  = %f ", (mem_energy[0]) / total_energy
+    )
+    scheduler.logger.info(
+        "Memory Level 1 Energy Consumption  = %f ", (mem_energy[1]) / total_energy
+    )
+    scheduler.logger.info(
+        "Compute Energy Consumption  = %f ", compute_energy / total_energy
+    )
+    scheduler.logger.info(
+        "Register File Energy Consumption  = %f ", rf_energy / total_energy
+    )
+
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
     scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
     scheduler.logger.info("Register File Energy Consumption  = %d ", rf_area)

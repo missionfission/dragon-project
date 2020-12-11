@@ -51,8 +51,8 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
             )
             if (
                 scheduler.bandwidth_idle_time < 0.1 * scheduler.total_cycles
-                and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles
-            ):
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles:
                 break
             # print(area / in_area)
             config = generator.backward_pass(scheduler)
@@ -60,17 +60,17 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
             scheduler.complete_config(config)
             i += 1
 
-        print(in_time[0] // time[0], in_energy[0] // energy[0])
+        print(in_time[0] / time[0], in_energy[0] / energy[0])
         print("===============Optimizing Technology=============")
-        for i in range(10):
+        for j in range(10):
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
             time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             config = generator.backward_pass_tech(scheduler, "time")
-            generator.writeconfig(config, str(i) + "hw.yaml")
+            generator.writeconfig(config, str(j + i) + "hw.yaml")
             scheduler.complete_config(config)
-        print(in_time[0] // time[0], in_energy[0] // energy[0])
+        print(in_time[0] / time[0], in_energy[0] / energy[0])
 
 
 def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
