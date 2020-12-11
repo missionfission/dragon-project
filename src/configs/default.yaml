@@ -30,13 +30,12 @@ mm_compute:
   class: systolic_array
   frequency: 1000
   size: 64
-  N_PE: 6
+  N_PE: 1
   area: 12.32
   per_op_energy: 3.532019e-02
 rf:
   energy: 3.68
   area: 5.981433e+00
-
 vector_compute:
   class: vector_array
   frequency: 1000

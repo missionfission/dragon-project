@@ -151,7 +151,7 @@ def update_mem_design(self, scheduler, mem_config):
     alpha = 30000
     beta = 10
     # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
-    if scheduler.force_connectivity is False:
+    if scheduler.force_connectivity == 0:
         mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
             beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
         )
