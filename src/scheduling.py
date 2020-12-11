@@ -14,7 +14,7 @@ from utils.visualizer import *
 
 
 class Scheduling:
-    def __init__(self, hwfile="default.yaml"):
+    def __init__(self, hwfile="tpu.yaml"):
         base_dir = "configs/"
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -152,7 +152,7 @@ def run(self, graph):
         write_access = 0
         self.mem_read_access[1] += weights
 
-        assert self.mem_util[0] < self.mem_size[0]
+        assert self.mem_util[0] <= self.mem_size[0]
         self.mem_util[0] += node.in_edge_mem
         node.mem_util = node.out_edge_mem + node.mem_fetch
         # Total Free memory
@@ -165,21 +165,34 @@ def run(self, graph):
         read_bw_req.append(read_bw_ll)
         write_bw_req.append(write_bw_ll)
         free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
         if self.mem_free[0] < node.mem_util:
             mem_free = False
-            assert (self.mem_free[0] + node.in_edge_mem) > 0
-            used_pe_ratio = (self.mem_free[0] + node.in_edge_mem) / (
-                node.mem_util + node.in_edge_mem
-            )
-            n_swaps = int(1 / used_pe_ratio + 1)
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            n_swaps = total_mem // self.mem_free[0] + 1
+            # print("no of swaps is ", n_swaps)
+            # assert (self.mem_free[0] + node.in_edge_mem) > 0
+            # used_pe_ratio = (self.mem_free[0] + node.in_edge_mem) / (
+            #     node.mem_util + node.in_edge_mem
+            # )
+            # n_swaps = int(1 / used_pe_ratio + 1)
             swap_time = max(config["mm_compute"]["size"] * 4, time_compute // n_swaps)
             self.mem_size_idle_time += (
                 swap_time * n_swaps
-                + (node.mem_util + node.in_edge_mem) // self.mem_read_bw[self.mle - 1]
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
             )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
             step_cycles += (
                 swap_time * n_swaps
-                + (node.mem_util + node.in_edge_mem) // self.mem_read_bw[self.mle - 1]
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
             )
             self.mem_read_access[0] += node.mem_util + node.in_edge_mem
             self.mem_write_access[0] += node.mem_util + node.in_edge_mem
@@ -190,7 +203,7 @@ def run(self, graph):
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem
-        assert self.mem_free[0] < self.mem_size[0]
+        assert self.mem_free[0] <= self.mem_size[0]
         # Last level memory fetch takes more time, so that may be a bottleneck
         bandwidth_available = read_bw_ll < self.mem_read_bw[self.mle - 1]
 
@@ -223,7 +236,7 @@ def run(self, graph):
                         read_access = self.mem_read_bw[self.mle - 1] * step_cycles
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
-                        node.next.mem_fetch = (
+                        node.next.mem_fetch -= (
                             read_access - read_bw_ll * step_cycles
                         )  # Next node mem fetch gets updated
 
@@ -239,28 +252,29 @@ def run(self, graph):
                         read_access = self.mem_read_bw[self.mle - 1] * step_cycles
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
-                        node.next.mem_fetch = read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
                         # Next node mem fetch gets updated
 
         #         print("3",self.mem_free[0], self.mem_util[0], self.mem_size[0])
         self.mem_util_full.append(self.mem_util[0])
 
         # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
-        self.mem_util[0] -= node.in_edge_mem
         #         print("4",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
         if mem_free:
-            self.mem_util[0] -= node.mem_util
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
         #         print("5",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
         self.logger.debug(
-            "Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d ",
+            "Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d",
             node.operator,
             compute_expense,
             time_compute,
             step_cycles,
             read_access,
             write_access,
+            n_swaps,
+            total_mem,
         )
         self.total_cycles += step_cycles
         cycles.append(step_cycles)

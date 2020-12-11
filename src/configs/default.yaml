@@ -13,7 +13,7 @@ memory:
     read_ports: 1
     write_ports: 1
     width: 32
-    size: 1000000
+    size: 1048576
     leakage_power: 0
   level1:
     class: DRAM
@@ -30,8 +30,8 @@ mm_compute:
   class: systolic_array
   frequency: 1000
   size: 64
-  N_PE: 4
-  area: 12.32e+03
+  N_PE: 6
+  area: 12.32
   per_op_energy: 1.9
 rf:
   energy: 3.68

@@ -119,12 +119,20 @@ def update_comp_design(self, scheduler, comp_config):
     scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
     )
-    if scheduler.compute_time > 0.88 * scheduler.total_cycles:
-        gamma = 3
-        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-            comp_config["N_PE"] * comp_config["size"] ^ 2
-        )
-        comp_config["N_PE"] += int(pe_descent * gamma)
+    # if scheduler.mem_size_idle_time > 0.90 * scheduler.total_cycles:
+    #     gamma = 3
+    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+    #         comp_config["N_PE"] * comp_config["size"] ** 2
+    #     )
+    #     comp_config["N_PE"] += int(pe_descent * gamma)
+    #     print("N_PEs changed")
+
+    # if scheduler.mem_size_idle_time < 0.01 * scheduler.total_cycles:
+    #     gamma = 3
+    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+    #         comp_config["N_PE"] * comp_config["size"] ** 2
+    #     )
+    #     comp_config["N_PE"] -= int(pe_descent * gamma)
 
     return comp_config
 
@@ -145,9 +153,9 @@ def update_mem_design(self, scheduler, mem_config):
     # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
     # if scheduler.force_connectivity is False:
 
-    mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
-        beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
-    )
+    # mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
+    #     beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+    # )
     ## Force Connectivity : External bandwidth is forced, then cannot change anything
     # print(
     #     "Outside Memory Banks new",
@@ -235,13 +243,14 @@ def comp_space(comp_config, technology):
 
 def get_mem_props(size, width, banks):
     for i in range(11, 25):
-        if (size // 2 ** i) < 1:
+        if (size * 4 // (2 ** i)) < 1:
             break
     a = mem_table[np.where(mem_table[:, 1] == banks)]
     a = a[np.where(a[:, 2] == width)]
-    element = min(a[:, 0], key=lambda x: abs(x - size))
+    element = min(a[:, 0], key=lambda x: abs(x - 4 * size))
     a = a[np.where(a[:, 0] == element)]
-    return a[0, 5], a[0, 6], a[0, 7], a[0, 8]
+    # print("area is ", a[0, 8], "size is", element)
+    return a[0, 5], a[0, 6], a[0, 7], a[0, 8] * 10 ** 4
 
 
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
@@ -307,7 +316,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     compute_area = (
         config["mm_compute"]["area"]
         * config["mm_compute"]["N_PE"]
-        * (config["mm_compute"]["size"] ^ 2)
+        * (config["mm_compute"]["size"] ** 2)
     )
     mem_area = float(scheduler.config["memory"]["level0"]["area"])
     total_area = mem_area + compute_area + rf_area
@@ -405,6 +414,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             mem_config["level0"]["read_energy"],
         ],
         scheduler.technology,
+        total_area,
     )
 
 

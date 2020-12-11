@@ -38,7 +38,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         generator = Generator()
         scheduler = Scheduling()
         scheduler.run(graph)
-        in_time, in_energy, design, tech = generator.save_stats(
+        in_time, in_energy, design, tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         scheduler = Scheduling()
@@ -46,7 +46,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         i = 0
         while True:
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            time, energy, design, tech = generator.save_stats(
+            time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             if (
@@ -54,6 +54,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
                 and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles
             ):
                 break
+            # print(area / in_area)
             config = generator.backward_pass(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
@@ -63,7 +64,7 @@ def design_tech_runner(graph_set, backprop=False, print_stats=False):
         print("===============Optimizing Technology=============")
         for i in range(10):
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            time, energy, design, tech = generator.save_stats(
+            time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             config = generator.backward_pass_tech(scheduler, "time")
@@ -102,14 +103,14 @@ def design_runner(graph_set, scheduler, backprop=False, print_stats=False):
         generator = Generator()
         scheduler = Scheduling()
         scheduler.run(graph)
-        in_time, in_energy, in_design, in_tech = generator.save_stats(
+        in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         scheduler = Scheduling()
         print("======Optimizing Design=========")
         for i in range(num_iterations):
             _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-            time, energy, design, tech = generator.save_stats(
+            time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             config = generator.backward_pass(scheduler)
@@ -127,7 +128,7 @@ def run_illusion_sim(graph, backprop):
     scheduler.run(graph)
     generator = Generator()
     print_stats = True
-    in_time, in_energy, design, tech = generator.save_stats(
+    in_time, in_energy, design, tech, area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
 
@@ -144,7 +145,7 @@ def all_design_updates(graph, backprop):
     scheduler.run(graph)
     generator = Generator()
     print_stats = True
-    in_time, in_energy, in_design, in_tech = generator.save_stats(
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
@@ -152,7 +153,7 @@ def all_design_updates(graph, backprop):
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
         _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-        time, energy, design, tech = generator.save_stats(
+        time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         design_list.append(design)
@@ -179,7 +180,7 @@ def all_tech_updates(graph, backprop):
     scheduler.run(graph)
     generator = Generator()
     print_stats = True
-    in_time, in_energy, in_design, in_tech = generator.save_stats(
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
@@ -187,7 +188,7 @@ def all_tech_updates(graph, backprop):
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
         _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-        time, energy, design, tech = generator.save_stats(
+        time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
     for i in range(10):
@@ -195,7 +196,7 @@ def all_tech_updates(graph, backprop):
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
         _, _, _, _, cycles, free_cycles = scheduler.run(graph)
-        time, energy, design, tech = generator.save_stats(
+        time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         time_list.append(time)
@@ -224,7 +225,7 @@ def s_mem_c_same_arch(graph, backprop):
             scheduler.config["memory"]["level1"]["banks"] = 2
             scheduler.config["memory"]["level1"]["banks"] *= j
             scheduler.complete_config(scheduler.config)
-            in_time, in_energy, design, tech = generator.save_stats(
+            in_time, in_energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])

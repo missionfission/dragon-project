@@ -1,34 +1,44 @@
 technology:
-    wire_cap: 1e-12
-    sense_amp_time: 1e-9
-    plogic_node: 40
-  voltage: 1
-  memory_levels: 2
-  memory:
-    level0:
-      class: SRAM
-      frequency: 1000
-      banks: 4
-      read_ports: 1
-      write_ports: 1
-      width: 32
-      size: 1000000
-    level1:
-      class: DRAM
-      frequency: 5
-      banks: 2
-      read_ports: 1
-      write_ports: 1
-      width: 2
-      size: 100000000000
-  mm_compute:
-    class: systolic_array
+  wire_cap: 1
+  sense_amp_time: 1
+  plogic_node: 40
+  logic_node: 22
+voltage: 1
+memory_levels: 2
+memory:
+  level0:
+    class: SRAM
     frequency: 1000
-    size: 256
-    N_PE: 1
-  vector_compute:
-    class: systolic_array
-    frequency: 1000
-    size: 64
-    N_PE: 4
-  
+    banks: 4
+    read_ports: 1
+    write_ports: 1
+    width: 32
+    size: 6248576
+    leakage_power: 0
+  level1:
+    class: DRAM
+    frequency: 5
+    banks: 2
+    read_ports: 1
+    write_ports: 1
+    width: 2
+    size: 100000000000
+    leakage_power: 0
+    read_energy: 240
+    write_energy: 240
+mm_compute:
+  class: systolic_array
+  frequency: 1000
+  size: 256
+  N_PE: 1
+  area: 12.32
+  per_op_energy: 1.9
+rf:
+  energy: 3.68
+  area: 5.981433e+00
+
+vector_compute:
+  class: vector_array
+  frequency: 1000
+  size: 1
+  N_PE: 128
