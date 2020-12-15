@@ -1,36 +1,32 @@
 technology:
-    on_chip_memory: rram
-      #Required
-      wire_cap: 1 # normalized 545.455 (ohm/um) aggresive/global
-      wire_res: 1 # normalized 2.752 (fF/um) aggresive/global
-      memory_cell_write_time: 2 # ns
-      memory_cell_write_energy: 0.3 # pJ
-      memory_cell_write_energy: 0.3 # pJ
-      memory_cell_access_device: cmos
-       memory_cell_read_power: 23.4 # uW
-      read_latency: 0.2 #ns
-      cell_area: 6 #F^2
-      peripheral_logic_node: 22 #nm
-      # Optional
-      resistance_on: 6000 # ohm
-      resistance_off: 120000 # ohm
-      voltage_drop_access_device: 0.15 # V
-      memory_cell_read_voltage: 0.25 # V
-    external_memory: dram
-      #Required
-      wire_cap: 1 # normalized 545.455 (ohm/um) aggresive/global
-      wire_res: 1 # normalized 2.752 (fF/um) aggresive/global
-      memory_cell_write_time: 2 # ns
-      memory_cell_write_energy: 0.3 # pJ
-      memory_cell_access_device: cmos
-      read_power: 23.4 # uW
-      read_latency: 0.2 #ns
-      cell_area: 6 #F^2
-      peripheral_logic_node: 22 #nm
-      # Optional (read_power)
-      resistance_on: 6000 # ohm
-      resistance_off: 120000 # ohm
-      voltage_drop_access_device: 0.15 # V
-      memory_cell_read_voltage: 0.25 # V
-    compute_logic_node: 22 #nm
-  voltage: 1
+  level0: rram
+    #Required
+    wire_cap: 1 # normalized 2.752 (fF/um) aggresive/global
+    wire_res: 1  # normalized 545.455 (ohm/um) aggresive/global
+    memory_cell_write_time: 2 # ns
+    memory_cell_write_energy: 0.3 # pJ
+    memory_cell_access_device: cmos
+    memory_cell_read_power: 23.4 # uW
+    read_latency: 0.2 #ns
+    cell_area: 6 #F^2
+    peripheral_logic_node: 22 #nm
+    # Optional
+    resistance_on: 6000 # ohm
+    resistance_off: 120000 # ohm
+    voltage_drop_access_device: 0.15 # V
+    memory_cell_read_voltage: 0.25 # V
+  level1: dram
+    #Required
+    wire_cap: 1 # normalized 545.455 (ohm/um) aggresive/global
+    wire_res: 1 # normalized 2.752 (fF/um) aggresive/global
+    memory_cell_write_time: 2 # ns
+    memory_cell_write_energy: 0.3 # pJ
+    memory_cell_access_device: cmos
+    read_power: 23.4 # uW
+    read_latency: 0.2 #ns
+    cell_area: 6 #F^2
+    peripheral_logic_node: 22 #nm
+  compute: 22 #nm
+    wire_cap: 1 
+    wire_res: 1 
+voltage: 1

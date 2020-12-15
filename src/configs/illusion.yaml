@@ -22,7 +22,6 @@ memory:
     read_energy: 240
     write_energy: 240
     leakage_power: 0
-
 mm_compute:
   class: mac
   frequency: 500
