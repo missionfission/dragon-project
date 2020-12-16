@@ -360,3 +360,20 @@ def gpt2_graph():
     model(tokens_tensor)
     gpt2_graph = trace(model, tokens_tensor)
     return gpt2_graph
+
+
+def alexnet_graph():
+    import torchvision.models as models
+
+    for name, model in models.__dict__.items():
+        #             print(name)
+        if not name.islower() or name.startswith("__") or not callable(model):
+            #             print(name.islower())
+            continue
+        #         print(name)
+        if "alexnet" in name:
+            model = model().eval()
+            inputs = torch.randn(1, 3, 224, 224)
+            alexnet_graph = trace(model, inputs)
+            break
+    return alexnet_graph

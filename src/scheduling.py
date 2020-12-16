@@ -12,6 +12,8 @@ from generator import Generator, get_mem_props
 from utils.logger import create_logger
 from utils.visualizer import *
 
+eff = 0.5
+
 
 class Scheduling:
     def __init__(self, hwfile="default.yaml", stats_file="logs/stats.txt"):
@@ -55,7 +57,7 @@ def complete_config(self, config):
             ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / (4)
         )
         config["comp_bw"] = (
-            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2
+            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2 / 4
         )
 
         self.logger.debug("MM Compute per cycle : %d", config["mm_compute_per_cycle"])
