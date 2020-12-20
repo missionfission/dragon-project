@@ -286,6 +286,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         * rf_accesses
         / 4
         * eff
+        * 2
     )
     compute_energy = (
         mm_compute["N_PE"]
@@ -406,7 +407,9 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             int(scheduler.mem_read_access[1]),
             int(scheduler.mem_write_access[1]),
         )
-        print("rf access", mm_compute["N_PE"] * mm_compute["size"] * rf_accesses / 4)
+        print(
+            "rf access", 2 * mm_compute["N_PE"] * mm_compute["size"] * rf_accesses / 4
+        )
         print(
             "Design Params \n",
             "No. of PEs : ",
