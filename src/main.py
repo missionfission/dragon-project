@@ -43,7 +43,7 @@ def design_tech_runner(
     for graph in graph_set:
         generator = Generator()
         scheduler = Scheduling(stats_file=stats_file)
-        scheduler.run(graph)
+        scheduler.run_asap(graph)
         in_time, in_energy, design, tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
@@ -51,7 +51,7 @@ def design_tech_runner(
         print("======Optimizing Design and Connectivity=========")
         i = 0
         while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
@@ -69,7 +69,7 @@ def design_tech_runner(
         print(in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
         print("===============Optimizing Technology=============")
         for j in range(10):
-            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
@@ -105,7 +105,7 @@ def design_runner(
         #     write_bw_actual,
         #     cycles,
         #     free_cycles,
-        # ) = scheduler.run(graph)
+        # ) = scheduler.run_asap(graph)
         # read_bw_limit, write_bw_limit = (
         #     scheduler.mem_read_bw[scheduler.mle - 1],
         #     scheduler.mem_write_bw[scheduler.mle - 1],
@@ -115,7 +115,7 @@ def design_runner(
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
         generator = Generator()
         scheduler = Scheduling(hwfile=file, stats_file=stats_file)
-        scheduler.run(graph)
+        scheduler.run_asap(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
@@ -123,7 +123,7 @@ def design_runner(
         i = 0
         print("======Optimizing Design=========")
         while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
             )
@@ -148,7 +148,7 @@ def design_runner(
 
 def run_single(graph, backprop, print_stats, filename):
     scheduler = Scheduling(hwfile=filename)
-    scheduler.run(graph)
+    scheduler.run_asap(graph)
     generator = Generator()
     in_time, in_energy, design, tech, area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
@@ -165,7 +165,7 @@ def all_design_updates(graph, backprop):
     time_list = []
     energy_list = []
     scheduler = Scheduling()
-    scheduler.run(graph)
+    scheduler.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
@@ -175,7 +175,7 @@ def all_design_updates(graph, backprop):
         config = generator.backward_pass(scheduler)
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
@@ -200,7 +200,7 @@ def all_tech_updates(graph, backprop):
     energy_list = []
     base_dir = "figures/"
     scheduler = Scheduling()
-    scheduler.run(graph)
+    scheduler.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
@@ -210,7 +210,7 @@ def all_tech_updates(graph, backprop):
         config = generator.backward_pass(scheduler)
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
@@ -218,7 +218,7 @@ def all_tech_updates(graph, backprop):
         config = generator.backward_pass_tech(scheduler, "time")
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run(graph)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
@@ -282,7 +282,7 @@ def s_mem_c_diff_arch(graph, backprop):
             scheduler.config["memory"]["level1"]["banks"] = 2
             scheduler.config["memory"]["level1"]["banks"] *= j
             scheduler.complete_config(scheduler.config)
-            scheduler.run(graph)
+            scheduler.run_asap(graph)
             in_time, in_energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes)
             )
