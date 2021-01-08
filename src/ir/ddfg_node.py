@@ -1,20 +1,20 @@
 class DDFG_Node:
     def __init__(self, operator, attributes, inputs, outputs, scope):
-        self.operator = operator  # type of stencil, control, loop, mult, add etc
+        self.operator = operator  # type of stencil, control, loop, mult, add, specialops etc
         self.attributes = attributes
         self.inputs = inputs
         self.outputs = outputs
         self.scope = scope
 
         self.compute_expense = 0
-        self.weights = 0
+        self.static_inputs = 0
         self.write_access = 0
         self.read_access = 0
 
         self.mem_util = 0  # in_edge_mem including weights
         self.mem_fetch = 0
 
-        self.in_edge_mem = 0
+        self.in_edge_mem = 0 # only from nodes, not static inputs
         self.out_edge_mem = 0
         self.n_in_edges = 1
         self.n_out_edges = 1
