@@ -23,3 +23,7 @@ try some configs and select the best one
 return full_config
 
 get_efficiency(conv.info, array_sizes)
+
+algorithms -> execute and log bottlenecks 
+
+identify the bottleneck portions, transform it in a library of transformations
