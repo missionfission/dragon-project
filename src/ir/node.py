@@ -1,20 +1,27 @@
 class Node:
     def __init__(self, operator, attributes, inputs, outputs, scope):
-        self.operator = operator
+        self.operator = operator  # type of stencil 
         self.attributes = attributes
         self.inputs = inputs
         self.outputs = outputs
         self.scope = scope
+
         self.compute_expense = 0
         self.weights = 0
         self.write_access = 0
         self.read_access = 0
-        self.mem_util = 0  # out_edge_mem + read_access
+
+        self.mem_util = 0  # in_edge_mem including weights
+        self.mem_fetch = 0
+
         self.in_edge_mem = 0
         self.out_edge_mem = 0
-        self.mem_fetch = 0
-        self.next = None
+        self.n_in_edges = 1
+        self.n_out_edges = 1
 
+        self.prev = None # [list of where the input comes from]
+        self.next = None # [list of where the output gets next]
+        
     @property
     def operator(self):
         return self._operator
