@@ -1,2 +1,2 @@
-def homomorhphic_encrytpion():
+def homomorphic_encrytpion():
     pass
