@@ -16,13 +16,22 @@ memory:
     write_ports: 1
     width: 2
     size: 100000000000
+  local_mem:
+    type: 1
+      class: SRAM
+      size: 512
+    type: 2
+      class: SRAM
+      size: 2048
 mm_compute:
-  class: systolic_array
-  frequency: 1000
-  size: 64
-  N_PE: 64
-vector_compute:
-  class: vector_array
-  frequency: 1000
-  size: 1
-  N_PE: 128
+  type: 1
+    class: systolic_array
+    frequency: 1000
+    size: 64
+    N_PE: 1
+  type: 2
+    class: mac
+    frequency: 1000
+    size: 1
+    N_PE: 256
+
