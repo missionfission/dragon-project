@@ -260,7 +260,7 @@ def resnet_graph():
             continue
         if "resnet50" in name:
             model = model().eval()
-            inputs = torch.randn(1, 3, 100, 100)
+            inputs = torch.randn(1, 3, 224, 224)
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph

@@ -13,11 +13,11 @@ memory:
     leakage_power: 0
   level1:
     class: DRAM
-    frequency: 50
-    banks: 128
+    frequency: 500
+    banks: 4
     read_ports: 1
     write_ports: 1
-    width: 64
+    width: 4
     size: 4000000000
     read_energy: 6.4
     write_energy: 6.4
@@ -29,6 +29,7 @@ mm_compute:
   N_PE: 4096
   leakage_power: 0
   per_op_energy: 1.9
+  area: 12.32
 vector_compute:
   class: vector_array
   frequency: 1000
@@ -37,3 +38,5 @@ vector_compute:
 rf:
   energy: 3.68
   size: 256
+  area: 5.981433e+00
+force_connectivity: 1
