@@ -5,6 +5,13 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from transformers import (
+    DPRConfig,
+    DPRContextEncoder,
+    DPRQuestionEncoder,
+    DPRReader,
+    DPRReaderTokenizer,
+)
 
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
@@ -325,6 +332,40 @@ def bert_graph():
     model(tokens_tensor)
     bert_graph = trace(model, tokens_tensor)
     return bert_graph
+
+
+def dpr_graph():
+
+    segments_ids = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
+    indexed_tokens = [
+        101,
+        2627,
+        1108,
+        3104,
+        1124,
+        15703,
+        136,
+        102,
+        3104,
+        1124,
+        15703,
+        1108,
+        170,
+        16797,
+        8284,
+        102,
+    ]
+
+    # Convert inputs to PyTorch tensors
+    segments_tensors = torch.tensor([segments_ids])
+    tokens_tensor = torch.tensor([indexed_tokens])
+    configuration = DPRConfig()
+    contextencoder_graph = trace(DPRContextEncoder(configuration).eval(), tokens_tensor)
+    questionencoder_graph = trace(
+        DPRQuestionEncoder(configuration).eval(), tokens_tensor
+    )
+    reader_graph = trace(DPRReader(configuration).eval(), tokens_tensor)
+    return contextencoder_graph, questionencoder_graph, reader_graph
 
 
 def gpt2_graph():

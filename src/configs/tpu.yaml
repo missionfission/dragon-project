@@ -37,7 +37,6 @@ mm_compute:
 rf:
   energy: 8.999495e-03
   area: 5.981433e+00
-
 vector_compute:
   class: vector_array
   frequency: 1000
