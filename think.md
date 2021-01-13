@@ -23,3 +23,11 @@ try some configs and select the best one
 return full_config
 
 get_efficiency(conv.info, array_sizes)
+
+
+
+- algorithms -> execute and log bottlenecks 
+
+- identify the bottleneck portions in code, what is the stencil there, transform it using a library of transformations
+
+- after the transformation, check performance benefit
