@@ -461,6 +461,26 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     )
 
 
+def generate_tech_targets(self, benefit_target):
+    orderlist = []
+    orderlist.append("connectivity")
+    tech_targets = {}
+    time_params = []
+    energy_params = []
+    tech_ratio_params = []
+    tech_ratio_list = []
+    energy_ratio_params = []
+    energy_ratio_list = []
+    # create the order list
+    total_benefit = 1
+    while total_benefit < benefit_target:
+        i += 1
+        improv, improv_ben = get_benefit(orderlist[i])
+        tech_targets[orderlist[i]] = int(improv) + 1
+        total_benefit *= int(improv_ben)
+    return tech_targets
+
+
 #############################################################################################################################
 
 
