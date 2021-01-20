@@ -5,16 +5,17 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torchvision.models as models
-from transformers import (
-    DPRConfig,
-    DPRContextEncoder,
-    DPRQuestionEncoder,
-    DPRReader,
-    DPRReaderTokenizer,
-)
 
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
+
+# from transformers import (
+#     DPRConfig,
+#     DPRContextEncoder,
+#     DPRQuestionEncoder,
+#     DPRReader,
+#     DPRReaderTokenizer,
+# )
 
 
 def dlrm_graph():
@@ -57,7 +58,7 @@ def dlrm_graph():
     parser.add_argument("--data-size", type=int, default=1)
     parser.add_argument("--num-batches", type=int, default=0)
     parser.add_argument(
-        "--data-generation", type=str, default="random"
+        "--data-generation", type=str, default="dataset"
     )  # synthetic or dataset
     parser.add_argument("--data-trace-file", type=str, default="./input/dist_emb_j.log")
     parser.add_argument("--data-set", type=str, default="kaggle")  # or terabyte
