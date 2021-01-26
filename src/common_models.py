@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
 import torchvision.models as models
 
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
@@ -421,5 +423,49 @@ def alexnet_graph():
     return alexnet_graph
 
 
+class LSTMTagger(nn.Module):
+    def __init__(
+        self, embedding_dim=24, hidden_dim=2048, vocab_size=32768, tagset_size=1024
+    ):
+        super(LSTMTagger, self).__init__()
+        self.hidden_dim = hidden_dim
+
+        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+
+        # The LSTM takes word embeddings as inputs, and outputs hidden states
+        # with dimensionality hidden_dim.
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim)
+
+        # The linear layer that maps from hidden state space to tag space
+        self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
+
+    def forward(self, sentence):
+        embeds = self.word_embeddings(sentence)
+        lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
+        tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
+        tag_scores = F.log_softmax(tag_space, dim=1)
+        return tag_scores
+
+
 def langmodel_graph():
-    return langmodel_graph
+
+    # torch.manual_seed(1)
+    # lstm = nn.LSTM(793470, 1024)  # Input dim is 3, output dim is 3
+    # inputs = [torch.randn(1, 3) for _ in range(5)]  # make a sequence of length 5
+    # # initialize the hidden state.
+    # hidden = (torch.randn(1, 1, 3), torch.randn(1, 1, 3))
+    # inputs = torch.cat(inputs).view(len(inputs), 1, -1)
+    # hidden = (torch.randn(1, 1, 3), torch.randn(1, 1, 3))  # clean out hidden state
+    # # out, hidden = lstm(inputs, hidden)
+
+    # LAYERS["embed1"] = FCLayer(1, 793470, 1)
+    # LAYERS["act_1"] = FCLayer(2048, 32768, 1)
+    # LAYERS["proj_1"] = FCLayer(8192, 1024, 1)
+    inputs = torch.randn(2048)  # make a sequence of length 5
+    model1 = nn.Sequential(nn.Linear(2048, 32768))
+    model2 = nn.Sequential(nn.Linear(8192, 1024))
+
+    langmod_graph1 = trace(model1.eval(), inputs)
+    inputs = torch.randn(8192)  # make a sequence of length 5
+    langmod_graph2 = trace(model2.eval(), inputs)
+    return langmod_graph1, langmod_graph2
