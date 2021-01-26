@@ -280,7 +280,7 @@ def vggnet_graph():
         if not name.islower() or name.startswith("__") or not callable(model):
             continue
         if "vgg11" in name and "vgg11_bn" not in name:
-            inputs = torch.randn(1, 3, 299, 299)
+            inputs = torch.randn(1, 3, 224, 224)
             vgg11_graph = trace(model().eval(), inputs)
             # print(vgg11_graph)
             break
@@ -419,3 +419,7 @@ def alexnet_graph():
             alexnet_graph = trace(model, inputs)
             break
     return alexnet_graph
+
+
+def langmodel_graph():
+    return langmodel_graph

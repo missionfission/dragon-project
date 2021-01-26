@@ -12,12 +12,12 @@ memory:
     write_energy: 5.12
     leakage_power: 0
   level1:
-    class: DRAM
-    frequency: 500
-    banks: 4
+    class: NVM
+    frequency: 1
+    banks: 256
     read_ports: 1
     write_ports: 1
-    width: 4
+    width: 16
     size: 4000000000
     read_energy: 6.4
     write_energy: 6.4
