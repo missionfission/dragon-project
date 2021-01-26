@@ -26,6 +26,19 @@ from utils.visualizer import (
     plot_gradients,
 )
 
+####################################
+
+
+def run_mapping(scheduler, mapping, graph):
+    if mapping == "asap":
+        scheduler.run_asap(graph)
+    elif mapping == "nn_dataflow":
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == "reuse_full":
+        scheduler.run_reuse_full(graph)
+    elif mapping == "reuse_leakage":
+        scheduler.run_reuse_leakage(graph)
+
 
 ####################################
 def design_tech_runner(
@@ -146,9 +159,16 @@ def design_runner(
     # return time_list, energy_list, design_list
 
 
-def run_single(graph, backprop, print_stats, filename):
+def run_single(graph, backprop, print_stats, filename, mapping="nn_dataflow"):
     scheduler = Scheduling(hwfile=filename)
-    scheduler.run_asap(graph)
+    if mapping == "asap":
+        scheduler.run_asap(graph)
+    elif mapping == "nn_dataflow":
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == "reuse_full":
+        scheduler.run_reuse_full(graph)
+    elif mapping == "reuse_leakage":
+        scheduler.run_reuse_leakage(graph)
     generator = Generator()
     in_time, in_energy, design, tech, area = generator.save_stats(
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats

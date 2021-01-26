@@ -13,11 +13,11 @@ memory:
     leakage_power: 0
   level1:
     class: DRAM
-    frequency: 800
-    banks: 2
+    frequency: 1.6
+    banks: 4
     read_ports: 1
     write_ports: 1
-    width: 64
+    width: 2
     size: 4000000000
     read_energy: 240
     write_energy: 240
