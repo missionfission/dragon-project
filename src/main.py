@@ -74,7 +74,7 @@ def design_tech_runner(
             ) and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles:
                 break
             # print(area / in_area)
-            config = generator.backward_pass(scheduler)
+            config = generator.backward_pass_design(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
             i += 1
@@ -146,7 +146,7 @@ def design_runner(
             ) and scheduler.mem_size_idle_time < 0.1 * scheduler.total_cycles:
                 break
             # print(area / in_area)
-            config = generator.backward_pass(scheduler)
+            config = generator.backward_pass_design(scheduler)
             generator.writeconfig(config, str(i) + "hw.yaml")
             scheduler.complete_config(config)
             time_list.append(time)
@@ -192,7 +192,7 @@ def all_design_updates(graph, backprop):
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass(scheduler)
+        config = generator.backward_pass_design(scheduler)
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
         _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
@@ -227,7 +227,7 @@ def all_tech_updates(graph, backprop):
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass(scheduler)
+        config = generator.backward_pass_design(scheduler)
         generator.writeconfig(config, str(i) + "hw.yaml")
         scheduler.complete_config(config)
         _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)

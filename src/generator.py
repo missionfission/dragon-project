@@ -40,7 +40,7 @@ def writeconfig(self, content, filename):
     )
 
 
-def backward_pass(self, scheduler, opts=None):
+def backward_pass_design(self, scheduler, opts=None):
 
     """
     opts = ["energy", "time", "area", "edp"]
@@ -503,12 +503,14 @@ def endurance_writes_schedule():
 
 Generator.writeconfig = writeconfig
 Generator.save_stats = save_stats
+
+Generator.backward_pass_tech = backward_pass_tech
 Generator.update_mem_tech = update_mem_tech
+Generator.update_logic_tech = update_logic_tech
+
+Generator.backward_pass_design = backward_pass_design
 Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
-Generator.backward_pass = backward_pass
-Generator.backward_pass_tech = backward_pass_tech
-Generator.update_logic_tech = update_logic_tech
 
 
 # TODO Check smaller errors of floating point (32) to words comparison in memory banks conversion

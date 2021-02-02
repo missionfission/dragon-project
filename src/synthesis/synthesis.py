@@ -4,3 +4,13 @@ def parser(graph):
     """
     # G_hw_repr(graph)
     pass
+
+
+def allocation(H):
+    pass
+
+def binding(H):
+    pass
+
+def template_space(H):
+    pass
