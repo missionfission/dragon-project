@@ -15,7 +15,7 @@ from utils.visualizer import *
 eff = 0.5
 
 
-class DDFG_Execute:
+class DDFG_Scheduling:
     def __init__(self, hwfile="default.yaml", stats_file="logs/stats.txt"):
         base_dir = "configs/"
         self.total_cycles = 0
@@ -109,7 +109,7 @@ def complete_config(self, config):
     return config
 
 
-def map_asap(self, graph):
+def run_asap(self, graph):
 
     """
      Check both size, utilization and bandwidths at every node
@@ -294,7 +294,7 @@ def map_asap(self, graph):
     )
 
 
-def map_reuse_leakage(self, graph):
+def run_reuse_leakage(self, graph):
     """
     Energy efficiency mapping with greedy choice between reuse and leakage_power 
     """
@@ -471,7 +471,7 @@ def map_reuse_leakage(self, graph):
     )
 
 
-def map_reuse_full(self, graph):
+def run_reuse_full(self, graph):
     """
     Energy efficiency mapping with maximal reuse and power gating of the components
     """
@@ -656,7 +656,7 @@ def get_reuse(node):
     pass
 
 
-DDFG_Execute.complete_config = complete_config
-DDFG_Execute.map_asap = map_asap
-DDFG_Execute.map_reuse_full = map_reuse_full
-DDFG_Execute.map_reuse_leakage = map_reuse_leakage
+DDFG_Scheduling.complete_config = complete_config
+DDFG_Scheduling.run_asap = run_asap
+DDFG_Scheduling.run_reuse_full = run_reuse_full
+DDFG_Scheduling.run_reuse_leakage = run_reuse_leakage

@@ -15,8 +15,8 @@ from yaml import dump
 from generator import *
 from generator import Generator, get_mem_props
 from ir.handlers import handlers
-from ir.trace import get_backprop_memory, trace
-from scheduling import Scheduling
+from ir.trace import trace
+from ddfg_scheduling import DDFG_Scheduling
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
@@ -31,8 +31,6 @@ from utils.visualizer import (
 def run_mapping(scheduler, mapping, graph):
     if mapping == "asap":
         scheduler.run_asap(graph)
-    elif mapping == "nn_dataflow":
-        scheduler.run_nn_dataflow(graph)
     elif mapping == "reuse_full":
         scheduler.run_reuse_full(graph)
     elif mapping == "reuse_leakage":
@@ -54,12 +52,12 @@ def design_tech_runner(
     num_iterations = 50
     for graph in graph_set:
         generator = Generator()
-        scheduler = Scheduling(stats_file=stats_file)
+        scheduler = DDFG_Scheduling(stats_file=stats_file)
         scheduler.run_asap(graph)
         in_time, in_energy, design, tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling(stats_file=stats_file)
+        scheduler = DDFG_Scheduling(stats_file=stats_file)
         print("======Optimizing Design and Connectivity=========")
         i = 0
         while True:
@@ -126,12 +124,12 @@ def design_runner(
         #         cycles_bar_graph("cycles.png", cycles, free_cycles, graph.nodes)
         #         mem_util_bar_graph("mem_util.png",scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
         generator = Generator()
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        scheduler = DDFG_Scheduling(hwfile=file, stats_file=stats_file)
         scheduler.run_asap(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
             scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        scheduler = DDFG_Scheduling(hwfile=file, stats_file=stats_file)
         i = 0
         print("======Optimizing Design=========")
         while True:
@@ -159,7 +157,7 @@ def design_runner(
 
 
 def run_single(graph, backprop, print_stats, filename, mapping="nn_dataflow"):
-    scheduler = Scheduling(hwfile=filename)
+    scheduler = DDFG_Scheduling(hwfile=filename)
     if mapping == "asap":
         scheduler.run_asap(graph)
     elif mapping == "nn_dataflow":
@@ -183,7 +181,7 @@ def all_design_updates(graph, backprop):
     design_names = []
     time_list = []
     energy_list = []
-    scheduler = Scheduling()
+    scheduler = DDFG_Scheduling()
     scheduler.run_asap(graph)
     generator = Generator()
     print_stats = True
@@ -218,7 +216,7 @@ def all_tech_updates(graph, backprop):
     time_list = []
     energy_list = []
     base_dir = "figures/"
-    scheduler = Scheduling()
+    scheduler = DDFG_Scheduling()
     scheduler.run_asap(graph)
     generator = Generator()
     print_stats = True
@@ -261,7 +259,7 @@ def s_mem_c_same_arch(graph, backprop):
         time_list = []
         energy_list = []
         for j in range(1, 100):
-            scheduler = Scheduling()
+            scheduler = DDFG_Scheduling()
             generator = Generator()
             backprop = True
             scheduler.config["memory"]["level1"]["banks"] = 2
@@ -295,7 +293,7 @@ def s_mem_c_diff_arch(graph, backprop):
         time_list = []
         energy_list = []
         for j in range(1, 100):
-            scheduler = Scheduling()
+            scheduler = DDFG_Scheduling()
             generator = Generator()
             backprop = True
             scheduler.config["memory"]["level1"]["banks"] = 2
@@ -330,7 +328,7 @@ def s_size_c_joint(graph, backprop):
         time_list = []
         energy_list = []
         for j in range(1, 100):
-            scheduler = Scheduling()
+            scheduler = DDFG_Scheduling()
             generator = Generator()
             backprop = True
             scheduler.config["memory"]["level1"]["banks"] = 2
