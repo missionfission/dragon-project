@@ -9,6 +9,8 @@ from ir.ddfg_handlers import ddfg_handlers
 from ir.ddfg_node import DDFG_Node
 from ir.variable import Variable
 
+from staticfg import CFGBuilder
+import ast
 __all__ = ["ddfg_trace"]
 
 def trace(model, args=(), kwargs=None):
@@ -19,19 +21,24 @@ def trace(model, args=(), kwargs=None):
 
     # Get Trace from a C++ or a python program 
     # Invoke trace script
-    graph = code_trace(filename,type="python")
 
+    cfg = CFGBuilder().build_from_file(filename)
+    cfg.build_visual('exampleCFG', 'pdf', show=False)
+    # print(cfg)
     variables = dict()
-    for x in graph.nodes():
-        for v in list(x.inputs()) + list(x.outputs()):
-            if "tensor" in v.type().kind().lower():
-                variables[v] = Variable(
-                    name=v.debugName(),
-                    dtype=v.type().scalarType(),
-                    shape=v.type().sizes(),
-                )
-            else:
-                variables[v] = Variable(name=v.debugName(), dtype=str(v.type()),)
+
+    for node in cfg:
+        for i in node.statements:
+            print(ast.dump(i))
+            for v in list(x.inputs()) + list(x.outputs()):
+                if "tensor" in v.type().kind().lower():
+                    variables[v] = Variable(
+                        name=v.debugName(),
+                        dtype=v.type().scalarType(),
+                        shape=v.type().sizes(),
+                    )
+                else:
+                    variables[v] = Variable(name=v.debugName(), dtype=str(v.type()),)
 
     nodes = []
     for x in graph.nodes():
