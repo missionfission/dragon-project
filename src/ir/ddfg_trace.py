@@ -1,3 +1,4 @@
+import ast
 import warnings
 
 import numpy as np
@@ -8,10 +9,10 @@ from ir.ddfg import DDFG
 from ir.ddfg_handlers import ddfg_handlers
 from ir.ddfg_node import DDFG_Node
 from ir.variable import Variable
-
 from staticfg import CFGBuilder
-import ast
+
 __all__ = ["ddfg_trace"]
+
 
 def trace(model, args=(), kwargs=None):
     assert kwargs is None, (
@@ -19,17 +20,18 @@ def trace(model, args=(), kwargs=None):
         "Please use positional arguments instead!"
     )
 
-    # Get Trace from a C++ or a python program 
+    # Get Trace from a C++ or a python program
     # Invoke trace script
 
     cfg = CFGBuilder().build_from_file(filename)
-    cfg.build_visual('exampleCFG', 'pdf', show=False)
+    cfg.build_visual("exampleCFG", "pdf", show=False)
     # print(cfg)
     variables = dict()
 
     for node in cfg:
         for i in node.statements:
             print(ast.dump(i))
+
             for v in list(x.inputs()) + list(x.outputs()):
                 if "tensor" in v.type().kind().lower():
                     variables[v] = Variable(
@@ -63,8 +65,10 @@ def trace(model, args=(), kwargs=None):
                     # if not isinstance(node.weights, int):
                     #     if len(node.weights) > 1:
                     #         node.weights = node.weights[0]
-                    node.in_edge_mem = np.prod(node.inputs[0].shape) # if many previous nodes add them all
-                    node.out_edge_mem = np.prod(node.outputs[0].shape) 
+                    node.in_edge_mem = np.prod(
+                        node.inputs[0].shape
+                    )  # if many previous nodes add them all
+                    node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.static_inputs + node.out_edge_mem
                     # print("inputs", node.inputs[0].shape, "outputs", node.outputs[0].shape,"weights", node.weights)
                     # if not isinstance(node.mem_util, np.int64):
@@ -74,7 +78,7 @@ def trace(model, args=(), kwargs=None):
     for i, node in enumerate(nodes):
         if i < len(nodes) - 1:
             node.next = nodes[i + 1]
-        # TODO add node prev 
+        # TODO add node prev
         # print(node.next, node.mem_util)
     graph = DDFG(
         name=model.__class__.__module__ + "." + model.__class__.__name__,
