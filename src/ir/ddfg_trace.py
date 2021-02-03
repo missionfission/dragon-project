@@ -29,18 +29,19 @@ def trace(model, args=(), kwargs=None):
     variables = dict()
 
     for node in cfg:
+        print(node)
         for i in node.statements:
             print(ast.dump(i))
 
-            for v in list(x.inputs()) + list(x.outputs()):
-                if "tensor" in v.type().kind().lower():
-                    variables[v] = Variable(
-                        name=v.debugName(),
-                        dtype=v.type().scalarType(),
-                        shape=v.type().sizes(),
-                    )
-                else:
-                    variables[v] = Variable(name=v.debugName(), dtype=str(v.type()),)
+    for v in list(x.inputs()) + list(x.outputs()):
+        if "tensor" in v.type().kind().lower():
+            variables[v] = Variable(
+                name=v.debugName(),
+                dtype=v.type().scalarType(),
+                shape=v.type().sizes(),
+            )
+        else:
+            variables[v] = Variable(name=v.debugName(), dtype=str(v.type()),)
 
     nodes = []
     for x in graph.nodes():
