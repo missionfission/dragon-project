@@ -4,7 +4,7 @@ from staticfg import CFGBuilder
 
 cfg = CFGBuilder().build_from_file(
     "aes.py",
-    "/media/khushal/679f068d-921b-4d14-890f-3081c1728f98/research/SM/dragon-project/src/nonai_models/aes.py",
+    "/home/khushal/code-anyhwperf/src/nonai_models/aes.py",
 )
 cfg.build_visual("exampleCFG", "pdf", show=False)
 print(cfg)
