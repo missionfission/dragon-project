@@ -236,6 +236,6 @@ class CFG(object):
                     continue
                 to_visit.append(exit_.target)
             yield block
-
+        print("Yield from Subgraphs")
         for subcfg in self.functioncfgs.values():
             yield from subcfg
