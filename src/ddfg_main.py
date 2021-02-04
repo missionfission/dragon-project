@@ -1,5 +1,8 @@
 import glob
 import os
+
+####################################
+import subprocess
 import sys
 from collections import deque
 from copy import deepcopy
@@ -12,11 +15,11 @@ import yamlordereddictloader
 from torchvision import models
 from yaml import dump
 
+from ddfg_scheduling import DDFG_Scheduling
 from generator import *
 from generator import Generator, get_mem_props
 from ir.handlers import handlers
 from ir.trace import trace
-from ddfg_scheduling import DDFG_Scheduling
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
@@ -24,8 +27,6 @@ from utils.visualizer import (
     mem_util_bar_graph,
     plot_gradients,
 )
-
-####################################
 
 
 def run_mapping(scheduler, mapping, graph):
@@ -35,6 +36,25 @@ def run_mapping(scheduler, mapping, graph):
         scheduler.run_reuse_full(graph)
     elif mapping == "reuse_leakage":
         scheduler.run_reuse_leakage(graph)
+
+
+def synthesis_hardware(benchmark):
+    if benchmark == "aes":
+        bashCommand = "common/aladdin aes  machsuite/aes_aes/inputs/dynamic_trace.gz machsuite/aes_aes/test_aes.cfg"
+        process = subprocess.Popen(
+            bashCommand.split(), stdout=subprocess.PIPE, cwd="./plugins/aladdin/"
+        )
+        output, error = process.communicate()
+        for i in output.decode("utf-8").split("\n"):
+            print(i)
+    if benchmark == "bfs":
+        bashCommand = "common/aladdin bfs_bulk  machsuite/bfs_bulk/inputs/dynamic_trace1.gz machsuite/bfs_bulk/test_bfs.cfg"
+        process = subprocess.Popen(
+            bashCommand.split(), stdout=subprocess.PIPE, cwd="./plugins/aladdin/"
+        )
+        output, error = process.communicate()
+        for i in output.decode("utf-8").split("\n"):
+            print(i)
 
 
 ####################################
@@ -171,184 +191,3 @@ def run_single(graph, backprop, print_stats, filename, mapping="nn_dataflow"):
         scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     return in_time, in_energy, area
-
-
-def all_design_updates(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    # ax2 = ax.twinx()
-    base_dir = "figures/"
-    design_list = []
-    design_names = []
-    time_list = []
-    energy_list = []
-    scheduler = DDFG_Scheduling()
-    scheduler.run_asap(graph)
-    generator = Generator()
-    print_stats = True
-    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-    )
-    for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
-        generator.writeconfig(config, str(i) + "hw.yaml")
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
-        time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-        )
-        design_list.append(design)
-        time_list.append(time)
-        energy_list.append(energy)
-    design_list = np.array(design_list)
-    time_list = np.array(time_list)
-    energy_list = np.array(energy_list)
-    for i in range(len(in_design)):
-        ax.plot(design_list[:, i] / in_design[i], label=design_names[i])
-    ax.plot(time_list[:, 0] / in_time[0], label="Execution Time")
-    ax.plot(energy_list[:, 0] / in_energy[0], label="Energy Consumption")
-
-
-def all_tech_updates(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    # ax2 = ax.twinx()
-    tech_names = []
-    tech_list = []
-    time_list = []
-    energy_list = []
-    base_dir = "figures/"
-    scheduler = DDFG_Scheduling()
-    scheduler.run_asap(graph)
-    generator = Generator()
-    print_stats = True
-    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-    )
-    for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
-        generator.writeconfig(config, str(i) + "hw.yaml")
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
-        time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-        )
-    for i in range(10):
-        config = generator.backward_pass_tech(scheduler, "time")
-        generator.writeconfig(config, str(i) + "hw.yaml")
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
-        time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-        )
-        time_list.append(time)
-        energy_list.append(energy)
-        tech_list.append(tech)
-    time_list = np.array(time_list)
-    energy_list = np.array(energy_list)
-    tech_list = np.array(tech_list)
-
-    for i in len(in_tech):
-        ax.plot(tech_list[:, i] / in_tech[i], label=tech_names[i])
-    ax.plot(time_list[:, 0] / in_time[0], label="Execution Time")
-    ax.plot(energy_list[:, 0] / in_energy[0], label="Energy Consumption")
-
-
-# Fix Everything in Architecture and Just Sweep Memory Connectivity
-def s_mem_c_same_arch(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
-        time_list = []
-        energy_list = []
-        for j in range(1, 100):
-            scheduler = DDFG_Scheduling()
-            generator = Generator()
-            backprop = True
-            scheduler.config["memory"]["level1"]["banks"] = 2
-            scheduler.config["memory"]["level1"]["banks"] *= j
-            scheduler.complete_config(scheduler.config)
-            in_time, in_energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
-            )
-            time_list.append(in_time[0])
-            energy_list.append(in_energy[0])
-        ax.plot(energy_list, "o-", label=name[en])
-        print(energy_list[0] / energy_list[98])
-        print(time_list[0] / time_list[98])
-        ax.plot(time_list, "o-", label=name)
-
-    ax.set_xlabel("Memory Connectivity", fontsize=20, fontweight="bold")
-    ax.set_ylabel("Energy Consumption", fontsize=20, fontweight="bold")
-    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=20)
-    ax.legend(fontsize=20)
-    plt.yscale("log")
-    fig.tight_layout()
-    plt.savefig("figures/connectivity_sweep_energy.png", bbox_inches="tight")
-    plt.show()
-
-
-# Allow Architecture to Change when Sweeping Memory Connectivity
-def s_mem_c_diff_arch(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
-        time_list = []
-        energy_list = []
-        for j in range(1, 100):
-            scheduler = DDFG_Scheduling()
-            generator = Generator()
-            backprop = True
-            scheduler.config["memory"]["level1"]["banks"] = 2
-            scheduler.config["memory"]["level1"]["banks"] *= j
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
-            in_time, in_energy, design, tech = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
-            )
-            time_list.append(in_time[0])
-            energy_list.append(in_energy[0])
-        ax.plot(energy_list, "o-", label=name[en])
-        print(energy_list[0] / energy_list[98])
-        print(time_list[0] / time_list[98])
-        ax.plot(time_list, "o-", label=name)
-
-    ax.set_xlabel("Memory Connectivity", fontsize=20, fontweight="bold")
-    ax.set_ylabel("Energy Consumption", fontsize=20, fontweight="bold")
-    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=20)
-    ax.legend(fontsize=20)
-    plt.yscale("log")
-    fig.tight_layout()
-    plt.savefig("figures/connectivity_sweep_energy.png", bbox_inches="tight")
-    plt.show()
-
-
-# Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
-def s_size_c_joint(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
-        time_list = []
-        energy_list = []
-        for j in range(1, 100):
-            scheduler = DDFG_Scheduling()
-            generator = Generator()
-            backprop = True
-            scheduler.config["memory"]["level1"]["banks"] = 2
-            scheduler.config["memory"]["level1"]["banks"] *= j
-            scheduler.complete_config(scheduler.config)
-            in_time, in_energy, design, tech = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
-            )
-            time_list.append(in_time[0])
-            energy_list.append(in_energy[0])
-        ax.plot(energy_list, "o-", label=name[en])
-        print(energy_list[0] / energy_list[98])
-        print(time_list[0] / time_list[98])
-        ax.plot(time_list, "o-", label=name)
-    ax.set_xlabel("Memory Connectivity", fontsize=20, fontweight="bold")
-    ax.set_ylabel("Energy Consumption", fontsize=20, fontweight="bold")
-    plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=20)
-    ax.legend(fontsize=20)
-    plt.yscale("log")
-    fig.tight_layout()
-    plt.savefig("figures/connectivity_sweep_energy.png", bbox_inches="tight")
-    plt.show()

@@ -6,7 +6,6 @@ import numpy as np
 import yaml
 import yamlordereddictloader
 
-from functions import complete_functional_config
 from generator import *
 from generator import Generator, get_mem_props
 from utils.logger import create_logger
@@ -649,6 +648,7 @@ def run_reuse_full(self, graph):
         cycles,
         free_cycles,
     )
+
 
 def get_reuse(node):
     # for node.type in conv2d
