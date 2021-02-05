@@ -336,6 +336,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
     scheduler.logger.info("Bandwidth Idle Time  = %d ", scheduler.bandwidth_idle_time)
     scheduler.logger.info("Memory Size Idle Time = %d", scheduler.mem_size_idle_time)
+    scheduler.logger.info("================ Energy Description ======================")
     scheduler.logger.info(
         "Memory Level 0 Energy Consumption  = %f ", (mem_energy[0]) / total_energy
     )
@@ -360,6 +361,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         * scheduler.total_cycles
         / (mem_energy[1]),
     )
+
     scheduler.logger.info(
         "Compute Energy Consumption  = %f ", compute_energy / total_energy
     )
@@ -368,11 +370,18 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     )
 
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
+    scheduler.logger.info("================ Area Description ======================")
     scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
     scheduler.logger.info("Register File Area Consumption  = %d ", rf_area)
     scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
+    scheduler.logger.info("================ Design Description ======================")
     scheduler.logger.info("No. of PEs = %d", mm_compute["N_PE"])
+    scheduler.logger.info("Size of Each Systolic Array = %d", mm_compute["size"])
+    scheduler.logger.info(
+        "Register File Size = %d", mm_compute["N_PE"] * mm_compute["size"]
+    )
+    scheduler.logger.info("Memory Level-0 Size  = %d", mem_config["level0"]["banks"])
     scheduler.logger.info("Memory Level-0 Size = %d", mem_config["level0"]["size"])
     scheduler.logger.info(
         "Memory Level-1 Connectivity = %d",
