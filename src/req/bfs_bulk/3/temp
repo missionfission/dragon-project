@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from collections import namedtuple
+import matplotlib as mpl
+# mpl.rcParams['text.usetex'] = False?
+# mpl.rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}']
+
+n_groups = 15
+fig, ax = plt.subplots(figsize=(30,6))
+index = np.arange(n_groups)
+print(index)
+bar_width = 0.05
+ax.set_yscale('linear')
+# opacity = 0.4
+error_config = {'ecolor': '0.3'}
+index = np.arange(n_groups)
+# print(index)
+bar_width = 0.1
+# ax.set_yscale('log')
+opacity = 0.1
+error_config = {'ecolor': '0.3'}
+#
+
+
+rects1 = ax.bar(index+bar_width,h0_writes[:,0], bar_width, color='red', error_kw=error_config,label='DRAM')+ax.bar(index+bar_width, h0_writes[:,1], bar_width, bottom=h0_writes[:,0], color='gold', error_kw=error_config,label='NVM')+ax.bar(index+bar_width, h0_writes[:,2], bar_width,bottom=h0_writes[:,0]+h0_writes[:,1],color='aqua', error_kw=error_config,label='Misses')
+rects1 = ax.bar(index+bar_width, h0_writes[:,0]+h0_writes[:,1]+h0_writes[:,2], bar_width, color='none', error_kw=error_config,label='online',hatch='o')
+rects2 = ax.bar(index + 2.2*bar_width,optimal_writes[:,0]  , bar_width, color='red', error_kw=error_config)+ax.bar(index + 2.2*bar_width, optimal_writes[:,1] , bar_width,bottom=optimal_writes[:,0], color='gold', error_kw=error_config)+ax.bar(index+2.2*bar_width,optimal_writes[:,2] , bar_width,bottom=h1_writes[:,0]+optimal_writes[:,1],color='aqua', error_kw=error_config)
+rects2 = ax.bar(index + 2.2*bar_width, optimal_writes[:,0]+optimal_writes[:,1]+optimal_writes[:,2], bar_width, color='none',hatch='x', error_kw=error_config,label='offline')
+# rects3 = ax.bar(index + 3.4*bar_width, h2_writes[:,0] , bar_width, color='red',hatch='/',error_kw=error_config)+ax.bar(index + 3.4*bar_width, h2_writes[:,1] , bar_width, bottom=h2_writes[:,0], color='gold',hatch='/',error_kw=error_config)+ax.bar(index+3.4*bar_width, h2_writes[:,2], bar_width,bottom= h2_writes[:,0]+h2_writes[:,1],color='aqua', error_kw=error_config)
+# rects3 = ax.bar(index + 3.4*bar_width, h2_writes[:,0]+h2_writes[:,1]+h2_writes[:,2], bar_width, color='none',hatch='/',error_kw=error_config,label='h=0')
+
+# ax.set_ylabel('SpeedUp (GraphMat=1)',fontsize=14,fontweight='bold')
+ax.set_xticks(index + bar_width*2)
+ax.set_xticklabels(('<1,.256,4>', '<2,.128,2>', '<5,.05,0.8>','<10,.025,0.4>','<20,.012,0.2>','<1,.256,4>', '<2,.128,2>', '<5,.05,0.8>','<10,.025,0.4>','<20,.012,0.2>','<1,.256,4>', '<2,.128,2>', '<5,.05,0.8>','<10,.025,0.4>','<20,.012,0.2>'))
+ax.set_ylabel('Fraction of Number of Reads \n in DRAM/NVM',fontsize=20,fontweight='bold')
+ax.set_xlabel('Zipf\'s Parameter =0.9,                                                         Zipf\'s Parameter =0.8,                                                                                        Zipf\'s Parameter =0.7',fontsize=20,fontweight='bold')
+
+ax.legend(fontsize=20)
+# ax.set_ylim( (pow(10,-2),pow(10,3)))
+fig.tight_layout()
+plt.rc('xtick', labelsize=16)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=20)
+plt.savefig('comparison_writes.png', bbox_inches = 'tight')
+plt.show()
