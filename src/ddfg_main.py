@@ -40,17 +40,17 @@ def run_mapping(scheduler, mapping, graph):
 
 def synthesis_hardware(benchmark):
     if benchmark == "aes":
-        bashCommand = "common/aladdin aes  machsuite/aes_aes/inputs/dynamic_trace.gz machsuite/aes_aes/test_aes.cfg"
+        bashCommand = "common/aladdin aes  aes_aes/inputs/dynamic_trace.gz aes_aes/test_aes.cfg"
         process = subprocess.Popen(
-            bashCommand.split(), stdout=subprocess.PIPE, cwd="./plugins/aladdin/"
+            bashCommand.split(), stdout=subprocess.PIPE, cwd="./req/"
         )
         output, error = process.communicate()
         for i in output.decode("utf-8").split("\n"):
             print(i)
     if benchmark == "bfs":
-        bashCommand = "common/aladdin bfs_bulk  machsuite/bfs_bulk/inputs/dynamic_trace1.gz machsuite/bfs_bulk/test_bfs.cfg"
+        bashCommand = "common/aladdin bfs_bulk  bfs_bulk/inputs/dynamic_trace1.gz bfs_bulk/test_bfs.cfg"
         process = subprocess.Popen(
-            bashCommand.split(), stdout=subprocess.PIPE, cwd="./plugins/aladdin/"
+            bashCommand.split(), stdout=subprocess.PIPE, cwd="./req/"
         )
         output, error = process.communicate()
         for i in output.decode("utf-8").split("\n"):
