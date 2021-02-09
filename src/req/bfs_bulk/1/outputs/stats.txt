@@ -1,0 +1,602 @@
+
+---------- Begin Simulation Statistics ----------
+sim_seconds                                  0.000142                       # Number of seconds simulated
+sim_ticks                                   142330188                       # Number of ticks simulated
+final_tick                                  142330188                       # Number of ticks from beginning of simulation (restored from checkpoints and never reset)
+sim_freq                                 1000000000000                       # Frequency of simulated ticks
+host_tick_rate                              196285163                       # Simulator tick rate (ticks/s)
+host_mem_usage                                4906196                       # Number of bytes of host memory used
+host_seconds                                     0.73                       # Real time elapsed on the host
+system.voltage_domain.voltage                       1                       # Voltage in Volts
+system.clk_domain.clock                          3003                       # Clock period in ticks
+system.mem_ctrls.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.mem_ctrls.bytes_read::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache        20032                       # Number of bytes read from this memory
+system.mem_ctrls.bytes_read::.bfs_bulk_datapath.cache.prefetcher        28352                       # Number of bytes read from this memory
+system.mem_ctrls.bytes_read::total              48384                       # Number of bytes read from this memory
+system.mem_ctrls.num_reads::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          626                       # Number of read requests responded to by this memory
+system.mem_ctrls.num_reads::.bfs_bulk_datapath.cache.prefetcher          886                       # Number of read requests responded to by this memory
+system.mem_ctrls.num_reads::total                1512                       # Number of read requests responded to by this memory
+system.mem_ctrls.bw_read::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache    140743157                       # Total read bandwidth from this memory (bytes/s)
+system.mem_ctrls.bw_read::.bfs_bulk_datapath.cache.prefetcher    199198781                       # Total read bandwidth from this memory (bytes/s)
+system.mem_ctrls.bw_read::total             339941938                       # Total read bandwidth from this memory (bytes/s)
+system.mem_ctrls.bw_total::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache    140743157                       # Total bandwidth to/from this memory (bytes/s)
+system.mem_ctrls.bw_total::.bfs_bulk_datapath.cache.prefetcher    199198781                       # Total bandwidth to/from this memory (bytes/s)
+system.mem_ctrls.bw_total::total            339941938                       # Total bandwidth to/from this memory (bytes/s)
+system.mem_ctrls.avgPriority_.bfs_bulk_datapath.system.bfs_bulk_datapath.cache::samples       626.00                       # Average QoS priority value for accepted requests
+system.mem_ctrls.avgPriority_.bfs_bulk_datapath.cache.prefetcher::samples       886.00                       # Average QoS priority value for accepted requests
+system.mem_ctrls.priorityMinLatency      0.000000018750                       # per QoS priority minimum request to response latency (s)
+system.mem_ctrls.priorityMaxLatency      0.000001145172                       # per QoS priority maximum request to response latency (s)
+system.mem_ctrls.numReadWriteTurnArounds            0                       # Number of turnarounds from READ to WRITE
+system.mem_ctrls.numWriteReadTurnArounds            0                       # Number of turnarounds from WRITE to READ
+system.mem_ctrls.numStayReadState                2671                       # Number of times bus staying in READ state
+system.mem_ctrls.numStayWriteState                  0                       # Number of times bus staying in WRITE state
+system.mem_ctrls.readReqs                        1512                       # Number of read requests accepted
+system.mem_ctrls.writeReqs                          0                       # Number of write requests accepted
+system.mem_ctrls.readBursts                      1512                       # Number of DRAM read bursts, including those serviced by the write queue
+system.mem_ctrls.writeBursts                        0                       # Number of DRAM write bursts, including those merged in the write queue
+system.mem_ctrls.bytesReadDRAM                  96768                       # Total number of bytes read from DRAM
+system.mem_ctrls.bytesReadWrQ                       0                       # Total number of bytes read from write queue
+system.mem_ctrls.bytesWritten                       0                       # Total number of bytes written to DRAM
+system.mem_ctrls.bytesReadSys                   48384                       # Total read bytes from the system interface side
+system.mem_ctrls.bytesWrittenSys                    0                       # Total written bytes from the system interface side
+system.mem_ctrls.servicedByWrQ                      0                       # Number of DRAM read bursts serviced by the write queue
+system.mem_ctrls.mergedWrBursts                     0                       # Number of DRAM write bursts merged with an existing one
+system.mem_ctrls.neitherReadNorWriteReqs            0                       # Number of requests that are neither read nor write
+system.mem_ctrls.perBankRdBursts::0               336                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::1               170                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::2                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::3                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::4                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::5                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::6                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::7                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::8                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::9                 0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::10                0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::11                0                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::12               60                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::13              311                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::14              309                       # Per bank write bursts
+system.mem_ctrls.perBankRdBursts::15              326                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::0                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::1                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::2                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::3                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::4                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::5                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::6                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::7                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::8                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::9                 0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::10                0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::11                0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::12                0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::13                0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::14                0                       # Per bank write bursts
+system.mem_ctrls.perBankWrBursts::15                0                       # Per bank write bursts
+system.mem_ctrls.numRdRetry                         0                       # Number of times read queue was full causing retry
+system.mem_ctrls.numWrRetry                         0                       # Number of times write queue was full causing retry
+system.mem_ctrls.totGap                     134041908                       # Total gap between requests
+system.mem_ctrls.readPktSize::0                     0                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::1                     0                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::2                     0                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::3                     0                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::4                     0                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::5                  1512                       # Read request sizes (log2)
+system.mem_ctrls.readPktSize::6                     0                       # Read request sizes (log2)
+system.mem_ctrls.writePktSize::0                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::1                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::2                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::3                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::4                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::5                    0                       # Write request sizes (log2)
+system.mem_ctrls.writePktSize::6                    0                       # Write request sizes (log2)
+system.mem_ctrls.rdQLenPdf::0                     288                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::1                     161                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::2                     183                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::3                     158                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::4                     132                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::5                     101                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::6                      87                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::7                      99                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::8                     124                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::9                      76                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::10                     44                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::11                     22                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::12                     25                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::13                     11                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::14                      1                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::15                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::16                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::17                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::18                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::19                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::20                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::21                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::22                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::23                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::24                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::25                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::26                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::27                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::28                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::29                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::30                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.rdQLenPdf::31                      0                       # What read queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::0                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::1                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::2                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::3                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::4                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::5                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::6                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::7                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::8                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::9                       0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::10                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::11                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::12                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::13                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::14                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::15                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::16                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::17                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::18                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::19                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::20                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::21                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::22                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::23                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::24                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::25                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::26                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::27                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::28                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::29                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::30                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::31                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::32                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::33                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::34                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::35                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::36                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::37                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::38                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::39                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::40                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::41                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::42                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::43                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::44                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::45                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::46                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::47                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::48                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::49                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::50                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::51                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::52                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::53                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::54                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::55                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::56                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::57                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::58                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::59                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::60                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::61                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::62                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.wrQLenPdf::63                      0                       # What write queue length does an incoming req see
+system.mem_ctrls.bytesPerActivate::samples          127                       # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::mean    761.952756                       # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::gmean   572.242049                       # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::stdev   378.923744                       # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::0-127           12      9.45%      9.45% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::128-255           13     10.24%     19.69% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::256-383            6      4.72%     24.41% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::384-511            3      2.36%     26.77% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::512-639            3      2.36%     29.13% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::640-767            5      3.94%     33.07% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::768-895            3      2.36%     35.43% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::896-1023            4      3.15%     38.58% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::1024-1151           78     61.42%    100.00% # Bytes accessed per row activation
+system.mem_ctrls.bytesPerActivate::total          127                       # Bytes accessed per row activation
+system.mem_ctrls.masterReadBytes::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache        20032                       # Per-master bytes read from memory
+system.mem_ctrls.masterReadBytes::.bfs_bulk_datapath.cache.prefetcher        28352                       # Per-master bytes read from memory
+system.mem_ctrls.masterReadRate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 140743157.031451404095                       # Per-master bytes read from memory rate (Bytes/sec)
+system.mem_ctrls.masterReadRate::.bfs_bulk_datapath.cache.prefetcher 199198781.357613325119                       # Per-master bytes read from memory rate (Bytes/sec)
+system.mem_ctrls.masterReadAccesses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          626                       # Per-master read serviced memory accesses
+system.mem_ctrls.masterReadAccesses::.bfs_bulk_datapath.cache.prefetcher          886                       # Per-master read serviced memory accesses
+system.mem_ctrls.masterReadTotalLat::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     36277008                       # Per-master read total memory access latency
+system.mem_ctrls.masterReadTotalLat::.bfs_bulk_datapath.cache.prefetcher     41215012                       # Per-master read total memory access latency
+system.mem_ctrls.masterReadAvgLat::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     57950.49                       # Per-master read average memory access latency
+system.mem_ctrls.masterReadAvgLat::.bfs_bulk_datapath.cache.prefetcher     46518.07                       # Per-master read average memory access latency
+system.mem_ctrls.totQLat                     49142020                       # Total ticks spent queuing
+system.mem_ctrls.totMemAccLat                77492020                       # Total ticks spent from burst creation until serviced by the DRAM
+system.mem_ctrls.totBusLat                    7560000                       # Total ticks spent in databus transfers
+system.mem_ctrls.avgQLat                     32501.34                       # Average queueing delay per DRAM burst
+system.mem_ctrls.avgBusLat                    5000.00                       # Average bus latency per DRAM burst
+system.mem_ctrls.avgMemAccLat                51251.34                       # Average memory access latency per DRAM burst
+system.mem_ctrls.avgRdBW                       679.88                       # Average DRAM read bandwidth in MiByte/s
+system.mem_ctrls.avgWrBW                         0.00                       # Average achieved write bandwidth in MiByte/s
+system.mem_ctrls.avgRdBWSys                    339.94                       # Average system read bandwidth in MiByte/s
+system.mem_ctrls.avgWrBWSys                      0.00                       # Average system write bandwidth in MiByte/s
+system.mem_ctrls.peakBW                      12800.00                       # Theoretical peak bandwidth in MiByte/s
+system.mem_ctrls.busUtil                         5.31                       # Data bus utilization in percentage
+system.mem_ctrls.busUtilRead                     5.31                       # Data bus utilization in percentage for reads
+system.mem_ctrls.busUtilWrite                    0.00                       # Data bus utilization in percentage for writes
+system.mem_ctrls.avgRdQLen                       3.51                       # Average read queue length when enqueuing
+system.mem_ctrls.avgWrQLen                       0.00                       # Average write queue length when enqueuing
+system.mem_ctrls.readRowHits                     1385                       # Number of row buffer hits during reads
+system.mem_ctrls.writeRowHits                       0                       # Number of row buffer hits during writes
+system.mem_ctrls.readRowHitRate                 91.60                       # Row buffer hit rate for reads
+system.mem_ctrls.writeRowHitRate                  nan                       # Row buffer hit rate for writes
+system.mem_ctrls.avgGap                      88652.06                       # Average gap between requests
+system.mem_ctrls.pageHitRate                    91.60                       # Row buffer hit rate, read and write combined
+system.mem_ctrls_0.actEnergy                   307020                       # Energy for activate commands per rank (pJ)
+system.mem_ctrls_0.preEnergy                   163185                       # Energy for precharge commands per rank (pJ)
+system.mem_ctrls_0.readEnergy                 3612840                       # Energy for read commands per rank (pJ)
+system.mem_ctrls_0.writeEnergy                      0                       # Energy for write commands per rank (pJ)
+system.mem_ctrls_0.refreshEnergy         9219600.000000                       # Energy for refresh commands per rank (pJ)
+system.mem_ctrls_0.actBackEnergy              4153590                       # Energy for active background per rank (pJ)
+system.mem_ctrls_0.preBackEnergy               493440                       # Energy for precharge background per rank (pJ)
+system.mem_ctrls_0.actPowerDownEnergy        35483640                       # Energy for active power-down per rank (pJ)
+system.mem_ctrls_0.prePowerDownEnergy        11290560                       # Energy for precharge power-down per rank (pJ)
+system.mem_ctrls_0.selfRefreshEnergy          7082880                       # Energy for self refresh per rank (pJ)
+system.mem_ctrls_0.totalEnergy               71806755                       # Total energy per rank (pJ)
+system.mem_ctrls_0.averagePower            504.508257                       # Core power per rank (mW)
+system.mem_ctrls_0.totalIdleTime            132113591                       # Total Idle time Per DRAM Rank
+system.mem_ctrls_0.memoryStateTime::IDLE       777159                       # Time in different power states
+system.mem_ctrls_0.memoryStateTime::REF       3696124                       # Time in different power states
+system.mem_ctrls_0.memoryStateTime::SREF     24908564                       # Time in different power states
+system.mem_ctrls_0.memoryStateTime::PRE_PDN     29397073                       # Time in different power states
+system.mem_ctrls_0.memoryStateTime::ACT       5743314                       # Time in different power states
+system.mem_ctrls_0.memoryStateTime::ACT_PDN     77807954                       # Time in different power states
+system.mem_ctrls_1.actEnergy                   599760                       # Energy for activate commands per rank (pJ)
+system.mem_ctrls_1.preEnergy                   318780                       # Energy for precharge commands per rank (pJ)
+system.mem_ctrls_1.readEnergy                 7182840                       # Energy for read commands per rank (pJ)
+system.mem_ctrls_1.writeEnergy                      0                       # Energy for write commands per rank (pJ)
+system.mem_ctrls_1.refreshEnergy         10448880.000000                       # Energy for refresh commands per rank (pJ)
+system.mem_ctrls_1.actBackEnergy              8790540                       # Energy for active background per rank (pJ)
+system.mem_ctrls_1.preBackEnergy              1580640                       # Energy for precharge background per rank (pJ)
+system.mem_ctrls_1.actPowerDownEnergy        43398090                       # Energy for active power-down per rank (pJ)
+system.mem_ctrls_1.prePowerDownEnergy         6565920                       # Energy for precharge power-down per rank (pJ)
+system.mem_ctrls_1.selfRefreshEnergy          2152440                       # Energy for self refresh per rank (pJ)
+system.mem_ctrls_1.totalEnergy               81037890                       # Total energy per rank (pJ)
+system.mem_ctrls_1.averagePower            569.365439                       # Core power per rank (mW)
+system.mem_ctrls_1.totalIdleTime            116202530                       # Total Idle time Per DRAM Rank
+system.mem_ctrls_1.memoryStateTime::IDLE      3549174                       # Time in different power states
+system.mem_ctrls_1.memoryStateTime::REF       4420000                       # Time in different power states
+system.mem_ctrls_1.memoryStateTime::SREF      6667724                       # Time in different power states
+system.mem_ctrls_1.memoryStateTime::PRE_PDN     17093647                       # Time in different power states
+system.mem_ctrls_1.memoryStateTime::ACT      15418020                       # Time in different power states
+system.mem_ctrls_1.memoryStateTime::ACT_PDN     95181623                       # Time in different power states
+system.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.cpu_voltage_domain.voltage                   1                       # Voltage in Volts
+system.bfs_bulk_datapath.clk_domain.clock         3003                       # Clock period in ticks
+system.bfs_bulk_datapath.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.bfs_bulk_datapath.cache_queue_reads            0                       # Number of reads to the bfs_bulk_datapath.cache_queue
+system.bfs_bulk_datapath.cache_queue_writes            0                       # Number of writes to the bfs_bulk_datapath.cache_queue
+system.bfs_bulk_datapath.total_dcache_loads         3826                       # Total number of dcache loads
+system.bfs_bulk_datapath.total_dcache_stores          238                       # Total number of dcache stores.
+system.bfs_bulk_datapath.dcache_latency::samples         4064                       # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::mean 24870.548228                       # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::gmean  5492.733720                       # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::stdev 62745.553677                       # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::0-32767         3405     83.78%     83.78% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::32768-65535            0      0.00%     83.78% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::65536-98303          215      5.29%     89.07% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::98304-131071          185      4.55%     93.63% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::131072-163839          146      3.59%     97.22% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::163840-196607           64      1.57%     98.79% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::196608-229375           26      0.64%     99.43% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::229376-262143            0      0.00%     99.43% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::262144-294911            0      0.00%     99.43% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::294912-327679            0      0.00%     99.43% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::327680-360447            1      0.02%     99.46% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::360448-393215            4      0.10%     99.56% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::393216-425983            2      0.05%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::425984-458751            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::458752-491519            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::491520-524287            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::524288-557055            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::557056-589823            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::589824-622591            0      0.00%     99.61% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::622592-655359            7      0.17%     99.78% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::655360-688127            4      0.10%     99.88% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::688128-720895            4      0.10%     99.98% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::720896-753663            1      0.02%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::753664-786431            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::786432-819199            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::819200-851967            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::851968-884735            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::884736-917503            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::917504-950271            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::950272-983039            0      0.00%    100.00% # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_latency::total         4064                       # Histogram of dcache total access latency
+system.bfs_bulk_datapath.dcache_queue_time::samples         4005                       # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::mean 65721.835955                       # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::gmean 65130.074374                       # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::stdev 10987.128209                       # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::0-8191            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::8192-16383            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::16384-24575            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::24576-32767            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::32768-40959            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::40960-49151            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::49152-57343            0      0.00%      0.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::57344-65535         3222     80.45%     80.45% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::65536-73727          629     15.71%     96.15% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::73728-81919           36      0.90%     97.05% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::81920-90111            3      0.07%     97.13% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::90112-98303            0      0.00%     97.13% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::98304-106495            1      0.02%     97.15% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::106496-114687            1      0.02%     97.18% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::114688-122879            3      0.07%     97.25% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::122880-131071           84      2.10%     99.35% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::131072-139263           25      0.62%     99.98% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::139264-147455            0      0.00%     99.98% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::147456-155647            0      0.00%     99.98% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::155648-163839            1      0.02%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::163840-172031            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::172032-180223            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::180224-188415            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::188416-196607            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::196608-204799            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::204800-212991            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::212992-221183            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::221184-229375            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::229376-237567            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::237568-245759            0      0.00%    100.00% # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.dcache_queue_time::total         4005                       # Histogram of time dcache request spent in queue
+system.bfs_bulk_datapath.total_acp_loads            0                       # Total number of ACP loads
+system.bfs_bulk_datapath.total_acp_stores            0                       # Total number of ACP stores.
+system.bfs_bulk_datapath.acp_latency::samples            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::mean          nan                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::gmean          nan                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::stdev          nan                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::0             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::1             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::2             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::3             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::4             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::5             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::6             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::7             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::8             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::9             0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::10            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::11            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::12            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::13            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::14            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::15            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::16            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::17            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::18            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::19            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::20            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::21            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::22            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::23            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::24            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::25            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::26            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::27            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::28            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::29            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_latency::total            0                       # Histogram of ACP transaction total latency
+system.bfs_bulk_datapath.acp_queue_time::samples            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::mean          nan                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::gmean          nan                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::stdev          nan                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::0            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::1            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::2            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::3            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::4            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::5            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::6            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::7            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::8            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::9            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::10            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::11            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::12            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::13            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::14            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::15            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::16            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::17            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::18            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::19            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::20            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::21            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::22            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::23            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::24            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::25            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::26            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::27            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::28            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::29            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.acp_queue_time::total            0                       # Histogram of time ACP request spent in queue
+system.bfs_bulk_datapath.dma_setup_cycles           10                       # Total number of cycles spent on setting up DMA transfers.
+system.bfs_bulk_datapath.sim_cycles             47386                       # Total accelerator cycles
+system.bfs_bulk_datapath.tlb.hits                4064                       # TLB hits
+system.bfs_bulk_datapath.tlb.misses               116                       # TLB misses
+system.bfs_bulk_datapath.tlb.reads               4180                       # TLB reads
+system.bfs_bulk_datapath.tlb.updates               24                       # TLB updates
+system.bfs_bulk_datapath.tlb.hitRate         0.972249                       # TLB hit rate
+system.bfs_bulk_datapath.cache.prefetcher.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.bfs_bulk_datapath.cache.prefetcher.num_hwpf_issued        10581                       # number of hwpf issued
+system.bfs_bulk_datapath.cache.prefetcher.pfIdentified        15775                       # number of prefetch candidates identified
+system.bfs_bulk_datapath.cache.prefetcher.pfBufferHit         4512                       # number of redundant prefetches already in prefetch queue
+system.bfs_bulk_datapath.cache.prefetcher.pfInCache            0                       # number of redundant prefetches already in cache/mshr dropped
+system.bfs_bulk_datapath.cache.prefetcher.pfRemovedFull            0                       # number of prefetches dropped due to prefetch queue size
+system.bfs_bulk_datapath.cache.prefetcher.pfSpanPage          505                       # number of prefetches not generated due to page crossing
+system.bfs_bulk_datapath.cache.tags.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.bfs_bulk_datapath.cache.tags.tagsinuse   356.570323                       # Cycle average of tags in use
+system.bfs_bulk_datapath.cache.tags.total_refs         4917                       # Total number of references to valid blocks.
+system.bfs_bulk_datapath.cache.tags.sampled_refs         1512                       # Sample count of references to valid blocks.
+system.bfs_bulk_datapath.cache.tags.avg_refs     3.251984                       # Average number of references to valid blocks.
+system.bfs_bulk_datapath.cache.tags.warmup_cycle       243243                       # Cycle when the warmup percentage was hit.
+system.bfs_bulk_datapath.cache.tags.occ_blocks::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache   142.667103                       # Average occupied blocks per requestor
+system.bfs_bulk_datapath.cache.tags.occ_blocks::.bfs_bulk_datapath.cache.prefetcher   213.903220                       # Average occupied blocks per requestor
+system.bfs_bulk_datapath.cache.tags.occ_percent::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.278647                       # Average percentage of cache occupancy
+system.bfs_bulk_datapath.cache.tags.occ_percent::.bfs_bulk_datapath.cache.prefetcher     0.417780                       # Average percentage of cache occupancy
+system.bfs_bulk_datapath.cache.tags.occ_percent::total     0.696426                       # Average percentage of cache occupancy
+system.bfs_bulk_datapath.cache.tags.occ_task_id_blocks::1022          330                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.occ_task_id_blocks::1024          182                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.age_task_id_blocks_1022::1          324                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.age_task_id_blocks_1022::2            6                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.age_task_id_blocks_1024::0            2                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.age_task_id_blocks_1024::1          177                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.age_task_id_blocks_1024::2            3                       # Occupied blocks per task id
+system.bfs_bulk_datapath.cache.tags.occ_task_id_percent::1022     0.644531                       # Percentage of cache occupancy per task id
+system.bfs_bulk_datapath.cache.tags.occ_task_id_percent::1024     0.355469                       # Percentage of cache occupancy per task id
+system.bfs_bulk_datapath.cache.tags.tag_accesses        17768                       # Number of tag accesses
+system.bfs_bulk_datapath.cache.tags.data_accesses        17768                       # Number of data accesses
+system.bfs_bulk_datapath.cache.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.bfs_bulk_datapath.cache.ReadReq_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         3169                       # number of ReadReq hits
+system.bfs_bulk_datapath.cache.ReadReq_hits::total         3169                       # number of ReadReq hits
+system.bfs_bulk_datapath.cache.WriteReq_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          236                       # number of WriteReq hits
+system.bfs_bulk_datapath.cache.WriteReq_hits::total          236                       # number of WriteReq hits
+system.bfs_bulk_datapath.cache.demand_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         3405                       # number of demand (read+write) hits
+system.bfs_bulk_datapath.cache.demand_hits::total         3405                       # number of demand (read+write) hits
+system.bfs_bulk_datapath.cache.overall_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         3405                       # number of overall hits
+system.bfs_bulk_datapath.cache.overall_hits::total         3405                       # number of overall hits
+system.bfs_bulk_datapath.cache.ReadReq_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          657                       # number of ReadReq misses
+system.bfs_bulk_datapath.cache.ReadReq_misses::total          657                       # number of ReadReq misses
+system.bfs_bulk_datapath.cache.WriteReq_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache            2                       # number of WriteReq misses
+system.bfs_bulk_datapath.cache.WriteReq_misses::total            2                       # number of WriteReq misses
+system.bfs_bulk_datapath.cache.demand_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          659                       # number of demand (read+write) misses
+system.bfs_bulk_datapath.cache.demand_misses::total          659                       # number of demand (read+write) misses
+system.bfs_bulk_datapath.cache.overall_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          659                       # number of overall misses
+system.bfs_bulk_datapath.cache.overall_misses::total          659                       # number of overall misses
+system.bfs_bulk_datapath.cache.ReadReq_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     90636494                       # number of ReadReq miss cycles
+system.bfs_bulk_datapath.cache.ReadReq_miss_latency::total     90636494                       # number of ReadReq miss cycles
+system.bfs_bulk_datapath.cache.WriteReq_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache       189189                       # number of WriteReq miss cycles
+system.bfs_bulk_datapath.cache.WriteReq_miss_latency::total       189189                       # number of WriteReq miss cycles
+system.bfs_bulk_datapath.cache.demand_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     90825683                       # number of demand (read+write) miss cycles
+system.bfs_bulk_datapath.cache.demand_miss_latency::total     90825683                       # number of demand (read+write) miss cycles
+system.bfs_bulk_datapath.cache.overall_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     90825683                       # number of overall miss cycles
+system.bfs_bulk_datapath.cache.overall_miss_latency::total     90825683                       # number of overall miss cycles
+system.bfs_bulk_datapath.cache.ReadReq_accesses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         3826                       # number of ReadReq accesses(hits+misses)
+system.bfs_bulk_datapath.cache.ReadReq_accesses::total         3826                       # number of ReadReq accesses(hits+misses)
+system.bfs_bulk_datapath.cache.WriteReq_accesses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          238                       # number of WriteReq accesses(hits+misses)
+system.bfs_bulk_datapath.cache.WriteReq_accesses::total          238                       # number of WriteReq accesses(hits+misses)
+system.bfs_bulk_datapath.cache.demand_accesses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         4064                       # number of demand (read+write) accesses
+system.bfs_bulk_datapath.cache.demand_accesses::total         4064                       # number of demand (read+write) accesses
+system.bfs_bulk_datapath.cache.overall_accesses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache         4064                       # number of overall (read+write) accesses
+system.bfs_bulk_datapath.cache.overall_accesses::total         4064                       # number of overall (read+write) accesses
+system.bfs_bulk_datapath.cache.ReadReq_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.171720                       # miss rate for ReadReq accesses
+system.bfs_bulk_datapath.cache.ReadReq_miss_rate::total     0.171720                       # miss rate for ReadReq accesses
+system.bfs_bulk_datapath.cache.WriteReq_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.008403                       # miss rate for WriteReq accesses
+system.bfs_bulk_datapath.cache.WriteReq_miss_rate::total     0.008403                       # miss rate for WriteReq accesses
+system.bfs_bulk_datapath.cache.demand_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.162156                       # miss rate for demand accesses
+system.bfs_bulk_datapath.cache.demand_miss_rate::total     0.162156                       # miss rate for demand accesses
+system.bfs_bulk_datapath.cache.overall_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.162156                       # miss rate for overall accesses
+system.bfs_bulk_datapath.cache.overall_miss_rate::total     0.162156                       # miss rate for overall accesses
+system.bfs_bulk_datapath.cache.ReadReq_avg_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137955.089802                       # average ReadReq miss latency
+system.bfs_bulk_datapath.cache.ReadReq_avg_miss_latency::total 137955.089802                       # average ReadReq miss latency
+system.bfs_bulk_datapath.cache.WriteReq_avg_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 94594.500000                       # average WriteReq miss latency
+system.bfs_bulk_datapath.cache.WriteReq_avg_miss_latency::total 94594.500000                       # average WriteReq miss latency
+system.bfs_bulk_datapath.cache.demand_avg_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137823.494689                       # average overall miss latency
+system.bfs_bulk_datapath.cache.demand_avg_miss_latency::total 137823.494689                       # average overall miss latency
+system.bfs_bulk_datapath.cache.overall_avg_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137823.494689                       # average overall miss latency
+system.bfs_bulk_datapath.cache.overall_avg_miss_latency::total 137823.494689                       # average overall miss latency
+system.bfs_bulk_datapath.cache.blocked_cycles::no_mshrs          297                       # number of cycles access was blocked
+system.bfs_bulk_datapath.cache.blocked_cycles::no_targets            0                       # number of cycles access was blocked
+system.bfs_bulk_datapath.cache.blocked::no_mshrs           61                       # number of cycles access was blocked
+system.bfs_bulk_datapath.cache.blocked::no_targets            0                       # number of cycles access was blocked
+system.bfs_bulk_datapath.cache.avg_blocked_cycles::no_mshrs     4.868852                       # average number of cycles each access was blocked
+system.bfs_bulk_datapath.cache.avg_blocked_cycles::no_targets          nan                       # average number of cycles each access was blocked
+system.bfs_bulk_datapath.cache.unused_prefetches          234                       # number of HardPF blocks evicted w/o reference
+system.bfs_bulk_datapath.cache.ReadReq_mshr_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache           33                       # number of ReadReq MSHR hits
+system.bfs_bulk_datapath.cache.ReadReq_mshr_hits::total           33                       # number of ReadReq MSHR hits
+system.bfs_bulk_datapath.cache.demand_mshr_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache           33                       # number of demand (read+write) MSHR hits
+system.bfs_bulk_datapath.cache.demand_mshr_hits::total           33                       # number of demand (read+write) MSHR hits
+system.bfs_bulk_datapath.cache.overall_mshr_hits::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache           33                       # number of overall MSHR hits
+system.bfs_bulk_datapath.cache.overall_mshr_hits::total           33                       # number of overall MSHR hits
+system.bfs_bulk_datapath.cache.ReadReq_mshr_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          624                       # number of ReadReq MSHR misses
+system.bfs_bulk_datapath.cache.ReadReq_mshr_misses::total          624                       # number of ReadReq MSHR misses
+system.bfs_bulk_datapath.cache.WriteReq_mshr_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache            2                       # number of WriteReq MSHR misses
+system.bfs_bulk_datapath.cache.WriteReq_mshr_misses::total            2                       # number of WriteReq MSHR misses
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_misses::.bfs_bulk_datapath.cache.prefetcher          886                       # number of HardPFReq MSHR misses
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_misses::total          886                       # number of HardPFReq MSHR misses
+system.bfs_bulk_datapath.cache.demand_mshr_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          626                       # number of demand (read+write) MSHR misses
+system.bfs_bulk_datapath.cache.demand_mshr_misses::total          626                       # number of demand (read+write) MSHR misses
+system.bfs_bulk_datapath.cache.overall_mshr_misses::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache          626                       # number of overall MSHR misses
+system.bfs_bulk_datapath.cache.overall_mshr_misses::.bfs_bulk_datapath.cache.prefetcher          886                       # number of overall MSHR misses
+system.bfs_bulk_datapath.cache.overall_mshr_misses::total         1512                       # number of overall MSHR misses
+system.bfs_bulk_datapath.cache.ReadReq_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     85993856                       # number of ReadReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.ReadReq_mshr_miss_latency::total     85993856                       # number of ReadReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.WriteReq_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache       183183                       # number of WriteReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.WriteReq_mshr_miss_latency::total       183183                       # number of WriteReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_miss_latency::.bfs_bulk_datapath.cache.prefetcher    106886473                       # number of HardPFReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_miss_latency::total    106886473                       # number of HardPFReq MSHR miss cycles
+system.bfs_bulk_datapath.cache.demand_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     86177039                       # number of demand (read+write) MSHR miss cycles
+system.bfs_bulk_datapath.cache.demand_mshr_miss_latency::total     86177039                       # number of demand (read+write) MSHR miss cycles
+system.bfs_bulk_datapath.cache.overall_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     86177039                       # number of overall MSHR miss cycles
+system.bfs_bulk_datapath.cache.overall_mshr_miss_latency::.bfs_bulk_datapath.cache.prefetcher    106886473                       # number of overall MSHR miss cycles
+system.bfs_bulk_datapath.cache.overall_mshr_miss_latency::total    193063512                       # number of overall MSHR miss cycles
+system.bfs_bulk_datapath.cache.ReadReq_mshr_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.163095                       # mshr miss rate for ReadReq accesses
+system.bfs_bulk_datapath.cache.ReadReq_mshr_miss_rate::total     0.163095                       # mshr miss rate for ReadReq accesses
+system.bfs_bulk_datapath.cache.WriteReq_mshr_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.008403                       # mshr miss rate for WriteReq accesses
+system.bfs_bulk_datapath.cache.WriteReq_mshr_miss_rate::total     0.008403                       # mshr miss rate for WriteReq accesses
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_miss_rate::.bfs_bulk_datapath.cache.prefetcher          inf                       # mshr miss rate for HardPFReq accesses
+system.bfs_bulk_datapath.cache.HardPFReq_mshr_miss_rate::total          inf                       # mshr miss rate for HardPFReq accesses
+system.bfs_bulk_datapath.cache.demand_mshr_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.154035                       # mshr miss rate for demand accesses
+system.bfs_bulk_datapath.cache.demand_mshr_miss_rate::total     0.154035                       # mshr miss rate for demand accesses
+system.bfs_bulk_datapath.cache.overall_mshr_miss_rate::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache     0.154035                       # mshr miss rate for overall accesses
+system.bfs_bulk_datapath.cache.overall_mshr_miss_rate::.bfs_bulk_datapath.cache.prefetcher          inf                       # mshr miss rate for overall accesses
+system.bfs_bulk_datapath.cache.overall_mshr_miss_rate::total     0.372047                       # mshr miss rate for overall accesses
+system.bfs_bulk_datapath.cache.ReadReq_avg_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137810.666667                       # average ReadReq mshr miss latency
+system.bfs_bulk_datapath.cache.ReadReq_avg_mshr_miss_latency::total 137810.666667                       # average ReadReq mshr miss latency
+system.bfs_bulk_datapath.cache.WriteReq_avg_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 91591.500000                       # average WriteReq mshr miss latency
+system.bfs_bulk_datapath.cache.WriteReq_avg_mshr_miss_latency::total 91591.500000                       # average WriteReq mshr miss latency
+system.bfs_bulk_datapath.cache.HardPFReq_avg_mshr_miss_latency::.bfs_bulk_datapath.cache.prefetcher 120639.360045                       # average HardPFReq mshr miss latency
+system.bfs_bulk_datapath.cache.HardPFReq_avg_mshr_miss_latency::total 120639.360045                       # average HardPFReq mshr miss latency
+system.bfs_bulk_datapath.cache.demand_avg_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137663.001597                       # average overall mshr miss latency
+system.bfs_bulk_datapath.cache.demand_avg_mshr_miss_latency::total 137663.001597                       # average overall mshr miss latency
+system.bfs_bulk_datapath.cache.overall_avg_mshr_miss_latency::.bfs_bulk_datapath.system.bfs_bulk_datapath.cache 137663.001597                       # average overall mshr miss latency
+system.bfs_bulk_datapath.cache.overall_avg_mshr_miss_latency::.bfs_bulk_datapath.cache.prefetcher 120639.360045                       # average overall mshr miss latency
+system.bfs_bulk_datapath.cache.overall_avg_mshr_miss_latency::total 127687.507937                       # average overall mshr miss latency
+system.bfs_bulk_datapath.cache.replacements         1000                       # number of replacements
+system.cpu_clk_domain.clock                       500                       # Clock period in ticks
+system.membus.snoop_filter.tot_requests          2512                       # Total number of requests made to the snoop filter.
+system.membus.snoop_filter.hit_single_requests         1000                       # Number of requests hitting in the snoop filter with a single holder of the requested data.
+system.membus.snoop_filter.hit_multi_requests            0                       # Number of requests hitting in the snoop filter with multiple (>1) holders of the requested data.
+system.membus.snoop_filter.tot_snoops               0                       # Total number of snoops made to the snoop filter.
+system.membus.snoop_filter.hit_single_snoops            0                       # Number of snoops hitting in the snoop filter with a single holder of the requested data.
+system.membus.snoop_filter.hit_multi_snoops            0                       # Number of snoops hitting in the snoop filter with multiple (>1) holders of the requested data.
+system.membus.pwrStateResidencyTicks::UNDEFINED    142330188                       # Cumulative time (in ticks) in various power states
+system.membus.trans_dist::ReadResp               1510                       # Transaction distribution
+system.membus.trans_dist::CleanEvict             1000                       # Transaction distribution
+system.membus.trans_dist::ReadExReq                 2                       # Transaction distribution
+system.membus.trans_dist::ReadExResp                2                       # Transaction distribution
+system.membus.trans_dist::ReadSharedReq          1510                       # Transaction distribution
+system.membus.pkt_count_system.bfs_bulk_datapath.cache.mem_side::system.mem_ctrls.port         4024                       # Packet count per connected master and slave (bytes)
+system.membus.pkt_count::total                   4024                       # Packet count per connected master and slave (bytes)
+system.membus.pkt_size_system.bfs_bulk_datapath.cache.mem_side::system.mem_ctrls.port        48384                       # Cumulative packet size per connected master and slave (bytes)
+system.membus.pkt_size::total                   48384                       # Cumulative packet size per connected master and slave (bytes)
+system.membus.snoops                                0                       # Total snoops (count)
+system.membus.snoopTraffic                          0                       # Total snoop traffic (bytes)
+system.membus.snoop_fanout::samples              1512                       # Request fanout histogram
+system.membus.snoop_fanout::mean                    0                       # Request fanout histogram
+system.membus.snoop_fanout::stdev                   0                       # Request fanout histogram
+system.membus.snoop_fanout::underflows              0      0.00%      0.00% # Request fanout histogram
+system.membus.snoop_fanout::0                    1512    100.00%    100.00% # Request fanout histogram
+system.membus.snoop_fanout::1                       0      0.00%    100.00% # Request fanout histogram
+system.membus.snoop_fanout::2                       0      0.00%    100.00% # Request fanout histogram
+system.membus.snoop_fanout::overflows               0      0.00%    100.00% # Request fanout histogram
+system.membus.snoop_fanout::min_value               0                       # Request fanout histogram
+system.membus.snoop_fanout::max_value               0                       # Request fanout histogram
+system.membus.snoop_fanout::total                1512                       # Request fanout histogram
+system.membus.reqLayer0.occupancy             8443136                       # Layer occupancy (ticks)
+system.membus.reqLayer0.utilization               5.9                       # Layer utilization (%)
+system.membus.respLayer1.occupancy           13836125                       # Layer occupancy (ticks)
+system.membus.respLayer1.utilization              9.7                       # Layer utilization (%)
+
+---------- End Simulation Statistics   ----------
