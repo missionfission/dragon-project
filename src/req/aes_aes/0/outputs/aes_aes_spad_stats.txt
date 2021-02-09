@@ -1,0 +1,12 @@
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============
+Array: sbox, size = 256, partitions = 1, word size = 1, reads = 332, writes = 0
+===============

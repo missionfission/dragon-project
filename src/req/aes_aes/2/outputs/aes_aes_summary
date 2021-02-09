@@ -1,0 +1,23 @@
+===============================
+        Aladdin Results        
+===============================
+Running : /workspace/gem5-aladdin/sweeps/machsuite/aes_aes/2/outputs/aes_aes
+Top level function: aes256_encrypt_ecb
+Cycle : 41479 cycles
+Avg Power: 1.88477 mW
+Idle FU Cycles: 39854 cycles
+Avg FU Power: 0.0820717 mW
+Avg FU Dynamic Power: 0.0209091 mW
+Avg FU leakage Power: 0.0611626 mW
+Avg MEM Power: 1.8027 mW
+Avg MEM Dynamic Power: 0.498157 mW
+Avg MEM Leakage Power: 1.30454 mW
+Total Area: 308484 uM^2
+FU Area: 5181.18 uM^2
+MEM Area: 303303 uM^2
+Num of Bit-wise Operators (32-bit): 16
+Num of Shifters (32-bit): 2
+Num of Registers (32-bit): 20
+===============================
+        Aladdin Results        
+===============================

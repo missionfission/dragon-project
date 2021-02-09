@@ -1,0 +1,141 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Jun  2 2019 14:47:48
+gem5 started Jun 15 2019 00:25:10
+gem5 executing on 495254723dfb, pid 603
+command line: /workspace/gem5-aladdin/build/X86/gem5.opt --stats-db-file=stats.db --outdir=/workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/3/outputs /workspace/gem5-aladdin/configs/aladdin/aladdin_se.py --num-cpus=0 --mem-size=4GB --enable-stats-dump --enable_prefetchers --prefetcher-type=stride --mem-type=DDR3_1600_8x8 --sys-clock=200MHz --cpu-type=DerivO3CPU --caches --cacheline_size=32 --accel_cfg_file=/workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/3/gem5.cfg -c bfs-queue-gem5-accel -o ''
+
+Global frequency set at 1000000000000 ticks per second
+-------------------------------
+      Setting ScratchPad       
+-------------------------------
+-------------------------------
+      Generating DDDG          
+-------------------------------
+-------------------------------
+Num of Nodes: 58534
+Num of Edges: 127575
+Num of Reg Edges: 64481
+Num of MEM Edges: 4561
+Num of Control Edges: 58533
+-------------------------------
+-------------------------------
+    Initializing BaseDatapath      
+-------------------------------
+ Top level: bfs
+=============================================
+      Optimizing...            /workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/3/outputs/bfs_queue
+=============================================
+-------------------------------
+  Remove PHI and Convert Nodes 
+-------------------------------
+  Removing 38169 edges.
+  Adding 33115 new edges.
+  Removing 8425 isolated nodes.
+-------------------------------
+  Remove Induction Dependence  
+-------------------------------
+-------------------------------
+       Init Base Address       
+-------------------------------
+-------------------------------
+     Init DMA Base Address     
+-------------------------------
+-------------------------------
+        Mem to Reg Conv        
+-------------------------------
+-------------------------------
+      ScratchPad Partition     
+-------------------------------
+-------------------------------
+         Loop Flatten          
+-------------------------------
+  Removing 0 isolated nodes.
+  Removing 0 isolated nodes.
+-------------------------------
+         Loop Unrolling        
+-------------------------------
+  Adding 85563 new edges.
+  Removing 4085 isolated nodes.
+  Removing 0 isolated nodes.
+-------------------------------
+          Load Buffer          
+-------------------------------
+  Adding 194 new edges.
+  Removing 1164 edges.
+  Removing 0 isolated nodes.
+-------------------------------
+          Store Buffer         
+-------------------------------
+  Adding 582 new edges.
+  Removing 194 isolated nodes.
+  Removing 0 isolated nodes.
+-------------------------------
+    Remove Repeated Stores     
+-------------------------------
+-------------------------------
+      Memory Ambiguation       
+-------------------------------
+  Adding 461 new edges.
+-------------------------------
+     Tree Height Reduction     
+-------------------------------
+  Removing 0 edges.
+  Adding 0 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+  Fuse register loads/stores   
+-------------------------------
+  Removing 0 edges.
+  Adding 0 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+   Fuse consecutive branches   
+-------------------------------
+  Removing 0 edges.
+  Adding 0 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+      Per Loop Pipelining      
+-------------------------------
+-------------------------------
+         Loop Pipelining        
+-------------------------------
+=============================================
+      Scheduling...            /workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/3/outputs/bfs_queue
+=============================================
+  Total connected nodes: 40595
+  Total edges: 171753
+=============================================
+**** REAL SIMULATION ****
+===============================
+        Aladdin Results        
+===============================
+Running : /workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/3/outputs/bfs_queue
+Top level function: bfs
+Cycle : 32494 cycles
+Avg Power: 2.53676 mW
+Idle FU Cycles: 29580 cycles
+Avg FU Power: 0.518323 mW
+Avg FU Dynamic Power: 0.0332933 mW
+Avg FU leakage Power: 0.485029 mW
+Avg MEM Power: 2.01844 mW
+Avg MEM Dynamic Power: 0.632147 mW
+Avg MEM Leakage Power: 1.38629 mW
+Total Area: 346150 uM^2
+FU Area: 37681.8 uM^2
+MEM Area: 308468 uM^2
+Num of Adders (32-bit): 120
+Num of Bit-wise Operators (32-bit): 28
+Num of Registers (32-bit): 77
+===============================
+        Aladdin Results        
+===============================
+-------------------------------
+      Generating DDDG          
+-------------------------------
+-------------------------------
+Reached end of trace.
+-------------------------------
+Exiting @ tick 162470000 because Aladdin called exit()

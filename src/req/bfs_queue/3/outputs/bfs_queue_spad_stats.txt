@@ -1,0 +1,8 @@
+Array: queue, size = 2048, partitions = 1, word size = 8, reads = 233, writes = 233
+===============
+Array: queue, size = 2048, partitions = 1, word size = 8, reads = 233, writes = 233
+===============
+Array: queue, size = 2048, partitions = 1, word size = 8, reads = 233, writes = 233
+===============
+Array: queue, size = 2048, partitions = 1, word size = 8, reads = 233, writes = 233
+===============

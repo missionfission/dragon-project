@@ -1,0 +1,141 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Jun  2 2019 14:47:48
+gem5 started Jun 17 2019 02:29:56
+gem5 executing on 25fd82a6711a, pid 56
+command line: /workspace/gem5-aladdin/build/X86/gem5.opt --stats-db-file=stats.db --outdir=/workspace/gem5-aladdin/sweeps/machsuite/aes_aes/3/outputs /workspace/gem5-aladdin/configs/aladdin/aladdin_se.py --num-cpus=0 --mem-size=4GB --enable-stats-dump --enable_prefetchers --prefetcher-type=stride --mem-type=DDR3_1600_8x8 --sys-clock=200MHz --cpu-type=DerivO3CPU --caches --cacheline_size=32 --accel_cfg_file=/workspace/gem5-aladdin/sweeps/machsuite/aes_aes/3/gem5.cfg -c aes-aes-gem5-accel -o ''
+
+Global frequency set at 1000000000000 ticks per second
+-------------------------------
+      Setting ScratchPad       
+-------------------------------
+-------------------------------
+      Generating DDDG          
+-------------------------------
+-------------------------------
+Num of Nodes: 14811
+Num of Edges: 35693
+Num of Reg Edges: 19191
+Num of MEM Edges: 2132
+Num of Control Edges: 14810
+-------------------------------
+-------------------------------
+    Initializing BaseDatapath      
+-------------------------------
+ Top level: aes256_encrypt_ecb
+=============================================
+      Optimizing...            /workspace/gem5-aladdin/sweeps/machsuite/aes_aes/3/outputs/aes_aes
+=============================================
+-------------------------------
+  Remove PHI and Convert Nodes 
+-------------------------------
+  Removing 9081 edges.
+  Adding 6506 new edges.
+  Removing 491 isolated nodes.
+-------------------------------
+  Remove Induction Dependence  
+-------------------------------
+-------------------------------
+       Init Base Address       
+-------------------------------
+-------------------------------
+     Init DMA Base Address     
+-------------------------------
+-------------------------------
+        Mem to Reg Conv        
+-------------------------------
+-------------------------------
+      ScratchPad Partition     
+-------------------------------
+-------------------------------
+         Loop Flatten          
+-------------------------------
+  Removing 0 isolated nodes.
+  Removing 0 isolated nodes.
+-------------------------------
+         Loop Unrolling        
+-------------------------------
+  Adding 22083 new edges.
+  Removing 652 isolated nodes.
+  Removing 100 isolated nodes.
+-------------------------------
+          Load Buffer          
+-------------------------------
+  Adding 9 new edges.
+  Removing 45 edges.
+  Removing 0 isolated nodes.
+-------------------------------
+          Store Buffer         
+-------------------------------
+  Adding 840 new edges.
+  Removing 280 isolated nodes.
+  Removing 0 isolated nodes.
+-------------------------------
+    Remove Repeated Stores     
+-------------------------------
+-------------------------------
+      Memory Ambiguation       
+-------------------------------
+  Adding 0 new edges.
+-------------------------------
+     Tree Height Reduction     
+-------------------------------
+  Removing 0 edges.
+  Adding 0 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+  Fuse register loads/stores   
+-------------------------------
+  Removing 4816 edges.
+  Adding 5080 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+   Fuse consecutive branches   
+-------------------------------
+  Removing 28 edges.
+  Adding 28 new edges.
+  Removing 0 isolated nodes.
+-------------------------------
+      Per Loop Pipelining      
+-------------------------------
+-------------------------------
+         Loop Pipelining        
+-------------------------------
+=============================================
+      Scheduling...            /workspace/gem5-aladdin/sweeps/machsuite/aes_aes/3/outputs/aes_aes
+=============================================
+  Total connected nodes: 11285
+  Total edges: 47823
+=============================================
+**** REAL SIMULATION ****
+===============================
+        Aladdin Results        
+===============================
+Running : /workspace/gem5-aladdin/sweeps/machsuite/aes_aes/3/outputs/aes_aes
+Top level function: aes256_encrypt_ecb
+Cycle : 701 cycles
+Avg Power: 3.12092 mW
+Idle FU Cycles: 155 cycles
+Avg FU Power: 1.96639 mW
+Avg FU Dynamic Power: 1.80755 mW
+Avg FU leakage Power: 0.158847 mW
+Avg MEM Power: 1.15453 mW
+Avg MEM Dynamic Power: 0.439544 mW
+Avg MEM Leakage Power: 0.714989 mW
+Total Area: 65107 uM^2
+FU Area: 13238.2 uM^2
+MEM Area: 51868.8 uM^2
+Num of Bit-wise Operators (32-bit): 57
+Num of Shifters (32-bit): 3
+Num of Registers (32-bit): 30
+===============================
+        Aladdin Results        
+===============================
+-------------------------------
+      Generating DDDG          
+-------------------------------
+-------------------------------
+Reached end of trace.
+-------------------------------
+Exiting @ tick 701000 because Aladdin called exit()

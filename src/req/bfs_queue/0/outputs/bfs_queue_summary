@@ -1,0 +1,23 @@
+===============================
+        Aladdin Results        
+===============================
+Running : /workspace/gem5-aladdin/sweeps/machsuite/bfs_queue/0/outputs/bfs_queue
+Top level function: bfs
+Cycle : 222645 cycles
+Avg Power: 8.20939 mW
+Idle FU Cycles: 217852 cycles
+Avg FU Power: 0.0431371 mW
+Avg FU Dynamic Power: 0.0164515 mW
+Avg FU leakage Power: 0.0266856 mW
+Avg MEM Power: 8.16625 mW
+Avg MEM Dynamic Power: 2.98752 mW
+Avg MEM Leakage Power: 5.17872 mW
+Total Area: 1.15336e+06 uM^2
+FU Area: 2119.95 uM^2
+MEM Area: 1.15124e+06 uM^2
+Num of Adders (32-bit): 3
+Num of Bit-wise Operators (32-bit): 1
+Num of Registers (32-bit): 8
+===============================
+        Aladdin Results        
+===============================

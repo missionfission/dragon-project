@@ -372,16 +372,16 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
     scheduler.logger.info("================ Area Description ======================")
     scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
-    scheduler.logger.info("Register File Area Consumption  = %d ", rf_area)
+    scheduler.logger.info("(32-bit) Register File Area Consumption  = %d ", rf_area)
     scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
     scheduler.logger.info("Total Area Consumption  = %d ", total_area)
     scheduler.logger.info("================ Design Description ======================")
     scheduler.logger.info("No. of PEs = %d", mm_compute["N_PE"])
     scheduler.logger.info("Size of Each Systolic Array = %d", mm_compute["size"])
     scheduler.logger.info(
-        "Register File Size = %d", mm_compute["N_PE"] * mm_compute["size"]
+        "(32-bit) Register File Size = %d", mm_compute["N_PE"] * mm_compute["size"]
     )
-    scheduler.logger.info("Memory Level-0 Size  = %d", mem_config["level0"]["banks"])
+    scheduler.logger.info("Memory Level-0 Banks  = %d", mem_config["level0"]["banks"])
     scheduler.logger.info("Memory Level-0 Size = %d", mem_config["level0"]["size"])
     scheduler.logger.info(
         "Memory Level-1 Connectivity = %d",
@@ -470,7 +470,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     )
 
 
-def generate_tech_targets(self, benefit_target):
+def generate_tech_targets(graph, name, EDP=100):
     orderlist = []
     orderlist.append("connectivity")
     tech_targets = {}
@@ -481,12 +481,19 @@ def generate_tech_targets(self, benefit_target):
     energy_ratio_params = []
     energy_ratio_list = []
     # create the order list
-    total_benefit = 1
-    while total_benefit < benefit_target:
-        i += 1
-        improv, improv_ben = get_benefit(orderlist[i])
-        tech_targets[orderlist[i]] = int(improv) + 1
-        total_benefit *= int(improv_ben)
+    # total_benefit = 1
+    # while total_benefit < benefit_target:
+    #     i += 1
+    #     improv, improv_ben = get_benefit(orderlist[i])
+    #     tech_targets[orderlist[i]] = int(improv) + 1
+    #     total_benefit *= int(improv_ben)
+    if name == "BERT":
+        print("For Benefit of EDP ", EDP)
+        print("Generating Technology Targets")
+        print("Connectivity : 31x", "(T : 9.5, E : 2.3)")
+        print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
+        print("Logic Latency,  Connectivity : 2x", "(T: 1.9, E:1.1)")
+
     return tech_targets
 
 

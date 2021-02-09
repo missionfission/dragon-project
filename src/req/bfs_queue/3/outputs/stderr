@@ -1,0 +1,39 @@
+warn: DRAM device capacity (8192 Mbytes) does not match the address range assigned (4096 Mbytes)
+[WARNING]: Overlapping array declarations found!
+  edges: 0xdaeb00 - 0xdb6b00
+  level: 0xdb6b08 - 0xdb6c08
+[WARNING]: Overlapping array declarations found!
+  edges: 0xdaeb00 - 0xdb6b00
+  queue: 0x7fffc141db20 - 0xc141e320
+[WARNING]: Overlapping array declarations found!
+  edges: 0xdaeb00 - 0xdb6b00
+  level_counts: 0xdb6c08 - 0xdb6c58
+[WARNING]: Overlapping array declarations found!
+  level: 0xdb6b08 - 0xdb6c08
+  queue: 0x7fffc141db20 - 0xc141e320
+[WARNING]: Overlapping array declarations found!
+  level: 0xdb6b08 - 0xdb6c08
+  level_counts: 0xdb6c08 - 0xdb6c58
+[WARNING]: Overlapping array declarations found!
+  nodes: 0xdadb00 - 0xdaeb00
+  edges: 0xdaeb00 - 0xdb6b00
+[WARNING]: Overlapping array declarations found!
+  nodes: 0xdadb00 - 0xdaeb00
+  level: 0xdb6b08 - 0xdb6c08
+[WARNING]: Overlapping array declarations found!
+  nodes: 0xdadb00 - 0xdaeb00
+  queue: 0x7fffc141db20 - 0xc141e320
+[WARNING]: Overlapping array declarations found!
+  nodes: 0xdadb00 - 0xdaeb00
+  level_counts: 0xdb6c08 - 0xdb6c58
+[WARNING]: Overlapping array declarations found!
+  level_counts: 0xdb6c08 - 0xdb6c58
+  queue: 0x7fffc141db20 - 0xc141e320
+[WARNING]: Overlapping array declarations found!
+  level_counts: 0xdb6c08 - 0xdb6c58
+  nodes: 0xdadb00 - 0xdaeb00
+Overlapping array address ranges can lead to incorrect behavior, such as DMA nodes trying to access the wrong arrays, ACP accessing the wrong memory, etc. Please check your Aladdin configuration file and the mapArrayToAccelerator() calls to verify that they are correct.
+Global loop pipelining is not ON.
+info: Entering event queue @ 0.  Starting simulation...
+ Current power model supports trig functions running at 10 ns. 
+ Cycle time: 5 is not supported yet. Use 10ns power model instead.

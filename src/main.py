@@ -153,7 +153,14 @@ def design_runner(
             energy_list.append(energy)
             design_list.append(design)
             i += 1
-        print(in_time[0] / time[0], in_energy[0] / energy[0], in_area / area)
+        print(
+            "Faster : ",
+            in_time[0] / time[0],
+            "Energy Improvement : ",
+            in_energy[0] / energy[0],
+            "Area Budget : ",
+            in_area / area,
+        )
 
     return time, energy, area
     # return time_list, energy_list, design_list
