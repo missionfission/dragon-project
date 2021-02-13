@@ -14,4 +14,5 @@ src/dlrm/
 interface/.ipynb_checkpoints/*
 interface/Execution.txt
 HEAWS.pdf
-req/common/obj/
+src/req/common/obj/*
+src/req/common/aladdin
