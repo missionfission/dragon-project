@@ -1,13 +1,24 @@
 # Node,Type, Size/Number in parallel, Data Width, In edges, Out edges, Memory banks, 
+-----encrypt---------------
 cnode1, mult, 8, 32, [], []
 cnode2, add, 8, 32, [], []
 rnode1, reg, 8, 32, [], []
 cnode3, mult, 8, 32, [], []
---------------------------
 mnode2, sram, 8, 32, [], []
 mnode1, sram, 8, 32, [], []
 mnode3, sram, 8, 32, [], []
+fnode1, control, 8, 32, [], []
+fnode1, control, 8, 32, [], []
+fnode1, control, 8, 32, [], []
+-----decrypt--------------
+cnode1, mult, 8, 32, [], []
+cnode2, add, 8, 32, [], []
+rnode1, reg, 8, 32, [], []
+cnode3, mult, 8, 32, [], []
+mnode2, sram, 8, 32, [], []
+mnode1, sram, 8, 32, [], []
+mnode3, sram, 8, 32, [], []
+fnode1, control, 8, 32, [], []
+fnode1, control, 8, 32, [], []
+fnode1, control, 8, 32, [], []
 ---------------------------
-fnode1, control, 8, 32, [], []
-fnode1, control, 8, 32, [], []
-fnode1, control, 8, 32, [], []
