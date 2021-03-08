@@ -96,3 +96,18 @@ class graph_manipulations():
   
   def dependency_nodes():
     pass 
+
+
+def scheduling():
+      # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
+      # upsamplelloops
+      # run
+
+
+def get_stats():
+      
+    # Write logs
+    #* cycle_num,num-of-muls,num-of-adds,num-of-bitwise-ops,num-of-reg-reads,num-of-reg-writes
+    #  * If it is called from ScratchpadDatapath, it also outputs per cycle memory
+    #  * activity for each partitioned array. add up all the activity of all the components to get the final 
+    # output
