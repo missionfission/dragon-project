@@ -1,12 +1,12 @@
+lib_hw_dict = ["add", "mult", "buffer", "reg", "sys_array", "logic", "fsm"]
 
-lib_hw_dict = ['add','mult','buffer','reg','sys_array','logic','fsm']
 
 def parser(graph):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
     """
     # G_hw_repr(graph)
-    lib_common_ops = ['add','mult','mmv','spmv','conv']
+    lib_common_ops = ["add", "mult", "mmv", "spmv", "conv"]
     common_ops = set()
     for node in graph:
         if node.operator in lib_common_ops:
@@ -18,7 +18,7 @@ hw_allocated = {}
 # def allocation(H):
 #     for node in graph:
 #         hw_allocated[node.name] = allocate(node)
-    
+
 # def binding(H):
 #     for common_ops in graph:
 #         for key in hw_allocated.keys():
@@ -42,72 +42,79 @@ hw_allocated = {}
 # def create_fsm():
 #       # fsm overhead and resource consumption
 #     pass
- 
 
 
 def create_datapath():
     # cycle time
     # functional units packing < clock cycle
     # datapath, scratchpad access and memory access
-    # call datapath optimizations 
+    # call datapath optimizations
     # step through memory accesses
     # find common datapath of instances, or uncommon datapath -> area constraint controlled
     pass
 
-lib_template_space = ['global_mem','local_mem', 'pes','noc','buffers']
-        
+
+lib_template_space = ["global_mem", "local_mem", "pes", "noc", "buffers"]
+
+
 def template_space(H):
     template_space = {}
     for i in lib_template_space:
-        template_space[i] = template_handlers(i,hw_allocated)
+        template_space[i] = template_handlers(i, hw_allocated)
+
+
+def template_handlers(i, hw_allocated):
+    return hw_allocated.gather(i)
 
 
 def optimizations():
-      # initBaseAddress
-      # writeBaseAddress
-      # initDmaBaseAddress
-      # memoryAmbiguation
-      # removePhiNodes
-      # loopFlatten, loopUnrolling : Loop Tree
-      # removeInductionDependence
-      # GloballoopPipelining, perLoopPipelining 
-      # fuseRegLoadStores, fuseConsecutiveBranches, removeSharedLoads : LoadBuffering
-        #  updateGraphWithIsolatedEdges(to_remove_edges);
-        #  updateGraphWithNewEdges(to_add_edges);
-      # storeBuffer, removeRepeatedStores, treeHeightReduction
-
-
-class graph_manipulations():
-  
-  def __init__(graph):
-    self.graph = graph
-
-  def to_remove_edges():
     pass
+    # initBaseAddress
+    # writeBaseAddress
+    # initDmaBaseAddress
+    # memoryAmbiguation
+    # removePhiNodes
+    # loopFlatten, loopUnrolling : Loop Tree
+    # removeInductionDependence
+    # GloballoopPipelining, perLoopPipelining
+    # fuseRegLoadStores, fuseConsecutiveBranches, removeSharedLoads : LoadBuffering
+    #  updateGraphWithIsolatedEdges(to_remove_edges);
+    #  updateGraphWithNewEdges(to_add_edges);
+    # storeBuffer, removeRepeatedStores, treeHeightReduction
 
-  def to_add_edges():
-    pass
-  
-  def isolated_nodes():
-    pass 
-  
-  def isolated_edges():
-    pass 
-  
-  def dependency_nodes():
-    pass 
+
+class graph_manipulations:
+    def __init__(self, graph):
+        self.graph = graph
+
+    def to_remove_edges(self):
+        pass
+
+    def to_add_edges(self):
+        pass
+
+    def isolated_nodes(self):
+        pass
+
+    def isolated_edges(self):
+        pass
+
+    def dependency_nodes(self):
+        pass
 
 
 def scheduling():
-      # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
-      # upsamplelloops
-      # run
+    # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
+    # upsamplelloops
+    # run
+    pass
 
 
 def get_stats():
-      
+
     # Write logs
-    #* cycle_num,num-of-muls,num-of-adds,num-of-bitwise-ops,num-of-reg-reads,num-of-reg-writes
+    # * cycle_num,num-of-muls,num-of-adds,num-of-bitwise-ops,num-of-reg-reads,num-of-reg-writes
     #  * If it is called from ScratchpadDatapath, it also outputs per cycle memory
-    #  * activity for each partitioned array. add up all the activity of all the components to get the final 
+    #  * activity for each partitioned array. add up all the activity of all the components to get the final
     # output
+    pass
