@@ -52,6 +52,7 @@ def backward_pass_design(self, scheduler, opts=None):
     Energy high due to high memory bandwidth ?
     Energy high due to high of everything but compute is slow  
     Where is area getting consumed the most?
+    # check area somehow ?
     """
     config = scheduler.config
     config["mm_compute"] = self.update_comp_design(
@@ -74,13 +75,17 @@ def backward_pass_tech(self, scheduler, opts=None):
         - scheduler.bandwidth_idle_time
         + scheduler.mem_size_idle_time
     )
-    # pass a dictionary of time and energy grads calculation 
-    time_grads["memory latency"] = (scheduler.mem_size_idle_time) / scheduler.total_cycles
+    time_grads = {}
+    energy_grads = {}
+    # create a dictionary of time and energy grads calculation
+    time_grads["memory latency"] = (
+        scheduler.mem_size_idle_time
+    ) / scheduler.total_cycles
     time_grads["compute latency"] = (scheduler.compute_time) / scheduler.total_cycles
 
     # if mem energy consumption is too high at level 1, banks can be increased
-    energy_grads[" memory energy"] = scheduler.mem_energy[0] / scheduler.total_energy
-    energy_grads ["compute energy"] = scheduler.compute_energy / scheduler.total_energy
+    energy_grads["memory energy"] = scheduler.mem_energy[0] / scheduler.total_energy
+    energy_grads["compute energy"] = scheduler.compute_energy / scheduler.total_energy
 
     mem_config["level0"]["banks"] += (int)(
         beta
@@ -104,20 +109,20 @@ def update_comp_design(self, scheduler, comp_config):
     scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
     )
-    # if scheduler.mem_size_idle_time > 0.90 * scheduler.total_cycles:
-    #     gamma = 3
-    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-    #         comp_config["N_PE"] * comp_config["size"] ** 2
-    #     )
-    #     comp_config["N_PE"] += int(pe_descent * gamma)
-    #     print("N_PEs changed")
+    if scheduler.mem_size_idle_time > 0.90 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config["N_PE"] * comp_config["size"] ** 2
+        )
+        comp_config["N_PE"] += int(pe_descent * gamma)
+        print("N_PEs changed")
 
-    # if scheduler.mem_size_idle_time < 0.01 * scheduler.total_cycles:
-    #     gamma = 3
-    #     pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
-    #         comp_config["N_PE"] * comp_config["size"] ** 2
-    #     )
-    #     comp_config["N_PE"] -= int(pe_descent * gamma)
+    if scheduler.mem_size_idle_time < 0.01 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config["N_PE"] * comp_config["size"] ** 2
+        )
+        comp_config["N_PE"] -= int(pe_descent * gamma)
 
     return comp_config
 
@@ -129,10 +134,6 @@ def update_mem_design(self, scheduler, mem_config):
     # print("Compute Idle Time", scheduler.compute_idle_time)
     # print("Memory Size Idle Time", scheduler.mem_size_idle_time)
     ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
-    # print(
-    #     "Outside Memory Banks old",
-    #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
-    # )
     alpha = 30000
     beta = 10
     # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
@@ -141,11 +142,6 @@ def update_mem_design(self, scheduler, mem_config):
             beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
         )
     ## Force Connectivity : External bandwidth is forced, then cannot change anything
-    # print(
-    #     "Outside Memory Banks new",
-    #     mem_config["level" + str(scheduler.mle - 1)]["banks"],
-    # )
-
     ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
     # print("Memory Size old", mem_config["level0"]["size"])
 
@@ -167,60 +163,49 @@ def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
     # memory tech
-    wire_cap, wire_res, memory_cell_read_latency, memory_cell_write_latency, plogic_node, memory_cell_read_power, memory_cell_write_energy, memory_cell_leakage_power = technology["memory"]
-    
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+    ) = technology["memory"]
+
     # compute tech
     # pe -> composition
     wire_cap, wire_res, node = technology["compute"]
-     
+
     # noc tech : width, noc_type, data_width
     wire_cap, wire_res, noc_node = technology["noc"]
 
     wire_cap = float(wire_cap)
-    sense_amp_time = float(sense_amp_time)
+    # sense_amp_time = float(sense_amp_time)
     steps = 1
-    ## Because above this interval it does not matter whether we can create a better technology 
+    ## Because above this interval it does not matter whether we can create a better technology
     # or not.
-    ## Joint sweep of tech space in cmos, memory cell and wires
-    
+    ## Joint sweep of tech space in cmos, memory cell and wires, biggest gradient : wire_cap
+
     if opts == "energy" or opts == "read_energy":
         beta_wire = 1 / 50.7
         beta_sense_amp = 1 / 1.4
         beta_logic = 1
-        # In the joint tech space that shows that sweeping wire space makes the real difference here
-        if (wire_cap > 0): wire_cap -= energy_grads * beta_wire
-        if (plogic_node > 0): plogic_node -= energy_grads * beta_logic
-    
+        if wire_cap > 0:
+            wire_cap -= energy_grads * beta_wire
+        if plogic_node > 0:
+            plogic_node -= energy_grads * beta_logic
+
     if opts == "time":
-            # In the joint time space that shows that sweeping cmos space makes the real difference
-            beta_wire = 1 / 0.558
-            beta_sense_amp = 1 / 1.4
-            beta_plogic = 1
-        if (wire_cap > 0): wire_cap -= steps * time_grads * beta_wire
-        if (sense_amp_time > 0): sense_amp_time -= steps * time_grads * beta_sense_amp
+        beta_wire_cap = 1 / 0.558
+        beta_plogic_node = 1 / 1.4
+        if wire_cap > 0:
+            wire_cap -= steps * time_grads * beta_wire
+        if plogic_node > 0:
+            plogic_node -= steps * time_grads * beta_plogic_node
     # print(wire_cap, sense_amp_time)
     return technology
-
-def mem_space(mem_config, technology):
-    wire_cap, sense_amp_time, plogic_node = technology
-    wire_cap = float(wire_cap)
-    sense_amp_time = float(sense_amp_time)
-    plogic_node = float(plogic_node)
-    # mem_config["level0"]["write_latency"] = (
-    #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    # )
-    mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
-    mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
-    mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
-    mem_config["level0"]["frequency"] = 4000 * (
-        1 / mem_config["level0"]["read_latency"]
-    )
-    # mem_config["level0"]["leakage_power"]
-    return mem_config
-
-
-def comp_space(comp_config, technology):
-    return comp_config
 
 
 def get_mem_props(size, width, banks):
@@ -452,10 +437,44 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         total_area,
     )
 
-# def functions():
+
+def functions(technology, design):
     # compute functions
-    # memory functions 
+    wire_cap, wire_res, node = technology["compute"]
+    comp_config = design["compute"]
+    # memory functions
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+        sense_amp_time,
+    ) = technology["memory"]
+    mem_config = design["memory"]
+
+    wire_cap = float(wire_cap)
+    sense_amp_time = float(sense_amp_time)
+    plogic_node = float(plogic_node)
+    # mem_config["level0"]["write_latency"] = (
+    #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    # )
+    mem_config["level0"]["read_latency"] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config["level0"]["read_energy"] = 50.7 * wire_cap + 56.2
+    mem_config["level0"]["write_energy"] = 47.8 * wire_cap + 20
+    mem_config["level0"]["frequency"] = 4000 * (
+        1 / mem_config["level0"]["read_latency"]
+    )
+    # mem_config["level0"]["leakage_power"]
+
     # noc functions
+    wire_cap, wire_res, noc_node = technology["noc"]
+    noc_config = design["noc"]
+
+    pass
 
 
 def generate_tech_targets(graph, name, EDP=100):
@@ -509,8 +528,7 @@ Generator.writeconfig = writeconfig
 Generator.save_stats = save_stats
 
 Generator.backward_pass_tech = backward_pass_tech
-Generator.update_mem_tech = update_mem_tech
-Generator.update_logic_tech = update_logic_tech
+Generator.update_tech = update_tech
 
 Generator.backward_pass_design = backward_pass_design
 Generator.update_comp_design = update_comp_design
