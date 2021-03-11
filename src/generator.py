@@ -74,43 +74,28 @@ def backward_pass_tech(self, scheduler, opts=None):
         - scheduler.bandwidth_idle_time
         + scheduler.mem_size_idle_time
     )
+    # pass a dictionary of time and energy grads calculation 
+    time_grads["memory latency"] = (scheduler.mem_size_idle_time) / scheduler.total_cycles
+    time_grads["compute latency"] = (scheduler.compute_time) / scheduler.total_cycles
 
-    if opts == "time":
-        time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
-        # time_grads = (scheduler.mem_size_idle_time) / scheduler.total_cycles
-        technology = self.update_mem_tech("time", technology, time_grads=time_grads)
-        time_grads = (scheduler.compute_time) / scheduler.total_cycles
-        technology = self.update_logic_tech("time", technology, time_grads=time_grads)
+    # if mem energy consumption is too high at level 1, banks can be increased
+    energy_grads[" memory energy"] = scheduler.mem_energy[0] / scheduler.total_energy
+    energy_grads ["compute energy"] = scheduler.compute_energy / scheduler.total_energy
 
-    if opts == "energy":
+    mem_config["level0"]["banks"] += (int)(
+        beta
+        * scheduler.mem_energy
+        / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
+    )
+    # Compute_energy is too high, check if compute is larger than required, or slower than required
+    # compute_array size can be reduced -> how does compute array size effect energy consumption ->
+    # it may be due to a lot of compute or bad-sized compute arrays
 
-        mem_config["level0"]["banks"] += (int)(
-            beta
-            * scheduler.mem_energy
-            / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
-        )
-        # Compute_energy is too high, check if compute is larger than required, or slower than required
-        # compute_array size can be reduced -> how does compute array size effect energy consumption ->
-        # it may be due to a lot of compute or bad-sized compute arrays
-
-        # if mem energy consumption is too high at level 1, banks can be increased
-        energy_grads = scheduler.mem_energy[0] / scheduler.total_energy
-        technology = self.update_mem_tech(
-            "read_energy", technology, energy_grads=energy_grads
-        )
-        # technology = self.update_mem_tech(
-        #     "write_energy", technology, energy_grads=energy_grads
-        # )
-        energy_grads = scheduler.compute_energy / scheduler.total_energy
-        technology = self.update_logic_tech(
-            "energy", technology, energy_grads=energy_grads
-        )
-
-        ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
-        # If leakage energy, read or write energy-> can change the technology type
-        # if Energy is too high due to the leakage time : change sizing to energy efficient
-        # If mem energy consumption is high -> which level ?
-        # if mem_energy consumption is too high at level 0, its size can be reduced
+    ## What is really high read energy, write energy or leakage energy -> which depends on the leakage time
+    # If leakage energy, read or write energy-> can change the technology type
+    # if Energy is too high due to the leakage time : change sizing to energy efficient
+    # If mem energy consumption is high -> which level ?
+    # if mem_energy consumption is too high at level 0, its size can be reduced
     scheduler.technology = technology
     return config
 
@@ -173,7 +158,7 @@ def update_mem_design(self, scheduler, mem_config):
     return mem_config
 
 
-def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
+def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
     """
     opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
@@ -181,42 +166,40 @@ def update_mem_tech(self, opts, technology, time_grads=0, energy_grads=0):
     The technology space can be loaded from the file, and how we can rapidly find our point there
     The wire space is also loaded, and the joint technology and wire space can also be loaded
     """
-    wire_cap, sense_amp_time, plogic_node = technology
+    # memory tech
+    wire_cap, wire_res, memory_cell_read_latency, memory_cell_write_latency, plogic_node, memory_cell_read_power, memory_cell_write_energy, memory_cell_leakage_power = technology["memory"]
+    
+    # compute tech
+    # pe -> composition
+    wire_cap, wire_res, node = technology["compute"]
+     
+    # noc tech : width, noc_type, data_width
+    wire_cap, wire_res, noc_node = technology["noc"]
+
     wire_cap = float(wire_cap)
     sense_amp_time = float(sense_amp_time)
     steps = 1
-    ## We have to show that the memory cell space does not matter at all, all that matters is optimizing the wire space and the cmos space with it
-    ## because above this interval it does not matter whether we can create a better technology or not.
+    ## Because above this interval it does not matter whether we can create a better technology 
+    # or not.
     ## Joint sweep of tech space in cmos, memory cell and wires
-    if wire_cap > 0 and plogic_node > 0 and sense_amp_time > 0:
-        if opts == "energy" or opts == "read_energy":
-            beta_wire = 1 / 50.7
-            beta_sense_amp = 1 / 1.4
-            beta_logic = 1
-            # In the joint tech space that shows that sweeping wire space makes the real difference here
-            wire_cap -= energy_grads * beta_wire
-            plogic_node -= energy_grads * beta_logic
-
-        if opts == "time":
+    
+    if opts == "energy" or opts == "read_energy":
+        beta_wire = 1 / 50.7
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
+        # In the joint tech space that shows that sweeping wire space makes the real difference here
+        if (wire_cap > 0): wire_cap -= energy_grads * beta_wire
+        if (plogic_node > 0): plogic_node -= energy_grads * beta_logic
+    
+    if opts == "time":
             # In the joint time space that shows that sweeping cmos space makes the real difference
             beta_wire = 1 / 0.558
             beta_sense_amp = 1 / 1.4
-            beta_logic = 1
-            sense_amp_time -= steps * time_grads * beta_sense_amp
-            wire_cap -= steps * time_grads * beta_wire
+            beta_plogic = 1
+        if (wire_cap > 0): wire_cap -= steps * time_grads * beta_wire
+        if (sense_amp_time > 0): sense_amp_time -= steps * time_grads * beta_sense_amp
     # print(wire_cap, sense_amp_time)
-    return [wire_cap, sense_amp_time, plogic_node]
-
-
-def update_logic_tech(self, opts, technology, time_grads=0, energy_grads=0):
-    alpha = 1.1
-    beta = 1.4
-    if opts == "energy":
-        technology -= beta * energy_grads
-    if opts == "time":
-        technology -= alpha * time_grads
     return technology
-
 
 def mem_space(mem_config, technology):
     wire_cap, sense_amp_time, plogic_node = technology
@@ -468,6 +451,11 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         scheduler.technology,
         total_area,
     )
+
+# def functions():
+    # compute functions
+    # memory functions 
+    # noc functions
 
 
 def generate_tech_targets(graph, name, EDP=100):
