@@ -9,3 +9,8 @@ def transform_graph(graph, cond):
         editallpairs(src,dst)
 
     return graph
+
+# transformation pairs lib
+
+lib = <'for i in loop a+b','for i in loop a+b+c'>
+
