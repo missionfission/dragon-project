@@ -166,8 +166,8 @@ def design_runner(
     # return time_list, energy_list, design_list
 
 
-def run_single(graph, backprop, print_stats, filename, mapping="nn_dataflow"):
-    scheduler = Scheduling(hwfile=filename)
+def perf(graph, backprop, print_stats, hwfile, mapping="nn_dataflow", *args, **kwargs):
+    scheduler = Scheduling(hwfile=hwfile)
     if mapping == "asap":
         scheduler.run_asap(graph)
     elif mapping == "nn_dataflow":
