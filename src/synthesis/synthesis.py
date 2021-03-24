@@ -116,5 +116,4 @@ def get_stats():
     # * cycle_num,num-of-muls,num-of-adds,num-of-bitwise-ops,num-of-reg-reads,num-of-reg-writes
     #  * If it is called from ScratchpadDatapath, it also outputs per cycle memory
     #  * activity for each partitioned array. add up all the activity of all the components to get the final
-    # output
     pass
