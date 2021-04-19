@@ -70,7 +70,9 @@ def template_handlers(i, hw_allocated):
 def optimizations():
     pass
     # initBaseAddress
+    # for each variable allocated assign a base address
     # writeBaseAddress
+    # write base address to directory
     # initDmaBaseAddress
     # memoryAmbiguation
     # removePhiNodes
@@ -117,3 +119,6 @@ def get_stats():
     #  * If it is called from ScratchpadDatapath, it also outputs per cycle memory
     #  * activity for each partitioned array. add up all the activity of all the components to get the final
     pass
+
+## choices for scheduling :
+## assumptions for our formulas : propagation of error 
