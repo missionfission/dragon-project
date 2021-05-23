@@ -14,12 +14,14 @@ import yaml
 import yamlordereddictloader
 from torchvision import models
 from yaml import dump
-
+from synthesis import hls
 from ddfg_scheduling import DDFG_Scheduling
 from generator import *
 from generator import Generator, get_mem_props
 from ir.handlers import handlers
 from ir.trace import trace
+from ir.staticfg.staticfg import CFGBuilder
+
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
@@ -55,7 +57,14 @@ def synthesis_hardware(benchmark):
         output, error = process.communicate()
         for i in output.decode("utf-8").split("\n"):
             print(i)
-
+    if benchmark == "hpcg":
+        cfg = CFGBuilder().build_from_file(
+            "hpcg.py",
+            "nonai_models/hpcg.py",
+        )
+        hls.scheduling(cfg)
+        hls.get_stats(cfg)
+        
 
 ####################################
 def design_tech_runner(
