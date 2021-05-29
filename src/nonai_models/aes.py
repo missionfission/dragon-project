@@ -518,7 +518,8 @@ InvSbox = (
 
 
 # learnt from http://cs.ucsb.edu/~koc/cs178/projects/JT/aes.c
-xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
+def xtime(a):
+    return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
 
 Rcon = (
@@ -698,3 +699,12 @@ class AES:
             s[i][3] ^= v
 
         self.__mix_columns(s)
+
+if __name__ == "__main__" :
+
+    import time
+    start = time.time()
+    aes = AES("1212304810341341")
+    aes.encrypt("adflkadhlkfd")
+    end = time.time()
+    print(end-start)
