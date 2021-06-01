@@ -125,3 +125,134 @@ MUL_10_ns:
   dynamic_energy: 8.796144e+00
   leakage_power: 4.817683e-02
   area: 4.595000e+03
+
+BIT_1ns:
+  int_power: 1.010606e-02
+  switch_power:  7.950398e-03
+  dynamic_power: 1.805590e-02
+  dynamic_energy:    1.805590e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_2ns:
+  int_power: 5.047962e-03
+  switch_power:  3.971243e-03
+  dynamic_power: 9.019205e-03
+  dynamic_energy:    1.803786e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_3ns:
+  int_power: 3.362023e-03
+  switch_power:  2.644812e-03
+  dynamic_power: 6.006835e-03
+  dynamic_energy:    1.801981e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_4ns:
+  int_power: 2.518915e-03
+  switch_power:  1.981596e-03
+  dynamic_power: 4.500511e-03
+  dynamic_energy:    1.800177e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_5ns:
+  int_power: 2.013105e-03
+  switch_power:  1.583778e-03
+  dynamic_power: 3.596883e-03
+  dynamic_energy:    1.798511e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_6ns:
+  int_power: 1.680942e-03
+  switch_power:  1.322420e-03
+  dynamic_power: 3.003348e-03
+  dynamic_energy:    1.801981e-02
+  leakage_power: 6.111633e-04
+  area:      5.036996e+01
+  critical_path_delay:  0.06
+
+BIT_10ns:
+  int_power:    1.011508e-03
+  switch_power: 7.957616e-04
+  dynamic_power:    1.807256e-03
+  dynamic_energy:   1.807256e-02
+  leakage_power:    6.111633e-04
+  area:     5.036996e+01
+  critical_path_delay: 0.06
+
+SHIFTER_1ns:
+  int_power: 8.162355e-02
+  switch_power:  3.356332e-01
+  dynamic_power: 4.172512e-01
+  dynamic_energy:   4.172512e-01
+  leakage_power: 1.697876e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_2ns:
+  int_power: 3.965413e-02
+  switch_power:  1.636524e-01
+  dynamic_power: 2.033093e-01
+  dynamic_energy:   4.066186e-01
+  leakage_power: 1.710091e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_3ns:
+  int_power: 2.810824e-02
+  switch_power:  1.126897e-01
+  dynamic_power: 1.407910e-01
+  dynamic_energy:   4.223870e-01
+  leakage_power: 1.781854e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_4ns:
+  int_power: 2.057662e-02
+  switch_power:  8.443299e-02
+  dynamic_power: 1.050096e-01
+  dynamic_energy:   4.200412e-01
+  leakage_power: 1.731190e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_5ns:
+  int_power: 1.630555e-02
+  switch_power:  6.699894e-02
+  dynamic_power: 8.330449e-02
+  dynamic_energy:   4.165155e-01
+  leakage_power: 1.694823e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_6ns:
+  int_power: 1.361771e-02
+  switch_power:  5.602076e-02
+  dynamic_power: 6.963903e-02
+  dynamic_energy:   4.178342e-01
+  leakage_power: 1.695794e-03
+  area:  2.496461e+02
+  critical_path_delay:   0.70
+
+SHIFTER_10ns:
+  int_power:    8.120019e-03
+  switch_power: 3.338565e-02
+  dynamic_power:   4.150581e-02
+  dynamic_energy:  4.150581e-01
+  leakage_power:   1.695100e-03
+  area: 2.496461e+02
+  critical_path_delay:  0.70
+
+FP_MUL_LATENCY_IN_CYCLES 4
+FP_ADD_LATENCY_IN_CYCLES 5
+FP_DIV_LATENCY_IN_CYCLES 16
+SPECIAL_MATH_NODE_LATENCY_IN_CYCLES 3

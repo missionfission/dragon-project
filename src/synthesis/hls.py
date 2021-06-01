@@ -1,7 +1,7 @@
 import ast
 import astor
 from ir.staticfg.staticfg import CFGBuilder
-
+import re
 lib_hw_dict = ["add", "mult", "buffer", "reg", "sys_array", "logic", "fsm"]
 common_ops = set()
 op2sym_map = {
@@ -13,78 +13,164 @@ op2sym_map = {
     'IsNot': '!=',
     'USub': '-', 'UAdd': '+', 'Not': '!', 'Invert': '~'
 }
+delimiters = "+", "-", "*", "//", "%","=", ">>", "<<" , '<','<=','>','>=','!=','~','!','^', '&'
+regexPattern = '|'.join(map(re.escape, delimiters))
 
-latency = {}
+latency = {'And': 1, 'Or': 1,
+    'Add': 4, 'Sub': 4, 'Mult': 5, 'FloorDiv': 16, 'Mod': 3,
+    'LShift': 0.70, 'RShift': 0.70,
+    'BitOr': 0.06, 'BitXor': 0.06, 'BitAnd': 0.06,
+    'Eq': 1, 'NotEq': 1, 'Lt': 1, 'LtE': 1, 'Gt': 1, 'GtE': 1, 'USub': 0.42, 'UAdd': 0.42,
+    'IsNot': 1, 'Not': 0.06, 'Invert': 0.06, 'Regs': 1}
 energy = {}
+power = {'And': 32*[1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
+    'Or': 32*[1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    'Add': [2.537098e+00, 3.022642e+00, 5.559602e+00, 1.667880e+01, 5.311069e-02], 
+    'Sub':  [2.537098e+00, 3.022642e+00, 5.559602e+00, 1.667880e+01, 5.311069e-02], 
+    'Mult':   [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01], 
+    'FloorDiv': [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01], 
+    'Mod':  [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01],
+    'LShift':  [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'RShift':  [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    'BitOr':  [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
+    'BitXor': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
+    'BitAnd': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    'Eq': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'NotEq': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'Lt': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'LtE': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'Gt': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'GtE': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    'USub': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
+    'UAdd': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    'IsNot': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
+    'Not': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
+    'Invert': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    'Regs' :   [7.936518e-03,1.062977e-03,8.999495e-03, 8.999495e-03, 7.395312e-05] }
 hw_allocated = {}
+memory_cfgs = {}
+hw_utilized = {}
 
-def parse_code(expr, type):
-    if(type == "assign"):
-        left, right = expr.split("=")
-        parse_code(left, "expr")
-        parse_code(right, "expr")
-    if(type == "expr"):
-        pass
-        # expression is list operation such as append 
-        # expr.split(" ")
-        # find brackets, create data path
-    if(type == "binop_nested"):
-        operators = expr.split(op2sym_map.values())
-        print(operators)
-    if (type == "binop_simple"):
-        operators = expr.split(op2sym_map.values())
-    if (type == "if"):
-        pass
-    if (type == "constant"):
-        pass
+cycles = 0
+hw_allocated['Regs'] = 0
+hw_utilized['Regs'] = 0
 
-def check_and_parse(string):
-    if type(string) == ast.BinOp ||  ast.BoolOp :
-        parse_code(astor.to_source(string), "binop_nested")
+def schedule(expr, type):
+    # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
+    # upsamplelloops
+    # run
+    hw_need = {}
+    num_cycles = 0
+    for key in op2sym_map.keys():
+            hw_need[key] = 0
+    strs = re.split(regexPattern, expr)
+    print(strs, expr)
+    if strs.count("")>0:
+        strs.remove('')
+    num_vars = len(strs)
+    for i,op in enumerate(op2sym_map.values()):
+        hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
+        num_cycles += latency[list(op2sym_map.keys())[i]] # ALAP
+    hw_need["Regs"] = num_vars
+    return num_cycles, hw_need
+    
+def parse_code(expr, type, unrolled=1, loop_iters=1):
+    if type in ["assign", "expr", "binop_nested", "constant"]:
+        expr_cycles, hw_need = schedule(expr,type)
+        global cycles, hw_allocated, hw_utilized
+        cycles += expr_cycles*loop_iters/unrolled
+        # hw_allocated = max(hw_need*unrolled, hw_allocated)
+        hw_allocated = { key:max(value, hw_need[key]*unrolled) for key, value in hw_allocated.items() }
+        hw_utilized =  { key: value + hw_need[key]*unrolled for key, value in hw_utilized.items() }
+        print(cycles)
+    # if(type == "assign"):
+    #     left, right = expr.split("=")
+    #     parse_code(left, "expr")
+    #     parse_code(right, "expr")
+    # if(type == "expr"):
+    #     for i,op in enumerate(op2sym_map.values()):
+    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
+    #     # expression is list operation such as append 
+    #     # expr.split(" ")
+    #     # find brackets, create data path
+    # if(type == "binop_nested"):
+    #     for i,op in enumerate(op2sym_map.values()):
+    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
+    # if (type == "binop_simple"):
+    #     for i,op in enumerate(op2sym_map.values()):
+    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
+    # if (type == "constant"):
+    #     for i,op in enumerate(op2sym_map.values()):
+    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
+    
+
+def check_and_parse(string, unrolled=1,  loop_iters=1):
+    if type(string) == ast.BinOp or ast.BoolOp :
+        parse_code(astor.to_source(string), "binop_nested",unrolled)
     if (type(string) == ast.Call):
+        # cycles += visit(string)
         # latency calculation of traversal
         pass
     if (type(string) == ast.Constant):
-        parse_code(astor.to_source(string), "constant")
+        parse_code(astor.to_source(string), "constant",unrolled)
 
 def parse_graph(graph):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
     """
-
+    for key in op2sym_map.keys():
+        hw_allocated[key] = 0
+        hw_utilized[key] = 0
     unroll_params = {}
-    memory_cfgs = {}
+    variables = {}
+    global memory_cfgs 
+
     # if node.operator in lib_common_ops:
     #     common_ops.add(node.operator)
     for node in graph:
         # yield(node)
-        variables = {}
         for i in node.statements:     
                 print(i)
                 if type(i)==ast.Import:
                     continue
                 if type(i)==ast.FunctionDef:
                     for string in i.body:
+                        if isinstance(string, ast.For):
+                            continue
                         # print(string)
                         check_and_parse(string)
                 if type(i)==ast.Assign:
                     # allocated memory/registers
-                    parse_code(astor.to_source(i), "assign")
+                    flag = True
+                    if isinstance(i.value, ast.Tuple):
+                        for x in list(i.value.elts):
+                            if not isinstance(x,ast.Constant):
+                                flag = False
+                        if flag:
+                            if isinstance(i.targets[0],ast.Name):
+                                variables[i.targets[0].id] = len(list(i.value.elts))
+                    else:
+                        parse_code(astor.to_source(i), "assign")
                 if type(i)==ast.AugAssign:
                     # allocated memory/registers
                     parse_code(astor.to_source(i), "assign")
                 if type(i)==ast.Expr:
                     parse_code(astor.to_source(i), "expr")
                 if type(i)==ast.If:
-                    parse_code(astor.to_source(i.test), "if")
+                    check_and_parse(i.test)
                 if type(i)==ast.Return:
                     check_and_parse(i.value)
-                if (type(i) == ast.For):
-                    # unroll
+                if isinstance(i,ast.For) :
+                    unrolled = 1
+                    loop_iters =  [i.iter.args[0].value]
+                    print("Loop Iters are",loop_iters)
+                    for string in i.body:
+                        check_and_parse(string, unrolled)
+                    # print(ast.dump(i))
                     # transform
-                    pass
                 #numpy library spmv, dot, conv
-
+    print(variables)
+    memory_cfgs = variables
 def get_params(dfg, area_budget):
     allocated_area = 0
     while (allocated_area < 0.9*area or allocated_area > 1.2*area):
@@ -169,11 +255,6 @@ def prune_allocator():
 #         pass
 
 
-# def scheduling(cfg):
-#     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
-#     # upsamplelloops
-#     # run
-#     pass
 
 
 def get_stats(cfg):
@@ -183,9 +264,9 @@ def get_stats(cfg):
     #  * If it is called from ScratchpadDatapath, it also outputs per cycle memory
     #  * activity for each partitioned array. add up all the activity of all the components to get the fina
     ddg = {}
-    cycles = 0
     print("-------------------------------")
-    print("Generating DDDG")          
+    print("Generating DDDG")       
+    avgpower = 0   
     # print("Num of Nodes:",  ddg['nodes'])
     # print("Num of Edges:",  ddg['edges'])
     # print("Num of Reg Edges:", regedges)
@@ -193,14 +274,19 @@ def get_stats(cfg):
     # print("Num of Control Edges:", controledges)
     print("Creating Base Data Path")
     print("Cycle :", cycles)
-    print("Avg Power :", avgpower)   
-    print("Avg FU Power :", fupower)
-    print("Avg FU Dynamic Power:",fu_dynamic_power)
-    print("Avg FU leakage Power: ", fu_leakage_power )
-    print("Avg MEM Power: ", mempower)
-    print("Avg MEM Dynamic Power: ", mem_dynamic_power)
-    print("Avg MEM Leakage Power: ", mem_leakage_power)
-    print("Area Calculation :", area)
+    print("Hardware ")
+    for keys in hw_utilized.keys():   
+        avgpower += power[keys][0]*hw_utilized[keys]*latency[keys]/cycles
+    print("Avg Power :", avgpower)
+    # print("Avg FU Power :", fupower)
+    # print("Avg FU Dynamic Power:",fu_dynamic_power)
+    # print("Avg FU leakage Power: ", fu_leakage_power )
+    # print("Avg MEM Power: ", mempower)
+    # print("Avg MEM Dynamic Power: ", mem_dynamic_power)
+    # print("Avg MEM Leakage Power: ", mem_leakage_power)
+    # print("Avg REG Power: ", regpower)
+    # print("Area Calculation :", area)
+    print(hw_allocated, memory_cfgs)
     
 ## choices for scheduling :
 ## assumptions for our formulas : propagation of error 
