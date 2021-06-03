@@ -1,4 +1,5 @@
 import ast
+from generator import get_mem_props
 import astor
 from ir.staticfg.staticfg import CFGBuilder
 import re
@@ -47,6 +48,7 @@ power = {'And': 32*[1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.11
     'Not': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
     'Invert': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
     'Regs' :   [7.936518e-03,1.062977e-03,8.999495e-03, 8.999495e-03, 7.395312e-05] }
+    
 hw_allocated = {}
 memory_cfgs = {}
 hw_utilized = {}
@@ -162,15 +164,23 @@ def parse_graph(graph):
                     check_and_parse(i.value)
                 if isinstance(i,ast.For) :
                     unrolled = 1
-                    loop_iters =  [i.iter.args[0].value]
+                    print(ast.dump(i))
+                    if(isinstance(i.iter.args[0], ast.Constant)):
+                        loop_iters =  [i.iter.args[0].value]
+                    else:
+                        print("Loop iters not captured")
+                        loop_iters = 1
                     print("Loop Iters are",loop_iters)
+                    print("Unrolled are",unrolled)
                     for string in i.body:
                         check_and_parse(string, unrolled)
                     # print(ast.dump(i))
                     # transform
                 #numpy library spmv, dot, conv
-    print(variables)
     memory_cfgs = variables
+    # mem_list =  allocate_memory_cfgs()
+
+    
 def get_params(dfg, area_budget):
     allocated_area = 0
     while (allocated_area < 0.9*area or allocated_area > 1.2*area):
@@ -189,6 +199,14 @@ def get_params(dfg, area_budget):
         # if(area < allocated_area):
     pass
 
+def allocate_memory_cfgs():
+    mem_list = {}
+    for key, value in memory_cfgs.items():
+        if value> 32768:
+            mem_list[key] = get_mem_props(value, 32, 1)
+        else:
+            mem_list[key] = power["Regs"]*value
+    return mem_list
 
 def prune_allocator():
     
