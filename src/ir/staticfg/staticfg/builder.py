@@ -328,9 +328,9 @@ class CFGBuilder(ast.NodeVisitor):
     def visit_If(self, node):
         # Add the If statement at the end of the current block.
         self.add_statement(self.current_block, node)
-
         # Create a new block for the body of the if.
         if_block = self.new_block()
+        # self.visit(node.test)
         self.add_exit(self.current_block, if_block, node.test)
 
         # Create a block for the code after the if-else.
@@ -419,6 +419,18 @@ class CFGBuilder(ast.NodeVisitor):
         self.after_loop_block_stack.pop()
         self.curr_loop_guard_stack.pop()
 
+    # def visit_Compare(self, node):
+    #     self.add_statement(self.current_block, node)
+    #     left = self.visit(node.left)
+    #     # self.visit(x for x in node.comparators)
+    #     self.goto_new_block(node)
+
+    # def visit_BinOp(self, node):
+    #     # self.add_statement(self.current_block, node)
+    #     left = self.visit(node.left)
+    #     right = self.visit(node.right)
+    #     self.goto_new_block(node)
+
     def visit_Break(self, node):
         assert len(self.after_loop_block_stack), "Found break not inside loop"
         self.add_exit(self.current_block, self.after_loop_block_stack[-1])
@@ -434,6 +446,7 @@ class CFGBuilder(ast.NodeVisitor):
         self.add_statement(self.current_block, node)
 
     def visit_FunctionDef(self, node):
+
         self.add_statement(self.current_block, node)
         self.new_functionCFG(node, asynchr=False)
 
@@ -449,6 +462,7 @@ class CFGBuilder(ast.NodeVisitor):
 
     def visit_Return(self, node):
         self.add_statement(self.current_block, node)
+        # self.visit(node.value)
         self.cfg.finalblocks.append(self.current_block)
         # Continue in a new block but without any jump to it -> all code after
         # the return statement will not be included in the CFG.

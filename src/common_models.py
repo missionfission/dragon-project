@@ -7,10 +7,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
-
+from models.ssd_rs34 import SSD_R34
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
-
+from models.Unet import Generic_UNet
 # from transformers import (
 #     DPRConfig,
 #     DPRContextEncoder,
@@ -469,3 +469,12 @@ def langmodel_graph():
     inputs = torch.randn(8192)  # make a sequence of length 5
     langmod_graph2 = trace(model2.eval(), inputs)
     return langmod_graph1, langmod_graph2
+
+def Unet():
+    model = Generic_UNet(self.num_input_channels, self.base_num_features, self.num_classes, len(self.net_num_pool_op_kernel_sizes),self.conv_per_stage, 2, conv_op, norm_op, norm_op_kwargs, dropout_op, dropout_op_kwargs,net_nonlin, net_nonlin_kwargs, True, False, lambda x: x, InitWeights_He(0),self.net_num_pool_op_kernel_sizes, self.net_conv_kernel_sizes, False, True, True)
+    return 3dunet_Graph
+
+def speech2text_model():
+    model = SSD_R34()
+    speech2text_graph = trace(model.eval(), inputs)
+    return speech2text_graph
