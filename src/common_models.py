@@ -265,18 +265,31 @@ def dlrm_graph():
     return dlrm_graph
 
 
-def resnet_graph():
+def resnet_18_graph():
     for name, model in models.__dict__.items():
         #     print(name)
         if not name.islower() or name.startswith("__") or not callable(model):
             continue
-        if "resnet50" in name:
+        if "resnet18" in name:
+            print(name)
             model = model().eval()
             inputs = torch.randn(1, 3, 224, 224)
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph
 
+def resnet_50_graph():
+    for name, model in models.__dict__.items():
+        #     print(name)
+        if not name.islower() or name.startswith("__") or not callable(model):
+            continue
+        if "resnet50" in name:
+            print(name)
+            model = model().eval()
+            inputs = torch.randn(1, 3, 224, 224)
+            resnet_graph = trace(model, inputs)
+            break
+    return resnet_graph
 
 def vggnet_graph():
     for name, model in models.__dict__.items():

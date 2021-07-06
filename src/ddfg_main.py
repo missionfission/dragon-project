@@ -62,7 +62,7 @@ def synthesis_hardware(benchmark):
             "hpcg.py",
             "nonai_models/hpcg.py",
         )
-        hls.scheduling(cfg)
+        hls.parse_graph(cfg)
         hls.get_stats(cfg)
         
 
@@ -185,18 +185,3 @@ def design_runner(
     # return time_list, energy_list, design_list
 
 
-def run_single(graph, backprop, print_stats, filename, mapping="nn_dataflow"):
-    scheduler = DDFG_Scheduling(hwfile=filename)
-    if mapping == "asap":
-        scheduler.run_asap(graph)
-    elif mapping == "nn_dataflow":
-        scheduler.run_nn_dataflow(graph)
-    elif mapping == "reuse_full":
-        scheduler.run_reuse_full(graph)
-    elif mapping == "reuse_leakage":
-        scheduler.run_reuse_leakage(graph)
-    generator = Generator()
-    in_time, in_energy, design, tech, area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-    )
-    return in_time, in_energy, area
