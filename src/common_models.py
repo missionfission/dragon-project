@@ -8,9 +8,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
 from models.ssd_rs34 import SSD_R34
+from models.rnnt import RNNT
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
 from models.Unet import Generic_UNet
+
 # from transformers import (
 #     DPRConfig,
 #     DPRContextEncoder,
@@ -470,11 +472,65 @@ def langmodel_graph():
     langmod_graph2 = trace(model2.eval(), inputs)
     return langmod_graph1, langmod_graph2
 
-def Unet():
-    model = Generic_UNet(self.num_input_channels, self.base_num_features, self.num_classes, len(self.net_num_pool_op_kernel_sizes),self.conv_per_stage, 2, conv_op, norm_op, norm_op_kwargs, dropout_op, dropout_op_kwargs,net_nonlin, net_nonlin_kwargs, True, False, lambda x: x, InitWeights_He(0),self.net_num_pool_op_kernel_sizes, self.net_conv_kernel_sizes, False, True, True)
-    return 3dunet_Graph
 
+class InitWeights_He(object):
+    def __init__(self, neg_slope=1e-2):
+        self.neg_slope = neg_slope
+
+    def __call__(self, module):
+        if isinstance(module, nn.Conv3d) or isinstance(module, nn.Conv2d) or isinstance(module, nn.ConvTranspose2d) or isinstance(module, nn.ConvTranspose3d):
+            module.weight = nn.init.kaiming_normal_(module.weight, a=self.neg_slope)
+            if module.bias is not None:
+                module.bias = nn.init.constant_(module.bias, 0)
+
+def Unet():
+    conv_op = nn.Conv3d
+    dropout_op = nn.Dropout3d
+    norm_op = nn.InstanceNorm3d
+
+    inputs = torch.randn(1, 160, 224, 224)
+
+    norm_op_kwargs = {'eps': 1e-5, 'affine': True}
+    dropout_op_kwargs = {'p': 0, 'inplace': True}
+    net_nonlin = nn.LeakyReLU
+    net_nonlin_kwargs = {'negative_slope': 1e-2, 'inplace': True}
+    net_num_pool_op_kernel_sizes = [[2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2]]
+    net_conv_kernel_sizes =  [[3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3]]
+     # loaded automatically from plans_file
+    model = Generic_UNet(160, 24, 16,len(net_num_pool_op_kernel_sizes),1, 2, conv_op, norm_op, norm_op_kwargs, dropout_op,dropout_op_kwargs,net_nonlin, net_nonlin_kwargs, True, False, lambda x: x, InitWeights_He(1e-2),net_num_pool_op_kernel_sizes, net_conv_kernel_sizes, False, True, True)
+
+    unet_Graph = trace(model.eval(), inputs)
+    # return unet_Graph
+    return 0
+
+
+# featurizer_config = dict({sample_rate : 16000, window_size : 0.02, window_stride : 0.01, window : "hann", features : 80, n_fft : 512,frame_splicing : 3, dither : 0.00001, feat_type : "logfbank", normalize_transcripts : true, trim_silence : true, pad_to : 0})
+
+# rnn_config = {rnn_type : "lstm", encoder_n_hidden : 1024, encoder_pre_rnn_layers : 2, encoder_stack_time_factor : 2, encoder_post_rnn_layers : 3, pred_n_hidden : 320, pred_rnn_layers : 2, forget_gate_bias : 1.0, joint_n_hidden : 512, dropout:0.32}
+import toml
 def speech2text_model():
-    model = SSD_R34()
-    speech2text_graph = trace(model.eval(), inputs)
+    config = toml.load("rnnt.toml")
+    featurizer_config = config["input_eval"]
+    model = RNNT(
+            feature_config=featurizer_config,
+            rnnt= config["rnnt"],
+            num_classes=29
+        )
+    seq_length, batch_size, feature_length = 157, 1, 240
+    inp = torch.randn([seq_length, batch_size, feature_length])
+    feature_length = torch.LongTensor([seq_length])
+    x_padded, x_lens = model.encoder(inp, feature_length)
+    speech2text_graph = trace(model.eval(), (inp, feature_length))
     return speech2text_graph
+
+def objectdetection_model():
+    model = SSD_R34().model
+    inputs = torch.randn(1, 3, 1200, 1200)
+    objectdetection_graph = trace(model.eval(), inputs)
+    return objectdetection_graph
+
+
+# 224x224
+# 1200x1200
+# 224x224x160,16
+# bert max_seq_len=384

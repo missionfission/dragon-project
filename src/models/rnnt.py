@@ -1,12 +1,12 @@
-rom typing import Optional, Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import torch
 
-from rnn import rnn
-from rnn import StackTime
+from models.rnn import rnn
+from models.rnn import StackTime
 
-
+      
 class RNNT(torch.nn.Module):
     def __init__(self, rnnt=None, num_classes=1, **kwargs):
         super().__init__()
@@ -105,22 +105,22 @@ class Prediction(torch.nn.Module):
         )
 
     def forward(self, y: Optional[torch.Tensor],
-                state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None) -> Tuple[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
-        """
-        B - batch size
-        U - label length
-        H - Hidden dimension size
-        L - Number of decoder layers = 2
-        Args:
-            y: (B, U)
-        Returns:
-            Tuple (g, hid) where:
-                g: (B, U + 1, H)
-                hid: (h, c) where h is the final sequence hidden state and c is
-                    the final cell state:
-                        h (tensor), shape (L, B, H)
-                        c (tensor), shape (L, B, H)
-        """
+                state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None):
+        # """
+        # B - batch size
+        # U - label length
+        # H - Hidden dimension size
+        # L - Number of decoder layers = 2
+        # Args:
+        #     y: (B, U)
+        # Returns:
+        #     Tuple (g, hid) where:
+        #         g: (B, U + 1, H)
+        #         hid: (h, c) where h is the final sequence hidden state and c is
+        #             the final cell state:
+        #                 h (tensor), shape (L, B, H)
+        #                 c (tensor), shape (L, B, H)
+        # """
         if y is None:
             # This is gross. I should really just pass in an SOS token
             # instead. Is there no SOS token?

@@ -66,14 +66,16 @@ def trace(model, args=(), kwargs=None):
                     node.in_edge_mem = np.prod(node.inputs[0].shape)
                     node.out_edge_mem = np.prod(node.outputs[0].shape)
                     node.mem_util = node.weights + node.out_edge_mem
-                    # print(
-                    # "inputs",
-                    # node.inputs[0].shape,
-                    # "outputs",
-                    # node.outputs[0].shape,
-                    # "weights",
-                    # node.weights,
-                    # )
+                    print(
+                    "inputs",
+                    np.prod(node.inputs[0].shape),
+                    "outputs",
+                    np.prod(node.outputs[0].shape),
+                    "weights",
+                    node.weights,
+                    "total",
+                     np.prod(node.inputs[0].shape)+np.prod(node.outputs[0].shape)+node.weights
+                    )
                     # if not isinstance(node.mem_util, np.int64):
                     #     if (node.mem_util).shape[0] > 1:
                     #         node.mem_util = node.mem_util[0]
