@@ -263,36 +263,37 @@ def all_tech_updates(graph, backprop):
 
 
 # Fix Everything in Architecture and Just Sweep Memory Connectivity
-def s_mem_c_same_arch(graph, backprop):
+def s_mem_c_same_arch(graph_list, backprop):
     fig, ax = plt.subplots(figsize=(10, 10))
     for en, graph in enumerate(graph_list):
         time_list = []
         energy_list = []
         for j in range(1, 100):
-            scheduler = Scheduling()
+            print("works for", j)
+            scheduler = Scheduling(hwfile="illusion.yaml")
             generator = Generator()
-            backprop = True
             scheduler.config["memory"]["level1"]["banks"] = 2
             scheduler.config["memory"]["level1"]["banks"] *= j
             scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
             in_time, in_energy, design, tech, area = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
-        ax.plot(energy_list, "o-", label=name[en])
-        print(energy_list[0] / energy_list[98])
-        print(time_list[0] / time_list[98])
-        ax.plot(time_list, "o-", label=name)
-
+        # ax.plot(energy_list, "o-", label="energy")
+        # print(energy_list[0] / energy_list[98])
+        # print(time_list[0] / time_list[98])
+        ax.plot(time_list, "o-", label="time")
     ax.set_xlabel("Memory Connectivity", fontsize=20, fontweight="bold")
-    ax.set_ylabel("Energy Consumption", fontsize=20, fontweight="bold")
+    ax.set_ylabel("Time", fontsize=20, fontweight="bold")
     plt.rc("xtick", labelsize=20)  # fontsize of the tick labels
     plt.rc("ytick", labelsize=20)
     ax.legend(fontsize=20)
     plt.yscale("log")
     fig.tight_layout()
-    plt.savefig("figures/connectivity_sweep_energy.png", bbox_inches="tight")
+    # plt.savefig("figures/connectivity_sweep_area2.png", bbox_inches="tight")
+    plt.savefig("figures/connectivity_sweep_area1.png", bbox_inches="tight")
     plt.show()
 
 
@@ -334,25 +335,24 @@ def s_mem_c_diff_arch(graph, backprop):
 # Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
 def s_size_c_joint(graph, backprop):
     fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
+    for en, graph in enumerate(graph):
         time_list = []
         energy_list = []
         for j in range(1, 100):
             scheduler = Scheduling()
             generator = Generator()
-            backprop = True
             scheduler.config["memory"]["level1"]["banks"] = 2
             scheduler.config["memory"]["level1"]["banks"] *= j
             scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            # scheduler.config["memory"]["level0"]["size"] *= 2
             in_time, in_energy, design, tech = generator.save_stats(
                 scheduler, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
-        ax.plot(energy_list, "o-", label=name[en])
-        print(energy_list[0] / energy_list[98])
-        print(time_list[0] / time_list[98])
-        ax.plot(time_list, "o-", label=name)
+        ax.plot(energy_list, "o-")
+        ax.plot(time_list, "o-")
     ax.set_xlabel("Memory Connectivity", fontsize=20, fontweight="bold")
     ax.set_ylabel("Energy Consumption", fontsize=20, fontweight="bold")
     plt.rc("xtick", labelsize=20)  # fontsize of the tick labels

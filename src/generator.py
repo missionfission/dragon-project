@@ -400,7 +400,8 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         )
 
         print("Tech Params", scheduler.technology)
-
+    
+    print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time >= 0

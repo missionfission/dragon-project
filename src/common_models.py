@@ -30,13 +30,13 @@ def dlrm_graph():
         description="Train Deep Learning Recommendation Model (DLRM)"
     )
     # model related parameters
-    parser.add_argument("--arch-sparse-feature-size", type=int, default=2)
+    parser.add_argument("--arch-sparse-feature-size", type=int, default=64)
     parser.add_argument(
         "--arch-embedding-size", type=dash_separated_ints, default="4-3-2"
     )
     # j will be replaced with the table number
-    parser.add_argument("--arch-mlp-bot", type=dash_separated_ints, default="4-3-2")
-    parser.add_argument("--arch-mlp-top", type=dash_separated_ints, default="4-2-1")
+    parser.add_argument("--arch-mlp-bot", type=dash_separated_ints, default="13-512-256-64")
+    parser.add_argument("--arch-mlp-top", type=dash_separated_ints, default="512-512-256-1")
     parser.add_argument(
         "--arch-interaction-op", type=str, choices=["dot", "cat"], default="dot"
     )
@@ -52,6 +52,7 @@ def dlrm_graph():
     parser.add_argument("--qr-collisions", type=int, default=4)
     # activations and loss
     parser.add_argument("--activation-function", type=str, default="relu")
+    parser.add_argument("--dataset-multiprocessing", type=bool, default=False)
     parser.add_argument("--loss-function", type=str, default="mse")  # or bce or wbce
     parser.add_argument(
         "--loss-weights", type=dash_separated_floats, default="1.0-1.0"
@@ -60,9 +61,9 @@ def dlrm_graph():
     parser.add_argument("--round-targets", type=bool, default=False)
     # data
     parser.add_argument("--data-size", type=int, default=1)
-    parser.add_argument("--num-batches", type=int, default=0)
+    parser.add_argument("--num-batches", type=int, default=1)
     parser.add_argument(
-        "--data-generation", type=str, default="dataset"
+        "--data-generation", type=str, default="random"
     )  # synthetic or dataset
     parser.add_argument("--data-trace-file", type=str, default="./input/dist_emb_j.log")
     parser.add_argument("--data-set", type=str, default="kaggle")  # or terabyte
@@ -117,7 +118,7 @@ def dlrm_graph():
 
     # if args.mlperf_logging:
     #     print("command line args: ", json.dumps(vars(args)))
-
+  
     ### some basic setup ###
     np.random.seed(args.numpy_rand_seed)
     np.set_printoptions(precision=args.print_precision)
@@ -144,6 +145,7 @@ def dlrm_graph():
 
     # ### prepare training data ###
     ln_bot = np.fromstring(args.arch_mlp_bot, dtype=int, sep="-")
+
     # input data
     if args.data_generation == "dataset":
 
@@ -166,12 +168,14 @@ def dlrm_graph():
         ln_bot[0] = m_den
     else:
         # input and target at random
-        ln_emb = np.fromstring(args.arch_embedding_size, dtype=int, sep="-")
+        # ln_emb = np.fromstring(args.arch_embedding_size, dtype=int, sep="-")
+        ln_emb=np.array([9980333,36084,17217,7378,20134,3,7112,1442,61, 9758201,1333352,313829,10,2208,11156,122,4,970,14, 9994222, 7267859, 9946608,415421,12420,101, 36])
+
         m_den = ln_bot[0]
         train_data, train_ld = dp.make_random_data_and_loader(args, ln_emb, m_den)
         nbatches = args.num_batches if args.num_batches > 0 else len(train_ld)
 
-    ### parse command line arguments ###
+    # ### parse command line arguments ###
     m_spa = args.arch_sparse_feature_size
     num_fea = ln_emb.size + 1  # num sparse + num dense features
     m_den_out = ln_bot[ln_bot.size - 1]
@@ -234,12 +238,16 @@ def dlrm_graph():
             + str(ln_top[0])
         )
 
-    ndevices = min(ngpus, args.mini_batch_size, num_fea - 1) if use_gpu else -1
-
+    # ndevices = min(ngpus, args.mini_batch_size, num_fea - 1) if use_gpu else -1
+    ndevices = -1
     # ### construct the neural network specified above ###
     # # WARNING: to obtain exactly the same initialization for
     # # the weights we need to start from the same random seed.
     # # np.random.seed(args.numpy_rand_seed)
+    m_spa=64
+    ln_emb=np.array([9980333,36084,17217,7378,20134,3,7112,1442,61, 9758201,1333352,313829,10,2208,11156,122,4,970,14, 9994222, 7267859, 9946608,415421,12420,101, 36])
+    ln_bot=np.array([13,512,256,64])
+    ln_top=np.array([415,512,512,256,1])
     dlrm = DLRM_Net(
         m_spa,
         ln_emb,

@@ -90,8 +90,16 @@ def avg_pool_or_mean(node):
     os = node.outputs[0].shape
     return np.prod(os), 0, 0
 
+def lstm(node):
+    os = node.outputs[0].shape
+    # print(node.inputs[1], node.inputs[2])
+    # print("lstm node")
+    # Have to check if true
+    print(node.inputs[0].shape)
+    return 0,0,0
 
 handlers = (
+    ("aten::lstm", lstm),
     ("aten::addmm", addmm),
     ("aten::addmv", addmv),
     ("aten::bmm", bmm),
