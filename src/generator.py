@@ -401,7 +401,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 
         print("Tech Params", scheduler.technology)
     
-    print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
+    # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
     assert scheduler.bandwidth_idle_time >= 0
@@ -430,7 +430,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         ],
         [
             mem_config["level" + str(scheduler.mle - 1)]["banks"],
-            mem_config["level0"]["size"],
+            int(int(mem_config["level0"]["size"])/1000),
             mem_config["level0"]["frequency"],
             mem_config["level0"]["read_energy"],
         ],

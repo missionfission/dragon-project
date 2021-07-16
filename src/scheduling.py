@@ -63,7 +63,7 @@ def complete_config(self, config):
         self.logger.debug("Compute Bandwidth Required : %d", config["comp_bw"])
 
     if config["mm_compute"]["class"] == "mac":
-        config["mm_compute_per_cycle"] = ((mm_compute["size"])) * mm_compute["N_PE"]
+        config["mm_compute_per_cycle"] = (mm_compute["size"]) * mm_compute["N_PE"]
         config["comp_read_bw"] = (
             mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"]
         )
@@ -203,7 +203,7 @@ def run_asap(self, graph):
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem
-        assert self.mem_free[0] <= self.mem_size[0]
+        # assert self.mem_free[0] <= self.mem_size[0]
         # Last level memory fetch takes more time, so that may be a bottleneck
         bandwidth_available = read_bw_ll < self.mem_read_bw[self.mle - 1]
 
@@ -702,38 +702,13 @@ def run_nn_dataflow(self, graph):
         free_cycles.append(step_cycles)
         n_swaps = 1
         total_mem = 0
-        if self.mem_free[0] < node.mem_util:
-            mem_free = False
-            self.mem_util[0] -= node.in_edge_mem
-            self.mem_util[0] -= node.weights - node.mem_fetch
-            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
-            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
-            if self.mem_free[0] <= 0:
-                print(self.mem_free[0])
-            assert self.mem_free[0] > 0, self.mem_util[0]
-            n_swaps = total_mem // self.mem_free[0] + 1
-            swap_time = max(config["mm_compute"]["size"] * 4, time_compute // n_swaps)
-            self.mem_size_idle_time += (
-                swap_time * n_swaps
-                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
-                // self.mem_read_bw[self.mle - 1]
-            )
-            self.bandwidth_idle_time += (
-                (node.out_edge_mem // n_swaps - 1) * n_swaps
-            ) // self.mem_read_bw[self.mle - 1]
-            step_cycles += (
-                swap_time * n_swaps
-                + 2
-                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
-                // self.mem_read_bw[self.mle - 1]
-            )
-            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
-            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
-            self.mem_write_access[1] += node.out_edge_mem
-        else:
-            self.mem_util[0] += node.mem_util
-            self.mem_free[0] -= node.mem_util
-        #         print("2.5",self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[1] += node.out_edge_mem
+        self.mem_util[0] += node.mem_util
+        self.mem_free[0] -= node.mem_util
+        util = calculate_utillization(node)
+        steps_cycles += time_compute/util
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem

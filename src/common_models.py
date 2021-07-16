@@ -173,8 +173,8 @@ def dlrm_graph():
 
         m_den = ln_bot[0]
         train_data, train_ld = dp.make_random_data_and_loader(args, ln_emb, m_den)
-        nbatches = args.num_batches if args.num_batches > 0 else len(train_ld)
-
+        nbatches = 1
+    print("Num batches ", nbatches)
     # ### parse command line arguments ###
     m_spa = args.arch_sparse_feature_size
     num_fea = ln_emb.size + 1  # num sparse + num dense features
@@ -267,9 +267,11 @@ def dlrm_graph():
         md_flag=args.md_flag,
         md_threshold=args.md_threshold,
     )
+    # print(train_ld)
     for j, (X, lS_o, lS_i, T) in enumerate(train_ld):
-        Z = dlrm(X, lS_o, lS_i)
+        pass
     dlrm_graph = trace(dlrm, (X, lS_o, lS_i))
+    print(dlrm_graph)
     return dlrm_graph
 
 
@@ -281,7 +283,7 @@ def resnet_18_graph():
         if "resnet18" in name:
             print(name)
             model = model().eval()
-            inputs = torch.randn(1, 3, 224, 224)
+            inputs = torch.randn(64, 3, 224, 224)
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph
@@ -294,7 +296,7 @@ def resnet_50_graph():
         if "resnet50" in name:
             print(name)
             model = model().eval()
-            inputs = torch.randn(1, 3, 224, 224)
+            inputs = torch.randn(64, 3, 224, 224)
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph

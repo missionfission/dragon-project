@@ -29,7 +29,6 @@ def trace(model, args=(), kwargs=None):
 
     with warnings.catch_warnings(record=True):
         graph, _ = torch.jit._get_trace_graph(Flatten(model), args, kwargs)
-
     variables = dict()
     for x in graph.nodes():
         for v in list(x.inputs()) + list(x.outputs()):
@@ -58,6 +57,8 @@ def trace(model, args=(), kwargs=None):
                 if func is not None:
                     # TODO Merge Small Node
                     # read access are weight read access
+                    # for v in x.inputs():
+                    #     print(v)
                     node.compute_expense, node.weights, _ = func(node)
                     # print(node.weights)
                     # if not isinstance(node.weights, int):
