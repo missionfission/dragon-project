@@ -8,11 +8,11 @@ import pandas as pd
 class tables():
     
     def __init__(self):
-        
     pass 
 
     def create_tables(self):
-    """
-    InstantiatePlugins here
-    """
     pass 
+
+    # """
+    # InstantiatePlugins here
+    # """

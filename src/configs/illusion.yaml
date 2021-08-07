@@ -7,17 +7,17 @@ memory:
     read_ports: 1
     write_ports: 1
     width: 32
-    size: 2000000
+    size: 1000000
     read_energy: 5.12
     write_energy: 5.12
     leakage_power: 0
   level1:
     class: DRAM
     frequency: 1.6
-    banks: 4
+    banks: 1
     read_ports: 1
     write_ports: 1
-    width: 2
+    width: 1
     size: 4000000000
     read_energy: 240
     write_energy: 240
@@ -28,7 +28,7 @@ mm_compute:
   size: 1
   N_PE: 4096
   leakage_power: 0
-  per_op_energy: 1.9
+  per_op_energy: 4
   area: 12.32
 vector_compute:
   class: vector_array
