@@ -2,15 +2,19 @@ import argparse
 import sys
 
 import numpy as np
+
+# rnn_config = {rnn_type : "lstm", encoder_n_hidden : 1024, encoder_pre_rnn_layers : 2, encoder_stack_time_factor : 2, encoder_post_rnn_layers : 3, pred_n_hidden : 320, pred_rnn_layers : 2, forget_gate_bias : 1.0, joint_n_hidden : 512, dropout:0.32}
+import toml
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
-from models.ssd_rs34 import SSD_R34
-from models.rnnt import RNNT
+
 from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
+from models.rnnt import RNNT
+from models.ssd_rs34 import SSD_R34
 from models.Unet import Generic_UNet
 
 # from transformers import (
@@ -35,8 +39,12 @@ def dlrm_graph():
         "--arch-embedding-size", type=dash_separated_ints, default="4-3-2"
     )
     # j will be replaced with the table number
-    parser.add_argument("--arch-mlp-bot", type=dash_separated_ints, default="13-512-256-64")
-    parser.add_argument("--arch-mlp-top", type=dash_separated_ints, default="512-512-256-1")
+    parser.add_argument(
+        "--arch-mlp-bot", type=dash_separated_ints, default="13-512-256-64"
+    )
+    parser.add_argument(
+        "--arch-mlp-top", type=dash_separated_ints, default="512-512-256-1"
+    )
     parser.add_argument(
         "--arch-interaction-op", type=str, choices=["dot", "cat"], default="dot"
     )
@@ -114,11 +122,13 @@ def dlrm_graph():
     parser.add_argument("--lr-num-warmup-steps", type=int, default=0)
     parser.add_argument("--lr-decay-start-step", type=int, default=0)
     parser.add_argument("--lr-num-decay-steps", type=int, default=0)
+    global args
+
     args = parser.parse_args([])
 
     # if args.mlperf_logging:
     #     print("command line args: ", json.dumps(vars(args)))
-  
+
     ### some basic setup ###
     np.random.seed(args.numpy_rand_seed)
     np.set_printoptions(precision=args.print_precision)
@@ -169,7 +179,36 @@ def dlrm_graph():
     else:
         # input and target at random
         # ln_emb = np.fromstring(args.arch_embedding_size, dtype=int, sep="-")
-        ln_emb=np.array([9980333,36084,17217,7378,20134,3,7112,1442,61, 9758201,1333352,313829,10,2208,11156,122,4,970,14, 9994222, 7267859, 9946608,415421,12420,101, 36])
+        ln_emb = np.array(
+            [
+                9980333,
+                36084,
+                17217,
+                7378,
+                20134,
+                3,
+                7112,
+                1442,
+                61,
+                9758201,
+                1333352,
+                313829,
+                10,
+                2208,
+                11156,
+                122,
+                4,
+                970,
+                14,
+                9994222,
+                7267859,
+                9946608,
+                415421,
+                12420,
+                101,
+                36,
+            ]
+        )
 
         m_den = ln_bot[0]
         train_data, train_ld = dp.make_random_data_and_loader(args, ln_emb, m_den)
@@ -244,10 +283,40 @@ def dlrm_graph():
     # # WARNING: to obtain exactly the same initialization for
     # # the weights we need to start from the same random seed.
     # # np.random.seed(args.numpy_rand_seed)
-    m_spa=64
-    ln_emb=np.array([9980333,36084,17217,7378,20134,3,7112,1442,61, 9758201,1333352,313829,10,2208,11156,122,4,970,14, 9994222, 7267859, 9946608,415421,12420,101, 36])
-    ln_bot=np.array([13,512,256,64])
-    ln_top=np.array([415,512,512,256,1])
+    m_spa = 64
+    ln_emb = np.array(
+        [
+            9980333,
+            36084,
+            17217,
+            7378,
+            20134,
+            3,
+            7112,
+            1442,
+            61,
+            9758201,
+            1333352,
+            313829,
+            10,
+            2208,
+            11156,
+            122,
+            4,
+            970,
+            14,
+            9994222,
+            7267859,
+            9946608,
+            415421,
+            12420,
+            101,
+            36,
+        ]
+    )
+    ln_bot = np.array([13, 512, 256, 64])
+    ln_top = np.array([415, 512, 512, 256, 1])
+
     dlrm = DLRM_Net(
         m_spa,
         ln_emb,
@@ -288,6 +357,7 @@ def resnet_18_graph():
             break
     return resnet_graph
 
+
 def resnet_50_graph():
     for name, model in models.__dict__.items():
         #     print(name)
@@ -300,6 +370,7 @@ def resnet_50_graph():
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph
+
 
 def vggnet_graph():
     for name, model in models.__dict__.items():
@@ -501,10 +572,16 @@ class InitWeights_He(object):
         self.neg_slope = neg_slope
 
     def __call__(self, module):
-        if isinstance(module, nn.Conv3d) or isinstance(module, nn.Conv2d) or isinstance(module, nn.ConvTranspose2d) or isinstance(module, nn.ConvTranspose3d):
+        if (
+            isinstance(module, nn.Conv3d)
+            or isinstance(module, nn.Conv2d)
+            or isinstance(module, nn.ConvTranspose2d)
+            or isinstance(module, nn.ConvTranspose3d)
+        ):
             module.weight = nn.init.kaiming_normal_(module.weight, a=self.neg_slope)
             if module.bias is not None:
                 module.bias = nn.init.constant_(module.bias, 0)
+
 
 def Unet():
     conv_op = nn.Conv3d
@@ -513,14 +590,54 @@ def Unet():
 
     inputs = torch.randn(1, 160, 224, 224)
 
-    norm_op_kwargs = {'eps': 1e-5, 'affine': True}
-    dropout_op_kwargs = {'p': 0, 'inplace': True}
+    norm_op_kwargs = {"eps": 1e-5, "affine": True}
+    dropout_op_kwargs = {"p": 0, "inplace": True}
     net_nonlin = nn.LeakyReLU
-    net_nonlin_kwargs = {'negative_slope': 1e-2, 'inplace': True}
-    net_num_pool_op_kernel_sizes = [[2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2], [2, 2]]
-    net_conv_kernel_sizes =  [[3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3]]
-     # loaded automatically from plans_file
-    model = Generic_UNet(160, 24, 16,len(net_num_pool_op_kernel_sizes),1, 2, conv_op, norm_op, norm_op_kwargs, dropout_op,dropout_op_kwargs,net_nonlin, net_nonlin_kwargs, True, False, lambda x: x, InitWeights_He(1e-2),net_num_pool_op_kernel_sizes, net_conv_kernel_sizes, False, True, True)
+    net_nonlin_kwargs = {"negative_slope": 1e-2, "inplace": True}
+    net_num_pool_op_kernel_sizes = [
+        [2, 2],
+        [2, 2],
+        [2, 2],
+        [2, 2],
+        [2, 2],
+        [2, 2],
+        [2, 2],
+    ]
+    net_conv_kernel_sizes = [
+        [3, 3],
+        [3, 3],
+        [3, 3],
+        [3, 3],
+        [3, 3],
+        [3, 3],
+        [3, 3],
+        [3, 3],
+    ]
+    # loaded automatically from plans_file
+    model = Generic_UNet(
+        160,
+        24,
+        16,
+        len(net_num_pool_op_kernel_sizes),
+        1,
+        2,
+        conv_op,
+        norm_op,
+        norm_op_kwargs,
+        dropout_op,
+        dropout_op_kwargs,
+        net_nonlin,
+        net_nonlin_kwargs,
+        True,
+        False,
+        lambda x: x,
+        InitWeights_He(1e-2),
+        net_num_pool_op_kernel_sizes,
+        net_conv_kernel_sizes,
+        False,
+        True,
+        True,
+    )
 
     unet_Graph = trace(model.eval(), inputs)
     # return unet_Graph
@@ -529,22 +646,18 @@ def Unet():
 
 # featurizer_config = dict({sample_rate : 16000, window_size : 0.02, window_stride : 0.01, window : "hann", features : 80, n_fft : 512,frame_splicing : 3, dither : 0.00001, feat_type : "logfbank", normalize_transcripts : true, trim_silence : true, pad_to : 0})
 
-# rnn_config = {rnn_type : "lstm", encoder_n_hidden : 1024, encoder_pre_rnn_layers : 2, encoder_stack_time_factor : 2, encoder_post_rnn_layers : 3, pred_n_hidden : 320, pred_rnn_layers : 2, forget_gate_bias : 1.0, joint_n_hidden : 512, dropout:0.32}
-import toml
+
 def speech2text_model():
     config = toml.load("rnnt.toml")
     featurizer_config = config["input_eval"]
-    model = RNNT(
-            feature_config=featurizer_config,
-            rnnt= config["rnnt"],
-            num_classes=29
-        )
+    model = RNNT(feature_config=featurizer_config, rnnt=config["rnnt"], num_classes=29)
     seq_length, batch_size, feature_length = 157, 1, 240
     inp = torch.randn([seq_length, batch_size, feature_length])
     feature_length = torch.LongTensor([seq_length])
     x_padded, x_lens = model.encoder(inp, feature_length)
     speech2text_graph = trace(model.eval(), (inp, feature_length))
     return speech2text_graph
+
 
 def objectdetection_model():
     model = SSD_R34().model
