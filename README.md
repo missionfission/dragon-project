@@ -1,4 +1,4 @@
-## Analytical Tool Features :
+## DRAGON Framework Features :
 
 1. Runs on any Pytorch Model and provides the Graphical Analysis of Execution
 2. Fast Hardware Performance Estimation (Runtime, Energy and Area), allows overlapped execution and prefetching
