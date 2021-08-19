@@ -38,7 +38,6 @@ Open Demo.ipynb in jupyter notebook
 Performance Estimation for AI and Non-AI Workloads :
 
 1. Runs on Pytorch Model of an AI Workload and provides the Graphical Analysis of Execution
----
 
 For Running the Pytorch see models specified as in 'src/common_models.py', the default-hardware configurations supported are specified in 'src/configs/default.yaml'
 To specify the configs completely, detail all the energy and timing details for input to the simulation.
