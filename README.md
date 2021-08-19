@@ -58,12 +58,7 @@ Add the name of your app to src/ddfg_main.py which -> calls the C++ Non-AI synth
 ---
 
 
-2. For Running Non-AI Workload in C++, we have to get the LLVM-Trace :
+3. For Running Non-AI Workload in Python, we have to got the Python HLS as follows :
 
-We have provided Generate LLVM-Trace for some applications in folder 'req/.."
-The application trace is given in form of .gz and is generated from LLVM 6.0,
-
-We use an open-source LLVM-Trace Generation for doing this : https://github.com/harvard-acc/LLVM-Tracer/tree/llvm-6.0, place the workload to run in the folder "src/req/your_app", with a cfg and trace file in "src/req/your_app/inputs/" directory
-
-Add the name of your app to src/ddfg_main.py which -> calls the C++ Non-AI synthesis Code. 
+In the synthesis folder go to "src/hls.py", and call the gen_stats and cfg generation functions
 
