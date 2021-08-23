@@ -50,9 +50,32 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
-    eff = 0
-    # if(node.type == 'conv2d'||):
-    return eff
+    efficiency = 0
+    if(node.type == 'aten::convolution'):
+        # Efficiency of Mapping a Convolution Layer on a Systolic Array
+         # 
+        # The following is a function that calculates the efficiency of mapping a convolution layer on a systolic array.
+        # 
+        # The function takes in the following parameters:
+        # 
+        # - `N`: The size of the systolic array
+        # - `K`: The size of the kernels
+        # - `C`: The number of channels
+        # - `R`: The number of rows in the image
+        # - `Ci`: The number of channels in the image
+        # - `Co`: The number of channels out
+        # - `S`: The stride
+        # - `B`: The batch size
+        # 
+        # The function returns the efficiency of mapping a convolution layer on a systolic array.
+        # Calculate the number of systolic array cycles
+#         cycles = (N*N*C*R*R*K*K*Co*Ci) / (N*N*B)
+
+        # Calculate the efficiency
+#         efficiency = cycles / (N*N*B)
+    
+    return efficiency
+
 
 
 
