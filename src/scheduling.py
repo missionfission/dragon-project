@@ -8,6 +8,7 @@ import yamlordereddictloader
 
 from generator import *
 from generator import Generator, get_mem_props
+from synthesis import aisynthesis_utils
 from utils.logger import create_logger
 from utils.visualizer import *
 
@@ -317,8 +318,6 @@ def run_reuse_leakage(self, graph):
     mem_free = True
     for n, node in enumerate(graph.nodes):
         node.mem_fetch = node.weights
-    for n, node in enumerate(graph.nodes):
-
         # These are last level read/write accesses
         compute_expense, weights = node.get_stats()
         """
@@ -666,7 +665,7 @@ def run_nn_dataflow(self, graph):
     self.mem_util_full = []
     # Mem Fetch time of the last Nodes
     #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
-
+    step_cycles = 0
     mem_free = True
     for n, node in enumerate(graph.nodes):
         node.mem_fetch = node.weights
@@ -707,8 +706,8 @@ def run_nn_dataflow(self, graph):
         self.mem_write_access[1] += node.out_edge_mem
         self.mem_util[0] += node.mem_util
         self.mem_free[0] -= node.mem_util
-        util = calculate_utillization(node)
-        steps_cycles += time_compute/util
+        util = aisynthesis_utils.calculate_utillization(node)
+        steps_cycles += time_compute / util
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem
@@ -763,6 +762,220 @@ def get_reuse(node):
     # for node.type in conv2d
     #
     pass
+
+
+def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    mem_size_util = np.zeros((num_of_chips + 1))
+    mem_free = np.zeros((num_of_chips + 1))
+    message_passed = np.zeros((num_of_chips + 1))
+    i = 0
+    # mem_track_node
+    if deeper:
+        layer = 0
+        for node in graph.nodes:
+            for k in range(depth):
+                if node.operator == "aten::_convolution":
+                    layer += 1
+                    if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                        oc, ic, *ks = node.inputs[1].shape
+                    else:
+                        ic, oc, *ks = node.inputs[1].shape
+                    mem_size_util[i] += node.weights
+
+                    if mem_size_util[i] < capacity:
+                        continue
+                    elif mem_size_util[i] > capacity:
+                        mem_size_util[i] -= node.weights
+                        # partition of node.weights
+                        if np.prod(node.outputs[0].shape) > np.prod(
+                            node.inputs[0].shape
+                        ):
+                            # weights : (oc,ic,x,y)
+                            mem_free[i] = capacity - mem_size_util[i]
+                            oc_partition = mem_free[i] // (np.prod(ks) * ic)
+                            mem_size_util[i + 1] = (
+                                node.weights
+                            ) - oc_partition * np.prod(ks) * ic
+                            # outputs : oc, ox, oy, inputs : ic,ix, iy
+
+                            message_passed[i + 1] += np.prod(
+                                node.outputs[0].shape[2:]
+                            ) * oc_partition + np.prod(node.inputs[0].shape)
+
+                        else:
+                            mem_free[i] = capacity - mem_size_util[i]
+                            ic_partition = mem_free[i] // (oc * np.prod(ks))
+                            mem_size_util[
+                                i + 1
+                            ] = node.weights - ic_partition * oc * np.prod(ks)
+                            message_passed[i + 1] += np.prod(
+                                node.inputs[0].shape[2:]
+                            ) * ic_partition + np.prod(node.outputs[0].shape)
+                        i += 1
+                        message_passed[i] += np.prod(node.outputs[0].shape)
+                    # if node.operator == "aten::addmm":
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
+                    #     mem_size_util[i] -= node.weights
+                    #     n, m = node.inputs[1].shape
+                    #     m, p = node.inputs[2].shape
+                    #     if mem_size_util[i] + n * p > capacity:
+                    #         message_passed[i] += n * p
+
+                    #     if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
+                    #         x = capacity // p
+                    #         message_passed[i] += m * p + (n - x) * m
+                    #         mem_size_util[i + 1] += (n - x) * p
+                    #     else:
+                    #         x = capacity // (n)
+                    #         message_passed[i] += m * (p - x) + n * m
+                    #         mem_size_util[i + 1] += (p - x) * n
+                    #     i += 1
+                    # if node.operator == "aten::bmm":
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
+                    #     *b, n, p = node.outputs[0].shape
+                    #     *_, n, m = node.inputs[0].shape
+                    #     *_, m, p = node.inputs[1].shape
+                    #     if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
+                    #         x = capacity // (np.prod(b) * p)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+
+                    #     else:
+                    #         x = capacity // (np.prod(b) * n)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    #     i += 1
+                    # if node.operator == "aten::matmul":
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
+
+                    #     if len(node.inputs) > 1:
+                    #         if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
+                    #             n, p = node.outputs[0].shape
+                    #             n, m = node.inputs[0].shape
+                    #             m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) > np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (p)
+                    #                 message_passed[i] += m * p + (n - x) * m
+                    #                 mem_size_util[i + 1] += (n - x) * p
+                    #             else:
+                    #                 x = capacity // (n)
+                    #                 message_passed[i] += m * (p - x) + n * m
+                    #                 mem_size_util[i + 1] += (p - x) * n
+
+                    #         elif node.inputs[0].ndim > 2 and node.inputs[1].ndim > 2:
+                    #             *b, n, p = node.outputs[0].shape
+                    #             *_, n, m = node.inputs[0].shape
+                    #             *_, m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) > np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (np.prod(b) * p)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #             else:
+                    #                 x = capacity // (np.prod(b) * n)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    # i += 1
+        print(np.sum(message_passed))
+
+    if wider:
+        for node in graph.nodes:
+            layer = 0
+            if node.operator == "aten::_convolution":
+                layer += 1
+                if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                    oc, ic, *ks = node.inputs[1].shape
+                else:
+                    ic, oc, *ks = node.inputs[1].shape
+                # depth first for residual blocks
+
+                mem_size_util[i] += depth * node.weights
+                if mem_size_util[i] < capacity:
+                    continue
+                elif mem_size_util[i] > capacity:
+                    mem_size_util[i] -= depth * node.weights
+                    # partition of node.weights
+                    # print("Layer partition", layer)
+                    if np.prod(node.outputs[0].shape) > np.prod(node.inputs[0].shape):
+                        # weights : (oc,ic,x,y)
+                        mem_free[i] = capacity - mem_size_util[i]
+                        oc_partition = mem_free[i] // (depth * np.prod(ks) * ic)
+                        mem_size_util[i + 1] = (
+                            depth * (node.weights)
+                            - depth * oc_partition * np.prod(ks) * ic
+                        )
+                        # outputs : oc, ox, oy, inputs : ic,ix, iy
+                        # message_passed[i + 1] = np.prod(
+                        #     node.outputs[0].shape[2:]
+                        # ) * oc_partition + np.prod(node.inputs[0].shape)
+                        if mem_size_util[i + 1] > capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) % capacity
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            i += depth_ratio
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    else:
+                        mem_free[i] = capacity - mem_size_util[i]
+                        ic_partition = mem_free[i] // (depth * oc * np.prod(ks))
+                        mem_size_util[i + 1] = depth * (
+                            node.weights - ic_partition * oc * np.prod(ks)
+                        )
+                        if mem_size_util[i + 1] > capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) % capacity
+                            i += int(depth_ratio)
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    message_passed[i] += np.prod(node.outputs[0].shape) + np.prod(
+                        node.inputs[0].shape
+                    )
+
+        # print(message_passed)
+        print(np.sum(message_passed))
 
 
 Scheduling.complete_config = complete_config

@@ -78,23 +78,22 @@ def get_efficiency(graph_node, array_size):
 
 
 
+# class ai_graph_manipulations():
 
-class ai_graph_manipulations():
-  
-  def __init__(graph):
-    self.graph = graph
+#   def __init__(graph):
+#     self.graph = graph
 
-  def smart_topo_sort():
-    # [[a,b],c,d,[e,f,g]]
-    # account_relevant_edges():
-    pass
+#   def smart_topo_sort():
+#     # [[a,b],c,d,[e,f,g]]
+#     # account_relevant_edges():
+#     pass
 
-  def check_size():
-    # run in parallel
-    pass
-        
-  def dependency_nodes():
-    pass 
-  def simplify_edge_mesh():
-    # model internal data movement
-    pass 
+#   def check_size():
+#     # run in parallel
+#     pass
+
+#   def dependency_nodes():
+#     pass
+#   def simplify_edge_mesh():
+#     # model internal data movement
+#     pass

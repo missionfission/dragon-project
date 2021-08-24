@@ -21,7 +21,7 @@ def bmm(node):
     # [b, n, p] = aten::bmm([b, n, m], [b, m, p])
     b, n, m = node.inputs[0].shape
     b, m, p = node.inputs[1].shape
-    return (b * n * m * p, b * m * p, 0)
+    return (b * n * m * p, b * n * m + b * m * p, 0)
 
 
 def matmul(node):
@@ -42,7 +42,7 @@ def matmul(node):
         # [n, p] = aten::matmul([n, m], [m, p])
         n, m = node.inputs[0].shape
         m, p = node.inputs[1].shape
-        return n * m * p, m * p, 0
+        return n * m * p, m * p + n * m, 0
     elif node.inputs[0].ndim == 1:
         # [..., m] = aten::matmul([n], [..., n, m])
         *b, n, m = node.inputs[1].shape
@@ -90,11 +90,13 @@ def avg_pool_or_mean(node):
     os = node.outputs[0].shape
     return np.prod(os), 0, 0
 
+
 def lstm(node):
     os = node.outputs[0].shape
     inp = node.inputs[0].shape
     print(node.inputs[1], os)
-    return np.prod(inp),np.prod(os),0
+    return np.prod(inp), np.prod(os), 0
+
 
 handlers = (
     ("aten::lstm", lstm),

@@ -352,7 +352,7 @@ def resnet_18_graph():
         if "resnet18" in name:
             print(name)
             model = model().eval()
-            inputs = torch.randn(64, 3, 224, 224)
+            inputs = torch.randn(1, 3, 224, 224)
             resnet_graph = trace(model, inputs)
             break
     return resnet_graph
