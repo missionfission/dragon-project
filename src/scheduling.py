@@ -17,6 +17,12 @@ eff = 0.5
 
 class Scheduling:
     def __init__(self, hwfile="default.yaml", stats_file="logs/stats.txt"):
+        """[summary]
+
+        Args:
+            hwfile (str, optional): [description]. Defaults to "default.yaml".
+            stats_file (str, optional): [description]. Defaults to "logs/stats.txt".
+        """        
         base_dir = "configs/"
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -29,6 +35,14 @@ class Scheduling:
 
 
 def complete_config(self, config):
+    """[Complete the Config for Hardware Description by using Technology Models]
+
+    Args:
+        config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """    
 
     self.logger.debug("Config Statistics : ")
 
@@ -112,18 +126,24 @@ def complete_config(self, config):
 def run_asap(self, graph):
 
     """
-     Check both size, utilization and bandwidths at every node
-     What about memory size that can also get exhausted ?
-     So if memory size is exhausted, then have to go to a previous level and write there ?
-     if any level utilization is exhausted then only the immediate memory required will be kept.
-     if the memory is empty in size, but is not bandwidth, it is useless?
-     Cannot do prefetching
-     Read access of the next node will decrease
-     Bandwidth is available but size is not?, can do prefetching, but now the memory fetches have to check, 
-     whether to do fetches of the same node or a different node
-     Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
-     slower so it will take its own time
-     Do vector operations in the meantime perhaps ? 
+    [Runs the Graph on the Hardware ASAP Mapped]
+
+    Memory Management Scenarios :
+        1. Check both size, utilization and bandwidths at every node
+        2. What about memory size that can also get exhausted 
+        3. If memory size is exhausted, then to go to a previous level and write there 
+        4. If any level utilization is exhausted then only the immediate memory required will be kept.
+        5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+        6. If Prefetching : Read access of the next node will decrease
+        7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+        whether to do fetches of the same node or a different node
+        8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+        slower so it will take its own time
+
+    Compute Management Scenarios :
+        1. Pipelined vs Parallel Scheduling 
+        2. When do vector operations happen 
+        3. Scale up vs Scale out for Systolic Arrays
 
     """
 
@@ -296,7 +316,12 @@ def run_asap(self, graph):
 
 def run_reuse_leakage(self, graph):
     """
-    Energy efficiency mapping with greedy choice between reuse and leakage_power 
+    Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power
+    
+    Implementation :
+        1. Quantify the Scenarios of Reuse
+        2. Time taken by the Loop Blocking for Reuse
+
     """
 
     config = self.config
@@ -471,7 +496,7 @@ def run_reuse_leakage(self, graph):
 
 def run_reuse_full(self, graph):
     """
-    Energy efficiency mapping with maximal reuse and power gating of the components
+    Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components 
     """
     config = self.config
     # TODO in_edge_mem can change by pooling/batch_norm

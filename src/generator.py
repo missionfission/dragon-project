@@ -21,6 +21,11 @@ logic_speed = 1
 
 class Generator:
     def __init__(self, constraintfiles="max_constraints.yaml"):
+        """[summary]
+
+        Args:
+            constraintfiles (str, optional): [description]. Defaults to "max_constraints.yaml".
+        """        
         base_dir = "configs/"
 
         self.maxval = yaml.load(
@@ -209,6 +214,16 @@ def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
 
 def get_mem_props(size, width, banks):
+    """[summary]
+
+    Args:
+        size ([type]): [description]
+        width ([type]): [description]
+        banks ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """    
     for i in range(11, 25):
         if (size * 4 // (2 ** i)) < 1:
             break
@@ -440,7 +455,12 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 
 
 def functions(technology, design):
-    # compute functions
+    """[summary]
+
+    Args:
+        technology ([type]): [description]
+        design ([type]): [description]
+    """    # compute functions
     wire_cap, wire_res, node = technology["compute"]
     comp_config = design["compute"]
     # memory functions
@@ -479,6 +499,7 @@ def functions(technology, design):
 
 
 def generate_tech_targets(graph, name, EDP=100):
+    
     orderlist = []
     orderlist.append("connectivity")
     tech_targets = {}
@@ -518,33 +539,31 @@ def generate_tech_targets(graph, name, EDP=100):
 
 #############################################################################################################################
 
+# Snippet for Write Bandwidth
 
-def endurance_writes_schedule():
-    pass
-    # if (read_bw_ll < self.mem_read_bw[self.mle - 1] and write_bw_ll < self.mem_write_bw[self.mle - 1]):
-    # elif (
-    #     read_bw_ll < self.mem_read_bw[self.mle - 1]
-    #     and write_bw_ll > self.mem_write_bw[self.mle - 1]
-    # ):
-    #     step_cycles = write_bw_ll / self.mem_write_bw[self.mle - 1]
-    # elif (
-    #     read_bw_ll > self.mem_read_bw[self.mle - 1]
-    #     and write_bw_ll < self.mem_write_bw[self.mle - 1]
-    # ):
-    #     step_cycles = read_bw_ll / self.mem_read_bw[self.mle - 1]
-    # else:
-    #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
+# TODO Check smaller errors of floating point (32) to words comparison in memory banks conversion
+
+# if (read_bw_ll < self.mem_read_bw[self.mle - 1] and write_bw_ll < self.mem_write_bw[self.mle - 1]):
+# elif (
+#     read_bw_ll < self.mem_read_bw[self.mle - 1]
+#     and write_bw_ll > self.mem_write_bw[self.mle - 1]
+# ):
+#     step_cycles = write_bw_ll / self.mem_write_bw[self.mle - 1]
+# elif (
+#     read_bw_ll > self.mem_read_bw[self.mle - 1]
+#     and write_bw_ll < self.mem_write_bw[self.mle - 1]
+# ):
+#     step_cycles = read_bw_ll / self.mem_read_bw[self.mle - 1]
+# else:
+#     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 
 
 Generator.writeconfig = writeconfig
 Generator.save_stats = save_stats
-
 Generator.backward_pass_tech = backward_pass_tech
 Generator.update_tech = update_tech
-
 Generator.backward_pass_design = backward_pass_design
 Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
 
 
-# TODO Check smaller errors of floating point (32) to words comparison in memory banks conversion
