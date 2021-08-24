@@ -31,8 +31,8 @@ def generate_systolic_array(graph, config):
     total_expense = 0
     for node in graph.nodes:
         total_expense += node.compute_expense
-    for i in range(10):
-        for j in range(10):
+    for i in range(4, 9):
+        for j in range(4, 9):
             s_i = 2 ** i
             s_j = 2 ** j
             for node in graph.nodes:
@@ -50,48 +50,25 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
+    N_i, N_j = array_size
     efficiency = 0
-    if(node.type == 'aten::convolution'):
-        # Efficiency of Mapping a Convolution Layer on a Systolic Array
-         # 
-        # The following is a function that calculates the efficiency of mapping a convolution layer on a systolic array.
-        # 
-        # The function takes in the following parameters:
-        # 
-        # - `N`: The size of the systolic array
-        # - `K`: The size of the kernels
-        # - `C`: The number of channels
-        # - `R`: The number of rows in the image
-        # - `Ci`: The number of channels in the image
-        # - `Co`: The number of channels out
-        # - `S`: The stride
-        # - `B`: The batch size
-        # 
-        # The function returns the efficiency of mapping a convolution layer on a systolic array.
-        # Calculate the number of systolic array cycles
-#         cycles = (N*N*C*R*R*K*K*Co*Ci) / (N*N*B)
+    if node.type == "aten::convolution":
+        cycles = (N * N * C * R * R * K * K * Co * Ci) / (N * N * B)
+        efficiency = cycles / (N * N * B)
 
-        # Calculate the efficiency
-#         efficiency = cycles / (N*N*B)
-    
     return efficiency
 
 
-
 # class ai_graph_manipulations():
-
 #   def __init__(graph):
 #     self.graph = graph
-
 #   def smart_topo_sort():
 #     # [[a,b],c,d,[e,f,g]]
 #     # account_relevant_edges():
 #     pass
-
 #   def check_size():
 #     # run in parallel
 #     pass
-
 #   def dependency_nodes():
 #     pass
 #   def simplify_edge_mesh():
