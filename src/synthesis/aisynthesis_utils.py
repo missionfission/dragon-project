@@ -50,6 +50,12 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
+    """[Efficiency of node on Systolic Array]
+
+    Args:
+        graph_node ([type]): [description]
+        array_size ([type]): [description]
+    """    
     efficiency = 0
     if(node.type == 'aten::convolution'):
         # Efficiency of Mapping a Convolution Layer on a Systolic Array

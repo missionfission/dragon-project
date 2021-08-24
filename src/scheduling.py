@@ -784,12 +784,27 @@ def run_nn_dataflow(self, graph):
 
 
 def get_reuse(node):
+    """[Get Reuse Possible for Conv and Matmul nodes]
+
+    Args:
+        node ([type]): [description]
+    """    
     # for node.type in conv2d
     #
     pass
 
 
 def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    """[summary]
+
+    Args:
+        graph ([type]): [description]
+        num_of_chips ([type]): [description]
+        depth ([type]): [description]
+        capacity ([type]): [description]
+        deeper (bool, optional): [description]. Defaults to False.
+        wider (bool, optional): [description]. Defaults to False.
+    """    
     mem_size_util = np.zeros((num_of_chips + 1))
     mem_free = np.zeros((num_of_chips + 1))
     message_passed = np.zeros((num_of_chips + 1))

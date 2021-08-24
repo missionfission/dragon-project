@@ -499,7 +499,16 @@ def functions(technology, design):
 
 
 def generate_tech_targets(graph, name, EDP=100):
-    
+    """[summary]
+
+    Args:
+        graph ([type]): [description]
+        name ([type]): [description]
+        EDP (int, optional): [description]. Defaults to 100.
+
+    Returns:
+        [type]: [description]
+    """    
     orderlist = []
     orderlist.append("connectivity")
     tech_targets = {}

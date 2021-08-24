@@ -58,6 +58,15 @@ hw_allocated['Regs'] = 0
 hw_utilized['Regs'] = 0
 
 def schedule(expr, type):
+    """[Schedules the expr from AST]
+
+    Args:
+        expr ([type]): [description]
+        type ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """    
     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
     # upsamplelloops
     # run
@@ -77,6 +86,14 @@ def schedule(expr, type):
     return num_cycles, hw_need
     
 def parse_code(expr, type, unrolled=1, loop_iters=1):
+    """[Parse the input Python Code file]
+
+    Args:
+        expr ([type]): [description]
+        type ([type]): [description]
+        unrolled (int, optional): [description]. Defaults to 1.
+        loop_iters (int, optional): [description]. Defaults to 1.
+    """    
     if type in ["assign", "expr", "binop_nested", "constant"]:
         expr_cycles, hw_need = schedule(expr,type)
         global cycles, hw_allocated, hw_utilized
@@ -107,6 +124,13 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     
 
 def check_and_parse(string, unrolled=1,  loop_iters=1):
+    """[summary]
+
+    Args:
+        string ([type]): [description]
+        unrolled (int, optional): [description]. Defaults to 1.
+        loop_iters (int, optional): [description]. Defaults to 1.
+    """    
     if type(string) == ast.BinOp or ast.BoolOp :
         parse_code(astor.to_source(string), "binop_nested",unrolled)
     if (type(string) == ast.Call):
@@ -182,6 +206,12 @@ def parse_graph(graph):
 
     
 def get_params(dfg, area_budget):
+    """[summary]
+
+    Args:
+        dfg ([type]): [description]
+        area_budget ([type]): [description]
+    """    
     allocated_area = 0
     while (allocated_area < 0.9*area or allocated_area > 1.2*area):
         # unroll_params -> modify
@@ -200,6 +230,11 @@ def get_params(dfg, area_budget):
     pass
 
 def allocate_memory_cfgs():
+    """[allocate_memory_cfgs]
+
+    Returns:
+        [type]: [description]
+    """    
     mem_list = {}
     for key, value in memory_cfgs.items():
         if value> 32768:
