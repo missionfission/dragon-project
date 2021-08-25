@@ -231,6 +231,11 @@ def perf(
 
 
 def all_design_updates(graph, backprop):
+    &#34;&#34;&#34;Plots the Design Parameters Updates in Backward Pass on Running a Given DFG
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): True to Run the Workload in Training
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
     base_dir = &#34;figures/&#34;
@@ -266,8 +271,7 @@ def all_design_updates(graph, backprop):
 
 
 def all_tech_updates(graph, backprop):
-    &#34;&#34;&#34;[summary]
-
+    &#34;&#34;&#34;Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG
     Args:
         graph ([type]): [description]
         backprop ([type]): [description]
@@ -429,6 +433,15 @@ def s_mem_area_pitch(
 def sweep_area(
     graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
 ):
+    &#34;&#34;&#34;
+
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+        area_range (int, optional): [description]. Defaults to 1.
+    &#34;&#34;&#34;
     total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
     fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -737,6 +750,16 @@ def sweep_area(
 
 
 def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
+    &#34;&#34;&#34; No. of Monolithic Memory Layers Required by the Workloads 
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(6, 6))
     total_mem = []
     for en, graph in enumerate(graph_list):
@@ -851,12 +874,24 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">all_design_updates</span></span>(<span>graph, backprop)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Plots the Design Parameters Updates in Backward Pass on Running a Given DFG</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>True to Run the Workload in Training</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def all_design_updates(graph, backprop):
+    &#34;&#34;&#34;Plots the Design Parameters Updates in Backward Pass on Running a Given DFG
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): True to Run the Workload in Training
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
     base_dir = &#34;figures/&#34;
@@ -895,7 +930,7 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">all_tech_updates</span></span>(<span>graph, backprop)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>[summary]</p>
+<div class="desc"><p>Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
@@ -908,8 +943,7 @@ def s_size_c_joint(graph, backprop):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def all_tech_updates(graph, backprop):
-    &#34;&#34;&#34;[summary]
-
+    &#34;&#34;&#34;Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG
     Args:
         graph ([type]): [description]
         backprop ([type]): [description]
@@ -1373,12 +1407,38 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">show_memory_capacity_req</span></span>(<span>graph_list, backprop, names=None, plot='time')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>No. of Monolithic Memory Layers Required by the Workloads </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_list</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>names</code></strong> :&ensp;<code>[type]</code>, optional</dt>
+<dd>[description]. Defaults to None.</dd>
+<dt><strong><code>plot</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "time".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
+    &#34;&#34;&#34; No. of Monolithic Memory Layers Required by the Workloads 
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(6, 6))
     total_mem = []
     for en, graph in enumerate(graph_list):
@@ -1454,7 +1514,19 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">sweep_area</span></span>(<span>graph_list, backprop, names=None, plot='time', area_range=1, *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_list</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>names</code></strong> :&ensp;<code>[type]</code>, optional</dt>
+<dd>[description]. Defaults to None.</dd>
+<dt><strong><code>plot</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "time".</dd>
+<dt><strong><code>area_range</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>[description]. Defaults to 1.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1462,6 +1534,15 @@ def s_size_c_joint(graph, backprop):
 <pre><code class="python">def sweep_area(
     graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
 ):
+    &#34;&#34;&#34;
+
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+        area_range (int, optional): [description]. Defaults to 1.
+    &#34;&#34;&#34;
     total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
     fig, ax = plt.subplots(figsize=(6, 6))
 

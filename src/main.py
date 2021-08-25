@@ -203,6 +203,11 @@ def perf(
 
 
 def all_design_updates(graph, backprop):
+    """Plots the Design Parameters Updates in Backward Pass on Running a Given DFG
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): True to Run the Workload in Training
+    """
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
     base_dir = "figures/"
@@ -238,8 +243,7 @@ def all_design_updates(graph, backprop):
 
 
 def all_tech_updates(graph, backprop):
-    """[summary]
-
+    """Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG
     Args:
         graph ([type]): [description]
         backprop ([type]): [description]
@@ -401,6 +405,15 @@ def s_mem_area_pitch(
 def sweep_area(
     graph_list, backprop, names=None, plot="time", area_range=1, *args, **kwargs
 ):
+    """
+
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to "time".
+        area_range (int, optional): [description]. Defaults to 1.
+    """
     total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot="time")
     fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -709,6 +722,16 @@ def sweep_area(
 
 
 def show_memory_capacity_req(graph_list, backprop, names=None, plot="time"):
+    """ No. of Monolithic Memory Layers Required by the Workloads 
+    Args:
+        graph_list ([type]): [description]
+        backprop ([type]): [description]
+        names ([type], optional): [description]. Defaults to None.
+        plot (str, optional): [description]. Defaults to "time".
+
+    Returns:
+        [type]: [description]
+    """
     fig, ax = plt.subplots(figsize=(6, 6))
     total_mem = []
     for en, graph in enumerate(graph_list):

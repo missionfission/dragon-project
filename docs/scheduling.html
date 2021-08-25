@@ -36,7 +36,7 @@ import yamlordereddictloader
 
 from generator import *
 from generator import Generator, get_mem_props
-from synthesis import aisynthesis_utils
+from synthesis import ai_utils
 from utils.logger import create_logger
 from utils.visualizer import *
 
@@ -50,7 +50,7 @@ class Scheduling:
         Args:
             hwfile (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
             stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
-        &#34;&#34;&#34;        
+        &#34;&#34;&#34;
         base_dir = &#34;configs/&#34;
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -70,7 +70,7 @@ def complete_config(self, config):
 
     Returns:
         [type]: [description]
-    &#34;&#34;&#34;    
+    &#34;&#34;&#34;
 
     self.logger.debug(&#34;Config Statistics : &#34;)
 
@@ -811,13 +811,17 @@ def run_nn_dataflow(self, graph):
     )
 
 
-def get_reuse(node):
-    # for node.type in conv2d
-    #
-    pass
-
-
 def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    &#34;&#34;&#34; Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.&#39;20
+
+    Args:
+        graph ([type]): [description]
+        num_of_chips ([type]): [description]
+        depth ([type]): [description]
+        capacity ([type]): [description]
+        deeper (bool, optional): [description]. Defaults to False.
+        wider (bool, optional): [description]. Defaults to False.
+    &#34;&#34;&#34;
     mem_size_util = np.zeros((num_of_chips + 1))
     mem_free = np.zeros((num_of_chips + 1))
     message_passed = np.zeros((num_of_chips + 1))
@@ -1072,7 +1076,7 @@ Scheduling.run_nn_dataflow = run_nn_dataflow</code></pre>
 
     Returns:
         [type]: [description]
-    &#34;&#34;&#34;    
+    &#34;&#34;&#34;
 
     self.logger.debug(&#34;Config Statistics : &#34;)
 
@@ -1153,31 +1157,41 @@ Scheduling.run_nn_dataflow = run_nn_dataflow</code></pre>
     return config</code></pre>
 </details>
 </dd>
-<dt id="scheduling.get_reuse"><code class="name flex">
-<span>def <span class="ident">get_reuse</span></span>(<span>node)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_reuse(node):
-    # for node.type in conv2d
-    #
-    pass</code></pre>
-</details>
-</dd>
 <dt id="scheduling.illusion_mapping"><code class="name flex">
 <span>def <span class="ident">illusion_mapping</span></span>(<span>graph, num_of_chips, depth, capacity, deeper=False, wider=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.'20</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>num_of_chips</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>depth</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>capacity</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>deeper</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+<dt><strong><code>wider</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    &#34;&#34;&#34; Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.&#39;20
+
+    Args:
+        graph ([type]): [description]
+        num_of_chips ([type]): [description]
+        depth ([type]): [description]
+        capacity ([type]): [description]
+        deeper (bool, optional): [description]. Defaults to False.
+        wider (bool, optional): [description]. Defaults to False.
+    &#34;&#34;&#34;
     mem_size_util = np.zeros((num_of_chips + 1))
     mem_free = np.zeros((num_of_chips + 1))
     message_passed = np.zeros((num_of_chips + 1))
@@ -2134,7 +2148,7 @@ slower so it will take its own time</p>
         Args:
             hwfile (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
             stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
-        &#34;&#34;&#34;        
+        &#34;&#34;&#34;
         base_dir = &#34;configs/&#34;
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -2174,7 +2188,7 @@ slower so it will take its own time</p>
 
     Returns:
         [type]: [description]
-    &#34;&#34;&#34;    
+    &#34;&#34;&#34;
 
     self.logger.debug(&#34;Config Statistics : &#34;)
 
@@ -2983,7 +2997,6 @@ slower so it will take its own time</p>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
 <li><code><a title="scheduling.complete_config" href="#scheduling.complete_config">complete_config</a></code></li>
-<li><code><a title="scheduling.get_reuse" href="#scheduling.get_reuse">get_reuse</a></code></li>
 <li><code><a title="scheduling.illusion_mapping" href="#scheduling.illusion_mapping">illusion_mapping</a></code></li>
 <li><code><a title="scheduling.run_asap" href="#scheduling.run_asap">run_asap</a></code></li>
 <li><code><a title="scheduling.run_nn_dataflow" href="#scheduling.run_nn_dataflow">run_nn_dataflow</a></code></li>

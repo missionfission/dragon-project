@@ -8,7 +8,7 @@ import yamlordereddictloader
 
 from generator import *
 from generator import Generator, get_mem_props
-from synthesis import aisynthesis_utils
+from synthesis import ai_utils
 from utils.logger import create_logger
 from utils.visualizer import *
 
