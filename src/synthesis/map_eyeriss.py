@@ -1,11 +1,11 @@
 import warnings
 from operator import mul, sub
 
-from . import DataCategoryEnum as de
-from . import LoopBlocking
-from . import MemHierEnum as me
-from . import Util
-from .PhyDim2 import PhyDim2
+# from . import DataCategoryEnum as de
+# from . import LoopBlocking
+# from . import MemHierEnum as me
+# from . import Util
+# from .PhyDim2 import PhyDim2
 
 
 def gen_nested_loop_desc(layer, batch_size, dim_array):
@@ -237,4 +237,3 @@ def gen_nested_loop_desc(layer, batch_size, dim_array):
             unit_ops,
             unit_time,
         )
-

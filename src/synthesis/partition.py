@@ -2,11 +2,11 @@ import itertools
 
 import numpy as np
 
-from . import DataCategoryEnum as de
-from . import ParallelEnum as pe
-from . import Util
-from .Layer import Layer
-from .PhyDim2 import PhyDim2
+# from . import DataCategoryEnum as de
+# from . import ParallelEnum as pe
+# from . import Util
+# from .Layer import Layer
+# from .PhyDim2 import PhyDim2
 
 
 class Partition2dScheme(object):

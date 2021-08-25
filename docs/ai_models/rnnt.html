@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>rnnt API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>rnnt</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from typing import Optional, Tuple
+
+import numpy as np
+import torch
+
+from models.rnn import rnn
+from models.rnn import StackTime
+
+      
+class RNNT(torch.nn.Module):
+    def __init__(self, rnnt=None, num_classes=1, **kwargs):
+        super().__init__()
+        if kwargs.get(&#34;no_featurizer&#34;, False):
+            in_features = kwargs.get(&#34;in_features&#34;)
+        else:
+            feat_config = kwargs.get(&#34;feature_config&#34;)
+            # This may be useful in the future, for MLPerf
+            # configuration.
+            in_features = feat_config[&#39;features&#39;] * \
+                feat_config.get(&#34;frame_splicing&#34;, 1)
+
+        self.encoder = Encoder(in_features,
+            rnnt[&#34;encoder_n_hidden&#34;],
+            rnnt[&#34;encoder_pre_rnn_layers&#34;],
+            rnnt[&#34;encoder_post_rnn_layers&#34;],
+            rnnt[&#34;forget_gate_bias&#34;],
+            None if &#34;norm&#34; not in rnnt else rnnt[&#34;norm&#34;],
+            rnnt[&#34;rnn_type&#34;],
+            rnnt[&#34;encoder_stack_time_factor&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+        self.prediction = Prediction(
+            num_classes,
+            rnnt[&#34;pred_n_hidden&#34;],
+            rnnt[&#34;pred_rnn_layers&#34;],
+            rnnt[&#34;forget_gate_bias&#34;],
+            None if &#34;norm&#34; not in rnnt else rnnt[&#34;norm&#34;],
+            rnnt[&#34;rnn_type&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+        self.joint = Joint(
+            num_classes,
+            rnnt[&#34;pred_n_hidden&#34;],
+            rnnt[&#34;encoder_n_hidden&#34;],
+            rnnt[&#34;joint_n_hidden&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+    def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+        return self.encoder(x_padded, x_lens)
+        
+
+class Encoder(torch.nn.Module):
+    def __init__(self, in_features, encoder_n_hidden,
+                 encoder_pre_rnn_layers, encoder_post_rnn_layers,
+                 forget_gate_bias, norm, rnn_type, encoder_stack_time_factor,
+                 dropout):
+        super().__init__()
+        self.pre_rnn = rnn(
+            rnn=rnn_type,
+            input_size=in_features,
+            hidden_size=encoder_n_hidden,
+            num_layers=encoder_pre_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            dropout=dropout,
+        )
+        self.stack_time = StackTime(factor=encoder_stack_time_factor)
+        self.post_rnn = rnn(
+            rnn=rnn_type,
+            input_size=encoder_stack_time_factor * encoder_n_hidden,
+            hidden_size=encoder_n_hidden,
+            num_layers=encoder_post_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            norm_first_rnn=True,
+            dropout=dropout,
+        )
+
+    def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+        x_padded, _ = self.pre_rnn(x_padded, None)
+        x_padded, x_lens = self.stack_time(x_padded, x_lens)
+        # (T, B, H)
+        x_padded, _ = self.post_rnn(x_padded, None)
+        # (B, T, H)
+        x_padded = x_padded.transpose(0, 1)
+        return x_padded, x_lens
+
+class Prediction(torch.nn.Module):
+    def __init__(self, vocab_size, n_hidden, pred_rnn_layers,
+                 forget_gate_bias, norm, rnn_type, dropout):
+        super().__init__()
+        self.embed = torch.nn.Embedding(vocab_size - 1, n_hidden)
+        self.n_hidden = n_hidden
+        self.dec_rnn = rnn(
+            rnn=rnn_type,
+            input_size=n_hidden,
+            hidden_size=n_hidden,
+            num_layers=pred_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            dropout=dropout,
+        )
+
+    def forward(self, y: Optional[torch.Tensor],
+                state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None):
+        # &#34;&#34;&#34;
+        # B - batch size
+        # U - label length
+        # H - Hidden dimension size
+        # L - Number of decoder layers = 2
+        # Args:
+        #     y: (B, U)
+        # Returns:
+        #     Tuple (g, hid) where:
+        #         g: (B, U + 1, H)
+        #         hid: (h, c) where h is the final sequence hidden state and c is
+        #             the final cell state:
+        #                 h (tensor), shape (L, B, H)
+        #                 c (tensor), shape (L, B, H)
+        # &#34;&#34;&#34;
+        if y is None:
+            # This is gross. I should really just pass in an SOS token
+            # instead. Is there no SOS token?
+            assert state is None
+            # Hacky, no way to determine this right now!
+            B = 1
+            y = torch.zeros((B, 1, self.n_hidden), dtype=torch.float32)
+        else:
+            y = self.embed(y)
+
+        # if state is None:
+        #    batch = y.size(0)
+        #    state = [
+        #        (torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device),
+        #         torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device))
+        #        for _ in range(self.pred_rnn_layers)
+        #    ]
+
+        y = y.transpose(0, 1)  # .contiguous()   # (U + 1, B, H)
+        g, hid = self.dec_rnn(y, state)
+        g = g.transpose(0, 1)  # .contiguous()   # (B, U + 1, H)
+        # del y, state
+        return g, hid
+
+class Joint(torch.nn.Module):
+    def __init__(self, vocab_size, pred_n_hidden, enc_n_hidden,
+                 joint_n_hidden, dropout):
+        super().__init__()
+        layers = [
+            torch.nn.Linear(pred_n_hidden + enc_n_hidden, joint_n_hidden),
+            torch.nn.ReLU(),
+        ] + ([torch.nn.Dropout(p=dropout), ] if dropout else []) + [
+            torch.nn.Linear(joint_n_hidden, vocab_size)
+        ]
+        self.net = torch.nn.Sequential(
+            *layers
+        )
+
+    def forward(self, f: torch.Tensor, g: torch.Tensor):
+        &#34;&#34;&#34;
+        f should be shape (B, T, H)
+        g should be shape (B, U + 1, H)
+        returns:
+            logits of shape (B, T, U, K + 1)
+        &#34;&#34;&#34;
+        # Combine the input states and the output states
+        B, T, H = f.shape
+        B, U_, H2 = g.shape
+
+        f = f.unsqueeze(dim=2)   # (B, T, 1, H)
+        f = f.expand((B, T, U_, H))
+
+        g = g.unsqueeze(dim=1)   # (B, 1, U + 1, H)
+        g = g.expand((B, T, U_, H2))
+
+        inp = torch.cat([f, g], dim=3)   # (B, T, U, 2H)
+        res = self.net(inp)
+        # del f, g, inp
+        return res
+
+def label_collate(labels):
+    &#34;&#34;&#34;Collates the label inputs for the rnn-t prediction network.
+    If `labels` is already in torch.Tensor form this is a no-op.
+    Args:
+        labels: A torch.Tensor List of label indexes or a torch.Tensor.
+    Returns:
+        A padded torch.Tensor of shape (batch, max_seq_len).
+    &#34;&#34;&#34;
+
+    if isinstance(labels, torch.Tensor):
+        return labels.type(torch.int64)
+    if not isinstance(labels, (list, tuple)):
+        raise ValueError(
+            f&#34;`labels` should be a list or tensor not {type(labels)}&#34;
+        )
+
+    batch_size = len(labels)
+    max_len = max(len(l) for l in labels)
+
+    cat_labels = np.full((batch_size, max_len), fill_value=0.0, dtype=np.int32)
+    for e, l in enumerate(labels):
+        cat_labels[e, :len(l)] = l
+    labels = torch.LongTensor(cat_labels)
+
+    return labels</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="rnnt.label_collate"><code class="name flex">
+<span>def <span class="ident">label_collate</span></span>(<span>labels)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Collates the label inputs for the rnn-t prediction network.
+If <code>labels</code> is already in torch.Tensor form this is a no-op.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>labels</code></strong></dt>
+<dd>A torch.Tensor List of label indexes or a torch.Tensor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A padded torch.Tensor of shape (batch, max_seq_len).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def label_collate(labels):
+    &#34;&#34;&#34;Collates the label inputs for the rnn-t prediction network.
+    If `labels` is already in torch.Tensor form this is a no-op.
+    Args:
+        labels: A torch.Tensor List of label indexes or a torch.Tensor.
+    Returns:
+        A padded torch.Tensor of shape (batch, max_seq_len).
+    &#34;&#34;&#34;
+
+    if isinstance(labels, torch.Tensor):
+        return labels.type(torch.int64)
+    if not isinstance(labels, (list, tuple)):
+        raise ValueError(
+            f&#34;`labels` should be a list or tensor not {type(labels)}&#34;
+        )
+
+    batch_size = len(labels)
+    max_len = max(len(l) for l in labels)
+
+    cat_labels = np.full((batch_size, max_len), fill_value=0.0, dtype=np.int32)
+    for e, l in enumerate(labels):
+        cat_labels[e, :len(l)] = l
+    labels = torch.LongTensor(cat_labels)
+
+    return labels</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="rnnt.Encoder"><code class="flex name class">
+<span>class <span class="ident">Encoder</span></span>
+<span>(</span><span>in_features, encoder_n_hidden, encoder_pre_rnn_layers, encoder_post_rnn_layers, forget_gate_bias, norm, rnn_type, encoder_stack_time_factor, dropout)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Encoder(torch.nn.Module):
+    def __init__(self, in_features, encoder_n_hidden,
+                 encoder_pre_rnn_layers, encoder_post_rnn_layers,
+                 forget_gate_bias, norm, rnn_type, encoder_stack_time_factor,
+                 dropout):
+        super().__init__()
+        self.pre_rnn = rnn(
+            rnn=rnn_type,
+            input_size=in_features,
+            hidden_size=encoder_n_hidden,
+            num_layers=encoder_pre_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            dropout=dropout,
+        )
+        self.stack_time = StackTime(factor=encoder_stack_time_factor)
+        self.post_rnn = rnn(
+            rnn=rnn_type,
+            input_size=encoder_stack_time_factor * encoder_n_hidden,
+            hidden_size=encoder_n_hidden,
+            num_layers=encoder_post_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            norm_first_rnn=True,
+            dropout=dropout,
+        )
+
+    def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+        x_padded, _ = self.pre_rnn(x_padded, None)
+        x_padded, x_lens = self.stack_time(x_padded, x_lens)
+        # (T, B, H)
+        x_padded, _ = self.post_rnn(x_padded, None)
+        # (B, T, H)
+        x_padded = x_padded.transpose(0, 1)
+        return x_padded, x_lens</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="rnnt.Encoder.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x_padded: torch.Tensor, x_lens: torch.Tensor) ‑> Tuple[torch.Tensor, torch.Tensor]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the :class:<code>Module</code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+    x_padded, _ = self.pre_rnn(x_padded, None)
+    x_padded, x_lens = self.stack_time(x_padded, x_lens)
+    # (T, B, H)
+    x_padded, _ = self.post_rnn(x_padded, None)
+    # (B, T, H)
+    x_padded = x_padded.transpose(0, 1)
+    return x_padded, x_lens</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="rnnt.Joint"><code class="flex name class">
+<span>class <span class="ident">Joint</span></span>
+<span>(</span><span>vocab_size, pred_n_hidden, enc_n_hidden, joint_n_hidden, dropout)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Joint(torch.nn.Module):
+    def __init__(self, vocab_size, pred_n_hidden, enc_n_hidden,
+                 joint_n_hidden, dropout):
+        super().__init__()
+        layers = [
+            torch.nn.Linear(pred_n_hidden + enc_n_hidden, joint_n_hidden),
+            torch.nn.ReLU(),
+        ] + ([torch.nn.Dropout(p=dropout), ] if dropout else []) + [
+            torch.nn.Linear(joint_n_hidden, vocab_size)
+        ]
+        self.net = torch.nn.Sequential(
+            *layers
+        )
+
+    def forward(self, f: torch.Tensor, g: torch.Tensor):
+        &#34;&#34;&#34;
+        f should be shape (B, T, H)
+        g should be shape (B, U + 1, H)
+        returns:
+            logits of shape (B, T, U, K + 1)
+        &#34;&#34;&#34;
+        # Combine the input states and the output states
+        B, T, H = f.shape
+        B, U_, H2 = g.shape
+
+        f = f.unsqueeze(dim=2)   # (B, T, 1, H)
+        f = f.expand((B, T, U_, H))
+
+        g = g.unsqueeze(dim=1)   # (B, 1, U + 1, H)
+        g = g.expand((B, T, U_, H2))
+
+        inp = torch.cat([f, g], dim=3)   # (B, T, U, 2H)
+        res = self.net(inp)
+        # del f, g, inp
+        return res</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="rnnt.Joint.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, f: torch.Tensor, g: torch.Tensor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>f should be shape (B, T, H)
+g should be shape (B, U + 1, H)
+returns:
+logits of shape (B, T, U, K + 1)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, f: torch.Tensor, g: torch.Tensor):
+    &#34;&#34;&#34;
+    f should be shape (B, T, H)
+    g should be shape (B, U + 1, H)
+    returns:
+        logits of shape (B, T, U, K + 1)
+    &#34;&#34;&#34;
+    # Combine the input states and the output states
+    B, T, H = f.shape
+    B, U_, H2 = g.shape
+
+    f = f.unsqueeze(dim=2)   # (B, T, 1, H)
+    f = f.expand((B, T, U_, H))
+
+    g = g.unsqueeze(dim=1)   # (B, 1, U + 1, H)
+    g = g.expand((B, T, U_, H2))
+
+    inp = torch.cat([f, g], dim=3)   # (B, T, U, 2H)
+    res = self.net(inp)
+    # del f, g, inp
+    return res</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="rnnt.Prediction"><code class="flex name class">
+<span>class <span class="ident">Prediction</span></span>
+<span>(</span><span>vocab_size, n_hidden, pred_rnn_layers, forget_gate_bias, norm, rnn_type, dropout)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Prediction(torch.nn.Module):
+    def __init__(self, vocab_size, n_hidden, pred_rnn_layers,
+                 forget_gate_bias, norm, rnn_type, dropout):
+        super().__init__()
+        self.embed = torch.nn.Embedding(vocab_size - 1, n_hidden)
+        self.n_hidden = n_hidden
+        self.dec_rnn = rnn(
+            rnn=rnn_type,
+            input_size=n_hidden,
+            hidden_size=n_hidden,
+            num_layers=pred_rnn_layers,
+            norm=norm,
+            forget_gate_bias=forget_gate_bias,
+            dropout=dropout,
+        )
+
+    def forward(self, y: Optional[torch.Tensor],
+                state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None):
+        # &#34;&#34;&#34;
+        # B - batch size
+        # U - label length
+        # H - Hidden dimension size
+        # L - Number of decoder layers = 2
+        # Args:
+        #     y: (B, U)
+        # Returns:
+        #     Tuple (g, hid) where:
+        #         g: (B, U + 1, H)
+        #         hid: (h, c) where h is the final sequence hidden state and c is
+        #             the final cell state:
+        #                 h (tensor), shape (L, B, H)
+        #                 c (tensor), shape (L, B, H)
+        # &#34;&#34;&#34;
+        if y is None:
+            # This is gross. I should really just pass in an SOS token
+            # instead. Is there no SOS token?
+            assert state is None
+            # Hacky, no way to determine this right now!
+            B = 1
+            y = torch.zeros((B, 1, self.n_hidden), dtype=torch.float32)
+        else:
+            y = self.embed(y)
+
+        # if state is None:
+        #    batch = y.size(0)
+        #    state = [
+        #        (torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device),
+        #         torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device))
+        #        for _ in range(self.pred_rnn_layers)
+        #    ]
+
+        y = y.transpose(0, 1)  # .contiguous()   # (U + 1, B, H)
+        g, hid = self.dec_rnn(y, state)
+        g = g.transpose(0, 1)  # .contiguous()   # (B, U + 1, H)
+        # del y, state
+        return g, hid</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="rnnt.Prediction.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, y: Optional[torch.Tensor], state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the :class:<code>Module</code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, y: Optional[torch.Tensor],
+            state: Optional[Tuple[torch.Tensor, torch.Tensor]] = None):
+    # &#34;&#34;&#34;
+    # B - batch size
+    # U - label length
+    # H - Hidden dimension size
+    # L - Number of decoder layers = 2
+    # Args:
+    #     y: (B, U)
+    # Returns:
+    #     Tuple (g, hid) where:
+    #         g: (B, U + 1, H)
+    #         hid: (h, c) where h is the final sequence hidden state and c is
+    #             the final cell state:
+    #                 h (tensor), shape (L, B, H)
+    #                 c (tensor), shape (L, B, H)
+    # &#34;&#34;&#34;
+    if y is None:
+        # This is gross. I should really just pass in an SOS token
+        # instead. Is there no SOS token?
+        assert state is None
+        # Hacky, no way to determine this right now!
+        B = 1
+        y = torch.zeros((B, 1, self.n_hidden), dtype=torch.float32)
+    else:
+        y = self.embed(y)
+
+    # if state is None:
+    #    batch = y.size(0)
+    #    state = [
+    #        (torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device),
+    #         torch.zeros(batch, self.pred_n_hidden, dtype=y.dtype, device=y.device))
+    #        for _ in range(self.pred_rnn_layers)
+    #    ]
+
+    y = y.transpose(0, 1)  # .contiguous()   # (U + 1, B, H)
+    g, hid = self.dec_rnn(y, state)
+    g = g.transpose(0, 1)  # .contiguous()   # (B, U + 1, H)
+    # del y, state
+    return g, hid</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="rnnt.RNNT"><code class="flex name class">
+<span>class <span class="ident">RNNT</span></span>
+<span>(</span><span>rnnt=None, num_classes=1, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RNNT(torch.nn.Module):
+    def __init__(self, rnnt=None, num_classes=1, **kwargs):
+        super().__init__()
+        if kwargs.get(&#34;no_featurizer&#34;, False):
+            in_features = kwargs.get(&#34;in_features&#34;)
+        else:
+            feat_config = kwargs.get(&#34;feature_config&#34;)
+            # This may be useful in the future, for MLPerf
+            # configuration.
+            in_features = feat_config[&#39;features&#39;] * \
+                feat_config.get(&#34;frame_splicing&#34;, 1)
+
+        self.encoder = Encoder(in_features,
+            rnnt[&#34;encoder_n_hidden&#34;],
+            rnnt[&#34;encoder_pre_rnn_layers&#34;],
+            rnnt[&#34;encoder_post_rnn_layers&#34;],
+            rnnt[&#34;forget_gate_bias&#34;],
+            None if &#34;norm&#34; not in rnnt else rnnt[&#34;norm&#34;],
+            rnnt[&#34;rnn_type&#34;],
+            rnnt[&#34;encoder_stack_time_factor&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+        self.prediction = Prediction(
+            num_classes,
+            rnnt[&#34;pred_n_hidden&#34;],
+            rnnt[&#34;pred_rnn_layers&#34;],
+            rnnt[&#34;forget_gate_bias&#34;],
+            None if &#34;norm&#34; not in rnnt else rnnt[&#34;norm&#34;],
+            rnnt[&#34;rnn_type&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+        self.joint = Joint(
+            num_classes,
+            rnnt[&#34;pred_n_hidden&#34;],
+            rnnt[&#34;encoder_n_hidden&#34;],
+            rnnt[&#34;joint_n_hidden&#34;],
+            rnnt[&#34;dropout&#34;],
+        )
+
+    def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+        return self.encoder(x_padded, x_lens)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="rnnt.RNNT.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x_padded: torch.Tensor, x_lens: torch.Tensor) ‑> Tuple[torch.Tensor, torch.Tensor]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the :class:<code>Module</code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x_padded: torch.Tensor, x_lens: torch.Tensor) -&gt; Tuple[torch.Tensor, torch.Tensor]:
+    return self.encoder(x_padded, x_lens)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="rnnt.label_collate" href="#rnnt.label_collate">label_collate</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="rnnt.Encoder" href="#rnnt.Encoder">Encoder</a></code></h4>
+<ul class="">
+<li><code><a title="rnnt.Encoder.forward" href="#rnnt.Encoder.forward">forward</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="rnnt.Joint" href="#rnnt.Joint">Joint</a></code></h4>
+<ul class="">
+<li><code><a title="rnnt.Joint.forward" href="#rnnt.Joint.forward">forward</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="rnnt.Prediction" href="#rnnt.Prediction">Prediction</a></code></h4>
+<ul class="">
+<li><code><a title="rnnt.Prediction.forward" href="#rnnt.Prediction.forward">forward</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="rnnt.RNNT" href="#rnnt.RNNT">RNNT</a></code></h4>
+<ul class="">
+<li><code><a title="rnnt.RNNT.forward" href="#rnnt.RNNT.forward">forward</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

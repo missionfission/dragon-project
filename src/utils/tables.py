@@ -1,18 +1,18 @@
 import pandas as pd
 
-## Load Energy Tables 
+## Load Energy Tables
 ## Load Latency tables
-## Load Area Tables 
+## Load Area Tables
 
 
-class tables():
-    
-    def __init__(self):
-    pass 
+# class tables():
 
-    def create_tables(self):
-    pass 
+#     def __init__(self):
+#     pass
 
-    # """
-    # InstantiatePlugins here
-    # """
+#     def create_tables(self):
+#     pass
+
+# """
+# InstantiatePlugins here
+# """

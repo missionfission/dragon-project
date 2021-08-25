@@ -2,9 +2,9 @@ import itertools
 
 import numpy as np
 
-from . import DataCategoryEnum as de
-from . import MemHierEnum as me
-from . import Util
+# from . import DataCategoryEnum as de
+# from . import MemHierEnum as me
+# from . import Util
 
 
 class NestedLoopDesc(object):
@@ -332,4 +332,3 @@ def gen_loopblocking_gbuf_regf(
             nested_loop_desc=nested_loop_desc,
             options=options,
         )
-

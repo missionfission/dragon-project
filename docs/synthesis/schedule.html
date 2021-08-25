@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>schedule API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>schedule</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># OUTP = 0
+# OFMP = 1
+# NUM = 2
+
+# Resource = namedtuple(&#39;Resource&#39;,
+#                       [&#39;dim_nodes&#39;, &#39;dim_array&#39;, &#39;size_gbuf&#39;, &#39;size_regf&#39;])
+
+# OPTION_LIST = [&#39;allow_gbuf_bypass&#39;,
+#                &#39;solve_loopblocking&#39;,
+#                &#39;hybrid_partition2d&#39;,
+#                &#39;ntops&#39;,
+#                &#39;nprocesses&#39;,
+#               ]
+import heapq
+import math
+import multiprocessing
+import sys
+from collections import OrderedDict
+
+# from . import DataCategoryEnum as de
+# from . import LoopBlocking
+# from . import MemHierEnum as me
+# from . import ParallelEnum as pe
+# from . import Partition, Solver
+# from .Partition import Partition2dScheme
+# from .PhyDim2 import PhyDim2
+
+
+def _get_loopblocking_genfunc(options, layer_lb=None):
+    &#34;&#34;&#34; Get the generator function for loop blocking. &#34;&#34;&#34;
+    if layer_lb is not None:
+        print(&#34;Forcing loop blocking: &#34;, layer_lb)
+
+    if options.solve_loopblocking:
+        return Solver.gen_loopblocking_gbuf_regf
+    else:
+        return LoopBlocking.gen_loopblocking_gbuf_regf
+
+
+def _get_partition2d_genfunc(options):
+    &#34;&#34;&#34; Get the generator function for parallel partition. &#34;&#34;&#34;
+    if options.hybrid_partition2d:
+        return Partition.gen_layer_partition2d
+    else:
+        return Partition.gen_layer_naive_partition2d
+
+
+def _combine_search_lpbl_part2d(
+    resource,
+    cost,
+    nested_loop_desc,
+    layer_part,
+    batch_size,
+    part_lcurr,
+    part_lprev,
+    unit_nhops,
+    options,
+    layer_lb=None,
+):
+    &#34;&#34;&#34;
+    Combine search the best loop blocking schemes with a certain parallel
+    partition scheme with the smallest combined cost.
+
+    `nested_loop_desc` and `layer_part` are for the layer after partitioning.
+
+    `unit_nhops` is the unit number of hops for each data category for a single
+    access run.
+    &#34;&#34;&#34;
+
+    layer_data_size = [0] * de.NUM
+    layer_data_size[de.FIL] = layer_part.total_filter_size()
+    layer_data_size[de.IFM] = layer_part.total_ifmap_size() * batch_size
+    layer_data_size[de.OFM] = layer_part.total_ofmap_size() * batch_size
+
+    def sweep():  # pylint: disable=missing-docstring
+
+        for cost_loop, dict_loop in _get_loopblocking_genfunc(options, layer_lb)(
+            resource, cost, nested_loop_desc, options, layer_lb
+        ):
+
+            if math.isinf(cost_loop):
+                continue
+
+            # Calculate total number of hops, which determined by both
+            # partition scheme (number of hops per access) and loop blocking
+            # (runs of access).
+            access_mem = dict_loop[&#34;access&#34;][me.DRAM]
+            assert len(access_mem) == de.NUM
+            access_runs = [a / float(s) for a, s in zip(access_mem, layer_data_size)]
+            total_nhops = [nh * r for nh, r in zip(unit_nhops, access_runs)]
+
+            # Partition cost.
+            cost_part = cost.nochop() * sum(total_nhops)
+            dict_part = {
+                &#34;unit_nhops&#34;: unit_nhops,
+                &#34;total_nhops&#34;: total_nhops,
+                &#34;part_lprev&#34;: part_lprev.as_pod_type(),
+                &#34;part_lcurr&#34;: part_lcurr.as_pod_type(),
+            }
+
+            # Combine.
+            dict_loop.update({&#34;cost&#34;: cost_loop})
+            dict_part.update({&#34;cost&#34;: cost_part})
+            yield (
+                cost_loop * resource.dim_nodes.size() + cost_part,
+                dict_loop,
+                dict_part,
+            )
+
+    return heapq.nsmallest(options.ntops, sweep(), key=lambda x: x[0])
+
+
+def layer_schedule_search(
+    layer,
+    batch_size,
+    resource,
+    cost,
+    part_lprev,
+    gen_nested_loop_desc,
+    options,
+    layer_lb=None,
+):
+    &#34;&#34;&#34;
+    Search the best schedule for given layer and batch size.
+    &#34;&#34;&#34;
+
+    pool = multiprocessing.Pool(processes=options.nprocesses)
+    results = []
+
+    # Search NoC partition.
+    for part_lcurr, layer_part in _get_partition2d_genfunc(options)(
+        layer, resource.dim_nodes
+    ):
+        # print part_lcurr
+        unit_nhops = Partition.unit_nhops_layer_partition2d(
+            layer, batch_size, part_lcurr, part_lprev
+        )
+
+        # Search loop blocking using partitioned layer.
+        for nested_loop_desc in gen_nested_loop_desc(
+            layer_part, batch_size, resource.dim_array
+        ):
+            # print nested_loop_desc
+            print(
+                nested_loop_desc.loopcnt_ifm(), nested_loop_desc.loopcnt_ofm(), layer_lb
+            )
+            r = pool.apply_async(
+                _combine_search_lpbl_part2d,
+                (
+                    resource,
+                    cost,
+                    nested_loop_desc,
+                    layer_part,
+                    batch_size,
+                    part_lcurr,
+                    part_lprev,
+                    unit_nhops,
+                    options,
+                    layer_lb,
+                ),
+            )
+            results.append(r)
+
+    def retrieve_result():  # pylint: disable=missing-docstring
+        for r in results:
+            nsmallest = r.get(timeout=3600)
+            for t in nsmallest:
+                yield t
+
+    tops = heapq.nsmallest(options.ntops, retrieve_result(), key=lambda x: x[0])
+    pool.close()
+
+    return list(tops)
+
+
+def schedule_search(
+    layers, batch_size, resource, cost, gen_nested_loop_desc, options, old_lb=None
+):
+    &#34;&#34;&#34;
+    Search the best schedule for given network and batch size.
+    &#34;&#34;&#34;
+
+    aggr_tops = [(0, OrderedDict()) for _ in range(options.ntops)]
+
+    # Assume the first layer input is fully fmap partitioned (image tiled).
+    partition2d_all_ofmp = [0] * pe.NUM
+    partition2d_all_ofmp[pe.OUTP] = PhyDim2(1, 1)
+    partition2d_all_ofmp[pe.OFMP] = resource.dim_nodes
+
+    # Keep all previous layer partition schemes appeared in the top schedules.
+    # Explore all of them for next layer.
+    part_lprev_list = [Partition2dScheme(range(pe.NUM), partition2d_all_ofmp)]
+    # The corresponding indexes of schedules in aggr_tops for the previous layer
+    # partition scheme.
+    aggr_top_indexes_list = [range(options.ntops)]
+
+    for name, layer in layers.items():
+
+        print(&#34;searching schedule for &#34; + name)
+
+        new_aggr_tops = []
+
+        for part_lprev, aggr_top_indexes in zip(part_lprev_list, aggr_top_indexes_list):
+            # try:
+            layer_lb = None
+            if old_lb is not None:
+                for lbname, lbdata in old_lb.items():
+                    if lbname in name:
+                        layer_lb = lbdata
+
+                        split_mode = name.split(&#34;_&#34;)[-1]
+
+                        if split_mode == &#34;i&#34;:
+                            print(&#34;Split Mode: input-split&#34;)
+                            layer_lb[&#34;ti&#34;] = None
+                        elif split_mode == &#34;o&#34;:
+                            print(&#34;Split Mode: output-split&#34;)
+                            layer_lb[&#34;to&#34;] = None
+                        else:
+                            print(&#34;Split Mode: None&#34;)
+
+            if &#34;embed&#34; in name:
+                layer_lb = None
+
+            print(&#34;Layer force loop blocking = &#34;, layer_lb)
+
+            # For each previous layer partition scheme, search top schedules
+            # for the current layer.
+            tops = layer_schedule_search(
+                layer,
+                batch_size,
+                resource,
+                cost,
+                part_lprev,
+                gen_nested_loop_desc,
+                options,
+                layer_lb,
+            )
+            print(tops)
+            # except Exception as e:
+            #    sys.stderr.write(&#39;Failed when scheduling layer {}&#39;.format(name))
+            #    raise e
+
+            # Append all the current layer top schedules to all the previous top
+            # schedules with the matching partition scheme.
+            for t_idx in range(options.ntops):
+                if t_idx &gt;= len(tops):
+                    break
+                # 2: dict_part.
+                assert tops[t_idx][2][&#34;part_lprev&#34;] == part_lprev.as_pod_type()
+                for at_idx in aggr_top_indexes:
+                    new_schedule = aggr_tops[at_idx][1].copy()
+                    new_schedule.update({name: tops[t_idx]})
+                    atop = (aggr_tops[at_idx][0] + tops[t_idx][0], new_schedule)
+                    new_aggr_tops.append(atop)
+
+        # Always pick and keep top n at each layer.
+        aggr_tops = sorted(new_aggr_tops, key=lambda x: x[0])[: options.ntops]
+
+        # Record all layer partition schemes for next layer.
+        part_lprev_list = []
+        aggr_top_indexes_list = []
+        for at_idx in range(options.ntops):
+            if at_idx &gt;= len(aggr_tops):
+                break
+            # 1: list of schedules for layers; name: last layer; 2: dict_part.
+            # Translate back to Partition2dScheme.
+            part_lprev_pod = aggr_tops[at_idx][1][name][2][&#34;part_lcurr&#34;]
+            part_lprev = Partition2dScheme(*part_lprev_pod)
+            try:
+                i = part_lprev_list.index(part_lprev)
+            except ValueError:
+                assert part_lprev_list.count(part_lprev) == 0
+                part_lprev_list.append(part_lprev)
+                aggr_top_indexes_list.append([])
+                assert len(part_lprev_list) == len(aggr_top_indexes_list)
+                i = -1
+            aggr_top_indexes_list[i].append(at_idx)
+
+    return aggr_tops</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="schedule.layer_schedule_search"><code class="name flex">
+<span>def <span class="ident">layer_schedule_search</span></span>(<span>layer, batch_size, resource, cost, part_lprev, gen_nested_loop_desc, options, layer_lb=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search the best schedule for given layer and batch size.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def layer_schedule_search(
+    layer,
+    batch_size,
+    resource,
+    cost,
+    part_lprev,
+    gen_nested_loop_desc,
+    options,
+    layer_lb=None,
+):
+    &#34;&#34;&#34;
+    Search the best schedule for given layer and batch size.
+    &#34;&#34;&#34;
+
+    pool = multiprocessing.Pool(processes=options.nprocesses)
+    results = []
+
+    # Search NoC partition.
+    for part_lcurr, layer_part in _get_partition2d_genfunc(options)(
+        layer, resource.dim_nodes
+    ):
+        # print part_lcurr
+        unit_nhops = Partition.unit_nhops_layer_partition2d(
+            layer, batch_size, part_lcurr, part_lprev
+        )
+
+        # Search loop blocking using partitioned layer.
+        for nested_loop_desc in gen_nested_loop_desc(
+            layer_part, batch_size, resource.dim_array
+        ):
+            # print nested_loop_desc
+            print(
+                nested_loop_desc.loopcnt_ifm(), nested_loop_desc.loopcnt_ofm(), layer_lb
+            )
+            r = pool.apply_async(
+                _combine_search_lpbl_part2d,
+                (
+                    resource,
+                    cost,
+                    nested_loop_desc,
+                    layer_part,
+                    batch_size,
+                    part_lcurr,
+                    part_lprev,
+                    unit_nhops,
+                    options,
+                    layer_lb,
+                ),
+            )
+            results.append(r)
+
+    def retrieve_result():  # pylint: disable=missing-docstring
+        for r in results:
+            nsmallest = r.get(timeout=3600)
+            for t in nsmallest:
+                yield t
+
+    tops = heapq.nsmallest(options.ntops, retrieve_result(), key=lambda x: x[0])
+    pool.close()
+
+    return list(tops)</code></pre>
+</details>
+</dd>
+<dt id="schedule.schedule_search"><code class="name flex">
+<span>def <span class="ident">schedule_search</span></span>(<span>layers, batch_size, resource, cost, gen_nested_loop_desc, options, old_lb=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search the best schedule for given network and batch size.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def schedule_search(
+    layers, batch_size, resource, cost, gen_nested_loop_desc, options, old_lb=None
+):
+    &#34;&#34;&#34;
+    Search the best schedule for given network and batch size.
+    &#34;&#34;&#34;
+
+    aggr_tops = [(0, OrderedDict()) for _ in range(options.ntops)]
+
+    # Assume the first layer input is fully fmap partitioned (image tiled).
+    partition2d_all_ofmp = [0] * pe.NUM
+    partition2d_all_ofmp[pe.OUTP] = PhyDim2(1, 1)
+    partition2d_all_ofmp[pe.OFMP] = resource.dim_nodes
+
+    # Keep all previous layer partition schemes appeared in the top schedules.
+    # Explore all of them for next layer.
+    part_lprev_list = [Partition2dScheme(range(pe.NUM), partition2d_all_ofmp)]
+    # The corresponding indexes of schedules in aggr_tops for the previous layer
+    # partition scheme.
+    aggr_top_indexes_list = [range(options.ntops)]
+
+    for name, layer in layers.items():
+
+        print(&#34;searching schedule for &#34; + name)
+
+        new_aggr_tops = []
+
+        for part_lprev, aggr_top_indexes in zip(part_lprev_list, aggr_top_indexes_list):
+            # try:
+            layer_lb = None
+            if old_lb is not None:
+                for lbname, lbdata in old_lb.items():
+                    if lbname in name:
+                        layer_lb = lbdata
+
+                        split_mode = name.split(&#34;_&#34;)[-1]
+
+                        if split_mode == &#34;i&#34;:
+                            print(&#34;Split Mode: input-split&#34;)
+                            layer_lb[&#34;ti&#34;] = None
+                        elif split_mode == &#34;o&#34;:
+                            print(&#34;Split Mode: output-split&#34;)
+                            layer_lb[&#34;to&#34;] = None
+                        else:
+                            print(&#34;Split Mode: None&#34;)
+
+            if &#34;embed&#34; in name:
+                layer_lb = None
+
+            print(&#34;Layer force loop blocking = &#34;, layer_lb)
+
+            # For each previous layer partition scheme, search top schedules
+            # for the current layer.
+            tops = layer_schedule_search(
+                layer,
+                batch_size,
+                resource,
+                cost,
+                part_lprev,
+                gen_nested_loop_desc,
+                options,
+                layer_lb,
+            )
+            print(tops)
+            # except Exception as e:
+            #    sys.stderr.write(&#39;Failed when scheduling layer {}&#39;.format(name))
+            #    raise e
+
+            # Append all the current layer top schedules to all the previous top
+            # schedules with the matching partition scheme.
+            for t_idx in range(options.ntops):
+                if t_idx &gt;= len(tops):
+                    break
+                # 2: dict_part.
+                assert tops[t_idx][2][&#34;part_lprev&#34;] == part_lprev.as_pod_type()
+                for at_idx in aggr_top_indexes:
+                    new_schedule = aggr_tops[at_idx][1].copy()
+                    new_schedule.update({name: tops[t_idx]})
+                    atop = (aggr_tops[at_idx][0] + tops[t_idx][0], new_schedule)
+                    new_aggr_tops.append(atop)
+
+        # Always pick and keep top n at each layer.
+        aggr_tops = sorted(new_aggr_tops, key=lambda x: x[0])[: options.ntops]
+
+        # Record all layer partition schemes for next layer.
+        part_lprev_list = []
+        aggr_top_indexes_list = []
+        for at_idx in range(options.ntops):
+            if at_idx &gt;= len(aggr_tops):
+                break
+            # 1: list of schedules for layers; name: last layer; 2: dict_part.
+            # Translate back to Partition2dScheme.
+            part_lprev_pod = aggr_tops[at_idx][1][name][2][&#34;part_lcurr&#34;]
+            part_lprev = Partition2dScheme(*part_lprev_pod)
+            try:
+                i = part_lprev_list.index(part_lprev)
+            except ValueError:
+                assert part_lprev_list.count(part_lprev) == 0
+                part_lprev_list.append(part_lprev)
+                aggr_top_indexes_list.append([])
+                assert len(part_lprev_list) == len(aggr_top_indexes_list)
+                i = -1
+            aggr_top_indexes_list[i].append(at_idx)
+
+    return aggr_tops</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="schedule.layer_schedule_search" href="#schedule.layer_schedule_search">layer_schedule_search</a></code></li>
+<li><code><a title="schedule.schedule_search" href="#schedule.schedule_search">schedule_search</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

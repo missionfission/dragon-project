@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>partition API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>partition</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import itertools
+
+import numpy as np
+
+# from . import DataCategoryEnum as de
+# from . import ParallelEnum as pe
+# from . import Util
+# from .Layer import Layer
+# from .PhyDim2 import PhyDim2
+
+
+class Partition2dScheme(object):
+    &#34;&#34;&#34;
+    Denote a 2D partitioning scheme.
+    &#34;&#34;&#34;
+
+    def __init__(self, order, partition2d):
+        self.order = tuple(order)
+        self.partition2d = tuple(partition2d)
+        assert len(self.order) == pe.NUM and len(set(self.order)) == pe.NUM
+        assert len(self.partition2d) == pe.NUM
+        assert all([isinstance(p, PhyDim2) for p in self.partition2d])
+
+    def total_size(self):
+        &#34;&#34;&#34;
+        Get total parallel partition size.
+        &#34;&#34;&#34;
+        return np.prod([p.h * p.w for p in self.partition2d])
+
+    def gen_all_indexes2d(self):
+        &#34;&#34;&#34;
+        Generator to iterate over all 2D partition indexes.
+        &#34;&#34;&#34;
+        for indexes in itertools.product(
+            *[itertools.product(*[range(dim) for dim in p]) for p in self.partition2d]
+        ):
+            yield [PhyDim2._make(idx) for idx in indexes]
+
+    def physical_coordinate2d(self, index2d):
+        &#34;&#34;&#34;
+        Get physical 2D coordinate from the given 2D partition index.
+        &#34;&#34;&#34;
+        coord = PhyDim2(0, 0)
+        for penum in self.order:
+            coord = [
+                c * p + i
+                for c, p, i in zip(coord, self.partition2d[penum], index2d[penum])
+            ]
+        return PhyDim2._make(coord)
+
+    def as_pod_type(self):
+        &#34;&#34;&#34;
+        Return as a POD type (a tuple) to allow serialization/deserialization.
+        &#34;&#34;&#34;
+        return (self.order, self.partition2d)
+
+    def __str__(self):
+        return str(self.as_pod_type())
+
+
+def gen_layer_partition2d(layer, dim_nodes):
+    &#34;&#34;&#34;
+    Iterate through all possible partitioning schemes that partition `layer`
+    into 2D `dim_nodes` nodes.
+
+    Return a tuple of the partition scheme and the partitioned layer
+    parameters.
+    &#34;&#34;&#34;
+    for ph, pw in itertools.product(
+        Util.factorize(dim_nodes.h, pe.NUM), Util.factorize(dim_nodes.w, pe.NUM)
+    ):
+        # Require fmap partition the same factor in both dimension.
+        if ph[pe.OFMP] != pw[pe.OFMP]:
+            continue
+
+        partition2d = [PhyDim2(h, w) for h, w in zip(ph, pw)]
+
+        # Require partition is approximately dividable of total size.
+        if not Util.approx_dividable(layer.nofm, partition2d[pe.OUTP].size()):
+            continue
+        if not Util.approx_dividable(
+            layer.sofm, partition2d[pe.OFMP].h
+        ) or not Util.approx_dividable(layer.sofm, partition2d[pe.OFMP].w):
+            continue
+
+        # Partitioned layer spec.
+        layer_part = Layer(
+            layer.nifm,
+            Util.idivc(layer.nofm, partition2d[pe.OUTP].size()),
+            Util.idivc(layer.sofm, partition2d[pe.OFMP].h),
+            layer.sfil,
+            layer.strd,
+        )
+
+        # For different order.
+        for order in itertools.permutations(tuple(range(pe.NUM))):
+            # Size-(1, 1) partition has no effect, so its order is not
+            # relevant. Force them at the beginning.
+            no_partitions = [v for v in range(pe.NUM) if partition2d[v].size() == 1]
+            if not all(
+                [order[i] == no_partitions[i] for i in range(len(no_partitions))]
+            ):
+                continue
+
+            yield (Partition2dScheme(order, partition2d), layer_part)
+
+
+def gen_layer_naive_partition2d(layer, dim_nodes):
+    &#34;&#34;&#34;
+    Use naive way to partition `layer` into 2D `dim_nodes` nodes: for CONV
+    layer use all OFMP partition; for FC layer use all OUTP partition.
+
+    Return a tuple of the partition scheme and the partitioned layer
+    parameters.
+    &#34;&#34;&#34;
+    if layer.sofm == 1:
+        # FC layer: all OUTP.
+        partition2d = [0] * pe.NUM
+        partition2d[pe.OUTP] = dim_nodes
+        partition2d[pe.OFMP] = PhyDim2(1, 1)
+        # Force size-(1, 1) partition at the beginning.
+        order = (pe.OFMP, pe.OUTP)
+    else:
+        # CONV layer: all OFMP.
+        partition2d = [0] * pe.NUM
+        partition2d[pe.OUTP] = PhyDim2(1, 1)
+        partition2d[pe.OFMP] = dim_nodes
+        # Force size-(1, 1) partition at the beginning.
+        order = (pe.OUTP, pe.OFMP)
+
+    layer_part = Layer(
+        layer.nifm,
+        Util.idivc(layer.nofm, partition2d[pe.OUTP].size()),
+        Util.idivc(layer.sofm, partition2d[pe.OFMP].h),
+        layer.sfil,
+        layer.strd,
+    )
+
+    yield (Partition2dScheme(order, partition2d), layer_part)
+
+
+def get_layer_range(nfmap, sfmap, part, index):
+    &#34;&#34;&#34;
+    Get the range of the layer for the given partition index.
+
+    `part` is the partition2d field of Partition2dScheme. `index` is a given
+    partition2d index.
+    &#34;&#34;&#34;
+    # fmap channel partition.
+    idx_chn = index[pe.OUTP].h * part[pe.OUTP].w + index[pe.OUTP].w
+    n_beg = nfmap * idx_chn // part[pe.OUTP].size()
+    n_end = nfmap * (idx_chn + 1) // part[pe.OUTP].size()
+    assert n_end &lt;= nfmap
+    # fmap height tiling.
+    h_beg = sfmap * index[pe.OFMP].h // part[pe.OFMP].h
+    h_end = sfmap * (index[pe.OFMP].h + 1) // part[pe.OFMP].h
+    assert h_end &lt;= sfmap
+    # fmap width tiling.
+    w_beg = sfmap * index[pe.OFMP].w // part[pe.OFMP].w
+    w_end = sfmap * (index[pe.OFMP].w + 1) // part[pe.OFMP].w
+    assert w_end &lt;= sfmap
+    return (n_beg, n_end), (h_beg, h_end), (w_beg, w_end)
+
+
+def unit_nhops_layer_partition2d(layer, batch_size, part_lcurr, part_lprev):
+    &#34;&#34;&#34;
+    Get total number of hops for each data category when partition the given
+    layer with `part_lcurr` and &#39;part_lprev&#39;.
+
+    Return a tuple with each element being the number of hops for each data
+    category.
+    &#34;&#34;&#34;
+
+    # Layers should have the same model parallel size (i.e., the same data
+    # parallel size).
+    assert part_lcurr.total_size() == part_lprev.total_size()
+
+    # Per data category.
+    nhops = [0 for _ in range(de.NUM)]
+
+    if part_lcurr.total_size() == 1 and part_lprev.total_size() == 1:
+        # Case with no partition.
+        return nhops
+
+    # Record all dest coordinates that need this element.
+    req_lists_lprev = [
+        [[[] for _ in range(layer.sifm)] for _ in range(layer.sifm)]
+        for _ in range(layer.nifm)
+    ]
+
+    for index_lcurr in part_lcurr.gen_all_indexes2d():
+        # Physical coordinate.
+        coord_lcurr = part_lcurr.physical_coordinate2d(index_lcurr)
+
+        # Range of current layer for this index.
+        _, h_lcurr_rng, w_lcurr_rng = get_layer_range(
+            layer.nofm, layer.sofm, part_lcurr.partition2d, index_lcurr
+        )
+
+        # Range of previous layer, i.e., input for this pidx
+        # ifmap channels. All.
+        n_lprev_beg = 0
+        n_lprev_end = layer.nifm
+        # ifmap height tiling.
+        # xy_i = xy_o * stride + (0 ... sfil-1)
+        h_lprev_beg = h_lcurr_rng[0] * layer.strd
+        h_lprev_end = (h_lcurr_rng[1] - 1) * layer.strd + layer.sfil
+        assert h_lprev_end &lt;= layer.sifm
+        # ifmap width tiling.
+        w_lprev_beg = w_lcurr_rng[0] * layer.strd
+        w_lprev_end = (w_lcurr_rng[1] - 1) * layer.strd + layer.sfil
+        assert w_lprev_end &lt;= layer.sifm
+
+        for n_lprev, h_lprev, w_lprev in itertools.product(
+            range(n_lprev_beg, n_lprev_end),
+            range(h_lprev_beg, h_lprev_end),
+            range(w_lprev_beg, w_lprev_end),
+        ):
+            req_lists_lprev[n_lprev][h_lprev][w_lprev].append(coord_lcurr)
+
+    def get_nhops(coord1, coord2):
+        &#34;&#34;&#34; Get number of hops from `coord1` to `coord2`. &#34;&#34;&#34;
+        return abs(coord1.h - coord2.h) + abs(coord1.w - coord2.w)
+
+    # Sum up nhops based on recorded dest coordinates.
+    for index_lprev in part_lprev.gen_all_indexes2d():
+        # Physical coordinate.
+        coord_lprev = part_lprev.physical_coordinate2d(index_lprev)
+
+        # Range of previous layer for this index.
+        n_lprev_rng, h_lprev_rng, w_lprev_rng = get_layer_range(
+            layer.nifm, layer.sifm, part_lprev.partition2d, index_lprev
+        )
+
+        for n_lprev, h_lprev, w_lprev in itertools.product(
+            range(*n_lprev_rng), range(*h_lprev_rng), range(*w_lprev_rng)
+        ):
+            rlist = req_lists_lprev[n_lprev][h_lprev][w_lprev]
+            nhops[de.IFM] += np.sum([get_nhops(coord_lprev, c) for c in rlist])
+
+    nhops = [n * batch_size for n in nhops]
+
+    return nhops</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="partition.gen_layer_naive_partition2d"><code class="name flex">
+<span>def <span class="ident">gen_layer_naive_partition2d</span></span>(<span>layer, dim_nodes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Use naive way to partition <code>layer</code> into 2D <code>dim_nodes</code> nodes: for CONV
+layer use all OFMP partition; for FC layer use all OUTP partition.</p>
+<p>Return a tuple of the partition scheme and the partitioned layer
+parameters.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gen_layer_naive_partition2d(layer, dim_nodes):
+    &#34;&#34;&#34;
+    Use naive way to partition `layer` into 2D `dim_nodes` nodes: for CONV
+    layer use all OFMP partition; for FC layer use all OUTP partition.
+
+    Return a tuple of the partition scheme and the partitioned layer
+    parameters.
+    &#34;&#34;&#34;
+    if layer.sofm == 1:
+        # FC layer: all OUTP.
+        partition2d = [0] * pe.NUM
+        partition2d[pe.OUTP] = dim_nodes
+        partition2d[pe.OFMP] = PhyDim2(1, 1)
+        # Force size-(1, 1) partition at the beginning.
+        order = (pe.OFMP, pe.OUTP)
+    else:
+        # CONV layer: all OFMP.
+        partition2d = [0] * pe.NUM
+        partition2d[pe.OUTP] = PhyDim2(1, 1)
+        partition2d[pe.OFMP] = dim_nodes
+        # Force size-(1, 1) partition at the beginning.
+        order = (pe.OUTP, pe.OFMP)
+
+    layer_part = Layer(
+        layer.nifm,
+        Util.idivc(layer.nofm, partition2d[pe.OUTP].size()),
+        Util.idivc(layer.sofm, partition2d[pe.OFMP].h),
+        layer.sfil,
+        layer.strd,
+    )
+
+    yield (Partition2dScheme(order, partition2d), layer_part)</code></pre>
+</details>
+</dd>
+<dt id="partition.gen_layer_partition2d"><code class="name flex">
+<span>def <span class="ident">gen_layer_partition2d</span></span>(<span>layer, dim_nodes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Iterate through all possible partitioning schemes that partition <code>layer</code>
+into 2D <code>dim_nodes</code> nodes.</p>
+<p>Return a tuple of the partition scheme and the partitioned layer
+parameters.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gen_layer_partition2d(layer, dim_nodes):
+    &#34;&#34;&#34;
+    Iterate through all possible partitioning schemes that partition `layer`
+    into 2D `dim_nodes` nodes.
+
+    Return a tuple of the partition scheme and the partitioned layer
+    parameters.
+    &#34;&#34;&#34;
+    for ph, pw in itertools.product(
+        Util.factorize(dim_nodes.h, pe.NUM), Util.factorize(dim_nodes.w, pe.NUM)
+    ):
+        # Require fmap partition the same factor in both dimension.
+        if ph[pe.OFMP] != pw[pe.OFMP]:
+            continue
+
+        partition2d = [PhyDim2(h, w) for h, w in zip(ph, pw)]
+
+        # Require partition is approximately dividable of total size.
+        if not Util.approx_dividable(layer.nofm, partition2d[pe.OUTP].size()):
+            continue
+        if not Util.approx_dividable(
+            layer.sofm, partition2d[pe.OFMP].h
+        ) or not Util.approx_dividable(layer.sofm, partition2d[pe.OFMP].w):
+            continue
+
+        # Partitioned layer spec.
+        layer_part = Layer(
+            layer.nifm,
+            Util.idivc(layer.nofm, partition2d[pe.OUTP].size()),
+            Util.idivc(layer.sofm, partition2d[pe.OFMP].h),
+            layer.sfil,
+            layer.strd,
+        )
+
+        # For different order.
+        for order in itertools.permutations(tuple(range(pe.NUM))):
+            # Size-(1, 1) partition has no effect, so its order is not
+            # relevant. Force them at the beginning.
+            no_partitions = [v for v in range(pe.NUM) if partition2d[v].size() == 1]
+            if not all(
+                [order[i] == no_partitions[i] for i in range(len(no_partitions))]
+            ):
+                continue
+
+            yield (Partition2dScheme(order, partition2d), layer_part)</code></pre>
+</details>
+</dd>
+<dt id="partition.get_layer_range"><code class="name flex">
+<span>def <span class="ident">get_layer_range</span></span>(<span>nfmap, sfmap, part, index)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the range of the layer for the given partition index.</p>
+<p><code>part</code> is the partition2d field of Partition2dScheme. <code>index</code> is a given
+partition2d index.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_layer_range(nfmap, sfmap, part, index):
+    &#34;&#34;&#34;
+    Get the range of the layer for the given partition index.
+
+    `part` is the partition2d field of Partition2dScheme. `index` is a given
+    partition2d index.
+    &#34;&#34;&#34;
+    # fmap channel partition.
+    idx_chn = index[pe.OUTP].h * part[pe.OUTP].w + index[pe.OUTP].w
+    n_beg = nfmap * idx_chn // part[pe.OUTP].size()
+    n_end = nfmap * (idx_chn + 1) // part[pe.OUTP].size()
+    assert n_end &lt;= nfmap
+    # fmap height tiling.
+    h_beg = sfmap * index[pe.OFMP].h // part[pe.OFMP].h
+    h_end = sfmap * (index[pe.OFMP].h + 1) // part[pe.OFMP].h
+    assert h_end &lt;= sfmap
+    # fmap width tiling.
+    w_beg = sfmap * index[pe.OFMP].w // part[pe.OFMP].w
+    w_end = sfmap * (index[pe.OFMP].w + 1) // part[pe.OFMP].w
+    assert w_end &lt;= sfmap
+    return (n_beg, n_end), (h_beg, h_end), (w_beg, w_end)</code></pre>
+</details>
+</dd>
+<dt id="partition.unit_nhops_layer_partition2d"><code class="name flex">
+<span>def <span class="ident">unit_nhops_layer_partition2d</span></span>(<span>layer, batch_size, part_lcurr, part_lprev)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get total number of hops for each data category when partition the given
+layer with <code>part_lcurr</code> and 'part_lprev'.</p>
+<p>Return a tuple with each element being the number of hops for each data
+category.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unit_nhops_layer_partition2d(layer, batch_size, part_lcurr, part_lprev):
+    &#34;&#34;&#34;
+    Get total number of hops for each data category when partition the given
+    layer with `part_lcurr` and &#39;part_lprev&#39;.
+
+    Return a tuple with each element being the number of hops for each data
+    category.
+    &#34;&#34;&#34;
+
+    # Layers should have the same model parallel size (i.e., the same data
+    # parallel size).
+    assert part_lcurr.total_size() == part_lprev.total_size()
+
+    # Per data category.
+    nhops = [0 for _ in range(de.NUM)]
+
+    if part_lcurr.total_size() == 1 and part_lprev.total_size() == 1:
+        # Case with no partition.
+        return nhops
+
+    # Record all dest coordinates that need this element.
+    req_lists_lprev = [
+        [[[] for _ in range(layer.sifm)] for _ in range(layer.sifm)]
+        for _ in range(layer.nifm)
+    ]
+
+    for index_lcurr in part_lcurr.gen_all_indexes2d():
+        # Physical coordinate.
+        coord_lcurr = part_lcurr.physical_coordinate2d(index_lcurr)
+
+        # Range of current layer for this index.
+        _, h_lcurr_rng, w_lcurr_rng = get_layer_range(
+            layer.nofm, layer.sofm, part_lcurr.partition2d, index_lcurr
+        )
+
+        # Range of previous layer, i.e., input for this pidx
+        # ifmap channels. All.
+        n_lprev_beg = 0
+        n_lprev_end = layer.nifm
+        # ifmap height tiling.
+        # xy_i = xy_o * stride + (0 ... sfil-1)
+        h_lprev_beg = h_lcurr_rng[0] * layer.strd
+        h_lprev_end = (h_lcurr_rng[1] - 1) * layer.strd + layer.sfil
+        assert h_lprev_end &lt;= layer.sifm
+        # ifmap width tiling.
+        w_lprev_beg = w_lcurr_rng[0] * layer.strd
+        w_lprev_end = (w_lcurr_rng[1] - 1) * layer.strd + layer.sfil
+        assert w_lprev_end &lt;= layer.sifm
+
+        for n_lprev, h_lprev, w_lprev in itertools.product(
+            range(n_lprev_beg, n_lprev_end),
+            range(h_lprev_beg, h_lprev_end),
+            range(w_lprev_beg, w_lprev_end),
+        ):
+            req_lists_lprev[n_lprev][h_lprev][w_lprev].append(coord_lcurr)
+
+    def get_nhops(coord1, coord2):
+        &#34;&#34;&#34; Get number of hops from `coord1` to `coord2`. &#34;&#34;&#34;
+        return abs(coord1.h - coord2.h) + abs(coord1.w - coord2.w)
+
+    # Sum up nhops based on recorded dest coordinates.
+    for index_lprev in part_lprev.gen_all_indexes2d():
+        # Physical coordinate.
+        coord_lprev = part_lprev.physical_coordinate2d(index_lprev)
+
+        # Range of previous layer for this index.
+        n_lprev_rng, h_lprev_rng, w_lprev_rng = get_layer_range(
+            layer.nifm, layer.sifm, part_lprev.partition2d, index_lprev
+        )
+
+        for n_lprev, h_lprev, w_lprev in itertools.product(
+            range(*n_lprev_rng), range(*h_lprev_rng), range(*w_lprev_rng)
+        ):
+            rlist = req_lists_lprev[n_lprev][h_lprev][w_lprev]
+            nhops[de.IFM] += np.sum([get_nhops(coord_lprev, c) for c in rlist])
+
+    nhops = [n * batch_size for n in nhops]
+
+    return nhops</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="partition.Partition2dScheme"><code class="flex name class">
+<span>class <span class="ident">Partition2dScheme</span></span>
+<span>(</span><span>order, partition2d)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Denote a 2D partitioning scheme.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Partition2dScheme(object):
+    &#34;&#34;&#34;
+    Denote a 2D partitioning scheme.
+    &#34;&#34;&#34;
+
+    def __init__(self, order, partition2d):
+        self.order = tuple(order)
+        self.partition2d = tuple(partition2d)
+        assert len(self.order) == pe.NUM and len(set(self.order)) == pe.NUM
+        assert len(self.partition2d) == pe.NUM
+        assert all([isinstance(p, PhyDim2) for p in self.partition2d])
+
+    def total_size(self):
+        &#34;&#34;&#34;
+        Get total parallel partition size.
+        &#34;&#34;&#34;
+        return np.prod([p.h * p.w for p in self.partition2d])
+
+    def gen_all_indexes2d(self):
+        &#34;&#34;&#34;
+        Generator to iterate over all 2D partition indexes.
+        &#34;&#34;&#34;
+        for indexes in itertools.product(
+            *[itertools.product(*[range(dim) for dim in p]) for p in self.partition2d]
+        ):
+            yield [PhyDim2._make(idx) for idx in indexes]
+
+    def physical_coordinate2d(self, index2d):
+        &#34;&#34;&#34;
+        Get physical 2D coordinate from the given 2D partition index.
+        &#34;&#34;&#34;
+        coord = PhyDim2(0, 0)
+        for penum in self.order:
+            coord = [
+                c * p + i
+                for c, p, i in zip(coord, self.partition2d[penum], index2d[penum])
+            ]
+        return PhyDim2._make(coord)
+
+    def as_pod_type(self):
+        &#34;&#34;&#34;
+        Return as a POD type (a tuple) to allow serialization/deserialization.
+        &#34;&#34;&#34;
+        return (self.order, self.partition2d)
+
+    def __str__(self):
+        return str(self.as_pod_type())</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="partition.Partition2dScheme.as_pod_type"><code class="name flex">
+<span>def <span class="ident">as_pod_type</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return as a POD type (a tuple) to allow serialization/deserialization.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def as_pod_type(self):
+    &#34;&#34;&#34;
+    Return as a POD type (a tuple) to allow serialization/deserialization.
+    &#34;&#34;&#34;
+    return (self.order, self.partition2d)</code></pre>
+</details>
+</dd>
+<dt id="partition.Partition2dScheme.gen_all_indexes2d"><code class="name flex">
+<span>def <span class="ident">gen_all_indexes2d</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generator to iterate over all 2D partition indexes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gen_all_indexes2d(self):
+    &#34;&#34;&#34;
+    Generator to iterate over all 2D partition indexes.
+    &#34;&#34;&#34;
+    for indexes in itertools.product(
+        *[itertools.product(*[range(dim) for dim in p]) for p in self.partition2d]
+    ):
+        yield [PhyDim2._make(idx) for idx in indexes]</code></pre>
+</details>
+</dd>
+<dt id="partition.Partition2dScheme.physical_coordinate2d"><code class="name flex">
+<span>def <span class="ident">physical_coordinate2d</span></span>(<span>self, index2d)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get physical 2D coordinate from the given 2D partition index.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def physical_coordinate2d(self, index2d):
+    &#34;&#34;&#34;
+    Get physical 2D coordinate from the given 2D partition index.
+    &#34;&#34;&#34;
+    coord = PhyDim2(0, 0)
+    for penum in self.order:
+        coord = [
+            c * p + i
+            for c, p, i in zip(coord, self.partition2d[penum], index2d[penum])
+        ]
+    return PhyDim2._make(coord)</code></pre>
+</details>
+</dd>
+<dt id="partition.Partition2dScheme.total_size"><code class="name flex">
+<span>def <span class="ident">total_size</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get total parallel partition size.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def total_size(self):
+    &#34;&#34;&#34;
+    Get total parallel partition size.
+    &#34;&#34;&#34;
+    return np.prod([p.h * p.w for p in self.partition2d])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="partition.gen_layer_naive_partition2d" href="#partition.gen_layer_naive_partition2d">gen_layer_naive_partition2d</a></code></li>
+<li><code><a title="partition.gen_layer_partition2d" href="#partition.gen_layer_partition2d">gen_layer_partition2d</a></code></li>
+<li><code><a title="partition.get_layer_range" href="#partition.get_layer_range">get_layer_range</a></code></li>
+<li><code><a title="partition.unit_nhops_layer_partition2d" href="#partition.unit_nhops_layer_partition2d">unit_nhops_layer_partition2d</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="partition.Partition2dScheme" href="#partition.Partition2dScheme">Partition2dScheme</a></code></h4>
+<ul class="">
+<li><code><a title="partition.Partition2dScheme.as_pod_type" href="#partition.Partition2dScheme.as_pod_type">as_pod_type</a></code></li>
+<li><code><a title="partition.Partition2dScheme.gen_all_indexes2d" href="#partition.Partition2dScheme.gen_all_indexes2d">gen_all_indexes2d</a></code></li>
+<li><code><a title="partition.Partition2dScheme.physical_coordinate2d" href="#partition.Partition2dScheme.physical_coordinate2d">physical_coordinate2d</a></code></li>
+<li><code><a title="partition.Partition2dScheme.total_size" href="#partition.Partition2dScheme.total_size">total_size</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

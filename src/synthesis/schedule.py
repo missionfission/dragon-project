@@ -17,13 +17,13 @@ import multiprocessing
 import sys
 from collections import OrderedDict
 
-from . import DataCategoryEnum as de
-from . import LoopBlocking
-from . import MemHierEnum as me
-from . import ParallelEnum as pe
-from . import Partition, Solver
-from .Partition import Partition2dScheme
-from .PhyDim2 import PhyDim2
+# from . import DataCategoryEnum as de
+# from . import LoopBlocking
+# from . import MemHierEnum as me
+# from . import ParallelEnum as pe
+# from . import Partition, Solver
+# from .Partition import Partition2dScheme
+# from .PhyDim2 import PhyDim2
 
 
 def _get_loopblocking_genfunc(options, layer_lb=None):
