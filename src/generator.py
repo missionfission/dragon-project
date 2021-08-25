@@ -69,6 +69,15 @@ def backward_pass_design(self, scheduler, opts=None):
 
 
 def backward_pass_tech(self, scheduler, opts=None):
+    """[summary]
+
+    Args:
+        scheduler ([type]): [description]
+        opts ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
     alpha = 20000
     beta = 4
     technology = scheduler.technology
@@ -111,6 +120,15 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler, comp_config):
+    """[summary]
+
+    Args:
+        scheduler ([type]): [description]
+        comp_config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
     )
@@ -133,7 +151,15 @@ def update_comp_design(self, scheduler, comp_config):
 
 
 def update_mem_design(self, scheduler, mem_config):
+    """[summary]
 
+    Args:
+        scheduler ([type]): [description]
+        mem_config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
     # print("Bandwidth Idle Time", scheduler.bandwidth_idle_time)
     # print("Compute Idle Time", scheduler.compute_idle_time)
