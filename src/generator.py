@@ -4,10 +4,10 @@ import yaml
 import yamlordereddictloader
 
 # mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
-
-
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
+"""
 
+"""
 """
 Hyperparameters of Gradient Descent 
 alpha

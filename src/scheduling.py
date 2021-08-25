@@ -22,7 +22,7 @@ class Scheduling:
         Args:
             hwfile (str, optional): [description]. Defaults to "default.yaml".
             stats_file (str, optional): [description]. Defaults to "logs/stats.txt".
-        """        
+        """
         base_dir = "configs/"
         self.total_cycles = 0
         self.technology = [1, 1, 40]
@@ -42,7 +42,7 @@ def complete_config(self, config):
 
     Returns:
         [type]: [description]
-    """    
+    """
 
     self.logger.debug("Config Statistics : ")
 
@@ -783,19 +783,8 @@ def run_nn_dataflow(self, graph):
     )
 
 
-def get_reuse(node):
-    """[Get Reuse Possible for Conv and Matmul nodes]
-
-    Args:
-        node ([type]): [description]
-    """    
-    # for node.type in conv2d
-    #
-    pass
-
-
 def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
-    """[summary]
+    """ Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.'20
 
     Args:
         graph ([type]): [description]
@@ -804,7 +793,7 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
         capacity ([type]): [description]
         deeper (bool, optional): [description]. Defaults to False.
         wider (bool, optional): [description]. Defaults to False.
-    """    
+    """
     mem_size_util = np.zeros((num_of_chips + 1))
     mem_free = np.zeros((num_of_chips + 1))
     message_passed = np.zeros((num_of_chips + 1))

@@ -1,10 +1,22 @@
+"""Utilies for Generating and Optimizing Hardware Architectures for AI Workloads
+"""
+
+
+def get_reuse(node):
+    """Get Reuse Possible for Conv and Matmul nodes
+
+    Args:
+        node ([type]): [description]
+    """
+    # for node.type in conv2d
+    #
+    pass
+
+
 def complete_functional_config(graph, config, area_constraint=0):
     """
-    fn(area constraint, graph)
-    analyze graph to get a good initial value of hw description
-    config.create()
-    gen_systl_fn()
-    write as 0_hw.yaml
+    Analyze Workload to create an initial hardware configuration that satisfies the area constraints -> written in file "iters/0_hw.yaml",
+    This will be updated upon interations in the backward_pass_design
     """
     config = generate_systolic_array(graph, config)
     config = generate_local_mem(graph, config)
@@ -12,19 +24,20 @@ def complete_functional_config(graph, config, area_constraint=0):
 
 
 def generate_local_mem(graph, config):
+    """ Create Scratchpad Memory Config from HW config
+    Args:
+        graph ([type]): [description]
+        config ([type]): [description]
     """
-    fn(config)
-    scratchpad config from HW config
-    return full_config
-    """
-
     return config
 
 
 def generate_systolic_array(graph, config):
     """
-    systolic array config from mapping efficiency
-    return full_config
+    Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes
+    Args:
+        graph ([type]): [description]
+        config ([type]): [description]
     """
     total_eff = 0
     min_eff = 1
@@ -50,8 +63,7 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
-    """[Efficiency of node on Systolic Array]
-
+    """Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
     Args:
         graph_node ([type]): [description]
         array_size ([type]): [description]
