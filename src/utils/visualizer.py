@@ -166,6 +166,13 @@ def tech_space_graph(
 def plot_gradients(
     time_list, bandwidth_time_list, mem_size_idle_time_list, *args, **kwargs
 ):
+    """Plot the gradients
+
+    Args:
+        time_list ([type]): [description]
+        bandwidth_time_list ([type]): [description]
+        mem_size_idle_time_list ([type]): [description]
+    """
     fig, ax = plt.subplots(figsize=(30, 10))
     base_dir = "figures/"
     error_config = {"ecolor": "0.3"}

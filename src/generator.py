@@ -3,7 +3,7 @@ import pandas as pd
 import yaml
 import yamlordereddictloader
 
-mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
+# mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
 
 
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
@@ -25,7 +25,7 @@ class Generator:
 
         Args:
             constraintfiles (str, optional): [description]. Defaults to "max_constraints.yaml".
-        """        
+        """
         base_dir = "configs/"
 
         self.maxval = yaml.load(
@@ -223,7 +223,7 @@ def get_mem_props(size, width, banks):
 
     Returns:
         [type]: [description]
-    """    
+    """
     for i in range(11, 25):
         if (size * 4 // (2 ** i)) < 1:
             break
@@ -415,7 +415,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         )
 
         print("Tech Params", scheduler.technology)
-    
+
     # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
     assert scheduler.total_cycles > scheduler.bandwidth_idle_time
     assert scheduler.total_cycles > scheduler.mem_size_idle_time
@@ -445,7 +445,7 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         ],
         [
             mem_config["level" + str(scheduler.mle - 1)]["banks"],
-            int(int(mem_config["level0"]["size"])/1000),
+            int(int(mem_config["level0"]["size"]) / 1000),
             mem_config["level0"]["frequency"],
             mem_config["level0"]["read_energy"],
         ],
@@ -460,7 +460,7 @@ def functions(technology, design):
     Args:
         technology ([type]): [description]
         design ([type]): [description]
-    """    # compute functions
+    """  # compute functions
     wire_cap, wire_res, node = technology["compute"]
     comp_config = design["compute"]
     # memory functions
@@ -499,7 +499,7 @@ def functions(technology, design):
 
 
 def generate_tech_targets(graph, name, EDP=100):
-    
+
     orderlist = []
     orderlist.append("connectivity")
     tech_targets = {}
@@ -517,16 +517,13 @@ def generate_tech_targets(graph, name, EDP=100):
     #     tech_targets[orderlist[i]] = int(improv) + 1
     #     total_benefit *= int(improv_ben)
 
-
-
-        
     if name == "BERT":
         print("For Benefit of EDP ", EDP)
         print("Generating Technology Targets")
         print("Connectivity : 31x", "(T : 9.5, E : 2.3)")
         print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
         print("Logic Latency,  Connectivity : 2x", "(T: 1.9, E:1.1)")
-    
+
     if name == "hpcg":
         print("For Benefit of EDP ", EDP)
         print("Generating Technology Targets")
@@ -565,5 +562,3 @@ Generator.update_tech = update_tech
 Generator.backward_pass_design = backward_pass_design
 Generator.update_comp_design = update_comp_design
 Generator.update_mem_design = update_mem_design
-
-

@@ -1,61 +1,121 @@
 import ast
-from generator import get_mem_props
-import astor
-from ir.staticfg.staticfg import CFGBuilder
 import re
+
+import astor
+
+from generator import get_mem_props
+from ir.cfg.staticfg import CFGBuilder
+
 lib_hw_dict = ["add", "mult", "buffer", "reg", "sys_array", "logic", "fsm"]
 common_ops = set()
 op2sym_map = {
-    'And': 'and', 'Or': 'or',
-    'Add': '+', 'Sub': '-', 'Mult': '*', 'FloorDiv': '//', 'Mod': '%',
-    'LShift': '<<', 'RShift': '>>',
-    'BitOr': '|', 'BitXor': '^', 'BitAnd': '&',
-    'Eq': '==', 'NotEq': '!=', 'Lt': '<', 'LtE': '<=', 'Gt': '>', 'GtE': '>=',
-    'IsNot': '!=',
-    'USub': '-', 'UAdd': '+', 'Not': '!', 'Invert': '~'
+    "And": "and",
+    "Or": "or",
+    "Add": "+",
+    "Sub": "-",
+    "Mult": "*",
+    "FloorDiv": "//",
+    "Mod": "%",
+    "LShift": "<<",
+    "RShift": ">>",
+    "BitOr": "|",
+    "BitXor": "^",
+    "BitAnd": "&",
+    "Eq": "==",
+    "NotEq": "!=",
+    "Lt": "<",
+    "LtE": "<=",
+    "Gt": ">",
+    "GtE": ">=",
+    "IsNot": "!=",
+    "USub": "-",
+    "UAdd": "+",
+    "Not": "!",
+    "Invert": "~",
 }
-delimiters = "+", "-", "*", "//", "%","=", ">>", "<<" , '<','<=','>','>=','!=','~','!','^', '&'
-regexPattern = '|'.join(map(re.escape, delimiters))
+delimiters = (
+    "+",
+    "-",
+    "*",
+    "//",
+    "%",
+    "=",
+    ">>",
+    "<<",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "!=",
+    "~",
+    "!",
+    "^",
+    "&",
+)
+regexPattern = "|".join(map(re.escape, delimiters))
 
-latency = {'And': 1, 'Or': 1,
-    'Add': 4, 'Sub': 4, 'Mult': 5, 'FloorDiv': 16, 'Mod': 3,
-    'LShift': 0.70, 'RShift': 0.70,
-    'BitOr': 0.06, 'BitXor': 0.06, 'BitAnd': 0.06,
-    'Eq': 1, 'NotEq': 1, 'Lt': 1, 'LtE': 1, 'Gt': 1, 'GtE': 1, 'USub': 0.42, 'UAdd': 0.42,
-    'IsNot': 1, 'Not': 0.06, 'Invert': 0.06, 'Regs': 1}
+latency = {
+    "And": 1,
+    "Or": 1,
+    "Add": 4,
+    "Sub": 4,
+    "Mult": 5,
+    "FloorDiv": 16,
+    "Mod": 3,
+    "LShift": 0.70,
+    "RShift": 0.70,
+    "BitOr": 0.06,
+    "BitXor": 0.06,
+    "BitAnd": 0.06,
+    "Eq": 1,
+    "NotEq": 1,
+    "Lt": 1,
+    "LtE": 1,
+    "Gt": 1,
+    "GtE": 1,
+    "USub": 0.42,
+    "UAdd": 0.42,
+    "IsNot": 1,
+    "Not": 0.06,
+    "Invert": 0.06,
+    "Regs": 1,
+}
 energy = {}
-power = {'And': 32*[1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
-    'Or': 32*[1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    'Add': [2.537098e+00, 3.022642e+00, 5.559602e+00, 1.667880e+01, 5.311069e-02], 
-    'Sub':  [2.537098e+00, 3.022642e+00, 5.559602e+00, 1.667880e+01, 5.311069e-02], 
-    'Mult':   [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01], 
-    'FloorDiv': [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01], 
-    'Mod':  [5.050183e+00, 6.723213e+00, 1.177340e+01, 3.532019e+01, 1.198412e-01],
-    'LShift':  [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'RShift':  [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    'BitOr':  [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
-    'BitXor': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
-    'BitAnd': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    'Eq': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'NotEq': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'Lt': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'LtE': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'Gt': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'GtE': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    'USub': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
-    'UAdd': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    'IsNot': [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03], 
-    'Not': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04], 
-    'Invert': [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    'Regs' :   [7.936518e-03,1.062977e-03,8.999495e-03, 8.999495e-03, 7.395312e-05] }
-    
+power = {
+    "And": 32 * [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "Or": 32 * [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "Add": [2.537098e00, 3.022642e00, 5.559602e00, 1.667880e01, 5.311069e-02],
+    "Sub": [2.537098e00, 3.022642e00, 5.559602e00, 1.667880e01, 5.311069e-02],
+    "Mult": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
+    "FloorDiv": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
+    "Mod": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
+    "LShift": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "RShift": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "BitOr": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "BitXor": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "BitAnd": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "Eq": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "NotEq": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "Lt": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "LtE": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "Gt": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "GtE": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "USub": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "UAdd": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "IsNot": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
+    "Not": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "Invert": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
+    "Regs": [7.936518e-03, 1.062977e-03, 8.999495e-03, 8.999495e-03, 7.395312e-05],
+}
+
 hw_allocated = {}
 memory_cfgs = {}
 hw_utilized = {}
 
 cycles = 0
-hw_allocated['Regs'] = 0
-hw_utilized['Regs'] = 0
+hw_allocated["Regs"] = 0
+hw_utilized["Regs"] = 0
+
 
 def schedule(expr, type):
     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
@@ -64,26 +124,32 @@ def schedule(expr, type):
     hw_need = {}
     num_cycles = 0
     for key in op2sym_map.keys():
-            hw_need[key] = 0
+        hw_need[key] = 0
     strs = re.split(regexPattern, expr)
     print(strs, expr)
-    if strs.count("")>0:
-        strs.remove('')
+    if strs.count("") > 0:
+        strs.remove("")
     num_vars = len(strs)
-    for i,op in enumerate(op2sym_map.values()):
+    for i, op in enumerate(op2sym_map.values()):
         hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
-        num_cycles += latency[list(op2sym_map.keys())[i]] # ALAP
+        num_cycles += latency[list(op2sym_map.keys())[i]]  # ALAP
     hw_need["Regs"] = num_vars
     return num_cycles, hw_need
-    
+
+
 def parse_code(expr, type, unrolled=1, loop_iters=1):
     if type in ["assign", "expr", "binop_nested", "constant"]:
-        expr_cycles, hw_need = schedule(expr,type)
+        expr_cycles, hw_need = schedule(expr, type)
         global cycles, hw_allocated, hw_utilized
-        cycles += expr_cycles*loop_iters/unrolled
+        cycles += expr_cycles * loop_iters / unrolled
         # hw_allocated = max(hw_need*unrolled, hw_allocated)
-        hw_allocated = { key:max(value, hw_need[key]*unrolled) for key, value in hw_allocated.items() }
-        hw_utilized =  { key: value + hw_need[key]*unrolled for key, value in hw_utilized.items() }
+        hw_allocated = {
+            key: max(value, hw_need[key] * unrolled)
+            for key, value in hw_allocated.items()
+        }
+        hw_utilized = {
+            key: value + hw_need[key] * unrolled for key, value in hw_utilized.items()
+        }
         print(cycles)
     # if(type == "assign"):
     #     left, right = expr.split("=")
@@ -92,7 +158,7 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     # if(type == "expr"):
     #     for i,op in enumerate(op2sym_map.values()):
     #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
-    #     # expression is list operation such as append 
+    #     # expression is list operation such as append
     #     # expr.split(" ")
     #     # find brackets, create data path
     # if(type == "binop_nested"):
@@ -104,17 +170,18 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     # if (type == "constant"):
     #     for i,op in enumerate(op2sym_map.values()):
     #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
-    
 
-def check_and_parse(string, unrolled=1,  loop_iters=1):
-    if type(string) == ast.BinOp or ast.BoolOp :
-        parse_code(astor.to_source(string), "binop_nested",unrolled)
-    if (type(string) == ast.Call):
+
+def check_and_parse(string, unrolled=1, loop_iters=1):
+    if type(string) == ast.BinOp or ast.BoolOp:
+        parse_code(astor.to_source(string), "binop_nested", unrolled)
+    if type(string) == ast.Call:
         # cycles += visit(string)
         # latency calculation of traversal
         pass
-    if (type(string) == ast.Constant):
-        parse_code(astor.to_source(string), "constant",unrolled)
+    if type(string) == ast.Constant:
+        parse_code(astor.to_source(string), "constant", unrolled)
+
 
 def parse_graph(graph):
     """
@@ -125,68 +192,68 @@ def parse_graph(graph):
         hw_utilized[key] = 0
     unroll_params = {}
     variables = {}
-    global memory_cfgs 
+    global memory_cfgs
 
     # if node.operator in lib_common_ops:
     #     common_ops.add(node.operator)
     for node in graph:
         # yield(node)
-        for i in node.statements:     
-                print(i)
-                if type(i)==ast.Import:
-                    continue
-                if type(i)==ast.FunctionDef:
-                    for string in i.body:
-                        if isinstance(string, ast.For):
-                            continue
-                        # print(string)
-                        check_and_parse(string)
-                if type(i)==ast.Assign:
-                    # allocated memory/registers
-                    flag = True
-                    if isinstance(i.value, ast.Tuple):
-                        for x in list(i.value.elts):
-                            if not isinstance(x,ast.Constant):
-                                flag = False
-                        if flag:
-                            if isinstance(i.targets[0],ast.Name):
-                                variables[i.targets[0].id] = len(list(i.value.elts))
-                    else:
-                        parse_code(astor.to_source(i), "assign")
-                if type(i)==ast.AugAssign:
-                    # allocated memory/registers
+        for i in node.statements:
+            print(i)
+            if type(i) == ast.Import:
+                continue
+            if type(i) == ast.FunctionDef:
+                for string in i.body:
+                    if isinstance(string, ast.For):
+                        continue
+                    # print(string)
+                    check_and_parse(string)
+            if type(i) == ast.Assign:
+                # allocated memory/registers
+                flag = True
+                if isinstance(i.value, ast.Tuple):
+                    for x in list(i.value.elts):
+                        if not isinstance(x, ast.Constant):
+                            flag = False
+                    if flag:
+                        if isinstance(i.targets[0], ast.Name):
+                            variables[i.targets[0].id] = len(list(i.value.elts))
+                else:
                     parse_code(astor.to_source(i), "assign")
-                if type(i)==ast.Expr:
-                    parse_code(astor.to_source(i), "expr")
-                if type(i)==ast.If:
-                    check_and_parse(i.test)
-                if type(i)==ast.Return:
-                    check_and_parse(i.value)
-                if isinstance(i,ast.For) :
-                    unrolled = 1
-                    print(ast.dump(i))
-                    if(isinstance(i.iter.args[0], ast.Constant)):
-                        loop_iters =  [i.iter.args[0].value]
-                    else:
-                        print("Loop iters not captured")
-                        loop_iters = 1
-                    print("Loop Iters are",loop_iters)
-                    print("Unrolled are",unrolled)
-                    for string in i.body:
-                        check_and_parse(string, unrolled)
-                    # print(ast.dump(i))
-                    # transform
-                #numpy library spmv, dot, conv
+            if type(i) == ast.AugAssign:
+                # allocated memory/registers
+                parse_code(astor.to_source(i), "assign")
+            if type(i) == ast.Expr:
+                parse_code(astor.to_source(i), "expr")
+            if type(i) == ast.If:
+                check_and_parse(i.test)
+            if type(i) == ast.Return:
+                check_and_parse(i.value)
+            if isinstance(i, ast.For):
+                unrolled = 1
+                print(ast.dump(i))
+                if isinstance(i.iter.args[0], ast.Constant):
+                    loop_iters = [i.iter.args[0].value]
+                else:
+                    print("Loop iters not captured")
+                    loop_iters = 1
+                print("Loop Iters are", loop_iters)
+                print("Unrolled are", unrolled)
+                for string in i.body:
+                    check_and_parse(string, unrolled)
+                # print(ast.dump(i))
+                # transform
+            # numpy library spmv, dot, conv
     memory_cfgs = variables
     # mem_list =  allocate_memory_cfgs()
 
-    
+
 def get_params(dfg, area_budget):
     allocated_area = 0
-    while (allocated_area < 0.9*area or allocated_area > 1.2*area):
+    while allocated_area < 0.9 * area or allocated_area > 1.2 * area:
         # unroll_params -> modify
         # memory size -> modify
-        if (area > allocated_area):
+        if area > allocated_area:
             for param in unroll_params:
                 # decrease parallelism
                 # unroll_params --
@@ -194,30 +261,31 @@ def get_params(dfg, area_budget):
             for mem_cfgs in memory_cfgs:
                 # high registers to sram
                 # decreases bandwidth
-                # update_memory_cfgs 
+                # update_memory_cfgs
                 pass
         # if(area < allocated_area):
     pass
 
+
 def allocate_memory_cfgs():
     mem_list = {}
     for key, value in memory_cfgs.items():
-        if value> 32768:
+        if value > 32768:
             mem_list[key] = get_mem_props(value, 32, 1)
         else:
-            mem_list[key] = power["Regs"]*value
+            mem_list[key] = power["Regs"] * value
     return mem_list
 
+
 def prune_allocator():
-    
+
     # conflict graph
     # interval graph for registers
-    if(node.operator=='func'):
+    if node.operator == "func":
         getall = []
         for i in func:
             getall.append(allocate_node(i))
     return getall
-
 
 
 # def get_fsm_overhead():
@@ -273,8 +341,6 @@ def prune_allocator():
 #         pass
 
 
-
-
 def get_stats(cfg):
 
     # Write logs
@@ -283,8 +349,8 @@ def get_stats(cfg):
     #  * activity for each partitioned array. add up all the activity of all the components to get the fina
     ddg = {}
     print("-------------------------------")
-    print("Generating DDDG")       
-    avgpower = 0   
+    print("Generating DDDG")
+    avgpower = 0
     # print("Num of Nodes:",  ddg['nodes'])
     # print("Num of Edges:",  ddg['edges'])
     # print("Num of Reg Edges:", regedges)
@@ -293,8 +359,8 @@ def get_stats(cfg):
     print("Creating Base Data Path")
     print("Cycle :", cycles)
     print("Hardware ")
-    for keys in hw_utilized.keys():   
-        avgpower += power[keys][0]*hw_utilized[keys]*latency[keys]/cycles
+    for keys in hw_utilized.keys():
+        avgpower += power[keys][0] * hw_utilized[keys] * latency[keys] / cycles
     print("Avg Power :", avgpower)
     # print("Avg FU Power :", fupower)
     # print("Avg FU Dynamic Power:",fu_dynamic_power)
@@ -305,9 +371,10 @@ def get_stats(cfg):
     # print("Avg REG Power: ", regpower)
     # print("Area Calculation :", area)
     print(hw_allocated, memory_cfgs)
-    
+
+
 ## choices for scheduling :
-## assumptions for our formulas : propagation of error 
+## assumptions for our formulas : propagation of error
 
 
 # lib_template_space = ["global_mem", "local_mem", "pes", "noc", "buffers"]
@@ -326,6 +393,6 @@ def get_stats(cfg):
 # def allocation(H):
 #     for node in graph:
 #         hw_allocated[node.name] = allocate(node)
-    
+
 
 #     return hw_allocated

@@ -108,8 +108,17 @@ def design_runner(
     file="default.yaml",
     stats_file="logs/stats.txt",
 ):
-    """
-    Runs the Input Graph
+    """[Runs the Input Graph : Optimizes Design Only]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to "default.yaml".
+        stats_file (str, optional): [description]. Defaults to "logs/stats.txt".
+
+    Returns:
+        [type]: [description]
     """
 
     time_list = []
@@ -229,6 +238,12 @@ def all_design_updates(graph, backprop):
 
 
 def all_tech_updates(graph, backprop):
+    """[summary]
+
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): [description]
+    """
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
     tech_names = []
