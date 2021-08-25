@@ -50,7 +50,12 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
-    N_i, N_j = array_size
+    """[Efficiency of node on Systolic Array]
+
+    Args:
+        graph_node ([type]): [description]
+        array_size ([type]): [description]
+    """
     efficiency = 0
     if node.type == "aten::convolution":
         cycles = (N * N * C * R * R * K * K * Co * Ci) / (N * N * B)
