@@ -1,0 +1,1783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>generator API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>generator</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import pandas as pd
+import yaml
+import yamlordereddictloader
+
+# mem_table = np.array(pd.read_csv(&#34;tables/sram.csv&#34;, header=None))
+
+
+# tech_table = np.array(pd.read_csv(&#34;tables/tech.csv&#34;))
+
+&#34;&#34;&#34;
+Hyperparameters of Gradient Descent 
+alpha
+beta 
+&#34;&#34;&#34;
+
+eff = 0.5
+logic_energy = 12.75
+logic_speed = 1
+
+
+class Generator:
+    def __init__(self, constraintfiles=&#34;max_constraints.yaml&#34;):
+        &#34;&#34;&#34;[summary]
+
+        Args:
+            constraintfiles (str, optional): [description]. Defaults to &#34;max_constraints.yaml&#34;.
+        &#34;&#34;&#34;
+        base_dir = &#34;configs/&#34;
+
+        self.maxval = yaml.load(
+            open(base_dir + constraintfiles), Loader=yamlordereddictloader.Loader
+        )
+
+
+def writeconfig(self, content, filename):
+    &#34;&#34;&#34;
+    Generate Hardware Description Yaml File 
+    &#34;&#34;&#34;
+    outfile = open(&#34;iters/&#34; + filename, &#34;w&#34;)
+    outfile.write(
+        yaml.dump(
+            content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,
+        )
+    )
+
+
+def backward_pass_design(self, scheduler, opts=None):
+
+    &#34;&#34;&#34;
+    opts = [&#34;energy&#34;, &#34;time&#34;, &#34;area&#34;, &#34;edp&#34;]
+    Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+    Time lost due to small memory size ?
+    Time lost due to small memory bandwidth ?
+    Time lost due to high of everything but compute is slow
+    Energy high due to smaller memory arrays ?
+    Energy high due to high memory bandwidth ?
+    Energy high due to high of everything but compute is slow  
+    Where is area getting consumed the most?
+    # check area somehow ?
+    &#34;&#34;&#34;
+    config = scheduler.config
+    config[&#34;mm_compute&#34;] = self.update_comp_design(
+        scheduler, scheduler.config[&#34;mm_compute&#34;]
+    )
+    config[&#34;memory&#34;] = self.update_mem_design(scheduler, scheduler.config[&#34;memory&#34;])
+
+    return config
+
+
+def backward_pass_tech(self, scheduler, opts=None):
+    alpha = 20000
+    beta = 4
+    technology = scheduler.technology
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    comp_config = config[&#34;mm_compute&#34;]
+    scheduler.compute_time = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        + scheduler.mem_size_idle_time
+    )
+    time_grads = {}
+    energy_grads = {}
+    # create a dictionary of time and energy grads calculation
+    time_grads[&#34;memory latency&#34;] = (
+        scheduler.mem_size_idle_time
+    ) / scheduler.total_cycles
+    time_grads[&#34;compute latency&#34;] = (scheduler.compute_time) / scheduler.total_cycles
+
+    # if mem energy consumption is too high at level 1, banks can be increased
+    energy_grads[&#34;memory energy&#34;] = scheduler.mem_energy[0] / scheduler.total_energy
+    energy_grads[&#34;compute energy&#34;] = scheduler.compute_energy / scheduler.total_energy
+
+    mem_config[&#34;level0&#34;][&#34;banks&#34;] += (int)(
+        beta
+        * scheduler.mem_energy
+        / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
+    )
+    # Compute_energy is too high, check if compute is larger than required, or slower than required
+    # compute_array size can be reduced -&gt; how does compute array size effect energy consumption -&gt;
+    # it may be due to a lot of compute or bad-sized compute arrays
+
+    ## What is really high read energy, write energy or leakage energy -&gt; which depends on the leakage time
+    # If leakage energy, read or write energy-&gt; can change the technology type
+    # if Energy is too high due to the leakage time : change sizing to energy efficient
+    # If mem energy consumption is high -&gt; which level ?
+    # if mem_energy consumption is too high at level 0, its size can be reduced
+    scheduler.technology = technology
+    return config
+
+
+def update_comp_design(self, scheduler, comp_config):
+    scheduler.compute_time = scheduler.total_cycles - (
+        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    )
+    if scheduler.mem_size_idle_time &gt; 0.90 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] += int(pe_descent * gamma)
+        print(&#34;N_PEs changed&#34;)
+
+    if scheduler.mem_size_idle_time &lt; 0.01 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] -= int(pe_descent * gamma)
+
+    return comp_config
+
+
+def update_mem_design(self, scheduler, mem_config):
+
+    #  Allow changing for bandwidth and Size_idle_time -&gt; bottlenecks always consume more time/energy
+    # print(&#34;Bandwidth Idle Time&#34;, scheduler.bandwidth_idle_time)
+    # print(&#34;Compute Idle Time&#34;, scheduler.compute_idle_time)
+    # print(&#34;Memory Size Idle Time&#34;, scheduler.mem_size_idle_time)
+    ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
+    alpha = 30000
+    beta = 10
+    # if scheduler.bandwidth_idle_time &gt; 0.1 * scheduler.total_cycles:
+    if scheduler.force_connectivity == 0:
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;] += (int)(
+            beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+        )
+    ## Force Connectivity : External bandwidth is forced, then cannot change anything
+    ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
+    # print(&#34;Memory Size old&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    # if scheduler.mem_size_idle_time &gt; 0.1 * scheduler.total_cycles:
+    mem_config[&#34;level0&#34;][&#34;size&#34;] += (int)(
+        alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+    )
+    # print(&#34;Memory Size new&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    return mem_config
+
+
+def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
+
+    &#34;&#34;&#34;
+    opts is of either frequency or its for energy -&gt; can modulate the access time of the cell and the cell energy
+    opt = [frequency, read energy, write energy, leakage power, endurance]
+    The technology space can be loaded from the file, and how we can rapidly find our point there
+    The wire space is also loaded, and the joint technology and wire space can also be loaded
+    &#34;&#34;&#34;
+    # memory tech
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+    ) = technology[&#34;memory&#34;]
+
+    # compute tech
+    # pe -&gt; composition
+    wire_cap, wire_res, node = technology[&#34;compute&#34;]
+
+    # noc tech : width, noc_type, data_width
+    wire_cap, wire_res, noc_node = technology[&#34;noc&#34;]
+
+    wire_cap = float(wire_cap)
+    # sense_amp_time = float(sense_amp_time)
+    steps = 1
+    ## Because above this interval it does not matter whether we can create a better technology
+    # or not.
+    ## Joint sweep of tech space in cmos, memory cell and wires, biggest gradient : wire_cap
+
+    if opts == &#34;energy&#34; or opts == &#34;read_energy&#34;:
+        beta_wire = 1 / 50.7
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
+        if wire_cap &gt; 0:
+            wire_cap -= energy_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= energy_grads * beta_logic
+
+    if opts == &#34;time&#34;:
+        beta_wire_cap = 1 / 0.558
+        beta_plogic_node = 1 / 1.4
+        if wire_cap &gt; 0:
+            wire_cap -= steps * time_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= steps * time_grads * beta_plogic_node
+    # print(wire_cap, sense_amp_time)
+    return technology
+
+
+def get_mem_props(size, width, banks):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        size ([type]): [description]
+        width ([type]): [description]
+        banks ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    for i in range(11, 25):
+        if (size * 4 // (2 ** i)) &lt; 1:
+            break
+    a = mem_table[np.where(mem_table[:, 1] == banks)]
+    a = a[np.where(a[:, 2] == width)]
+    element = min(a[:, 0], key=lambda x: abs(x - 4 * size))
+    a = a[np.where(a[:, 0] == element)]
+    # print(&#34;area is &#34;, a[0, 8], &#34;size is&#34;, element)
+    return a[0, 5], a[0, 6], a[0, 7], a[0, 8] * 10 ** 4
+
+
+def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
+    &#34;&#34;&#34;
+    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    &#34;&#34;&#34;
+    if backprop:
+        scheduler.total_cycles = (
+            2 * scheduler.total_cycles
+            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+        scheduler.mem_read_access[0] *= 2
+        scheduler.mem_write_access[0] *= 2
+        scheduler.mem_read_access[1] += backprop_memory
+        scheduler.mem_write_access[1] += backprop_memory
+        scheduler.bandwidth_idle_time += (
+            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+
+    total_energy = 0
+    mem_energy = np.zeros((scheduler.mle))
+    rf_accesses = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        - scheduler.mem_size_idle_time
+    )
+    rf_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * mm_compute[&#34;size&#34;]
+        * config[&#34;rf&#34;][&#34;energy&#34;]
+        * rf_accesses
+        / 4
+        * eff
+        * 2
+    )
+    compute_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * (mm_compute[&#34;size&#34;] ** 2)
+        * (
+            scheduler.total_cycles
+            - scheduler.bandwidth_idle_time
+            - scheduler.mem_size_idle_time
+        )
+        / 4
+        * eff
+        * mm_compute[&#34;per_op_energy&#34;]
+    )
+    # illusion_leakage = (
+    #     3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    # )
+    for i in range(scheduler.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy = float(memory[&#34;read_energy&#34;])
+        write_energy = float(memory[&#34;write_energy&#34;])
+        leakage_power = float(memory[&#34;leakage_power&#34;])
+        mem_energy[i] = (
+            scheduler.mem_read_access[i] * read_energy
+            + scheduler.mem_write_access[i] * write_energy
+            + leakage_power * scheduler.total_cycles / 1000
+        )
+        # print(read_energy, write_energy, leakage_power)
+        # print(mem_energy)
+    mem_energy[scheduler.mle - 1] = (
+        scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        + scheduler.mem_write_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+    ) + scheduler.total_cycles * config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+
+    rf_area = config[&#34;rf&#34;][&#34;area&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    compute_area = (
+        config[&#34;mm_compute&#34;][&#34;area&#34;]
+        * config[&#34;mm_compute&#34;][&#34;N_PE&#34;]
+        * (config[&#34;mm_compute&#34;][&#34;size&#34;] ** 2)
+    )
+    mem_area = float(scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;area&#34;])
+    total_area = mem_area + compute_area + rf_area
+    total_energy = np.sum(mem_energy) + compute_energy + rf_energy
+    # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
+    scheduler.mem_energy = mem_energy
+    scheduler.compute_energy = compute_energy
+    scheduler.logger.info(&#34;===========================&#34;)
+    scheduler.logger.info(&#34;Total No of cycles  = %d &#34;, scheduler.total_cycles)
+    scheduler.logger.info(&#34;Bandwidth Idle Time  = %d &#34;, scheduler.bandwidth_idle_time)
+    scheduler.logger.info(&#34;Memory Size Idle Time = %d&#34;, scheduler.mem_size_idle_time)
+    scheduler.logger.info(&#34;================ Energy Description ======================&#34;)
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption  = %f &#34;, (mem_energy[0]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[0] * read_energy / (mem_energy[0]),
+        scheduler.mem_write_access[0] * write_energy / (mem_energy[0]),
+        leakage_power * scheduler.total_cycles / 1000 / (mem_energy[0]),
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption  = %f &#34;, (mem_energy[1]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        / (mem_energy[1]),
+        scheduler.mem_write_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+        / (mem_energy[1]),
+        config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+        * scheduler.total_cycles
+        / (mem_energy[1]),
+    )
+
+    scheduler.logger.info(
+        &#34;Compute Energy Consumption  = %f &#34;, compute_energy / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Register File Energy Consumption  = %f &#34;, rf_energy / total_energy
+    )
+
+    scheduler.logger.info(&#34; Total Energy Consumption  = %d &#34;, total_energy)
+    scheduler.logger.info(&#34;================ Area Description ======================&#34;)
+    scheduler.logger.info(&#34;Compute Area Consumption  = %d &#34;, compute_area)
+    scheduler.logger.info(&#34;(32-bit) Register File Area Consumption  = %d &#34;, rf_area)
+    scheduler.logger.info(&#34;Memory Area Consumption  = %d &#34;, mem_area)
+    scheduler.logger.info(&#34;Total Area Consumption  = %d &#34;, total_area)
+    scheduler.logger.info(&#34;================ Design Description ======================&#34;)
+    scheduler.logger.info(&#34;No. of PEs = %d&#34;, mm_compute[&#34;N_PE&#34;])
+    scheduler.logger.info(&#34;Size of Each Systolic Array = %d&#34;, mm_compute[&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;(32-bit) Register File Size = %d&#34;, mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    )
+    scheduler.logger.info(&#34;Memory Level-0 Banks  = %d&#34;, mem_config[&#34;level0&#34;][&#34;banks&#34;])
+    scheduler.logger.info(&#34;Memory Level-0 Size = %d&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;Memory Level-1 Connectivity = %d&#34;,
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+    )
+
+    if print_stats:
+        print(&#34;==================================&#34;)
+        print(
+            &#34;Time&#34;,
+            int(scheduler.total_cycles),
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),
+        )
+        print(
+            &#34;Energy&#34;,
+            int(total_energy),
+            int(compute_energy),
+            int(rf_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(scheduler.mem_read_access[1] * read_energy),
+            int(scheduler.mem_write_access[1] * read_energy),
+            int(leakage_power * scheduler.total_cycles),
+        )
+        print(&#34;Area&#34;, int(total_area), int(compute_area), int(rf_area), int(mem_area))
+        print(
+            &#34;memory accesses&#34;,
+            int(scheduler.mem_read_access[0]),
+            int(scheduler.mem_write_access[0]),
+            int(scheduler.mem_read_access[1]),
+            int(scheduler.mem_write_access[1]),
+        )
+        print(
+            &#34;rf access&#34;, 2 * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;] * rf_accesses / 4
+        )
+        print(
+            &#34;Design Params \n&#34;,
+            &#34;No. of PEs : &#34;,
+            mm_compute[&#34;N_PE&#34;],
+            &#34;\n Memory Level-1 Connectivity : &#34;,
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            &#34;\n Memory Level-0 Size : &#34;,
+            mem_config[&#34;level0&#34;][&#34;size&#34;],
+            &#34;\n Memory Level-0 Read Energy : &#34;,
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        )
+
+        print(&#34;Tech Params&#34;, scheduler.technology)
+
+    # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
+    assert scheduler.total_cycles &gt; scheduler.bandwidth_idle_time
+    assert scheduler.total_cycles &gt; scheduler.mem_size_idle_time
+    assert scheduler.bandwidth_idle_time &gt;= 0
+    assert scheduler.mem_size_idle_time &gt;= 0
+    return (
+        [
+            scheduler.total_cycles,
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),  #
+            scheduler.compute_idle_time,
+        ],
+        [
+            int(total_energy),
+            int(compute_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(
+                scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+            ),
+            int(
+                scheduler.mem_write_access[1]
+                * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+            ),
+            int(config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;] * scheduler.total_cycles),
+        ],
+        [
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            int(int(mem_config[&#34;level0&#34;][&#34;size&#34;]) / 1000),
+            mem_config[&#34;level0&#34;][&#34;frequency&#34;],
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        ],
+        scheduler.technology,
+        total_area,
+    )
+
+
+def functions(technology, design):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        technology ([type]): [description]
+        design ([type]): [description]
+    &#34;&#34;&#34;  # compute functions
+    wire_cap, wire_res, node = technology[&#34;compute&#34;]
+    comp_config = design[&#34;compute&#34;]
+    # memory functions
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+        sense_amp_time,
+    ) = technology[&#34;memory&#34;]
+    mem_config = design[&#34;memory&#34;]
+
+    wire_cap = float(wire_cap)
+    sense_amp_time = float(sense_amp_time)
+    plogic_node = float(plogic_node)
+    # mem_config[&#34;level0&#34;][&#34;write_latency&#34;] = (
+    #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    # )
+    mem_config[&#34;level0&#34;][&#34;read_latency&#34;] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config[&#34;level0&#34;][&#34;read_energy&#34;] = 50.7 * wire_cap + 56.2
+    mem_config[&#34;level0&#34;][&#34;write_energy&#34;] = 47.8 * wire_cap + 20
+    mem_config[&#34;level0&#34;][&#34;frequency&#34;] = 4000 * (
+        1 / mem_config[&#34;level0&#34;][&#34;read_latency&#34;]
+    )
+    # mem_config[&#34;level0&#34;][&#34;leakage_power&#34;]
+
+    # noc functions
+    wire_cap, wire_res, noc_node = technology[&#34;noc&#34;]
+    noc_config = design[&#34;noc&#34;]
+
+    pass
+
+
+def generate_tech_targets(graph, name, EDP=100):
+
+    orderlist = []
+    orderlist.append(&#34;connectivity&#34;)
+    tech_targets = {}
+    time_params = []
+    energy_params = []
+    tech_ratio_params = []
+    tech_ratio_list = []
+    energy_ratio_params = []
+    energy_ratio_list = []
+    # create the order list
+    total_benefit = 1
+    # while total_benefit &lt; benefit_target:
+    #     i += 1
+    #     improv, improv_ben = get_benefit(orderlist[i])
+    #     tech_targets[orderlist[i]] = int(improv) + 1
+    #     total_benefit *= int(improv_ben)
+
+    if name == &#34;BERT&#34;:
+        print(&#34;For Benefit of EDP &#34;, EDP)
+        print(&#34;Generating Technology Targets&#34;)
+        print(&#34;Connectivity : 31x&#34;, &#34;(T : 9.5, E : 2.3)&#34;)
+        print(&#34;Logic Energy : 6x&#34;, &#34;(T: 1.0, E: 2.1)&#34;)
+        print(&#34;Logic Latency,  Connectivity : 2x&#34;, &#34;(T: 1.9, E:1.1)&#34;)
+
+    if name == &#34;hpcg&#34;:
+        print(&#34;For Benefit of EDP &#34;, EDP)
+        print(&#34;Generating Technology Targets&#34;)
+        print(&#34;External Memory Connectivity : 31x&#34;, &#34;(T : 9.5, E : 2.3)&#34;)
+        print(&#34;Logic Energy : 6x&#34;, &#34;(T: 1.0, E: 2.1)&#34;)
+        print(&#34;Logic Latency,  NoC Connectivity : 2x&#34;, &#34;(T: 1.9, E:1.1)&#34;)
+
+    return tech_targets
+
+
+#############################################################################################################################
+
+# Snippet for Write Bandwidth
+
+# TODO Check smaller errors of floating point (32) to words comparison in memory banks conversion
+
+# if (read_bw_ll &lt; self.mem_read_bw[self.mle - 1] and write_bw_ll &lt; self.mem_write_bw[self.mle - 1]):
+# elif (
+#     read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+#     and write_bw_ll &gt; self.mem_write_bw[self.mle - 1]
+# ):
+#     step_cycles = write_bw_ll / self.mem_write_bw[self.mle - 1]
+# elif (
+#     read_bw_ll &gt; self.mem_read_bw[self.mle - 1]
+#     and write_bw_ll &lt; self.mem_write_bw[self.mle - 1]
+# ):
+#     step_cycles = read_bw_ll / self.mem_read_bw[self.mle - 1]
+# else:
+#     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
+
+
+Generator.writeconfig = writeconfig
+Generator.save_stats = save_stats
+Generator.backward_pass_tech = backward_pass_tech
+Generator.update_tech = update_tech
+Generator.backward_pass_design = backward_pass_design
+Generator.update_comp_design = update_comp_design
+Generator.update_mem_design = update_mem_design</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="generator.backward_pass_design"><code class="name flex">
+<span>def <span class="ident">backward_pass_design</span></span>(<span>self, scheduler, opts=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>opts = ["energy", "time", "area", "edp"]
+Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+Time lost due to small memory size ?
+Time lost due to small memory bandwidth ?
+Time lost due to high of everything but compute is slow
+Energy high due to smaller memory arrays ?
+Energy high due to high memory bandwidth ?
+Energy high due to high of everything but compute is slow<br>
+Where is area getting consumed the most?</p>
+<h1 id="check-area-somehow">check area somehow ?</h1></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backward_pass_design(self, scheduler, opts=None):
+
+    &#34;&#34;&#34;
+    opts = [&#34;energy&#34;, &#34;time&#34;, &#34;area&#34;, &#34;edp&#34;]
+    Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+    Time lost due to small memory size ?
+    Time lost due to small memory bandwidth ?
+    Time lost due to high of everything but compute is slow
+    Energy high due to smaller memory arrays ?
+    Energy high due to high memory bandwidth ?
+    Energy high due to high of everything but compute is slow  
+    Where is area getting consumed the most?
+    # check area somehow ?
+    &#34;&#34;&#34;
+    config = scheduler.config
+    config[&#34;mm_compute&#34;] = self.update_comp_design(
+        scheduler, scheduler.config[&#34;mm_compute&#34;]
+    )
+    config[&#34;memory&#34;] = self.update_mem_design(scheduler, scheduler.config[&#34;memory&#34;])
+
+    return config</code></pre>
+</details>
+</dd>
+<dt id="generator.backward_pass_tech"><code class="name flex">
+<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, scheduler, opts=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backward_pass_tech(self, scheduler, opts=None):
+    alpha = 20000
+    beta = 4
+    technology = scheduler.technology
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    comp_config = config[&#34;mm_compute&#34;]
+    scheduler.compute_time = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        + scheduler.mem_size_idle_time
+    )
+    time_grads = {}
+    energy_grads = {}
+    # create a dictionary of time and energy grads calculation
+    time_grads[&#34;memory latency&#34;] = (
+        scheduler.mem_size_idle_time
+    ) / scheduler.total_cycles
+    time_grads[&#34;compute latency&#34;] = (scheduler.compute_time) / scheduler.total_cycles
+
+    # if mem energy consumption is too high at level 1, banks can be increased
+    energy_grads[&#34;memory energy&#34;] = scheduler.mem_energy[0] / scheduler.total_energy
+    energy_grads[&#34;compute energy&#34;] = scheduler.compute_energy / scheduler.total_energy
+
+    mem_config[&#34;level0&#34;][&#34;banks&#34;] += (int)(
+        beta
+        * scheduler.mem_energy
+        / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
+    )
+    # Compute_energy is too high, check if compute is larger than required, or slower than required
+    # compute_array size can be reduced -&gt; how does compute array size effect energy consumption -&gt;
+    # it may be due to a lot of compute or bad-sized compute arrays
+
+    ## What is really high read energy, write energy or leakage energy -&gt; which depends on the leakage time
+    # If leakage energy, read or write energy-&gt; can change the technology type
+    # if Energy is too high due to the leakage time : change sizing to energy efficient
+    # If mem energy consumption is high -&gt; which level ?
+    # if mem_energy consumption is too high at level 0, its size can be reduced
+    scheduler.technology = technology
+    return config</code></pre>
+</details>
+</dd>
+<dt id="generator.functions"><code class="name flex">
+<span>def <span class="ident">functions</span></span>(<span>technology, design)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[summary]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>technology</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>design</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def functions(technology, design):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        technology ([type]): [description]
+        design ([type]): [description]
+    &#34;&#34;&#34;  # compute functions
+    wire_cap, wire_res, node = technology[&#34;compute&#34;]
+    comp_config = design[&#34;compute&#34;]
+    # memory functions
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+        sense_amp_time,
+    ) = technology[&#34;memory&#34;]
+    mem_config = design[&#34;memory&#34;]
+
+    wire_cap = float(wire_cap)
+    sense_amp_time = float(sense_amp_time)
+    plogic_node = float(plogic_node)
+    # mem_config[&#34;level0&#34;][&#34;write_latency&#34;] = (
+    #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    # )
+    mem_config[&#34;level0&#34;][&#34;read_latency&#34;] = 0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
+    mem_config[&#34;level0&#34;][&#34;read_energy&#34;] = 50.7 * wire_cap + 56.2
+    mem_config[&#34;level0&#34;][&#34;write_energy&#34;] = 47.8 * wire_cap + 20
+    mem_config[&#34;level0&#34;][&#34;frequency&#34;] = 4000 * (
+        1 / mem_config[&#34;level0&#34;][&#34;read_latency&#34;]
+    )
+    # mem_config[&#34;level0&#34;][&#34;leakage_power&#34;]
+
+    # noc functions
+    wire_cap, wire_res, noc_node = technology[&#34;noc&#34;]
+    noc_config = design[&#34;noc&#34;]
+
+    pass</code></pre>
+</details>
+</dd>
+<dt id="generator.generate_tech_targets"><code class="name flex">
+<span>def <span class="ident">generate_tech_targets</span></span>(<span>graph, name, EDP=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_tech_targets(graph, name, EDP=100):
+
+    orderlist = []
+    orderlist.append(&#34;connectivity&#34;)
+    tech_targets = {}
+    time_params = []
+    energy_params = []
+    tech_ratio_params = []
+    tech_ratio_list = []
+    energy_ratio_params = []
+    energy_ratio_list = []
+    # create the order list
+    total_benefit = 1
+    # while total_benefit &lt; benefit_target:
+    #     i += 1
+    #     improv, improv_ben = get_benefit(orderlist[i])
+    #     tech_targets[orderlist[i]] = int(improv) + 1
+    #     total_benefit *= int(improv_ben)
+
+    if name == &#34;BERT&#34;:
+        print(&#34;For Benefit of EDP &#34;, EDP)
+        print(&#34;Generating Technology Targets&#34;)
+        print(&#34;Connectivity : 31x&#34;, &#34;(T : 9.5, E : 2.3)&#34;)
+        print(&#34;Logic Energy : 6x&#34;, &#34;(T: 1.0, E: 2.1)&#34;)
+        print(&#34;Logic Latency,  Connectivity : 2x&#34;, &#34;(T: 1.9, E:1.1)&#34;)
+
+    if name == &#34;hpcg&#34;:
+        print(&#34;For Benefit of EDP &#34;, EDP)
+        print(&#34;Generating Technology Targets&#34;)
+        print(&#34;External Memory Connectivity : 31x&#34;, &#34;(T : 9.5, E : 2.3)&#34;)
+        print(&#34;Logic Energy : 6x&#34;, &#34;(T: 1.0, E: 2.1)&#34;)
+        print(&#34;Logic Latency,  NoC Connectivity : 2x&#34;, &#34;(T: 1.9, E:1.1)&#34;)
+
+    return tech_targets</code></pre>
+</details>
+</dd>
+<dt id="generator.get_mem_props"><code class="name flex">
+<span>def <span class="ident">get_mem_props</span></span>(<span>size, width, banks)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[summary]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>size</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>width</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>banks</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_mem_props(size, width, banks):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        size ([type]): [description]
+        width ([type]): [description]
+        banks ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    for i in range(11, 25):
+        if (size * 4 // (2 ** i)) &lt; 1:
+            break
+    a = mem_table[np.where(mem_table[:, 1] == banks)]
+    a = a[np.where(a[:, 2] == width)]
+    element = min(a[:, 0], key=lambda x: abs(x - 4 * size))
+    a = a[np.where(a[:, 0] == element)]
+    # print(&#34;area is &#34;, a[0, 8], &#34;size is&#34;, element)
+    return a[0, 5], a[0, 6], a[0, 7], a[0, 8] * 10 ** 4</code></pre>
+</details>
+</dd>
+<dt id="generator.save_stats"><code class="name flex">
+<span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
+    &#34;&#34;&#34;
+    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    &#34;&#34;&#34;
+    if backprop:
+        scheduler.total_cycles = (
+            2 * scheduler.total_cycles
+            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+        scheduler.mem_read_access[0] *= 2
+        scheduler.mem_write_access[0] *= 2
+        scheduler.mem_read_access[1] += backprop_memory
+        scheduler.mem_write_access[1] += backprop_memory
+        scheduler.bandwidth_idle_time += (
+            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+
+    total_energy = 0
+    mem_energy = np.zeros((scheduler.mle))
+    rf_accesses = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        - scheduler.mem_size_idle_time
+    )
+    rf_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * mm_compute[&#34;size&#34;]
+        * config[&#34;rf&#34;][&#34;energy&#34;]
+        * rf_accesses
+        / 4
+        * eff
+        * 2
+    )
+    compute_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * (mm_compute[&#34;size&#34;] ** 2)
+        * (
+            scheduler.total_cycles
+            - scheduler.bandwidth_idle_time
+            - scheduler.mem_size_idle_time
+        )
+        / 4
+        * eff
+        * mm_compute[&#34;per_op_energy&#34;]
+    )
+    # illusion_leakage = (
+    #     3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    # )
+    for i in range(scheduler.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy = float(memory[&#34;read_energy&#34;])
+        write_energy = float(memory[&#34;write_energy&#34;])
+        leakage_power = float(memory[&#34;leakage_power&#34;])
+        mem_energy[i] = (
+            scheduler.mem_read_access[i] * read_energy
+            + scheduler.mem_write_access[i] * write_energy
+            + leakage_power * scheduler.total_cycles / 1000
+        )
+        # print(read_energy, write_energy, leakage_power)
+        # print(mem_energy)
+    mem_energy[scheduler.mle - 1] = (
+        scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        + scheduler.mem_write_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+    ) + scheduler.total_cycles * config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+
+    rf_area = config[&#34;rf&#34;][&#34;area&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    compute_area = (
+        config[&#34;mm_compute&#34;][&#34;area&#34;]
+        * config[&#34;mm_compute&#34;][&#34;N_PE&#34;]
+        * (config[&#34;mm_compute&#34;][&#34;size&#34;] ** 2)
+    )
+    mem_area = float(scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;area&#34;])
+    total_area = mem_area + compute_area + rf_area
+    total_energy = np.sum(mem_energy) + compute_energy + rf_energy
+    # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
+    scheduler.mem_energy = mem_energy
+    scheduler.compute_energy = compute_energy
+    scheduler.logger.info(&#34;===========================&#34;)
+    scheduler.logger.info(&#34;Total No of cycles  = %d &#34;, scheduler.total_cycles)
+    scheduler.logger.info(&#34;Bandwidth Idle Time  = %d &#34;, scheduler.bandwidth_idle_time)
+    scheduler.logger.info(&#34;Memory Size Idle Time = %d&#34;, scheduler.mem_size_idle_time)
+    scheduler.logger.info(&#34;================ Energy Description ======================&#34;)
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption  = %f &#34;, (mem_energy[0]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[0] * read_energy / (mem_energy[0]),
+        scheduler.mem_write_access[0] * write_energy / (mem_energy[0]),
+        leakage_power * scheduler.total_cycles / 1000 / (mem_energy[0]),
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption  = %f &#34;, (mem_energy[1]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        / (mem_energy[1]),
+        scheduler.mem_write_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+        / (mem_energy[1]),
+        config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+        * scheduler.total_cycles
+        / (mem_energy[1]),
+    )
+
+    scheduler.logger.info(
+        &#34;Compute Energy Consumption  = %f &#34;, compute_energy / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Register File Energy Consumption  = %f &#34;, rf_energy / total_energy
+    )
+
+    scheduler.logger.info(&#34; Total Energy Consumption  = %d &#34;, total_energy)
+    scheduler.logger.info(&#34;================ Area Description ======================&#34;)
+    scheduler.logger.info(&#34;Compute Area Consumption  = %d &#34;, compute_area)
+    scheduler.logger.info(&#34;(32-bit) Register File Area Consumption  = %d &#34;, rf_area)
+    scheduler.logger.info(&#34;Memory Area Consumption  = %d &#34;, mem_area)
+    scheduler.logger.info(&#34;Total Area Consumption  = %d &#34;, total_area)
+    scheduler.logger.info(&#34;================ Design Description ======================&#34;)
+    scheduler.logger.info(&#34;No. of PEs = %d&#34;, mm_compute[&#34;N_PE&#34;])
+    scheduler.logger.info(&#34;Size of Each Systolic Array = %d&#34;, mm_compute[&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;(32-bit) Register File Size = %d&#34;, mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    )
+    scheduler.logger.info(&#34;Memory Level-0 Banks  = %d&#34;, mem_config[&#34;level0&#34;][&#34;banks&#34;])
+    scheduler.logger.info(&#34;Memory Level-0 Size = %d&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;Memory Level-1 Connectivity = %d&#34;,
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+    )
+
+    if print_stats:
+        print(&#34;==================================&#34;)
+        print(
+            &#34;Time&#34;,
+            int(scheduler.total_cycles),
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),
+        )
+        print(
+            &#34;Energy&#34;,
+            int(total_energy),
+            int(compute_energy),
+            int(rf_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(scheduler.mem_read_access[1] * read_energy),
+            int(scheduler.mem_write_access[1] * read_energy),
+            int(leakage_power * scheduler.total_cycles),
+        )
+        print(&#34;Area&#34;, int(total_area), int(compute_area), int(rf_area), int(mem_area))
+        print(
+            &#34;memory accesses&#34;,
+            int(scheduler.mem_read_access[0]),
+            int(scheduler.mem_write_access[0]),
+            int(scheduler.mem_read_access[1]),
+            int(scheduler.mem_write_access[1]),
+        )
+        print(
+            &#34;rf access&#34;, 2 * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;] * rf_accesses / 4
+        )
+        print(
+            &#34;Design Params \n&#34;,
+            &#34;No. of PEs : &#34;,
+            mm_compute[&#34;N_PE&#34;],
+            &#34;\n Memory Level-1 Connectivity : &#34;,
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            &#34;\n Memory Level-0 Size : &#34;,
+            mem_config[&#34;level0&#34;][&#34;size&#34;],
+            &#34;\n Memory Level-0 Read Energy : &#34;,
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        )
+
+        print(&#34;Tech Params&#34;, scheduler.technology)
+
+    # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
+    assert scheduler.total_cycles &gt; scheduler.bandwidth_idle_time
+    assert scheduler.total_cycles &gt; scheduler.mem_size_idle_time
+    assert scheduler.bandwidth_idle_time &gt;= 0
+    assert scheduler.mem_size_idle_time &gt;= 0
+    return (
+        [
+            scheduler.total_cycles,
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),  #
+            scheduler.compute_idle_time,
+        ],
+        [
+            int(total_energy),
+            int(compute_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(
+                scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+            ),
+            int(
+                scheduler.mem_write_access[1]
+                * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+            ),
+            int(config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;] * scheduler.total_cycles),
+        ],
+        [
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            int(int(mem_config[&#34;level0&#34;][&#34;size&#34;]) / 1000),
+            mem_config[&#34;level0&#34;][&#34;frequency&#34;],
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        ],
+        scheduler.technology,
+        total_area,
+    )</code></pre>
+</details>
+</dd>
+<dt id="generator.update_comp_design"><code class="name flex">
+<span>def <span class="ident">update_comp_design</span></span>(<span>self, scheduler, comp_config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_comp_design(self, scheduler, comp_config):
+    scheduler.compute_time = scheduler.total_cycles - (
+        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    )
+    if scheduler.mem_size_idle_time &gt; 0.90 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] += int(pe_descent * gamma)
+        print(&#34;N_PEs changed&#34;)
+
+    if scheduler.mem_size_idle_time &lt; 0.01 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] -= int(pe_descent * gamma)
+
+    return comp_config</code></pre>
+</details>
+</dd>
+<dt id="generator.update_mem_design"><code class="name flex">
+<span>def <span class="ident">update_mem_design</span></span>(<span>self, scheduler, mem_config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_mem_design(self, scheduler, mem_config):
+
+    #  Allow changing for bandwidth and Size_idle_time -&gt; bottlenecks always consume more time/energy
+    # print(&#34;Bandwidth Idle Time&#34;, scheduler.bandwidth_idle_time)
+    # print(&#34;Compute Idle Time&#34;, scheduler.compute_idle_time)
+    # print(&#34;Memory Size Idle Time&#34;, scheduler.mem_size_idle_time)
+    ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
+    alpha = 30000
+    beta = 10
+    # if scheduler.bandwidth_idle_time &gt; 0.1 * scheduler.total_cycles:
+    if scheduler.force_connectivity == 0:
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;] += (int)(
+            beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+        )
+    ## Force Connectivity : External bandwidth is forced, then cannot change anything
+    ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
+    # print(&#34;Memory Size old&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    # if scheduler.mem_size_idle_time &gt; 0.1 * scheduler.total_cycles:
+    mem_config[&#34;level0&#34;][&#34;size&#34;] += (int)(
+        alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+    )
+    # print(&#34;Memory Size new&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    return mem_config</code></pre>
+</details>
+</dd>
+<dt id="generator.update_tech"><code class="name flex">
+<span>def <span class="ident">update_tech</span></span>(<span>self, opts, technology, time_grads=0, energy_grads=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>opts is of either frequency or its for energy -&gt; can modulate the access time of the cell and the cell energy
+opt = [frequency, read energy, write energy, leakage power, endurance]
+The technology space can be loaded from the file, and how we can rapidly find our point there
+The wire space is also loaded, and the joint technology and wire space can also be loaded</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
+
+    &#34;&#34;&#34;
+    opts is of either frequency or its for energy -&gt; can modulate the access time of the cell and the cell energy
+    opt = [frequency, read energy, write energy, leakage power, endurance]
+    The technology space can be loaded from the file, and how we can rapidly find our point there
+    The wire space is also loaded, and the joint technology and wire space can also be loaded
+    &#34;&#34;&#34;
+    # memory tech
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+    ) = technology[&#34;memory&#34;]
+
+    # compute tech
+    # pe -&gt; composition
+    wire_cap, wire_res, node = technology[&#34;compute&#34;]
+
+    # noc tech : width, noc_type, data_width
+    wire_cap, wire_res, noc_node = technology[&#34;noc&#34;]
+
+    wire_cap = float(wire_cap)
+    # sense_amp_time = float(sense_amp_time)
+    steps = 1
+    ## Because above this interval it does not matter whether we can create a better technology
+    # or not.
+    ## Joint sweep of tech space in cmos, memory cell and wires, biggest gradient : wire_cap
+
+    if opts == &#34;energy&#34; or opts == &#34;read_energy&#34;:
+        beta_wire = 1 / 50.7
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
+        if wire_cap &gt; 0:
+            wire_cap -= energy_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= energy_grads * beta_logic
+
+    if opts == &#34;time&#34;:
+        beta_wire_cap = 1 / 0.558
+        beta_plogic_node = 1 / 1.4
+        if wire_cap &gt; 0:
+            wire_cap -= steps * time_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= steps * time_grads * beta_plogic_node
+    # print(wire_cap, sense_amp_time)
+    return technology</code></pre>
+</details>
+</dd>
+<dt id="generator.writeconfig"><code class="name flex">
+<span>def <span class="ident">writeconfig</span></span>(<span>self, content, filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate Hardware Description Yaml File</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def writeconfig(self, content, filename):
+    &#34;&#34;&#34;
+    Generate Hardware Description Yaml File 
+    &#34;&#34;&#34;
+    outfile = open(&#34;iters/&#34; + filename, &#34;w&#34;)
+    outfile.write(
+        yaml.dump(
+            content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,
+        )
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="generator.Generator"><code class="flex name class">
+<span>class <span class="ident">Generator</span></span>
+<span>(</span><span>constraintfiles='max_constraints.yaml')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[summary]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>constraintfiles</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "max_constraints.yaml".</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Generator:
+    def __init__(self, constraintfiles=&#34;max_constraints.yaml&#34;):
+        &#34;&#34;&#34;[summary]
+
+        Args:
+            constraintfiles (str, optional): [description]. Defaults to &#34;max_constraints.yaml&#34;.
+        &#34;&#34;&#34;
+        base_dir = &#34;configs/&#34;
+
+        self.maxval = yaml.load(
+            open(base_dir + constraintfiles), Loader=yamlordereddictloader.Loader
+        )</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="generator.Generator.backward_pass_design"><code class="name flex">
+<span>def <span class="ident">backward_pass_design</span></span>(<span>self, scheduler, opts=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>opts = ["energy", "time", "area", "edp"]
+Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+Time lost due to small memory size ?
+Time lost due to small memory bandwidth ?
+Time lost due to high of everything but compute is slow
+Energy high due to smaller memory arrays ?
+Energy high due to high memory bandwidth ?
+Energy high due to high of everything but compute is slow<br>
+Where is area getting consumed the most?</p>
+<h1 id="check-area-somehow">check area somehow ?</h1></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backward_pass_design(self, scheduler, opts=None):
+
+    &#34;&#34;&#34;
+    opts = [&#34;energy&#34;, &#34;time&#34;, &#34;area&#34;, &#34;edp&#34;]
+    Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
+    Time lost due to small memory size ?
+    Time lost due to small memory bandwidth ?
+    Time lost due to high of everything but compute is slow
+    Energy high due to smaller memory arrays ?
+    Energy high due to high memory bandwidth ?
+    Energy high due to high of everything but compute is slow  
+    Where is area getting consumed the most?
+    # check area somehow ?
+    &#34;&#34;&#34;
+    config = scheduler.config
+    config[&#34;mm_compute&#34;] = self.update_comp_design(
+        scheduler, scheduler.config[&#34;mm_compute&#34;]
+    )
+    config[&#34;memory&#34;] = self.update_mem_design(scheduler, scheduler.config[&#34;memory&#34;])
+
+    return config</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.backward_pass_tech"><code class="name flex">
+<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, scheduler, opts=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backward_pass_tech(self, scheduler, opts=None):
+    alpha = 20000
+    beta = 4
+    technology = scheduler.technology
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    comp_config = config[&#34;mm_compute&#34;]
+    scheduler.compute_time = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        + scheduler.mem_size_idle_time
+    )
+    time_grads = {}
+    energy_grads = {}
+    # create a dictionary of time and energy grads calculation
+    time_grads[&#34;memory latency&#34;] = (
+        scheduler.mem_size_idle_time
+    ) / scheduler.total_cycles
+    time_grads[&#34;compute latency&#34;] = (scheduler.compute_time) / scheduler.total_cycles
+
+    # if mem energy consumption is too high at level 1, banks can be increased
+    energy_grads[&#34;memory energy&#34;] = scheduler.mem_energy[0] / scheduler.total_energy
+    energy_grads[&#34;compute energy&#34;] = scheduler.compute_energy / scheduler.total_energy
+
+    mem_config[&#34;level0&#34;][&#34;banks&#34;] += (int)(
+        beta
+        * scheduler.mem_energy
+        / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
+    )
+    # Compute_energy is too high, check if compute is larger than required, or slower than required
+    # compute_array size can be reduced -&gt; how does compute array size effect energy consumption -&gt;
+    # it may be due to a lot of compute or bad-sized compute arrays
+
+    ## What is really high read energy, write energy or leakage energy -&gt; which depends on the leakage time
+    # If leakage energy, read or write energy-&gt; can change the technology type
+    # if Energy is too high due to the leakage time : change sizing to energy efficient
+    # If mem energy consumption is high -&gt; which level ?
+    # if mem_energy consumption is too high at level 0, its size can be reduced
+    scheduler.technology = technology
+    return config</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.save_stats"><code class="name flex">
+<span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
+    &#34;&#34;&#34;
+    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    &#34;&#34;&#34;
+    if backprop:
+        scheduler.total_cycles = (
+            2 * scheduler.total_cycles
+            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+        scheduler.mem_read_access[0] *= 2
+        scheduler.mem_write_access[0] *= 2
+        scheduler.mem_read_access[1] += backprop_memory
+        scheduler.mem_write_access[1] += backprop_memory
+        scheduler.bandwidth_idle_time += (
+            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        )
+    config = scheduler.config
+    mem_config = config[&#34;memory&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+
+    total_energy = 0
+    mem_energy = np.zeros((scheduler.mle))
+    rf_accesses = (
+        scheduler.total_cycles
+        - scheduler.bandwidth_idle_time
+        - scheduler.mem_size_idle_time
+    )
+    rf_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * mm_compute[&#34;size&#34;]
+        * config[&#34;rf&#34;][&#34;energy&#34;]
+        * rf_accesses
+        / 4
+        * eff
+        * 2
+    )
+    compute_energy = (
+        mm_compute[&#34;N_PE&#34;]
+        * (mm_compute[&#34;size&#34;] ** 2)
+        * (
+            scheduler.total_cycles
+            - scheduler.bandwidth_idle_time
+            - scheduler.mem_size_idle_time
+        )
+        / 4
+        * eff
+        * mm_compute[&#34;per_op_energy&#34;]
+    )
+    # illusion_leakage = (
+    #     3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    # )
+    for i in range(scheduler.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy = float(memory[&#34;read_energy&#34;])
+        write_energy = float(memory[&#34;write_energy&#34;])
+        leakage_power = float(memory[&#34;leakage_power&#34;])
+        mem_energy[i] = (
+            scheduler.mem_read_access[i] * read_energy
+            + scheduler.mem_write_access[i] * write_energy
+            + leakage_power * scheduler.total_cycles / 1000
+        )
+        # print(read_energy, write_energy, leakage_power)
+        # print(mem_energy)
+    mem_energy[scheduler.mle - 1] = (
+        scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        + scheduler.mem_write_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+    ) + scheduler.total_cycles * config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+
+    rf_area = config[&#34;rf&#34;][&#34;area&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    compute_area = (
+        config[&#34;mm_compute&#34;][&#34;area&#34;]
+        * config[&#34;mm_compute&#34;][&#34;N_PE&#34;]
+        * (config[&#34;mm_compute&#34;][&#34;size&#34;] ** 2)
+    )
+    mem_area = float(scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;area&#34;])
+    total_area = mem_area + compute_area + rf_area
+    total_energy = np.sum(mem_energy) + compute_energy + rf_energy
+    # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
+    scheduler.mem_energy = mem_energy
+    scheduler.compute_energy = compute_energy
+    scheduler.logger.info(&#34;===========================&#34;)
+    scheduler.logger.info(&#34;Total No of cycles  = %d &#34;, scheduler.total_cycles)
+    scheduler.logger.info(&#34;Bandwidth Idle Time  = %d &#34;, scheduler.bandwidth_idle_time)
+    scheduler.logger.info(&#34;Memory Size Idle Time = %d&#34;, scheduler.mem_size_idle_time)
+    scheduler.logger.info(&#34;================ Energy Description ======================&#34;)
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption  = %f &#34;, (mem_energy[0]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 0 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[0] * read_energy / (mem_energy[0]),
+        scheduler.mem_write_access[0] * write_energy / (mem_energy[0]),
+        leakage_power * scheduler.total_cycles / 1000 / (mem_energy[0]),
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption  = %f &#34;, (mem_energy[1]) / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Memory Level 1 Energy Consumption Stats Read = %f, Write %f, Leakage %f &#34;,
+        scheduler.mem_read_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+        / (mem_energy[1]),
+        scheduler.mem_write_access[1]
+        * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+        / (mem_energy[1]),
+        config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;]
+        * scheduler.total_cycles
+        / (mem_energy[1]),
+    )
+
+    scheduler.logger.info(
+        &#34;Compute Energy Consumption  = %f &#34;, compute_energy / total_energy
+    )
+    scheduler.logger.info(
+        &#34;Register File Energy Consumption  = %f &#34;, rf_energy / total_energy
+    )
+
+    scheduler.logger.info(&#34; Total Energy Consumption  = %d &#34;, total_energy)
+    scheduler.logger.info(&#34;================ Area Description ======================&#34;)
+    scheduler.logger.info(&#34;Compute Area Consumption  = %d &#34;, compute_area)
+    scheduler.logger.info(&#34;(32-bit) Register File Area Consumption  = %d &#34;, rf_area)
+    scheduler.logger.info(&#34;Memory Area Consumption  = %d &#34;, mem_area)
+    scheduler.logger.info(&#34;Total Area Consumption  = %d &#34;, total_area)
+    scheduler.logger.info(&#34;================ Design Description ======================&#34;)
+    scheduler.logger.info(&#34;No. of PEs = %d&#34;, mm_compute[&#34;N_PE&#34;])
+    scheduler.logger.info(&#34;Size of Each Systolic Array = %d&#34;, mm_compute[&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;(32-bit) Register File Size = %d&#34;, mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;]
+    )
+    scheduler.logger.info(&#34;Memory Level-0 Banks  = %d&#34;, mem_config[&#34;level0&#34;][&#34;banks&#34;])
+    scheduler.logger.info(&#34;Memory Level-0 Size = %d&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+    scheduler.logger.info(
+        &#34;Memory Level-1 Connectivity = %d&#34;,
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+    )
+
+    if print_stats:
+        print(&#34;==================================&#34;)
+        print(
+            &#34;Time&#34;,
+            int(scheduler.total_cycles),
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),
+        )
+        print(
+            &#34;Energy&#34;,
+            int(total_energy),
+            int(compute_energy),
+            int(rf_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(scheduler.mem_read_access[1] * read_energy),
+            int(scheduler.mem_write_access[1] * read_energy),
+            int(leakage_power * scheduler.total_cycles),
+        )
+        print(&#34;Area&#34;, int(total_area), int(compute_area), int(rf_area), int(mem_area))
+        print(
+            &#34;memory accesses&#34;,
+            int(scheduler.mem_read_access[0]),
+            int(scheduler.mem_write_access[0]),
+            int(scheduler.mem_read_access[1]),
+            int(scheduler.mem_write_access[1]),
+        )
+        print(
+            &#34;rf access&#34;, 2 * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;size&#34;] * rf_accesses / 4
+        )
+        print(
+            &#34;Design Params \n&#34;,
+            &#34;No. of PEs : &#34;,
+            mm_compute[&#34;N_PE&#34;],
+            &#34;\n Memory Level-1 Connectivity : &#34;,
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            &#34;\n Memory Level-0 Size : &#34;,
+            mem_config[&#34;level0&#34;][&#34;size&#34;],
+            &#34;\n Memory Level-0 Read Energy : &#34;,
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        )
+
+        print(&#34;Tech Params&#34;, scheduler.technology)
+
+    # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
+    assert scheduler.total_cycles &gt; scheduler.bandwidth_idle_time
+    assert scheduler.total_cycles &gt; scheduler.mem_size_idle_time
+    assert scheduler.bandwidth_idle_time &gt;= 0
+    assert scheduler.mem_size_idle_time &gt;= 0
+    return (
+        [
+            scheduler.total_cycles,
+            int(scheduler.bandwidth_idle_time),
+            int(scheduler.mem_size_idle_time),  #
+            scheduler.compute_idle_time,
+        ],
+        [
+            int(total_energy),
+            int(compute_energy),
+            int(scheduler.mem_read_access[0] * read_energy),
+            int(scheduler.mem_write_access[0] * write_energy),
+            int(leakage_power * scheduler.total_cycles / 1000),
+            int(
+                scheduler.mem_read_access[1] * config[&#34;memory&#34;][&#34;level1&#34;][&#34;read_energy&#34;]
+            ),
+            int(
+                scheduler.mem_write_access[1]
+                * config[&#34;memory&#34;][&#34;level1&#34;][&#34;write_energy&#34;]
+            ),
+            int(config[&#34;memory&#34;][&#34;level1&#34;][&#34;leakage_power&#34;] * scheduler.total_cycles),
+        ],
+        [
+            mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;],
+            int(int(mem_config[&#34;level0&#34;][&#34;size&#34;]) / 1000),
+            mem_config[&#34;level0&#34;][&#34;frequency&#34;],
+            mem_config[&#34;level0&#34;][&#34;read_energy&#34;],
+        ],
+        scheduler.technology,
+        total_area,
+    )</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.update_comp_design"><code class="name flex">
+<span>def <span class="ident">update_comp_design</span></span>(<span>self, scheduler, comp_config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_comp_design(self, scheduler, comp_config):
+    scheduler.compute_time = scheduler.total_cycles - (
+        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    )
+    if scheduler.mem_size_idle_time &gt; 0.90 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] += int(pe_descent * gamma)
+        print(&#34;N_PEs changed&#34;)
+
+    if scheduler.mem_size_idle_time &lt; 0.01 * scheduler.total_cycles:
+        gamma = 3
+        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+            comp_config[&#34;N_PE&#34;] * comp_config[&#34;size&#34;] ** 2
+        )
+        comp_config[&#34;N_PE&#34;] -= int(pe_descent * gamma)
+
+    return comp_config</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.update_mem_design"><code class="name flex">
+<span>def <span class="ident">update_mem_design</span></span>(<span>self, scheduler, mem_config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_mem_design(self, scheduler, mem_config):
+
+    #  Allow changing for bandwidth and Size_idle_time -&gt; bottlenecks always consume more time/energy
+    # print(&#34;Bandwidth Idle Time&#34;, scheduler.bandwidth_idle_time)
+    # print(&#34;Compute Idle Time&#34;, scheduler.compute_idle_time)
+    # print(&#34;Memory Size Idle Time&#34;, scheduler.mem_size_idle_time)
+    ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
+    alpha = 30000
+    beta = 10
+    # if scheduler.bandwidth_idle_time &gt; 0.1 * scheduler.total_cycles:
+    if scheduler.force_connectivity == 0:
+        mem_config[&#34;level&#34; + str(scheduler.mle - 1)][&#34;banks&#34;] += (int)(
+            beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+        )
+    ## Force Connectivity : External bandwidth is forced, then cannot change anything
+    ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
+    # print(&#34;Memory Size old&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    # if scheduler.mem_size_idle_time &gt; 0.1 * scheduler.total_cycles:
+    mem_config[&#34;level0&#34;][&#34;size&#34;] += (int)(
+        alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+    )
+    # print(&#34;Memory Size new&#34;, mem_config[&#34;level0&#34;][&#34;size&#34;])
+
+    return mem_config</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.update_tech"><code class="name flex">
+<span>def <span class="ident">update_tech</span></span>(<span>self, opts, technology, time_grads=0, energy_grads=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>opts is of either frequency or its for energy -&gt; can modulate the access time of the cell and the cell energy
+opt = [frequency, read energy, write energy, leakage power, endurance]
+The technology space can be loaded from the file, and how we can rapidly find our point there
+The wire space is also loaded, and the joint technology and wire space can also be loaded</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
+
+    &#34;&#34;&#34;
+    opts is of either frequency or its for energy -&gt; can modulate the access time of the cell and the cell energy
+    opt = [frequency, read energy, write energy, leakage power, endurance]
+    The technology space can be loaded from the file, and how we can rapidly find our point there
+    The wire space is also loaded, and the joint technology and wire space can also be loaded
+    &#34;&#34;&#34;
+    # memory tech
+    (
+        wire_cap,
+        wire_res,
+        memory_cell_read_latency,
+        memory_cell_write_latency,
+        plogic_node,
+        memory_cell_read_power,
+        memory_cell_write_energy,
+        memory_cell_leakage_power,
+    ) = technology[&#34;memory&#34;]
+
+    # compute tech
+    # pe -&gt; composition
+    wire_cap, wire_res, node = technology[&#34;compute&#34;]
+
+    # noc tech : width, noc_type, data_width
+    wire_cap, wire_res, noc_node = technology[&#34;noc&#34;]
+
+    wire_cap = float(wire_cap)
+    # sense_amp_time = float(sense_amp_time)
+    steps = 1
+    ## Because above this interval it does not matter whether we can create a better technology
+    # or not.
+    ## Joint sweep of tech space in cmos, memory cell and wires, biggest gradient : wire_cap
+
+    if opts == &#34;energy&#34; or opts == &#34;read_energy&#34;:
+        beta_wire = 1 / 50.7
+        beta_sense_amp = 1 / 1.4
+        beta_logic = 1
+        if wire_cap &gt; 0:
+            wire_cap -= energy_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= energy_grads * beta_logic
+
+    if opts == &#34;time&#34;:
+        beta_wire_cap = 1 / 0.558
+        beta_plogic_node = 1 / 1.4
+        if wire_cap &gt; 0:
+            wire_cap -= steps * time_grads * beta_wire
+        if plogic_node &gt; 0:
+            plogic_node -= steps * time_grads * beta_plogic_node
+    # print(wire_cap, sense_amp_time)
+    return technology</code></pre>
+</details>
+</dd>
+<dt id="generator.Generator.writeconfig"><code class="name flex">
+<span>def <span class="ident">writeconfig</span></span>(<span>self, content, filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate Hardware Description Yaml File</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def writeconfig(self, content, filename):
+    &#34;&#34;&#34;
+    Generate Hardware Description Yaml File 
+    &#34;&#34;&#34;
+    outfile = open(&#34;iters/&#34; + filename, &#34;w&#34;)
+    outfile.write(
+        yaml.dump(
+            content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,
+        )
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="generator.backward_pass_design" href="#generator.backward_pass_design">backward_pass_design</a></code></li>
+<li><code><a title="generator.backward_pass_tech" href="#generator.backward_pass_tech">backward_pass_tech</a></code></li>
+<li><code><a title="generator.functions" href="#generator.functions">functions</a></code></li>
+<li><code><a title="generator.generate_tech_targets" href="#generator.generate_tech_targets">generate_tech_targets</a></code></li>
+<li><code><a title="generator.get_mem_props" href="#generator.get_mem_props">get_mem_props</a></code></li>
+<li><code><a title="generator.save_stats" href="#generator.save_stats">save_stats</a></code></li>
+<li><code><a title="generator.update_comp_design" href="#generator.update_comp_design">update_comp_design</a></code></li>
+<li><code><a title="generator.update_mem_design" href="#generator.update_mem_design">update_mem_design</a></code></li>
+<li><code><a title="generator.update_tech" href="#generator.update_tech">update_tech</a></code></li>
+<li><code><a title="generator.writeconfig" href="#generator.writeconfig">writeconfig</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="generator.Generator" href="#generator.Generator">Generator</a></code></h4>
+<ul class="">
+<li><code><a title="generator.Generator.backward_pass_design" href="#generator.Generator.backward_pass_design">backward_pass_design</a></code></li>
+<li><code><a title="generator.Generator.backward_pass_tech" href="#generator.Generator.backward_pass_tech">backward_pass_tech</a></code></li>
+<li><code><a title="generator.Generator.save_stats" href="#generator.Generator.save_stats">save_stats</a></code></li>
+<li><code><a title="generator.Generator.update_comp_design" href="#generator.Generator.update_comp_design">update_comp_design</a></code></li>
+<li><code><a title="generator.Generator.update_mem_design" href="#generator.Generator.update_mem_design">update_mem_design</a></code></li>
+<li><code><a title="generator.Generator.update_tech" href="#generator.Generator.update_tech">update_tech</a></code></li>
+<li><code><a title="generator.Generator.writeconfig" href="#generator.Generator.writeconfig">writeconfig</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

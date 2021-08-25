@@ -14,14 +14,13 @@ import yaml
 import yamlordereddictloader
 from torchvision import models
 from yaml import dump
-from synthesis import hls
-from ddfg_scheduling import DDFG_Scheduling
+
 from generator import *
 from generator import Generator, get_mem_props
+from ir.cfg.staticfg import CFGBuilder
 from ir.handlers import handlers
 from ir.trace import trace
-from ir.staticfg.staticfg import CFGBuilder
-
+from synthesis import hls
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
@@ -42,7 +41,9 @@ def run_mapping(scheduler, mapping, graph):
 
 def synthesis_hardware(benchmark):
     if benchmark == "aes":
-        bashCommand = "common/aladdin aes  aes_aes/inputs/dynamic_trace.gz aes_aes/test_aes.cfg"
+        bashCommand = (
+            "common/aladdin aes  aes_aes/inputs/dynamic_trace.gz aes_aes/test_aes.cfg"
+        )
         process = subprocess.Popen(
             bashCommand.split(), stdout=subprocess.PIPE, cwd="./req/"
         )
@@ -58,13 +59,10 @@ def synthesis_hardware(benchmark):
         for i in output.decode("utf-8").split("\n"):
             print(i)
     if benchmark == "hpcg":
-        cfg = CFGBuilder().build_from_file(
-            "hpcg.py",
-            "nonai_models/hpcg.py",
-        )
+        cfg = CFGBuilder().build_from_file("hpcg.py", "nonai_models/hpcg.py",)
         hls.parse_graph(cfg)
         hls.get_stats(cfg)
-        
+
 
 ####################################
 def design_tech_runner(
@@ -183,5 +181,3 @@ def design_runner(
 
     return time, energy, area
     # return time_list, energy_list, design_list
-
-

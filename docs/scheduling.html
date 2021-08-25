@@ -1,0 +1,3015 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>scheduling API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>scheduling</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import collections
+import logging
+import pdb
+
+import numpy as np
+import yaml
+import yamlordereddictloader
+
+from generator import *
+from generator import Generator, get_mem_props
+from synthesis import aisynthesis_utils
+from utils.logger import create_logger
+from utils.visualizer import *
+
+eff = 0.5
+
+
+class Scheduling:
+    def __init__(self, hwfile=&#34;default.yaml&#34;, stats_file=&#34;logs/stats.txt&#34;):
+        &#34;&#34;&#34;[summary]
+
+        Args:
+            hwfile (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+            stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        &#34;&#34;&#34;        
+        base_dir = &#34;configs/&#34;
+        self.total_cycles = 0
+        self.technology = [1, 1, 40]
+        # maybe change this later to peripheral logic node or speed
+        #     [wire_cap , sense_amp_time, plogic_node],
+        self.logger = create_logger(stats_file=stats_file)
+        self.config = self.complete_config(
+            yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
+        )
+
+
+def complete_config(self, config):
+    &#34;&#34;&#34;[Complete the Config for Hardware Description by using Technology Models]
+
+    Args:
+        config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;    
+
+    self.logger.debug(&#34;Config Statistics : &#34;)
+
+    self.mle = config[&#34;memory_levels&#34;]
+    self.mem_energy = np.zeros((self.mle))
+    self.compute_energy = 0
+    self.mem_read_access = np.zeros((self.mle))
+    self.mem_write_access = np.zeros((self.mle))
+    self.mem_size = np.zeros((self.mle))
+    self.mem_util = np.zeros((self.mle))
+    self.mem_free = np.zeros((self.mle))
+    self.mem_read_bw = np.zeros((self.mle))
+    self.mem_write_bw = np.zeros((self.mle))
+    self.internal_bandwidth_time = 0
+    self.total_cycles = 0
+    self.bandwidth_idle_time = 0
+    self.compute_idle_time = 0
+    self.mem_size_idle_time = 0
+
+    self.force_connectivity = config[&#34;force_connectivity&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+    vector_compute = config[&#34;vector_compute&#34;]
+
+    if mm_compute[&#34;class&#34;] == &#34;systolic_array&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (
+            ((mm_compute[&#34;size&#34;]) ** 2) * mm_compute[&#34;N_PE&#34;] / (4)
+        )
+        config[&#34;comp_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;] * 2 / 4
+        )
+
+        self.logger.debug(&#34;MM Compute per cycle : %d&#34;, config[&#34;mm_compute_per_cycle&#34;])
+        self.logger.debug(&#34;Compute Bandwidth Required : %d&#34;, config[&#34;comp_bw&#34;])
+
+    if config[&#34;mm_compute&#34;][&#34;class&#34;] == &#34;mac&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (mm_compute[&#34;size&#34;]) * mm_compute[&#34;N_PE&#34;]
+        config[&#34;comp_read_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;]
+        )
+
+    for i in range(self.mle):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        self.mem_read_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;read_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_write_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;write_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_size[i] = memory[&#34;size&#34;]
+
+        self.logger.debug(
+            &#34;Memory at Level %d, Read Bandwidth %d Write Bandwidth %d&#34;,
+            i,
+            self.mem_read_bw[i],
+            self.mem_write_bw[i],
+        )
+    # complete_functional_config
+    # complete_performance_config
+    # memory
+    for i in range(self.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy, write_energy, leakage_power, area = get_mem_props(
+            memory[&#34;size&#34;], memory[&#34;width&#34;], memory[&#34;banks&#34;]
+        )
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;read_energy&#34;] = str(read_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;write_energy&#34;] = str(write_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;leakage_power&#34;] = str(leakage_power)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;area&#34;] = str(area)
+    # compute
+    # config[&#34;memory&#34;] = mem_space(config[&#34;memory&#34;], technology)
+    # config[&#34;mm_compute&#34;] = comp_space(config[&#34;mm_compute&#34;], technology)
+    return config
+
+
+def run_asap(self, graph):
+
+    &#34;&#34;&#34;
+    [Runs the Graph on the Hardware ASAP Mapped]
+
+    Memory Management Scenarios :
+        1. Check both size, utilization and bandwidths at every node
+        2. What about memory size that can also get exhausted 
+        3. If memory size is exhausted, then to go to a previous level and write there 
+        4. If any level utilization is exhausted then only the immediate memory required will be kept.
+        5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+        6. If Prefetching : Read access of the next node will decrease
+        7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+        whether to do fetches of the same node or a different node
+        8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+        slower so it will take its own time
+
+    Compute Management Scenarios :
+        1. Pipelined vs Parallel Scheduling 
+        2. When do vector operations happen 
+        3. Scale up vs Scale out for Systolic Arrays
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        # assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )
+
+
+def run_reuse_leakage(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power
+    
+    Implementation :
+        1. Quantify the Scenarios of Reuse
+        2. Time taken by the Loop Blocking for Reuse
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse =         # reusing memory : then time_reuse = time_taken - time_without_reuse
+        
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )
+
+
+def run_reuse_full(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components 
+    &#34;&#34;&#34;
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )
+
+
+def run_nn_dataflow(self, graph):
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+    step_cycles = 0
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[1] += node.out_edge_mem
+        self.mem_util[0] += node.mem_util
+        self.mem_free[0] -= node.mem_util
+        util = aisynthesis_utils.calculate_utillization(node)
+        steps_cycles += time_compute / util
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        step_cycles += read_access / self.mem_read_bw[self.mle - 1] + 1
+        self.bandwidth_idle_time += read_access / self.mem_read_bw[self.mle - 1] + 1
+
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+        #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+        #     print(&#34;The total cycles are &#34;, self.total_cycles)
+        self.mem_write_access[1] += node.out_edge_mem
+    # total_fetch = 0
+    # for i, node in enumerate(graph.nodes):
+    #     total_fetch += (node.in_edge_mem) // 2
+    # step_cycles += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    # self.bandwidth_idle_time += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )
+
+
+def get_reuse(node):
+    # for node.type in conv2d
+    #
+    pass
+
+
+def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    mem_size_util = np.zeros((num_of_chips + 1))
+    mem_free = np.zeros((num_of_chips + 1))
+    message_passed = np.zeros((num_of_chips + 1))
+    i = 0
+    # mem_track_node
+    if deeper:
+        layer = 0
+        for node in graph.nodes:
+            for k in range(depth):
+                if node.operator == &#34;aten::_convolution&#34;:
+                    layer += 1
+                    if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                        oc, ic, *ks = node.inputs[1].shape
+                    else:
+                        ic, oc, *ks = node.inputs[1].shape
+                    mem_size_util[i] += node.weights
+
+                    if mem_size_util[i] &lt; capacity:
+                        continue
+                    elif mem_size_util[i] &gt; capacity:
+                        mem_size_util[i] -= node.weights
+                        # partition of node.weights
+                        if np.prod(node.outputs[0].shape) &gt; np.prod(
+                            node.inputs[0].shape
+                        ):
+                            # weights : (oc,ic,x,y)
+                            mem_free[i] = capacity - mem_size_util[i]
+                            oc_partition = mem_free[i] // (np.prod(ks) * ic)
+                            mem_size_util[i + 1] = (
+                                node.weights
+                            ) - oc_partition * np.prod(ks) * ic
+                            # outputs : oc, ox, oy, inputs : ic,ix, iy
+
+                            message_passed[i + 1] += np.prod(
+                                node.outputs[0].shape[2:]
+                            ) * oc_partition + np.prod(node.inputs[0].shape)
+
+                        else:
+                            mem_free[i] = capacity - mem_size_util[i]
+                            ic_partition = mem_free[i] // (oc * np.prod(ks))
+                            mem_size_util[
+                                i + 1
+                            ] = node.weights - ic_partition * oc * np.prod(ks)
+                            message_passed[i + 1] += np.prod(
+                                node.inputs[0].shape[2:]
+                            ) * ic_partition + np.prod(node.outputs[0].shape)
+                        i += 1
+                        message_passed[i] += np.prod(node.outputs[0].shape)
+                    # if node.operator == &#34;aten::addmm&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+                    #     mem_size_util[i] -= node.weights
+                    #     n, m = node.inputs[1].shape
+                    #     m, p = node.inputs[2].shape
+                    #     if mem_size_util[i] + n * p &gt; capacity:
+                    #         message_passed[i] += n * p
+
+                    #     if np.prod(node.inputs[0].shape) &gt; np.prod(node.inputs[1].shape):
+                    #         x = capacity // p
+                    #         message_passed[i] += m * p + (n - x) * m
+                    #         mem_size_util[i + 1] += (n - x) * p
+                    #     else:
+                    #         x = capacity // (n)
+                    #         message_passed[i] += m * (p - x) + n * m
+                    #         mem_size_util[i + 1] += (p - x) * n
+                    #     i += 1
+                    # if node.operator == &#34;aten::bmm&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+                    #     *b, n, p = node.outputs[0].shape
+                    #     *_, n, m = node.inputs[0].shape
+                    #     *_, m, p = node.inputs[1].shape
+                    #     if np.prod(node.inputs[0].shape) &gt; np.prod(node.inputs[1].shape):
+                    #         x = capacity // (np.prod(b) * p)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+
+                    #     else:
+                    #         x = capacity // (np.prod(b) * n)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    #     i += 1
+                    # if node.operator == &#34;aten::matmul&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+
+                    #     if len(node.inputs) &gt; 1:
+                    #         if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
+                    #             n, p = node.outputs[0].shape
+                    #             n, m = node.inputs[0].shape
+                    #             m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) &gt; np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (p)
+                    #                 message_passed[i] += m * p + (n - x) * m
+                    #                 mem_size_util[i + 1] += (n - x) * p
+                    #             else:
+                    #                 x = capacity // (n)
+                    #                 message_passed[i] += m * (p - x) + n * m
+                    #                 mem_size_util[i + 1] += (p - x) * n
+
+                    #         elif node.inputs[0].ndim &gt; 2 and node.inputs[1].ndim &gt; 2:
+                    #             *b, n, p = node.outputs[0].shape
+                    #             *_, n, m = node.inputs[0].shape
+                    #             *_, m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) &gt; np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (np.prod(b) * p)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #             else:
+                    #                 x = capacity // (np.prod(b) * n)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    # i += 1
+        print(np.sum(message_passed))
+
+    if wider:
+        for node in graph.nodes:
+            layer = 0
+            if node.operator == &#34;aten::_convolution&#34;:
+                layer += 1
+                if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                    oc, ic, *ks = node.inputs[1].shape
+                else:
+                    ic, oc, *ks = node.inputs[1].shape
+                # depth first for residual blocks
+
+                mem_size_util[i] += depth * node.weights
+                if mem_size_util[i] &lt; capacity:
+                    continue
+                elif mem_size_util[i] &gt; capacity:
+                    mem_size_util[i] -= depth * node.weights
+                    # partition of node.weights
+                    # print(&#34;Layer partition&#34;, layer)
+                    if np.prod(node.outputs[0].shape) &gt; np.prod(node.inputs[0].shape):
+                        # weights : (oc,ic,x,y)
+                        mem_free[i] = capacity - mem_size_util[i]
+                        oc_partition = mem_free[i] // (depth * np.prod(ks) * ic)
+                        mem_size_util[i + 1] = (
+                            depth * (node.weights)
+                            - depth * oc_partition * np.prod(ks) * ic
+                        )
+                        # outputs : oc, ox, oy, inputs : ic,ix, iy
+                        # message_passed[i + 1] = np.prod(
+                        #     node.outputs[0].shape[2:]
+                        # ) * oc_partition + np.prod(node.inputs[0].shape)
+                        if mem_size_util[i + 1] &gt; capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) % capacity
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            i += depth_ratio
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    else:
+                        mem_free[i] = capacity - mem_size_util[i]
+                        ic_partition = mem_free[i] // (depth * oc * np.prod(ks))
+                        mem_size_util[i + 1] = depth * (
+                            node.weights - ic_partition * oc * np.prod(ks)
+                        )
+                        if mem_size_util[i + 1] &gt; capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) % capacity
+                            i += int(depth_ratio)
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    message_passed[i] += np.prod(node.outputs[0].shape) + np.prod(
+                        node.inputs[0].shape
+                    )
+
+        # print(message_passed)
+        print(np.sum(message_passed))
+
+
+Scheduling.complete_config = complete_config
+Scheduling.run_asap = run_asap
+Scheduling.run_reuse_full = run_reuse_full
+Scheduling.run_reuse_leakage = run_reuse_leakage
+Scheduling.run_nn_dataflow = run_nn_dataflow</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="scheduling.complete_config"><code class="name flex">
+<span>def <span class="ident">complete_config</span></span>(<span>self, config)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Complete the Config for Hardware Description by using Technology Models]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def complete_config(self, config):
+    &#34;&#34;&#34;[Complete the Config for Hardware Description by using Technology Models]
+
+    Args:
+        config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;    
+
+    self.logger.debug(&#34;Config Statistics : &#34;)
+
+    self.mle = config[&#34;memory_levels&#34;]
+    self.mem_energy = np.zeros((self.mle))
+    self.compute_energy = 0
+    self.mem_read_access = np.zeros((self.mle))
+    self.mem_write_access = np.zeros((self.mle))
+    self.mem_size = np.zeros((self.mle))
+    self.mem_util = np.zeros((self.mle))
+    self.mem_free = np.zeros((self.mle))
+    self.mem_read_bw = np.zeros((self.mle))
+    self.mem_write_bw = np.zeros((self.mle))
+    self.internal_bandwidth_time = 0
+    self.total_cycles = 0
+    self.bandwidth_idle_time = 0
+    self.compute_idle_time = 0
+    self.mem_size_idle_time = 0
+
+    self.force_connectivity = config[&#34;force_connectivity&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+    vector_compute = config[&#34;vector_compute&#34;]
+
+    if mm_compute[&#34;class&#34;] == &#34;systolic_array&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (
+            ((mm_compute[&#34;size&#34;]) ** 2) * mm_compute[&#34;N_PE&#34;] / (4)
+        )
+        config[&#34;comp_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;] * 2 / 4
+        )
+
+        self.logger.debug(&#34;MM Compute per cycle : %d&#34;, config[&#34;mm_compute_per_cycle&#34;])
+        self.logger.debug(&#34;Compute Bandwidth Required : %d&#34;, config[&#34;comp_bw&#34;])
+
+    if config[&#34;mm_compute&#34;][&#34;class&#34;] == &#34;mac&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (mm_compute[&#34;size&#34;]) * mm_compute[&#34;N_PE&#34;]
+        config[&#34;comp_read_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;]
+        )
+
+    for i in range(self.mle):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        self.mem_read_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;read_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_write_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;write_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_size[i] = memory[&#34;size&#34;]
+
+        self.logger.debug(
+            &#34;Memory at Level %d, Read Bandwidth %d Write Bandwidth %d&#34;,
+            i,
+            self.mem_read_bw[i],
+            self.mem_write_bw[i],
+        )
+    # complete_functional_config
+    # complete_performance_config
+    # memory
+    for i in range(self.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy, write_energy, leakage_power, area = get_mem_props(
+            memory[&#34;size&#34;], memory[&#34;width&#34;], memory[&#34;banks&#34;]
+        )
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;read_energy&#34;] = str(read_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;write_energy&#34;] = str(write_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;leakage_power&#34;] = str(leakage_power)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;area&#34;] = str(area)
+    # compute
+    # config[&#34;memory&#34;] = mem_space(config[&#34;memory&#34;], technology)
+    # config[&#34;mm_compute&#34;] = comp_space(config[&#34;mm_compute&#34;], technology)
+    return config</code></pre>
+</details>
+</dd>
+<dt id="scheduling.get_reuse"><code class="name flex">
+<span>def <span class="ident">get_reuse</span></span>(<span>node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reuse(node):
+    # for node.type in conv2d
+    #
+    pass</code></pre>
+</details>
+</dd>
+<dt id="scheduling.illusion_mapping"><code class="name flex">
+<span>def <span class="ident">illusion_mapping</span></span>(<span>graph, num_of_chips, depth, capacity, deeper=False, wider=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
+    mem_size_util = np.zeros((num_of_chips + 1))
+    mem_free = np.zeros((num_of_chips + 1))
+    message_passed = np.zeros((num_of_chips + 1))
+    i = 0
+    # mem_track_node
+    if deeper:
+        layer = 0
+        for node in graph.nodes:
+            for k in range(depth):
+                if node.operator == &#34;aten::_convolution&#34;:
+                    layer += 1
+                    if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                        oc, ic, *ks = node.inputs[1].shape
+                    else:
+                        ic, oc, *ks = node.inputs[1].shape
+                    mem_size_util[i] += node.weights
+
+                    if mem_size_util[i] &lt; capacity:
+                        continue
+                    elif mem_size_util[i] &gt; capacity:
+                        mem_size_util[i] -= node.weights
+                        # partition of node.weights
+                        if np.prod(node.outputs[0].shape) &gt; np.prod(
+                            node.inputs[0].shape
+                        ):
+                            # weights : (oc,ic,x,y)
+                            mem_free[i] = capacity - mem_size_util[i]
+                            oc_partition = mem_free[i] // (np.prod(ks) * ic)
+                            mem_size_util[i + 1] = (
+                                node.weights
+                            ) - oc_partition * np.prod(ks) * ic
+                            # outputs : oc, ox, oy, inputs : ic,ix, iy
+
+                            message_passed[i + 1] += np.prod(
+                                node.outputs[0].shape[2:]
+                            ) * oc_partition + np.prod(node.inputs[0].shape)
+
+                        else:
+                            mem_free[i] = capacity - mem_size_util[i]
+                            ic_partition = mem_free[i] // (oc * np.prod(ks))
+                            mem_size_util[
+                                i + 1
+                            ] = node.weights - ic_partition * oc * np.prod(ks)
+                            message_passed[i + 1] += np.prod(
+                                node.inputs[0].shape[2:]
+                            ) * ic_partition + np.prod(node.outputs[0].shape)
+                        i += 1
+                        message_passed[i] += np.prod(node.outputs[0].shape)
+                    # if node.operator == &#34;aten::addmm&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+                    #     mem_size_util[i] -= node.weights
+                    #     n, m = node.inputs[1].shape
+                    #     m, p = node.inputs[2].shape
+                    #     if mem_size_util[i] + n * p &gt; capacity:
+                    #         message_passed[i] += n * p
+
+                    #     if np.prod(node.inputs[0].shape) &gt; np.prod(node.inputs[1].shape):
+                    #         x = capacity // p
+                    #         message_passed[i] += m * p + (n - x) * m
+                    #         mem_size_util[i + 1] += (n - x) * p
+                    #     else:
+                    #         x = capacity // (n)
+                    #         message_passed[i] += m * (p - x) + n * m
+                    #         mem_size_util[i + 1] += (p - x) * n
+                    #     i += 1
+                    # if node.operator == &#34;aten::bmm&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+                    #     *b, n, p = node.outputs[0].shape
+                    #     *_, n, m = node.inputs[0].shape
+                    #     *_, m, p = node.inputs[1].shape
+                    #     if np.prod(node.inputs[0].shape) &gt; np.prod(node.inputs[1].shape):
+                    #         x = capacity // (np.prod(b) * p)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+
+                    #     else:
+                    #         x = capacity // (np.prod(b) * n)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    #     i += 1
+                    # if node.operator == &#34;aten::matmul&#34;:
+                    #     mem_size_util[i] += node.weights
+
+                    #     if mem_size_util[i] &lt; capacity:
+                    #         continue
+
+                    #     if len(node.inputs) &gt; 1:
+                    #         if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
+                    #             n, p = node.outputs[0].shape
+                    #             n, m = node.inputs[0].shape
+                    #             m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) &gt; np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (p)
+                    #                 message_passed[i] += m * p + (n - x) * m
+                    #                 mem_size_util[i + 1] += (n - x) * p
+                    #             else:
+                    #                 x = capacity // (n)
+                    #                 message_passed[i] += m * (p - x) + n * m
+                    #                 mem_size_util[i + 1] += (p - x) * n
+
+                    #         elif node.inputs[0].ndim &gt; 2 and node.inputs[1].ndim &gt; 2:
+                    #             *b, n, p = node.outputs[0].shape
+                    #             *_, n, m = node.inputs[0].shape
+                    #             *_, m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) &gt; np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (np.prod(b) * p)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #             else:
+                    #                 x = capacity // (np.prod(b) * n)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    # i += 1
+        print(np.sum(message_passed))
+
+    if wider:
+        for node in graph.nodes:
+            layer = 0
+            if node.operator == &#34;aten::_convolution&#34;:
+                layer += 1
+                if node.outputs[0].shape[1] == node.inputs[1].shape[0]:
+                    oc, ic, *ks = node.inputs[1].shape
+                else:
+                    ic, oc, *ks = node.inputs[1].shape
+                # depth first for residual blocks
+
+                mem_size_util[i] += depth * node.weights
+                if mem_size_util[i] &lt; capacity:
+                    continue
+                elif mem_size_util[i] &gt; capacity:
+                    mem_size_util[i] -= depth * node.weights
+                    # partition of node.weights
+                    # print(&#34;Layer partition&#34;, layer)
+                    if np.prod(node.outputs[0].shape) &gt; np.prod(node.inputs[0].shape):
+                        # weights : (oc,ic,x,y)
+                        mem_free[i] = capacity - mem_size_util[i]
+                        oc_partition = mem_free[i] // (depth * np.prod(ks) * ic)
+                        mem_size_util[i + 1] = (
+                            depth * (node.weights)
+                            - depth * oc_partition * np.prod(ks) * ic
+                        )
+                        # outputs : oc, ox, oy, inputs : ic,ix, iy
+                        # message_passed[i + 1] = np.prod(
+                        #     node.outputs[0].shape[2:]
+                        # ) * oc_partition + np.prod(node.inputs[0].shape)
+                        if mem_size_util[i + 1] &gt; capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - oc_partition * np.prod(ks) * ic)
+                            ) % capacity
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            i += depth_ratio
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    else:
+                        mem_free[i] = capacity - mem_size_util[i]
+                        ic_partition = mem_free[i] // (depth * oc * np.prod(ks))
+                        mem_size_util[i + 1] = depth * (
+                            node.weights - ic_partition * oc * np.prod(ks)
+                        )
+                        if mem_size_util[i + 1] &gt; capacity:
+                            depth_ratio = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) // capacity
+
+                            depth_left = (
+                                depth
+                                * ((node.weights) - ic_partition * np.prod(ks) * oc)
+                            ) % capacity
+                            i += int(depth_ratio)
+                            message_passed[i + 1] = depth_ratio * (
+                                np.prod(node.outputs[0].shape)
+                                + np.prod(node.inputs[0].shape)
+                            )
+
+                            mem_size_util[int(i) + 1] = depth_left
+                        i += 1
+                    message_passed[i] += np.prod(node.outputs[0].shape) + np.prod(
+                        node.inputs[0].shape
+                    )
+
+        # print(message_passed)
+        print(np.sum(message_passed))</code></pre>
+</details>
+</dd>
+<dt id="scheduling.run_asap"><code class="name flex">
+<span>def <span class="ident">run_asap</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Runs the Graph on the Hardware ASAP Mapped]</p>
+<p>Memory Management Scenarios :
+1. Check both size, utilization and bandwidths at every node
+2. What about memory size that can also get exhausted
+3. If memory size is exhausted, then to go to a previous level and write there
+4. If any level utilization is exhausted then only the immediate memory required will be kept.
+5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+6. If Prefetching : Read access of the next node will decrease
+7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+whether to do fetches of the same node or a different node
+8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+slower so it will take its own time</p>
+<p>Compute Management Scenarios :
+1. Pipelined vs Parallel Scheduling
+2. When do vector operations happen
+3. Scale up vs Scale out for Systolic Arrays</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_asap(self, graph):
+
+    &#34;&#34;&#34;
+    [Runs the Graph on the Hardware ASAP Mapped]
+
+    Memory Management Scenarios :
+        1. Check both size, utilization and bandwidths at every node
+        2. What about memory size that can also get exhausted 
+        3. If memory size is exhausted, then to go to a previous level and write there 
+        4. If any level utilization is exhausted then only the immediate memory required will be kept.
+        5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+        6. If Prefetching : Read access of the next node will decrease
+        7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+        whether to do fetches of the same node or a different node
+        8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+        slower so it will take its own time
+
+    Compute Management Scenarios :
+        1. Pipelined vs Parallel Scheduling 
+        2. When do vector operations happen 
+        3. Scale up vs Scale out for Systolic Arrays
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        # assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.run_nn_dataflow"><code class="name flex">
+<span>def <span class="ident">run_nn_dataflow</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_nn_dataflow(self, graph):
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+    step_cycles = 0
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[1] += node.out_edge_mem
+        self.mem_util[0] += node.mem_util
+        self.mem_free[0] -= node.mem_util
+        util = aisynthesis_utils.calculate_utillization(node)
+        steps_cycles += time_compute / util
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        step_cycles += read_access / self.mem_read_bw[self.mle - 1] + 1
+        self.bandwidth_idle_time += read_access / self.mem_read_bw[self.mle - 1] + 1
+
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+        #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+        #     print(&#34;The total cycles are &#34;, self.total_cycles)
+        self.mem_write_access[1] += node.out_edge_mem
+    # total_fetch = 0
+    # for i, node in enumerate(graph.nodes):
+    #     total_fetch += (node.in_edge_mem) // 2
+    # step_cycles += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    # self.bandwidth_idle_time += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.run_reuse_full"><code class="name flex">
+<span>def <span class="ident">run_reuse_full</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_reuse_full(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components 
+    &#34;&#34;&#34;
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.run_reuse_leakage"><code class="name flex">
+<span>def <span class="ident">run_reuse_leakage</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power</p>
+<p>Implementation :
+1. Quantify the Scenarios of Reuse
+2. Time taken by the Loop Blocking for Reuse</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_reuse_leakage(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power
+    
+    Implementation :
+        1. Quantify the Scenarios of Reuse
+        2. Time taken by the Loop Blocking for Reuse
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse =         # reusing memory : then time_reuse = time_taken - time_without_reuse
+        
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="scheduling.Scheduling"><code class="flex name class">
+<span>class <span class="ident">Scheduling</span></span>
+<span>(</span><span>hwfile='default.yaml', stats_file='logs/stats.txt')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[summary]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>hwfile</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "default.yaml".</dd>
+<dt><strong><code>stats_file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "logs/stats.txt".</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Scheduling:
+    def __init__(self, hwfile=&#34;default.yaml&#34;, stats_file=&#34;logs/stats.txt&#34;):
+        &#34;&#34;&#34;[summary]
+
+        Args:
+            hwfile (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+            stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        &#34;&#34;&#34;        
+        base_dir = &#34;configs/&#34;
+        self.total_cycles = 0
+        self.technology = [1, 1, 40]
+        # maybe change this later to peripheral logic node or speed
+        #     [wire_cap , sense_amp_time, plogic_node],
+        self.logger = create_logger(stats_file=stats_file)
+        self.config = self.complete_config(
+            yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
+        )</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="scheduling.Scheduling.complete_config"><code class="name flex">
+<span>def <span class="ident">complete_config</span></span>(<span>self, config)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Complete the Config for Hardware Description by using Technology Models]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def complete_config(self, config):
+    &#34;&#34;&#34;[Complete the Config for Hardware Description by using Technology Models]
+
+    Args:
+        config ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;    
+
+    self.logger.debug(&#34;Config Statistics : &#34;)
+
+    self.mle = config[&#34;memory_levels&#34;]
+    self.mem_energy = np.zeros((self.mle))
+    self.compute_energy = 0
+    self.mem_read_access = np.zeros((self.mle))
+    self.mem_write_access = np.zeros((self.mle))
+    self.mem_size = np.zeros((self.mle))
+    self.mem_util = np.zeros((self.mle))
+    self.mem_free = np.zeros((self.mle))
+    self.mem_read_bw = np.zeros((self.mle))
+    self.mem_write_bw = np.zeros((self.mle))
+    self.internal_bandwidth_time = 0
+    self.total_cycles = 0
+    self.bandwidth_idle_time = 0
+    self.compute_idle_time = 0
+    self.mem_size_idle_time = 0
+
+    self.force_connectivity = config[&#34;force_connectivity&#34;]
+    mm_compute = config[&#34;mm_compute&#34;]
+    vector_compute = config[&#34;vector_compute&#34;]
+
+    if mm_compute[&#34;class&#34;] == &#34;systolic_array&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (
+            ((mm_compute[&#34;size&#34;]) ** 2) * mm_compute[&#34;N_PE&#34;] / (4)
+        )
+        config[&#34;comp_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;] * 2 / 4
+        )
+
+        self.logger.debug(&#34;MM Compute per cycle : %d&#34;, config[&#34;mm_compute_per_cycle&#34;])
+        self.logger.debug(&#34;Compute Bandwidth Required : %d&#34;, config[&#34;comp_bw&#34;])
+
+    if config[&#34;mm_compute&#34;][&#34;class&#34;] == &#34;mac&#34;:
+        config[&#34;mm_compute_per_cycle&#34;] = (mm_compute[&#34;size&#34;]) * mm_compute[&#34;N_PE&#34;]
+        config[&#34;comp_read_bw&#34;] = (
+            mm_compute[&#34;size&#34;] * mm_compute[&#34;N_PE&#34;] * mm_compute[&#34;frequency&#34;]
+        )
+
+    for i in range(self.mle):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        self.mem_read_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;read_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_write_bw[i] = (
+            memory[&#34;frequency&#34;]
+            * memory[&#34;banks&#34;]
+            * memory[&#34;write_ports&#34;]
+            * memory[&#34;width&#34;]
+        )
+        self.mem_size[i] = memory[&#34;size&#34;]
+
+        self.logger.debug(
+            &#34;Memory at Level %d, Read Bandwidth %d Write Bandwidth %d&#34;,
+            i,
+            self.mem_read_bw[i],
+            self.mem_write_bw[i],
+        )
+    # complete_functional_config
+    # complete_performance_config
+    # memory
+    for i in range(self.mle - 1):
+        memory = config[&#34;memory&#34;][&#34;level&#34; + str(i)]
+        read_energy, write_energy, leakage_power, area = get_mem_props(
+            memory[&#34;size&#34;], memory[&#34;width&#34;], memory[&#34;banks&#34;]
+        )
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;read_energy&#34;] = str(read_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;write_energy&#34;] = str(write_energy)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;leakage_power&#34;] = str(leakage_power)
+        config[&#34;memory&#34;][&#34;level&#34; + str(i)][&#34;area&#34;] = str(area)
+    # compute
+    # config[&#34;memory&#34;] = mem_space(config[&#34;memory&#34;], technology)
+    # config[&#34;mm_compute&#34;] = comp_space(config[&#34;mm_compute&#34;], technology)
+    return config</code></pre>
+</details>
+</dd>
+<dt id="scheduling.Scheduling.run_asap"><code class="name flex">
+<span>def <span class="ident">run_asap</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Runs the Graph on the Hardware ASAP Mapped]</p>
+<p>Memory Management Scenarios :
+1. Check both size, utilization and bandwidths at every node
+2. What about memory size that can also get exhausted
+3. If memory size is exhausted, then to go to a previous level and write there
+4. If any level utilization is exhausted then only the immediate memory required will be kept.
+5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+6. If Prefetching : Read access of the next node will decrease
+7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+whether to do fetches of the same node or a different node
+8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+slower so it will take its own time</p>
+<p>Compute Management Scenarios :
+1. Pipelined vs Parallel Scheduling
+2. When do vector operations happen
+3. Scale up vs Scale out for Systolic Arrays</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_asap(self, graph):
+
+    &#34;&#34;&#34;
+    [Runs the Graph on the Hardware ASAP Mapped]
+
+    Memory Management Scenarios :
+        1. Check both size, utilization and bandwidths at every node
+        2. What about memory size that can also get exhausted 
+        3. If memory size is exhausted, then to go to a previous level and write there 
+        4. If any level utilization is exhausted then only the immediate memory required will be kept.
+        5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+        6. If Prefetching : Read access of the next node will decrease
+        7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+        whether to do fetches of the same node or a different node
+        8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+        slower so it will take its own time
+
+    Compute Management Scenarios :
+        1. Pipelined vs Parallel Scheduling 
+        2. When do vector operations happen 
+        3. Scale up vs Scale out for Systolic Arrays
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        # assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.Scheduling.run_nn_dataflow"><code class="name flex">
+<span>def <span class="ident">run_nn_dataflow</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_nn_dataflow(self, graph):
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+    step_cycles = 0
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+        self.mem_write_access[1] += node.out_edge_mem
+        self.mem_util[0] += node.mem_util
+        self.mem_free[0] -= node.mem_util
+        util = aisynthesis_utils.calculate_utillization(node)
+        steps_cycles += time_compute / util
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        step_cycles += read_access / self.mem_read_bw[self.mle - 1] + 1
+        self.bandwidth_idle_time += read_access / self.mem_read_bw[self.mle - 1] + 1
+
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+        #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+        #     print(&#34;The total cycles are &#34;, self.total_cycles)
+        self.mem_write_access[1] += node.out_edge_mem
+    # total_fetch = 0
+    # for i, node in enumerate(graph.nodes):
+    #     total_fetch += (node.in_edge_mem) // 2
+    # step_cycles += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    # self.bandwidth_idle_time += total_fetch / self.mem_read_bw[self.mle - 1] + 1
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.Scheduling.run_reuse_full"><code class="name flex">
+<span>def <span class="ident">run_reuse_full</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_reuse_full(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and allow maximal reuse and fine-grained power gating of the components 
+    &#34;&#34;&#34;
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+    for n, node in enumerate(graph.nodes):
+
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse = 
+        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        total_leakage_power = time_reuse *() # sum of leakage power of all
+        is_reuse = True
+        if(total_leakage_power &gt; mem_reuse*mem_energy):
+            is_reuse = False
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+<dt id="scheduling.Scheduling.run_reuse_leakage"><code class="name flex">
+<span>def <span class="ident">run_reuse_leakage</span></span>(<span>self, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power</p>
+<p>Implementation :
+1. Quantify the Scenarios of Reuse
+2. Time taken by the Loop Blocking for Reuse</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_reuse_leakage(self, graph):
+    &#34;&#34;&#34;
+    Run an ASAP Mapping and choose the greedy choice between Reuse and Leakage_Power
+    
+    Implementation :
+        1. Quantify the Scenarios of Reuse
+        2. Time taken by the Loop Blocking for Reuse
+
+    &#34;&#34;&#34;
+
+    config = self.config
+    # TODO in_edge_mem can change by pooling/batch_norm
+    # TODO compute is very much higher than bandwidth time and mem size idle time
+    read_bw_req = []
+    write_bw_req = []
+    read_bw_actual = []
+    write_bw_actual = []
+    cycles = []
+    free_cycles = []
+    transferable_checkpointed_edge = []
+    all_checkpointed_edge = []
+    self.mem_util_log = []
+    self.mem_util_full = []
+    # Mem Fetch time of the last Nodes
+    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+    mem_free = True
+    for n, node in enumerate(graph.nodes):
+        node.mem_fetch = node.weights
+        # These are last level read/write accesses
+        compute_expense, weights = node.get_stats()
+        &#34;&#34;&#34;
+        mem_reuse, comp_reuse = get_reuse(node)
+        time_reuse =         # reusing memory : then time_reuse = time_taken - time_without_reuse
+        
+        &#34;&#34;&#34;
+        read_access = node.mem_fetch
+        write_access = 0
+        self.mem_read_access[1] += weights
+
+        assert self.mem_util[0] &lt;= self.mem_size[0]
+        self.mem_util[0] += node.in_edge_mem
+        node.mem_util = node.out_edge_mem + node.mem_fetch
+        # Total Free memory
+        for i in range(self.mle - 1):
+            self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
+        time_compute = compute_expense / config[&#34;mm_compute_per_cycle&#34;]
+        read_bw_ll = read_access / (time_compute)
+        write_bw_ll = write_access / (time_compute)
+        step_cycles = time_compute
+        read_bw_req.append(read_bw_ll)
+        write_bw_req.append(write_bw_ll)
+        free_cycles.append(step_cycles)
+        n_swaps = 1
+        total_mem = 0
+        if self.mem_free[0] &lt; node.mem_util:
+            mem_free = False
+            self.mem_util[0] -= node.in_edge_mem
+            self.mem_util[0] -= node.weights - node.mem_fetch
+            self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
+            total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            if self.mem_free[0] &lt;= 0:
+                print(self.mem_free[0])
+            assert self.mem_free[0] &gt; 0, self.mem_util[0]
+            n_swaps = total_mem // self.mem_free[0] + 1
+            swap_time = max(config[&#34;mm_compute&#34;][&#34;size&#34;] * 4, time_compute // n_swaps)
+            self.mem_size_idle_time += (
+                swap_time * n_swaps
+                + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.bandwidth_idle_time += (
+                (node.out_edge_mem // n_swaps - 1) * n_swaps
+            ) // self.mem_read_bw[self.mle - 1]
+            step_cycles += (
+                swap_time * n_swaps
+                + 2
+                * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
+                // self.mem_read_bw[self.mle - 1]
+            )
+            self.mem_read_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[0] += node.mem_util + node.in_edge_mem
+            self.mem_write_access[1] += node.out_edge_mem
+        else:
+            self.mem_util[0] += node.mem_util
+            self.mem_free[0] -= node.mem_util
+        #         print(&#34;2.5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_log.append(self.mem_util[0])
+        self.mem_read_access[0] += node.weights + node.out_edge_mem
+        self.mem_write_access[0] += node.weights + node.out_edge_mem
+        assert self.mem_free[0] &lt;= self.mem_size[0]
+        # Last level memory fetch takes more time, so that may be a bottleneck
+        bandwidth_available = read_bw_ll &lt; self.mem_read_bw[self.mle - 1]
+
+        # If Bandwidth is not available : Cannot Prefetch
+        if (bandwidth_available) == False:
+            step_cycles += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+            self.bandwidth_idle_time += (
+                read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
+            ) * time_compute
+
+        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
+        # if(total_mem_free[0] == 0 and (bandwidth_available)):
+        # for(nodes in checkpointed_nodes):
+        # checkpointed but not immediate node
+
+        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
+
+        # pdb.set_trace()
+        if self.mem_free[0] &gt; 0 and (bandwidth_available):
+            if n &lt; len(graph.nodes) - 1:
+                if self.mem_free[0] &gt; node.next.mem_fetch:
+                    read_access += node.next.mem_fetch
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        self.mem_util[0] += node.next.mem_fetch
+                        self.mem_free[0] -= node.next.mem_fetch
+                        node.next.mem_fetch = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= (
+                            read_access - read_bw_ll * step_cycles
+                        )  # Next node mem fetch gets updated
+
+                else:
+                    read_access += self.mem_free[0]
+                    if read_access / step_cycles &lt; self.mem_read_bw[self.mle - 1]:
+                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
+                        # Next node mem fetch gets updated
+
+                        self.mem_util[0] = self.mem_size[0]
+                        self.mem_free[0] = 0
+                    else:
+                        read_access = self.mem_read_bw[self.mle - 1] * step_cycles
+                        self.mem_util[0] += read_access - read_bw_ll * step_cycles
+                        self.mem_free[0] -= read_access - read_bw_ll * step_cycles
+                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
+                        # Next node mem fetch gets updated
+
+        #         print(&#34;3&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+        self.mem_util_full.append(self.mem_util[0])
+
+        # TODO Consider Write bandwidth for a block read memory or Write Bandwidth for endurance purposes
+        #         print(&#34;4&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        if mem_free:
+            self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
+        #         print(&#34;5&#34;,self.mem_free[0], self.mem_util[0], self.mem_size[0])
+
+        self.logger.debug(
+            &#34;Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d&#34;,
+            node.operator,
+            compute_expense,
+            time_compute,
+            step_cycles,
+            read_access,
+            write_access,
+            n_swaps,
+            total_mem,
+        )
+        self.total_cycles += step_cycles
+        cycles.append(step_cycles)
+        read_bw_actual.append(read_access / step_cycles)
+        write_bw_actual.append(write_access / step_cycles)
+    #         print(&#34;actual&#34;,read_access / step_cycles, write_access / step_cycles, step_cycles)
+    #     print(&#34;The total cycles are &#34;, self.total_cycles)
+    self.mem_write_access[1] += node.out_edge_mem
+    return (
+        read_bw_req,
+        write_bw_req,
+        read_bw_actual,
+        write_bw_actual,
+        cycles,
+        free_cycles,
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="scheduling.complete_config" href="#scheduling.complete_config">complete_config</a></code></li>
+<li><code><a title="scheduling.get_reuse" href="#scheduling.get_reuse">get_reuse</a></code></li>
+<li><code><a title="scheduling.illusion_mapping" href="#scheduling.illusion_mapping">illusion_mapping</a></code></li>
+<li><code><a title="scheduling.run_asap" href="#scheduling.run_asap">run_asap</a></code></li>
+<li><code><a title="scheduling.run_nn_dataflow" href="#scheduling.run_nn_dataflow">run_nn_dataflow</a></code></li>
+<li><code><a title="scheduling.run_reuse_full" href="#scheduling.run_reuse_full">run_reuse_full</a></code></li>
+<li><code><a title="scheduling.run_reuse_leakage" href="#scheduling.run_reuse_leakage">run_reuse_leakage</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="scheduling.Scheduling" href="#scheduling.Scheduling">Scheduling</a></code></h4>
+<ul class="">
+<li><code><a title="scheduling.Scheduling.complete_config" href="#scheduling.Scheduling.complete_config">complete_config</a></code></li>
+<li><code><a title="scheduling.Scheduling.run_asap" href="#scheduling.Scheduling.run_asap">run_asap</a></code></li>
+<li><code><a title="scheduling.Scheduling.run_nn_dataflow" href="#scheduling.Scheduling.run_nn_dataflow">run_nn_dataflow</a></code></li>
+<li><code><a title="scheduling.Scheduling.run_reuse_full" href="#scheduling.Scheduling.run_reuse_full">run_reuse_full</a></code></li>
+<li><code><a title="scheduling.Scheduling.run_reuse_leakage" href="#scheduling.Scheduling.run_reuse_leakage">run_reuse_leakage</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

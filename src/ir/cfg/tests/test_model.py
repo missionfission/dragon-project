@@ -1,11 +1,11 @@
-import unittest
 import ast
-from staticfg.model import *
+import unittest
+
 from staticfg.builder import CFGBuilder, is_py38_or_higher
+from staticfg.model import *
 
 
 class TestBlock(unittest.TestCase):
-
     def test_instanciation(self):
         block = Block(1)
         self.assertEqual(block.id, 1)
@@ -27,11 +27,17 @@ class TestBlock(unittest.TestCase):
         tree = ast.parse("a = 1")
         block.statements.append(tree.body[0])
         if is_py38_or_higher():
-            self.assertEqual(repr(block), "block:1@1 with 0 exits, body=[\
-Assign(targets=[Name(id='a', ctx=Store())], value=Constant(value=1, kind=None), type_comment=None)]")
+            self.assertEqual(
+                repr(block),
+                "block:1@1 with 0 exits, body=[\
+Assign(targets=[Name(id='a', ctx=Store())], value=Constant(value=1, kind=None), type_comment=None)]",
+            )
         else:
-            self.assertEqual(repr(block), "block:1@1 with 0 exits, body=[\
-Assign(targets=[Name(id='a', ctx=Store())], value=Num(n=1))]")
+            self.assertEqual(
+                repr(block),
+                "block:1@1 with 0 exits, body=[\
+Assign(targets=[Name(id='a', ctx=Store())], value=Num(n=1))]",
+            )
 
     def test_at(self):
         block = Block(1)
@@ -62,7 +68,6 @@ Assign(targets=[Name(id='a', ctx=Store())], value=Num(n=1))]")
 
 
 class TestLink(unittest.TestCase):
-
     def test_instanciation(self):
         block1 = Block(1)
         block2 = Block(2)
@@ -87,8 +92,13 @@ class TestLink(unittest.TestCase):
         block2 = Block(2)
         condition = ast.parse("a == 1").body[0]
         link = Link(block1, block2, condition)
-        self.assertEqual(repr(link), "link from empty block:1 to empty block:2\
-, with exitcase {}".format(ast.dump(condition)))
+        self.assertEqual(
+            repr(link),
+            "link from empty block:1 to empty block:2\
+, with exitcase {}".format(
+                ast.dump(condition)
+            ),
+        )
 
     def test_get_exitcase(self):
         block1 = Block(1)
@@ -99,22 +109,27 @@ class TestLink(unittest.TestCase):
 
 
 class TestCFG(unittest.TestCase):
+    """[summary]
+
+    Args:
+        unittest ([type]): [description]
+    """
 
     def test_instanciation(self):
         with self.assertRaises(AssertionError):
             CFG(2, False)  # Name of a CFG must be a string.
-            CFG('cfg', 2)  # Async argument must be a boolean.
+            CFG("cfg", 2)  # Async argument must be a boolean.
 
-        cfg = CFG('cfg', False)
-        self.assertEqual(cfg.name, 'cfg')
+        cfg = CFG("cfg", False)
+        self.assertEqual(cfg.name, "cfg")
         self.assertFalse(cfg.asynchr)
         self.assertEqual(cfg.entryblock, None)
         self.assertEqual(cfg.finalblocks, [])
         self.assertEqual(cfg.functioncfgs, {})
 
     def test_str_representation(self):
-        cfg = CFG('cfg', False)
-        self.assertEqual(str(cfg), 'CFG for cfg')
+        cfg = CFG("cfg", False)
+        self.assertEqual(str(cfg), "CFG for cfg")
 
     def test_iter(self):
         src = """\
@@ -130,7 +145,7 @@ def fib():
             "a, b = 0, 1\n",
             "while True:\n",
             "yield a\n",
-            "a, b = b, a + b\n"
+            "a, b = b, a + b\n",
         ]
         for actual_block, expected_src in zip(cfg, expected_block_sources):
             self.assertEqual(actual_block.get_source(), expected_src)
@@ -154,11 +169,9 @@ def foo():
             "def foo():...\n",
             "i = 0\n",
             "while True:\n",
-            "i += 1\n"
-            "if i == 3:\n",
+            "i += 1\n" "if i == 3:\n",
             "for j in range(3):\n",
-            "i += j\n"
-            "if j == 2:\n",
+            "i += j\n" "if j == 2:\n",
             "return i\n",
             "",
         ]
@@ -185,10 +198,11 @@ def foo():
             "i += 1\n",
             "for j in range(3):\n",
             "i += j\n",
-            "return i\n"
+            "return i\n",
         ]
         for actual_block, expected_src in zip(cfg, expected_block_sources):
             self.assertEqual(actual_block.get_source(), expected_src)
+
 
 if __name__ == "__main__":
     unittest.main()

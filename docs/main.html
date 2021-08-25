@@ -1,0 +1,1805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>main API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>main</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import glob
+import os
+import sys
+from collections import deque
+from copy import deepcopy
+
+import numpy as np
+import torch
+import torch.nn as nn
+import yaml
+import yamlordereddictloader
+from torchvision import models
+from yaml import dump
+
+from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
+from generator import *
+from generator import Generator, get_mem_props
+from ir.handlers import handlers
+from ir.trace import get_backprop_memory, trace
+from scheduling import Scheduling
+from utils.visualizer import *
+from utils.visualizer import (
+    bandwidth_bar_graph,
+    cycles_bar_graph,
+    mem_util_bar_graph,
+    plot_gradients,
+)
+
+####################################
+
+
+def run_mapping(scheduler, mapping, graph):
+    if mapping == &#34;asap&#34;:
+        scheduler.run_asap(graph)
+    elif mapping == &#34;nn_dataflow&#34;:
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == &#34;reuse_full&#34;:
+        scheduler.run_reuse_full(graph)
+    elif mapping == &#34;reuse_leakage&#34;:
+        scheduler.run_reuse_leakage(graph)
+
+
+####################################
+def design_tech_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file=&#34;default.yaml&#34;,
+    stats_file=&#34;logs/stats.txt&#34;,
+):
+    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    num_iterations = 50
+    for graph in graph_set:
+        generator = Generator()
+        scheduler = Scheduling(stats_file=stats_file)
+        scheduler.run_asap(graph)
+        in_time, in_energy, design, tech, in_area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        scheduler = Scheduling(stats_file=stats_file)
+        (&#34;======Optimizing Design and Connectivity=========&#34;)
+        i = 0
+        while True:
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), _stats
+            )
+            if (
+                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                break
+            # (area / in_area)
+            config = generator.backward_pass_design(scheduler)
+            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+            i += 1
+
+        (in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
+        print(&#34;===============Optimizing Technology=============&#34;)
+        for j in range(10):
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+            config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+            generator.writeconfig(config, str(j + i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+        print(in_time[0] / time[0], in_energy[0] / energy[0])
+    return time, energy, area
+
+
+def design_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file=&#34;default.yaml&#34;,
+    stats_file=&#34;logs/stats.txt&#34;,
+):
+    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design Only]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+
+    time_list = []
+    energy_list = []
+    design_list = []
+    tech_list = []
+    num_iterations = 50
+    for graph in graph_set:
+
+        # (
+        #     read_bw_req,
+        #     write_bw_req,
+        #     read_bw_actual,
+        #     write_bw_actual,
+        #     cycles,
+        #     free_cycles,
+        # ) = scheduler.run_asap(graph)
+        # read_bw_limit, write_bw_limit = (
+        #     scheduler.mem_read_bw[scheduler.mle - 1],
+        #     scheduler.mem_write_bw[scheduler.mle - 1],
+        # )
+        #         bandwidth_bar_graph(&#34;read_full.png&#34;, read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
+        #         cycles_bar_graph(&#34;cycles.png&#34;, cycles, free_cycles, graph.nodes)
+        #         mem_util_bar_graph(&#34;mem_util.png&#34;,scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        generator = Generator()
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        scheduler.run_asap(graph)
+        in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        i = 0
+        print(&#34;======Optimizing Design=========&#34;)
+        while True:
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+            if (
+                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                break
+            # print(area / in_area)
+            config = generator.backward_pass_design(scheduler)
+            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+            time_list.append(time)
+            energy_list.append(energy)
+            design_list.append(design)
+            i += 1
+        print(
+            &#34;Faster : &#34;,
+            in_time[0] / time[0],
+            &#34;Energy Improvement : &#34;,
+            in_energy[0] / energy[0],
+            &#34;Area Budget : &#34;,
+            in_area / area,
+        )
+
+    # return time, energy, area
+    return time_list, energy_list, design_list, area
+
+
+def perf(
+    graph, backprop, print_stats, filename, mapping=&#34;nn_dataflow&#34;, *args, **kwargs
+):
+    scheduler = Scheduling(hwfile=filename)
+    if mapping == &#34;asap&#34;:
+        scheduler.run_asap(graph)
+    elif mapping == &#34;nn_dataflow&#34;:
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == &#34;reuse_full&#34;:
+        scheduler.run_reuse_full(graph)
+    elif mapping == &#34;reuse_leakage&#34;:
+        scheduler.run_reuse_leakage(graph)
+    generator = Generator()
+    in_time, in_energy, design, tech, area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    return in_time, in_energy, area
+
+
+def all_design_updates(graph, backprop):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    # ax2 = ax.twinx()
+    base_dir = &#34;figures/&#34;
+    design_list = []
+    design_names = []
+    time_list = []
+    energy_list = []
+    scheduler = Scheduling()
+    scheduler.run_asap(graph)
+    generator = Generator()
+    print_stats = True
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    for i in range(num_iterations):
+        config = generator.backward_pass_design(scheduler)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        design_list.append(design)
+        time_list.append(time)
+        energy_list.append(energy)
+    design_list = np.array(design_list)
+    time_list = np.array(time_list)
+    energy_list = np.array(energy_list)
+    for i in range(len(in_design)):
+        ax.plot(design_list[:, i] / in_design[i], label=design_names[i])
+    ax.plot(time_list[:, 0] / in_time[0], label=&#34;Execution Time&#34;)
+    ax.plot(energy_list[:, 0] / in_energy[0], label=&#34;Energy Consumption&#34;)
+
+
+def all_tech_updates(graph, backprop):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): [description]
+    &#34;&#34;&#34;
+    fig, ax = plt.subplots(figsize=(10, 10))
+    # ax2 = ax.twinx()
+    tech_names = []
+    tech_list = []
+    time_list = []
+    energy_list = []
+    base_dir = &#34;figures/&#34;
+    scheduler = Scheduling()
+    scheduler.run_asap(graph)
+    generator = Generator()
+    print_stats = True
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    for i in range(num_iterations):
+        config = generator.backward_pass_design(scheduler)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+    for i in range(10):
+        config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        time_list.append(time)
+        energy_list.append(energy)
+        tech_list.append(tech)
+    time_list = np.array(time_list)
+    energy_list = np.array(energy_list)
+    tech_list = np.array(tech_list)
+
+    for i in len(in_tech):
+        ax.plot(tech_list[:, i] / in_tech[i], label=tech_names[i])
+    ax.plot(time_list[:, 0] / in_time[0], label=&#34;Execution Time&#34;)
+    ax.plot(energy_list[:, 0] / in_energy[0], label=&#34;Energy Consumption&#34;)
+
+
+# Fix Everything in Architecture and Just Sweep Memory Connectivity
+def s_mem_c_same_arch(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
+):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph_list):
+        time_list = []
+        energy_list = []
+        for j in range(1, 4000, 4):
+            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            if names[en] == &#34;SSD&#34;:
+                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            in_time, in_energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        if plot == &#34;time&#34;:
+            if names[en] == &#34;DLRM&#34;:
+                time_list = np.array(time_list) * 50
+            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
+        elif plot == &#34;energy&#34;:
+            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
+        else:
+            # plot edp
+            ax.plot(
+                [x * energy_list[enum] for enum, x in enumerate(time_list)],
+                &#34;o-&#34;,
+                label=names[en],
+            )
+    # ax.plot()
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    xposition = [1, 8, 256, 25600]
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    for i, xc in enumerate(xposition):
+        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(
+        &#34;figures/connectivity_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()
+
+
+def s_mem_area_pitch(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
+):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph_list):
+        time_list = []
+        energy_list = []
+        for j in range(1, 4000, 4):
+            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            if names[en] == &#34;SSD&#34;:
+                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            in_time, in_energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        if plot == &#34;time&#34;:
+            if names[en] == &#34;DLRM&#34;:
+                time_list = np.array(time_list) * 50
+            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
+        elif plot == &#34;energy&#34;:
+            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
+        else:
+            # plot edp
+            ax.plot(
+                [x * energy_list[enum] for enum, x in enumerate(time_list)],
+                &#34;o-&#34;,
+                label=names[en],
+            )
+    # ax.plot()
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    xposition = [1, 8, 256, 25600]
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    for i, xc in enumerate(xposition):
+        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(
+        &#34;figures/pitch_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()
+
+
+def sweep_area(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
+):
+    total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    area_names = [&#34;Edge&#34;, &#34;Mid&#34;, &#34;Cloud&#34;, &#34;Giant&#34;, &#34;Wafer-Scale&#34;]
+    markers_plot = [&#34;o&#34;, &#34;+&#34;, &#34;x&#34;, &#34;o&#34;]
+    colors = {
+        &#34;Resnet18&#34;: &#34;r&#34;,
+        &#34;SLAM&#34;: &#34;mediumseagreen&#34;,
+        &#34;SSD&#34;: &#34;g&#34;,
+        &#34;BERT&#34;: &#34;k&#34;,
+        &#34;Genomics&#34;: &#34;c&#34;,
+        &#34;RNN&#34;: &#34;aquamarine&#34;,
+        &#34;PageRank&#34;: &#34;y&#34;,
+        &#34;DLRM&#34;: &#34;m&#34;,
+        &#34;Resnet50&#34;: &#34;b&#34;,
+    }
+    precision = [32, 8, 4]
+    precision_density_factor = [1, 16, 64]
+    precision_speed_factor = [1, 4, 8]
+    precision_power_factor = [1, 1 / (0.7), 1 / 0.7]
+    precision_size_factor = [1, 4, 8]
+    node_name = [28, 7, 3]
+    node_speed = [1, 2, 3]
+    node_density = [1, 6, 14]
+    node_energy = [1, 0.42, 0.24]
+    m = 2
+    node = 3
+
+    for en, graph in enumerate(graph_list):
+        p = 0
+        if names[en] in [&#34;Resnet18&#34;, &#34;Resnet50&#34;, &#34;SSD&#34;]:
+            p = 2
+        temp = 1
+
+        # for p in range(3):
+        print(names[en], p)
+        for area_budget in range(area_range):
+            if names[en] in [&#34;DLRM&#34;, &#34;PageRank&#34;, &#34;Genomics&#34;]:
+                area_budget = 2
+            energy_list = []
+            energy_list2 = []
+            # connectivity = 2*j*32
+            for m, node in enumerate(node_name):
+                pitch_list = []
+                pitch_list2 = []
+                if names[en] == &#34;PageRank&#34;:
+                    pitch_list = [
+                        10000000,
+                        1300000,
+                        400000,
+                        140000,
+                        70000,
+                        20000,
+                        8000,
+                    ]
+                elif names[en] == &#34;Genomics&#34;:
+                    pitch_list = [
+                        10000000,
+                        900000,
+                        400000,
+                        200000,
+                        100000,
+                        70000,
+                        50000,
+                    ]
+                elif names[en] == &#34;SLAM&#34;:
+                    pitch_list = [
+                        10000000,
+                        1600000,
+                        600000,
+                        180000,
+                        90000,
+                        40000,
+                        20000,
+                    ]
+                else:
+                    for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
+                        percent_time_list = []
+                        percent_time_list2 = []
+                        for percent in range(5, 95, 10):
+
+                            connectivity_area = (
+                                percent * 1000 * 10 ** area_budget / node_density[m]
+                            )
+                            j = (
+                                connectivity_area
+                                / (2 * 32 * pitch ** 2)
+                                / total_mem[en]
+                            )
+                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+                            generator = Generator()
+                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                                10 ** area_budget * precision_density_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                                node_speed[m] * precision_speed_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][
+                                &#34;per_op_energy&#34;
+                            ] *= node_energy[m]
+
+                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                                10 ** area_budget * precision_size_factor[p]
+                            )
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+                            scheduler.complete_config(scheduler.config)
+                            scheduler.run_asap(graph)
+                            (
+                                in_time,
+                                in_energy,
+                                design,
+                                tech,
+                                area,
+                            ) = generator.save_stats(
+                                scheduler, backprop, get_backprop_memory(graph.nodes)
+                            )
+                            new_area = area + connectivity_area
+                            percent_time_list2.append(in_time[0])
+                            energy_list2.append(in_energy[0])
+
+                            j2 = connectivity_area / (2 * 32 * pitch ** 2)
+                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+                            generator = Generator()
+                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                                10 ** area_budget * precision_density_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                                node_speed[m] * precision_speed_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][
+                                &#34;per_op_energy&#34;
+                            ] *= node_energy[m]
+
+                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                                10 ** area_budget * precision_size_factor[p]
+                            )
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
+                            scheduler.complete_config(scheduler.config)
+                            scheduler.run_asap(graph)
+                            (
+                                in_time,
+                                in_energy,
+                                design,
+                                tech,
+                                area,
+                            ) = generator.save_stats(
+                                scheduler, backprop, get_backprop_memory(graph.nodes)
+                            )
+                            new_area = area / 17 + connectivity_area
+                            percent_time_list.append(in_time[0])
+                            energy_list.append(in_energy[0])
+
+                        pitch_list.append(
+                            min(percent_time_list)
+                            * node_energy[m]
+                            * 1
+                            / (precision_power_factor[p] * 0.3)
+                        )
+                        pitch_list2.append(
+                            min(percent_time_list2)
+                            * node_energy[m]
+                            * 1
+                            / (precision_power_factor[p] * 0.3)
+                        )
+                    # np.arange(2,8000,8)
+                    # temp = pitch_list2[0]
+                    # for i in range(len(pitch_list)):
+                    #     pitch_list2[i] = temp / pitch_list2[i]
+                    # print(pitch_list)
+
+                if m == 0:
+                    # if area_budget == 0:
+                    temp = pitch_list[0]
+                for i in range(len(pitch_list)):
+                    pitch_list[i] = temp / pitch_list[i]
+                if plot == &#34;time&#34;:
+                    # ax.plot([&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;],pitch_list, color = colors[en],marker=markers_plot[area_budget], label=area_names[area_budget]+names[en] + &#34;precision : &#34;+ str(precision))
+                    if precision[p] == 32:
+                        # labels = names[en] + &#34;:&#34; + str(node) + &#34;nm&#34;
+                        # + &#34;:fp32&#34;
+                        labels = names[en]
+                        # labels = names[en] + &#34;:&#34; + area_names[area_budget]
+                        # labels = names[en] + &#34;:&#34; &#34;:Uniform&#34;
+                        # # # :fp32
+                        # labels2 = names[en] + &#34;:Non-Uniform&#34;
+                        # :fp32
+                    else:
+                        # labels = names[en] + &#34;:&#34; + str(node) + &#34;nm&#34;
+                        labels = names[en]
+                        # labels = names[en] + &#34;:&#34; + area_names[area_budget]
+                        # # &#34;:int&#34; + str(precision[p])
+                        # labels = names[en] + &#34;:Uniform&#34;
+
+                        # labels2 = names[en] + &#34;:Non-Uniform&#34;
+                        # &#34;:int&#34; + str(precision[p])
+                        # labels = (
+                        #     names[en]
+                        #     + &#34;:&#34;
+                        #     + str(node)
+                        #     + &#34;nm&#34;
+                        #     + &#34;:&#34;
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        # )
+                        # labels = (
+                        #     names[en]
+                        #     + &#34;:&#34;
+                        #     + area_names[area_budget]
+                        #     + &#34;:&#34;
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        # )
+                        # labels2 = (
+                        #     area_names[area_budget]
+                        #     + names[en]
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        #     + &#34; &#34;
+                        #     + str(node)
+                        #     + &#34;nm&#34;
+                        #     + &#34;NU&#34;
+                        # )
+                    # ax.bar(
+                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget,
+                    #     pitch_list,
+                    #     width=0.4,
+                    #     color=colors[en],
+                    #     hatch=markers_plot[area_budget],
+                    #     label=labels,
+                    # )
+
+                    # ax.bar(
+                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget + 0.5,
+                    #     pitch_list2,
+                    #     width=0.4,
+                    #     color=colors[en],
+                    #     hatch=&#34;+&#34;,
+                    #     label=labels2,
+                    # )
+                    ax.plot(
+                        [10, 5, 3, 2, 1, 0.5, 0.1],
+                        pitch_list,
+                        color=colors[names[en]],
+                        marker=markers_plot[m],
+                        label=labels,
+                        linewidth=2,
+                    )
+                    # ax.plot(
+                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                    #     pitch_list,
+                    #     color=colors[names[en]],
+                    #     marker=markers_plot[area_budget],
+                    #     label=labels,
+                    #     linewidth=2,
+                    # )
+                    # ax.plot(
+                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                    #     pitch_list2,
+                    #     color=colors[names[en]],
+                    #     marker=markers_plot[m + 1],
+                    #     label=labels2,
+                    #     linewidh=2,
+                    # )
+                    print(pitch_list)
+
+                    # ax.plot(
+                    #     pitch_list,
+                    #     &#34;o-&#34;,
+                    #     color=colors[en],
+                    #     marker=markers_plot[m],
+                    #     label=labels,
+                    # )
+                    # [&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;]
+                    # ax.plot([&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;],pitch_list, color = colors[en],, label=area_names[area_budget]+names[en] + &#34; fp32&#34;)
+    ax.set_xlabel(&#34;Vertical Interconnect Pitch (in um)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(
+        &#34;EDP Benefit \n (Non-Uniform, 10um Pitch = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;
+    )
+    # ax.set_ylabel(&#34;EDP Benefit (10um = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    # ax.set_ylabel(&#34;EDP Benefit \n (Edge, 10um = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    legend_properties = {&#34;weight&#34;: &#34;bold&#34;}
+    ax.legend(fontsize=16)
+    xposition = [1, 8, 256, 25600]
+    ax.set_xlim(10, 0.1)
+
+    # ax.set_xticks(3.8*np.arange(7)+len(graph_list)*0.1+0.6*area_range)
+    ax.set_xticklabels([&#34;10&#34;, &#34;1&#34;, &#34;0.1&#34;])
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    # for i, xc in enumerate(xposition):
+    #     plt.axvline(x=xc, label = names[i], color = colors[i], linestyle=&#39;--&#39;)
+    plt.grid(b=True, which=&#34;major&#34;, axis=&#34;y&#34;, linewidth=2)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+
+    plt.savefig(
+        &#34;figures/area_sweep_nodes&#34; + str(plot) + str(area_range) + &#34;nodes.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()
+
+
+def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
+    fig, ax = plt.subplots(figsize=(6, 6))
+    total_mem = []
+    for en, graph in enumerate(graph_list):
+        if names[en] in [&#34;PageRank&#34;]:
+            total_mem.append(11.2)
+            continue
+        if names[en] in [&#34;SLAM&#34;]:
+            total_mem.append(12)
+            continue
+        if names[en] == &#34;Genomics&#34;:
+            total_mem.append(6.1)
+            continue
+        if names[en] == &#34;DLRM&#34;:
+            factor = 100000
+        elif names[en] == &#34;BERT&#34;:
+            factor = 20000000
+        elif names[en] == &#34;RNN&#34;:
+            factor = 20000
+        else:
+            factor = 2000000
+        weights = 0
+        for node in graph.nodes:
+            weights += node.weights
+        print(weights)
+        total_mem.append(weights / factor)
+    print(total_mem)
+    ax.bar(names, total_mem, width=0.3)
+    rects = ax.patches
+
+    # labels = [f&#34;label{i}&#34; for i in range(len(rects))]
+    # labels = [
+    #     &#34;2.5mm^2&#34;,
+    #     &#34;2.5mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;250mm^2&#34;,
+    #     &#34;500mm^2&#34;,
+    # ]
+    # for rect, label in zip(rects, labels):
+    #     height = rect.get_height()
+    #     ax.text(
+    #         rect.get_x() + rect.get_width() / 2,
+    #         height,
+    #         label,
+    #         ha=&#34;center&#34;,
+    #         va=&#34;bottom&#34;,
+    #         fontweight=&#34;bold&#34;,
+    #         # rotation=10,
+    #     )
+
+    #     time_list, energy_list, design_list, area = design_runner([graph], backprop, file=&#34;illusion.yaml&#34;)
+    #     # print(&#34;design list is &#34;, np.array(design_list)[:,1])
+    #     print(&#34;============Area is ===========&#34;, area)
+    #     T1 = np.array(design_list)[:,1]
+    #     T2 = [int(x) for x in T1]
+    #     # print(T2)
+    #     ax.plot(T2, &#34;o-&#34;, label=names[en])
+
+    # ax.set_ylabel(&#34;No. of Memory Layers Req&#34;, fontsize=16, fontweight=&#34;bold&#34;)
+    # plt.rc(&#34;xtick&#34;, labelsize=12)  # fontsize of the tick labels
+    # plt.rc(&#34;ytick&#34;, labelsize=12)
+    # plt.xticks(rotation=80)
+    # # ax.set_yticklabels([2,4,6])
+    # fig.tight_layout()
+    # plt.savefig(&#34;figures/memory_cap_req.png&#34;, bbox_inches=&#34;tight&#34;)
+    # plt.show()
+    return total_mem
+
+
+# Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
+def s_size_c_joint(graph, backprop):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph):
+        time_list = []
+        energy_list = []
+        for j in range(1, 100):
+            scheduler = Scheduling()
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            # scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
+            in_time, in_energy, design, tech = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        ax.plot(energy_list, &#34;o-&#34;)
+        ax.plot(time_list, &#34;o-&#34;)
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;Energy Consumption&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(&#34;figures/connectivity_sweep_energy.png&#34;, bbox_inches=&#34;tight&#34;)
+    plt.show()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="main.all_design_updates"><code class="name flex">
+<span>def <span class="ident">all_design_updates</span></span>(<span>graph, backprop)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def all_design_updates(graph, backprop):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    # ax2 = ax.twinx()
+    base_dir = &#34;figures/&#34;
+    design_list = []
+    design_names = []
+    time_list = []
+    energy_list = []
+    scheduler = Scheduling()
+    scheduler.run_asap(graph)
+    generator = Generator()
+    print_stats = True
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    for i in range(num_iterations):
+        config = generator.backward_pass_design(scheduler)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        design_list.append(design)
+        time_list.append(time)
+        energy_list.append(energy)
+    design_list = np.array(design_list)
+    time_list = np.array(time_list)
+    energy_list = np.array(energy_list)
+    for i in range(len(in_design)):
+        ax.plot(design_list[:, i] / in_design[i], label=design_names[i])
+    ax.plot(time_list[:, 0] / in_time[0], label=&#34;Execution Time&#34;)
+    ax.plot(energy_list[:, 0] / in_energy[0], label=&#34;Energy Consumption&#34;)</code></pre>
+</details>
+</dd>
+<dt id="main.all_tech_updates"><code class="name flex">
+<span>def <span class="ident">all_tech_updates</span></span>(<span>graph, backprop)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[summary]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def all_tech_updates(graph, backprop):
+    &#34;&#34;&#34;[summary]
+
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): [description]
+    &#34;&#34;&#34;
+    fig, ax = plt.subplots(figsize=(10, 10))
+    # ax2 = ax.twinx()
+    tech_names = []
+    tech_list = []
+    time_list = []
+    energy_list = []
+    base_dir = &#34;figures/&#34;
+    scheduler = Scheduling()
+    scheduler.run_asap(graph)
+    generator = Generator()
+    print_stats = True
+    in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    for i in range(num_iterations):
+        config = generator.backward_pass_design(scheduler)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+    for i in range(10):
+        config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+        generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+        scheduler.complete_config(config)
+        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        time, energy, design, tech, area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        time_list.append(time)
+        energy_list.append(energy)
+        tech_list.append(tech)
+    time_list = np.array(time_list)
+    energy_list = np.array(energy_list)
+    tech_list = np.array(tech_list)
+
+    for i in len(in_tech):
+        ax.plot(tech_list[:, i] / in_tech[i], label=tech_names[i])
+    ax.plot(time_list[:, 0] / in_time[0], label=&#34;Execution Time&#34;)
+    ax.plot(energy_list[:, 0] / in_energy[0], label=&#34;Energy Consumption&#34;)</code></pre>
+</details>
+</dd>
+<dt id="main.design_runner"><code class="name flex">
+<span>def <span class="ident">design_runner</span></span>(<span>graph_set, backprop=False, print_stats=False, file='default.yaml', stats_file='logs/stats.txt')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Runs the Input Graph : Optimizes Design Only]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_set</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+<dt><strong><code>print_stats</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+<dt><strong><code>file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "default.yaml".</dd>
+<dt><strong><code>stats_file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "logs/stats.txt".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def design_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file=&#34;default.yaml&#34;,
+    stats_file=&#34;logs/stats.txt&#34;,
+):
+    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design Only]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+
+    time_list = []
+    energy_list = []
+    design_list = []
+    tech_list = []
+    num_iterations = 50
+    for graph in graph_set:
+
+        # (
+        #     read_bw_req,
+        #     write_bw_req,
+        #     read_bw_actual,
+        #     write_bw_actual,
+        #     cycles,
+        #     free_cycles,
+        # ) = scheduler.run_asap(graph)
+        # read_bw_limit, write_bw_limit = (
+        #     scheduler.mem_read_bw[scheduler.mle - 1],
+        #     scheduler.mem_write_bw[scheduler.mle - 1],
+        # )
+        #         bandwidth_bar_graph(&#34;read_full.png&#34;, read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
+        #         cycles_bar_graph(&#34;cycles.png&#34;, cycles, free_cycles, graph.nodes)
+        #         mem_util_bar_graph(&#34;mem_util.png&#34;,scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        generator = Generator()
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        scheduler.run_asap(graph)
+        in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        i = 0
+        print(&#34;======Optimizing Design=========&#34;)
+        while True:
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+            if (
+                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                break
+            # print(area / in_area)
+            config = generator.backward_pass_design(scheduler)
+            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+            time_list.append(time)
+            energy_list.append(energy)
+            design_list.append(design)
+            i += 1
+        print(
+            &#34;Faster : &#34;,
+            in_time[0] / time[0],
+            &#34;Energy Improvement : &#34;,
+            in_energy[0] / energy[0],
+            &#34;Area Budget : &#34;,
+            in_area / area,
+        )
+
+    # return time, energy, area
+    return time_list, energy_list, design_list, area</code></pre>
+</details>
+</dd>
+<dt id="main.design_tech_runner"><code class="name flex">
+<span>def <span class="ident">design_tech_runner</span></span>(<span>graph_set, backprop=False, print_stats=False, file='default.yaml', stats_file='logs/stats.txt')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>[Runs the Input Graph : Optimizes Design and Technology]</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_set</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+<dt><strong><code>print_stats</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to False.</dd>
+<dt><strong><code>file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "default.yaml".</dd>
+<dt><strong><code>stats_file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "logs/stats.txt".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def design_tech_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file=&#34;default.yaml&#34;,
+    stats_file=&#34;logs/stats.txt&#34;,
+):
+    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    num_iterations = 50
+    for graph in graph_set:
+        generator = Generator()
+        scheduler = Scheduling(stats_file=stats_file)
+        scheduler.run_asap(graph)
+        in_time, in_energy, design, tech, in_area = generator.save_stats(
+            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        scheduler = Scheduling(stats_file=stats_file)
+        (&#34;======Optimizing Design and Connectivity=========&#34;)
+        i = 0
+        while True:
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), _stats
+            )
+            if (
+                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
+                or scheduler.force_connectivity
+            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                break
+            # (area / in_area)
+            config = generator.backward_pass_design(scheduler)
+            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+            i += 1
+
+        (in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
+        print(&#34;===============Optimizing Technology=============&#34;)
+        for j in range(10):
+            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+            config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+            generator.writeconfig(config, str(j + i) + &#34;hw.yaml&#34;)
+            scheduler.complete_config(config)
+        print(in_time[0] / time[0], in_energy[0] / energy[0])
+    return time, energy, area</code></pre>
+</details>
+</dd>
+<dt id="main.perf"><code class="name flex">
+<span>def <span class="ident">perf</span></span>(<span>graph, backprop, print_stats, filename, mapping='nn_dataflow', *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def perf(
+    graph, backprop, print_stats, filename, mapping=&#34;nn_dataflow&#34;, *args, **kwargs
+):
+    scheduler = Scheduling(hwfile=filename)
+    if mapping == &#34;asap&#34;:
+        scheduler.run_asap(graph)
+    elif mapping == &#34;nn_dataflow&#34;:
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == &#34;reuse_full&#34;:
+        scheduler.run_reuse_full(graph)
+    elif mapping == &#34;reuse_leakage&#34;:
+        scheduler.run_reuse_leakage(graph)
+    generator = Generator()
+    in_time, in_energy, design, tech, area = generator.save_stats(
+        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    return in_time, in_energy, area</code></pre>
+</details>
+</dd>
+<dt id="main.run_mapping"><code class="name flex">
+<span>def <span class="ident">run_mapping</span></span>(<span>scheduler, mapping, graph)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_mapping(scheduler, mapping, graph):
+    if mapping == &#34;asap&#34;:
+        scheduler.run_asap(graph)
+    elif mapping == &#34;nn_dataflow&#34;:
+        scheduler.run_nn_dataflow(graph)
+    elif mapping == &#34;reuse_full&#34;:
+        scheduler.run_reuse_full(graph)
+    elif mapping == &#34;reuse_leakage&#34;:
+        scheduler.run_reuse_leakage(graph)</code></pre>
+</details>
+</dd>
+<dt id="main.s_mem_area_pitch"><code class="name flex">
+<span>def <span class="ident">s_mem_area_pitch</span></span>(<span>graph_list, backprop, names=None, plot='time', area_budget=2.5, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s_mem_area_pitch(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
+):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph_list):
+        time_list = []
+        energy_list = []
+        for j in range(1, 4000, 4):
+            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            if names[en] == &#34;SSD&#34;:
+                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            in_time, in_energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        if plot == &#34;time&#34;:
+            if names[en] == &#34;DLRM&#34;:
+                time_list = np.array(time_list) * 50
+            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
+        elif plot == &#34;energy&#34;:
+            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
+        else:
+            # plot edp
+            ax.plot(
+                [x * energy_list[enum] for enum, x in enumerate(time_list)],
+                &#34;o-&#34;,
+                label=names[en],
+            )
+    # ax.plot()
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    xposition = [1, 8, 256, 25600]
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    for i, xc in enumerate(xposition):
+        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(
+        &#34;figures/pitch_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="main.s_mem_c_same_arch"><code class="name flex">
+<span>def <span class="ident">s_mem_c_same_arch</span></span>(<span>graph_list, backprop, names=None, plot='time', area_budget=2.5, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s_mem_c_same_arch(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
+):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph_list):
+        time_list = []
+        energy_list = []
+        for j in range(1, 4000, 4):
+            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            if names[en] == &#34;SSD&#34;:
+                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            in_time, in_energy, design, tech, area = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        if plot == &#34;time&#34;:
+            if names[en] == &#34;DLRM&#34;:
+                time_list = np.array(time_list) * 50
+            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
+        elif plot == &#34;energy&#34;:
+            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
+        else:
+            # plot edp
+            ax.plot(
+                [x * energy_list[enum] for enum, x in enumerate(time_list)],
+                &#34;o-&#34;,
+                label=names[en],
+            )
+    # ax.plot()
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    xposition = [1, 8, 256, 25600]
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    for i, xc in enumerate(xposition):
+        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(
+        &#34;figures/connectivity_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="main.s_size_c_joint"><code class="name flex">
+<span>def <span class="ident">s_size_c_joint</span></span>(<span>graph, backprop)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s_size_c_joint(graph, backprop):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    for en, graph in enumerate(graph):
+        time_list = []
+        energy_list = []
+        for j in range(1, 100):
+            scheduler = Scheduling()
+            generator = Generator()
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            scheduler.complete_config(scheduler.config)
+            scheduler.run_asap(graph)
+            # scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
+            in_time, in_energy, design, tech = generator.save_stats(
+                scheduler, backprop, get_backprop_memory(graph.nodes)
+            )
+            time_list.append(in_time[0])
+            energy_list.append(in_energy[0])
+        ax.plot(energy_list, &#34;o-&#34;)
+        ax.plot(time_list, &#34;o-&#34;)
+    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;Energy Consumption&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    ax.legend(fontsize=20)
+    plt.yscale(&#34;log&#34;)
+    fig.tight_layout()
+    plt.savefig(&#34;figures/connectivity_sweep_energy.png&#34;, bbox_inches=&#34;tight&#34;)
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="main.show_memory_capacity_req"><code class="name flex">
+<span>def <span class="ident">show_memory_capacity_req</span></span>(<span>graph_list, backprop, names=None, plot='time')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
+    fig, ax = plt.subplots(figsize=(6, 6))
+    total_mem = []
+    for en, graph in enumerate(graph_list):
+        if names[en] in [&#34;PageRank&#34;]:
+            total_mem.append(11.2)
+            continue
+        if names[en] in [&#34;SLAM&#34;]:
+            total_mem.append(12)
+            continue
+        if names[en] == &#34;Genomics&#34;:
+            total_mem.append(6.1)
+            continue
+        if names[en] == &#34;DLRM&#34;:
+            factor = 100000
+        elif names[en] == &#34;BERT&#34;:
+            factor = 20000000
+        elif names[en] == &#34;RNN&#34;:
+            factor = 20000
+        else:
+            factor = 2000000
+        weights = 0
+        for node in graph.nodes:
+            weights += node.weights
+        print(weights)
+        total_mem.append(weights / factor)
+    print(total_mem)
+    ax.bar(names, total_mem, width=0.3)
+    rects = ax.patches
+
+    # labels = [f&#34;label{i}&#34; for i in range(len(rects))]
+    # labels = [
+    #     &#34;2.5mm^2&#34;,
+    #     &#34;2.5mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;25mm^2&#34;,
+    #     &#34;250mm^2&#34;,
+    #     &#34;500mm^2&#34;,
+    # ]
+    # for rect, label in zip(rects, labels):
+    #     height = rect.get_height()
+    #     ax.text(
+    #         rect.get_x() + rect.get_width() / 2,
+    #         height,
+    #         label,
+    #         ha=&#34;center&#34;,
+    #         va=&#34;bottom&#34;,
+    #         fontweight=&#34;bold&#34;,
+    #         # rotation=10,
+    #     )
+
+    #     time_list, energy_list, design_list, area = design_runner([graph], backprop, file=&#34;illusion.yaml&#34;)
+    #     # print(&#34;design list is &#34;, np.array(design_list)[:,1])
+    #     print(&#34;============Area is ===========&#34;, area)
+    #     T1 = np.array(design_list)[:,1]
+    #     T2 = [int(x) for x in T1]
+    #     # print(T2)
+    #     ax.plot(T2, &#34;o-&#34;, label=names[en])
+
+    # ax.set_ylabel(&#34;No. of Memory Layers Req&#34;, fontsize=16, fontweight=&#34;bold&#34;)
+    # plt.rc(&#34;xtick&#34;, labelsize=12)  # fontsize of the tick labels
+    # plt.rc(&#34;ytick&#34;, labelsize=12)
+    # plt.xticks(rotation=80)
+    # # ax.set_yticklabels([2,4,6])
+    # fig.tight_layout()
+    # plt.savefig(&#34;figures/memory_cap_req.png&#34;, bbox_inches=&#34;tight&#34;)
+    # plt.show()
+    return total_mem</code></pre>
+</details>
+</dd>
+<dt id="main.sweep_area"><code class="name flex">
+<span>def <span class="ident">sweep_area</span></span>(<span>graph_list, backprop, names=None, plot='time', area_range=1, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sweep_area(
+    graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
+):
+    total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    area_names = [&#34;Edge&#34;, &#34;Mid&#34;, &#34;Cloud&#34;, &#34;Giant&#34;, &#34;Wafer-Scale&#34;]
+    markers_plot = [&#34;o&#34;, &#34;+&#34;, &#34;x&#34;, &#34;o&#34;]
+    colors = {
+        &#34;Resnet18&#34;: &#34;r&#34;,
+        &#34;SLAM&#34;: &#34;mediumseagreen&#34;,
+        &#34;SSD&#34;: &#34;g&#34;,
+        &#34;BERT&#34;: &#34;k&#34;,
+        &#34;Genomics&#34;: &#34;c&#34;,
+        &#34;RNN&#34;: &#34;aquamarine&#34;,
+        &#34;PageRank&#34;: &#34;y&#34;,
+        &#34;DLRM&#34;: &#34;m&#34;,
+        &#34;Resnet50&#34;: &#34;b&#34;,
+    }
+    precision = [32, 8, 4]
+    precision_density_factor = [1, 16, 64]
+    precision_speed_factor = [1, 4, 8]
+    precision_power_factor = [1, 1 / (0.7), 1 / 0.7]
+    precision_size_factor = [1, 4, 8]
+    node_name = [28, 7, 3]
+    node_speed = [1, 2, 3]
+    node_density = [1, 6, 14]
+    node_energy = [1, 0.42, 0.24]
+    m = 2
+    node = 3
+
+    for en, graph in enumerate(graph_list):
+        p = 0
+        if names[en] in [&#34;Resnet18&#34;, &#34;Resnet50&#34;, &#34;SSD&#34;]:
+            p = 2
+        temp = 1
+
+        # for p in range(3):
+        print(names[en], p)
+        for area_budget in range(area_range):
+            if names[en] in [&#34;DLRM&#34;, &#34;PageRank&#34;, &#34;Genomics&#34;]:
+                area_budget = 2
+            energy_list = []
+            energy_list2 = []
+            # connectivity = 2*j*32
+            for m, node in enumerate(node_name):
+                pitch_list = []
+                pitch_list2 = []
+                if names[en] == &#34;PageRank&#34;:
+                    pitch_list = [
+                        10000000,
+                        1300000,
+                        400000,
+                        140000,
+                        70000,
+                        20000,
+                        8000,
+                    ]
+                elif names[en] == &#34;Genomics&#34;:
+                    pitch_list = [
+                        10000000,
+                        900000,
+                        400000,
+                        200000,
+                        100000,
+                        70000,
+                        50000,
+                    ]
+                elif names[en] == &#34;SLAM&#34;:
+                    pitch_list = [
+                        10000000,
+                        1600000,
+                        600000,
+                        180000,
+                        90000,
+                        40000,
+                        20000,
+                    ]
+                else:
+                    for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
+                        percent_time_list = []
+                        percent_time_list2 = []
+                        for percent in range(5, 95, 10):
+
+                            connectivity_area = (
+                                percent * 1000 * 10 ** area_budget / node_density[m]
+                            )
+                            j = (
+                                connectivity_area
+                                / (2 * 32 * pitch ** 2)
+                                / total_mem[en]
+                            )
+                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+                            generator = Generator()
+                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                                10 ** area_budget * precision_density_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                                node_speed[m] * precision_speed_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][
+                                &#34;per_op_energy&#34;
+                            ] *= node_energy[m]
+
+                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                                10 ** area_budget * precision_size_factor[p]
+                            )
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+                            scheduler.complete_config(scheduler.config)
+                            scheduler.run_asap(graph)
+                            (
+                                in_time,
+                                in_energy,
+                                design,
+                                tech,
+                                area,
+                            ) = generator.save_stats(
+                                scheduler, backprop, get_backprop_memory(graph.nodes)
+                            )
+                            new_area = area + connectivity_area
+                            percent_time_list2.append(in_time[0])
+                            energy_list2.append(in_energy[0])
+
+                            j2 = connectivity_area / (2 * 32 * pitch ** 2)
+                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+                            generator = Generator()
+                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                                10 ** area_budget * precision_density_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                                node_speed[m] * precision_speed_factor[p]
+                            )
+                            scheduler.config[&#34;mm_compute&#34;][
+                                &#34;per_op_energy&#34;
+                            ] *= node_energy[m]
+
+                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                                10 ** area_budget * precision_size_factor[p]
+                            )
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
+                            scheduler.complete_config(scheduler.config)
+                            scheduler.run_asap(graph)
+                            (
+                                in_time,
+                                in_energy,
+                                design,
+                                tech,
+                                area,
+                            ) = generator.save_stats(
+                                scheduler, backprop, get_backprop_memory(graph.nodes)
+                            )
+                            new_area = area / 17 + connectivity_area
+                            percent_time_list.append(in_time[0])
+                            energy_list.append(in_energy[0])
+
+                        pitch_list.append(
+                            min(percent_time_list)
+                            * node_energy[m]
+                            * 1
+                            / (precision_power_factor[p] * 0.3)
+                        )
+                        pitch_list2.append(
+                            min(percent_time_list2)
+                            * node_energy[m]
+                            * 1
+                            / (precision_power_factor[p] * 0.3)
+                        )
+                    # np.arange(2,8000,8)
+                    # temp = pitch_list2[0]
+                    # for i in range(len(pitch_list)):
+                    #     pitch_list2[i] = temp / pitch_list2[i]
+                    # print(pitch_list)
+
+                if m == 0:
+                    # if area_budget == 0:
+                    temp = pitch_list[0]
+                for i in range(len(pitch_list)):
+                    pitch_list[i] = temp / pitch_list[i]
+                if plot == &#34;time&#34;:
+                    # ax.plot([&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;],pitch_list, color = colors[en],marker=markers_plot[area_budget], label=area_names[area_budget]+names[en] + &#34;precision : &#34;+ str(precision))
+                    if precision[p] == 32:
+                        # labels = names[en] + &#34;:&#34; + str(node) + &#34;nm&#34;
+                        # + &#34;:fp32&#34;
+                        labels = names[en]
+                        # labels = names[en] + &#34;:&#34; + area_names[area_budget]
+                        # labels = names[en] + &#34;:&#34; &#34;:Uniform&#34;
+                        # # # :fp32
+                        # labels2 = names[en] + &#34;:Non-Uniform&#34;
+                        # :fp32
+                    else:
+                        # labels = names[en] + &#34;:&#34; + str(node) + &#34;nm&#34;
+                        labels = names[en]
+                        # labels = names[en] + &#34;:&#34; + area_names[area_budget]
+                        # # &#34;:int&#34; + str(precision[p])
+                        # labels = names[en] + &#34;:Uniform&#34;
+
+                        # labels2 = names[en] + &#34;:Non-Uniform&#34;
+                        # &#34;:int&#34; + str(precision[p])
+                        # labels = (
+                        #     names[en]
+                        #     + &#34;:&#34;
+                        #     + str(node)
+                        #     + &#34;nm&#34;
+                        #     + &#34;:&#34;
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        # )
+                        # labels = (
+                        #     names[en]
+                        #     + &#34;:&#34;
+                        #     + area_names[area_budget]
+                        #     + &#34;:&#34;
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        # )
+                        # labels2 = (
+                        #     area_names[area_budget]
+                        #     + names[en]
+                        #     + &#34;int&#34;
+                        #     + str(precision[p])
+                        #     + &#34; &#34;
+                        #     + str(node)
+                        #     + &#34;nm&#34;
+                        #     + &#34;NU&#34;
+                        # )
+                    # ax.bar(
+                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget,
+                    #     pitch_list,
+                    #     width=0.4,
+                    #     color=colors[en],
+                    #     hatch=markers_plot[area_budget],
+                    #     label=labels,
+                    # )
+
+                    # ax.bar(
+                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget + 0.5,
+                    #     pitch_list2,
+                    #     width=0.4,
+                    #     color=colors[en],
+                    #     hatch=&#34;+&#34;,
+                    #     label=labels2,
+                    # )
+                    ax.plot(
+                        [10, 5, 3, 2, 1, 0.5, 0.1],
+                        pitch_list,
+                        color=colors[names[en]],
+                        marker=markers_plot[m],
+                        label=labels,
+                        linewidth=2,
+                    )
+                    # ax.plot(
+                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                    #     pitch_list,
+                    #     color=colors[names[en]],
+                    #     marker=markers_plot[area_budget],
+                    #     label=labels,
+                    #     linewidth=2,
+                    # )
+                    # ax.plot(
+                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                    #     pitch_list2,
+                    #     color=colors[names[en]],
+                    #     marker=markers_plot[m + 1],
+                    #     label=labels2,
+                    #     linewidh=2,
+                    # )
+                    print(pitch_list)
+
+                    # ax.plot(
+                    #     pitch_list,
+                    #     &#34;o-&#34;,
+                    #     color=colors[en],
+                    #     marker=markers_plot[m],
+                    #     label=labels,
+                    # )
+                    # [&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;]
+                    # ax.plot([&#39;10&#39;,&#39;5&#39;,&#39;3&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0.5&#39;,&#39;0.1&#39;],pitch_list, color = colors[en],, label=area_names[area_budget]+names[en] + &#34; fp32&#34;)
+    ax.set_xlabel(&#34;Vertical Interconnect Pitch (in um)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(
+        &#34;EDP Benefit \n (Non-Uniform, 10um Pitch = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;
+    )
+    # ax.set_ylabel(&#34;EDP Benefit (10um = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    # ax.set_ylabel(&#34;EDP Benefit \n (Edge, 10um = 1)&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
+    plt.rc(&#34;ytick&#34;, labelsize=20)
+    legend_properties = {&#34;weight&#34;: &#34;bold&#34;}
+    ax.legend(fontsize=16)
+    xposition = [1, 8, 256, 25600]
+    ax.set_xlim(10, 0.1)
+
+    # ax.set_xticks(3.8*np.arange(7)+len(graph_list)*0.1+0.6*area_range)
+    ax.set_xticklabels([&#34;10&#34;, &#34;1&#34;, &#34;0.1&#34;])
+    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
+    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
+    # for i, xc in enumerate(xposition):
+    #     plt.axvline(x=xc, label = names[i], color = colors[i], linestyle=&#39;--&#39;)
+    plt.grid(b=True, which=&#34;major&#34;, axis=&#34;y&#34;, linewidth=2)
+    plt.yscale(&#34;log&#34;)
+    plt.xscale(&#34;log&#34;)
+    fig.tight_layout()
+
+    plt.savefig(
+        &#34;figures/area_sweep_nodes&#34; + str(plot) + str(area_range) + &#34;nodes.png&#34;,
+        bbox_inches=&#34;tight&#34;,
+    )
+    plt.show()</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="main.all_design_updates" href="#main.all_design_updates">all_design_updates</a></code></li>
+<li><code><a title="main.all_tech_updates" href="#main.all_tech_updates">all_tech_updates</a></code></li>
+<li><code><a title="main.design_runner" href="#main.design_runner">design_runner</a></code></li>
+<li><code><a title="main.design_tech_runner" href="#main.design_tech_runner">design_tech_runner</a></code></li>
+<li><code><a title="main.perf" href="#main.perf">perf</a></code></li>
+<li><code><a title="main.run_mapping" href="#main.run_mapping">run_mapping</a></code></li>
+<li><code><a title="main.s_mem_area_pitch" href="#main.s_mem_area_pitch">s_mem_area_pitch</a></code></li>
+<li><code><a title="main.s_mem_c_same_arch" href="#main.s_mem_c_same_arch">s_mem_c_same_arch</a></code></li>
+<li><code><a title="main.s_size_c_joint" href="#main.s_size_c_joint">s_size_c_joint</a></code></li>
+<li><code><a title="main.show_memory_capacity_req" href="#main.show_memory_capacity_req">show_memory_capacity_req</a></code></li>
+<li><code><a title="main.sweep_area" href="#main.sweep_area">sweep_area</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

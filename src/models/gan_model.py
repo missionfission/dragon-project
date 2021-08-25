@@ -165,6 +165,14 @@ class Discriminator(nn.Module):
 
 
 def gan_graph(training=False):
+    """[summary]
+
+    Args:
+        training (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        [type]: [description]
+    """
     netD = Discriminator(ngpu).to(device)
     netG = Generator(ngpu).to(device)
 
