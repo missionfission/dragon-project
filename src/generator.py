@@ -1,13 +1,16 @@
+from collections import namedtuple
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml
 import yamlordereddictloader
+from matplotlib.ticker import MaxNLocator
 
-# mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
+mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
-"""
 
-"""
 """
 Hyperparameters of Gradient Descent 
 alpha
@@ -20,9 +23,15 @@ logic_speed = 1
 
 
 class Generator:
-    def __init__(self, constraintfiles="max_constraints.yaml"):
-        """[summary]
+    """Generator Class 
+    1. Generates the Performance Statistics for Running the Workload on an Hardware.
+    2. Updates the Hardware Design by calling the Backward Pass Design functions via gradient descent.
+    3. Updates the Technology Parameters by calling the Backward Pass Technology functions via gradient descent.
+    4. Provides Technology Targets for the application.
+    """
 
+    def __init__(self, constraintfiles="max_constraints.yaml"):
+        """
         Args:
             constraintfiles (str, optional): [description]. Defaults to "max_constraints.yaml".
         """
@@ -188,10 +197,9 @@ def update_mem_design(self, scheduler, mem_config):
 def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
     """
-    opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
-    opt = [frequency, read energy, write energy, leakage power, endurance]
-    The technology space can be loaded from the file, and how we can rapidly find our point there
-    The wire space is also loaded, and the joint technology and wire space can also be loaded
+    Opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
+    Opts = [frequency, read energy, write energy, leakage power, endurance]
+    Technology space can be loaded from the input files 
     """
     # memory tech
     (
@@ -240,15 +248,15 @@ def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
 
 def get_mem_props(size, width, banks):
-    """[summary]
-
+    """ 
+    Gets the Memory Array properties for different Size and Width and Banks.
     Args:
         size ([type]): [description]
         width ([type]): [description]
         banks ([type]): [description]
 
     Returns:
-        [type]: [description]
+        Memory Array Performance : Read Latency, Write Latency, Read Bandwidth, Write Bandwidth, Leakage Power
     """
     for i in range(11, 25):
         if (size * 4 // (2 ** i)) < 1:
@@ -481,8 +489,8 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 
 
 def functions(technology, design):
-    """[summary]
-
+    """
+    Provides Differentiable Functions of Modelling Hardware Description from Design and Technology Parameters.
     Args:
         technology ([type]): [description]
         design ([type]): [description]
@@ -525,8 +533,8 @@ def functions(technology, design):
 
 
 def generate_tech_targets(graph, name, EDP=100):
-    """[summary]
-
+    """
+    Generates the Technology Targets for the Required EDP Benefit on a Given Workload
     Args:
         graph ([type]): [description]
         name ([type]): [description]
@@ -589,12 +597,9 @@ def generate_tech_targets(graph, name, EDP=100):
 # else:
 #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 def improvement_paths():
-    from collections import namedtuple
-
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from matplotlib.ticker import MaxNLocator
+    """
+    Plot Multiple Improvement Paths for Technology Targets
+    """
 
     path = os.path.join(os.path.dirname(__file__))
     print(path)
