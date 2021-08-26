@@ -45,7 +45,7 @@ from generator import *
 from generator import Generator, get_mem_props
 from ir.handlers import handlers
 from ir.trace import get_backprop_memory, trace
-from scheduling import Scheduling
+from mapper.mapper import Mapper
 from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
@@ -53,80 +53,6 @@ from utils.visualizer import (
     mem_util_bar_graph,
     plot_gradients,
 )
-
-####################################
-
-
-def run_mapping(scheduler, mapping, graph):
-    if mapping == &#34;asap&#34;:
-        scheduler.run_asap(graph)
-    elif mapping == &#34;nn_dataflow&#34;:
-        scheduler.run_nn_dataflow(graph)
-    elif mapping == &#34;reuse_full&#34;:
-        scheduler.run_reuse_full(graph)
-    elif mapping == &#34;reuse_leakage&#34;:
-        scheduler.run_reuse_leakage(graph)
-
-
-####################################
-def design_tech_runner(
-    graph_set,
-    backprop=False,
-    print_stats=False,
-    file=&#34;default.yaml&#34;,
-    stats_file=&#34;logs/stats.txt&#34;,
-):
-    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
-
-    Args:
-        graph_set ([type]): [description]
-        backprop (bool, optional): [description]. Defaults to False.
-        print_stats (bool, optional): [description]. Defaults to False.
-        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
-        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
-
-    Returns:
-        [type]: [description]
-    &#34;&#34;&#34;
-    num_iterations = 50
-    for graph in graph_set:
-        generator = Generator()
-        scheduler = Scheduling(stats_file=stats_file)
-        scheduler.run_asap(graph)
-        in_time, in_energy, design, tech, in_area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-        )
-        scheduler = Scheduling(stats_file=stats_file)
-        (&#34;======Optimizing Design and Connectivity=========&#34;)
-        i = 0
-        while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
-            time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), _stats
-            )
-            if (
-                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
-                or scheduler.force_connectivity
-            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
-                break
-            # (area / in_area)
-            config = generator.backward_pass_design(scheduler)
-            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
-            i += 1
-
-        (in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
-        print(&#34;===============Optimizing Technology=============&#34;)
-        for j in range(10):
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
-            time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
-            )
-            config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
-            generator.writeconfig(config, str(j + i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
-        print(in_time[0] / time[0], in_energy[0] / energy[0])
-    return time, energy, area
 
 
 def design_runner(
@@ -136,7 +62,7 @@ def design_runner(
     file=&#34;default.yaml&#34;,
     stats_file=&#34;logs/stats.txt&#34;,
 ):
-    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design Only]
+    &#34;&#34;&#34;Runs the Input Graph and Optimizes Design 
 
     Args:
         graph_set ([type]): [description]
@@ -163,37 +89,37 @@ def design_runner(
         #     write_bw_actual,
         #     cycles,
         #     free_cycles,
-        # ) = scheduler.run_asap(graph)
+        # ) = mapper.run_asap(graph)
         # read_bw_limit, write_bw_limit = (
-        #     scheduler.mem_read_bw[scheduler.mle - 1],
-        #     scheduler.mem_write_bw[scheduler.mle - 1],
+        #     mapper.mem_read_bw[mapper.mle - 1],
+        #     mapper.mem_write_bw[mapper.mle - 1],
         # )
         #         bandwidth_bar_graph(&#34;read_full.png&#34;, read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
         #         cycles_bar_graph(&#34;cycles.png&#34;, cycles, free_cycles, graph.nodes)
-        #         mem_util_bar_graph(&#34;mem_util.png&#34;,scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        #         mem_util_bar_graph(&#34;mem_util.png&#34;,mapper.mem_util_full/mapper.mem_size[0],mapper.mem_util_log/mapper.mem_size[0], graph.nodes)
         generator = Generator()
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
-        scheduler.run_asap(graph)
+        mapper = Mapper(hwfile=file, stats_file=stats_file)
+        mapper.run_asap(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        mapper = Mapper(hwfile=file, stats_file=stats_file)
         i = 0
         print(&#34;======Optimizing Design=========&#34;)
         while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+                mapper, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             if (
-                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
-                or scheduler.force_connectivity
-            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                mapper.bandwidth_idle_time &lt; 0.1 * mapper.total_cycles
+                or mapper.force_connectivity
+            ) and mapper.mem_size_idle_time &lt; 0.1 * mapper.total_cycles:
                 break
             # print(area / in_area)
-            config = generator.backward_pass_design(scheduler)
+            config = generator.backward_pass_design(mapper)
             generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
+            mapper.complete_config(config)
             time_list.append(time)
             energy_list.append(energy)
             design_list.append(design)
@@ -211,21 +137,93 @@ def design_runner(
     return time_list, energy_list, design_list, area
 
 
+def design_tech_runner(
+    graph_set,
+    backprop=False,
+    print_stats=False,
+    file=&#34;default.yaml&#34;,
+    stats_file=&#34;logs/stats.txt&#34;,
+):
+    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
+
+    Args:
+        graph_set ([type]): [description]
+        backprop (bool, optional): [description]. Defaults to False.
+        print_stats (bool, optional): [description]. Defaults to False.
+        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    num_iterations = 50
+    for graph in graph_set:
+        generator = Generator()
+        mapper = Mapper(stats_file=stats_file)
+        mapper.run_asap(graph)
+        in_time, in_energy, design, tech, in_area = generator.save_stats(
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
+        )
+        mapper = Mapper(stats_file=stats_file)
+        (&#34;======Optimizing Design and Connectivity=========&#34;)
+        i = 0
+        while True:
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                mapper, backprop, get_backprop_memory(graph.nodes), _stats
+            )
+            if (
+                mapper.bandwidth_idle_time &lt; 0.1 * mapper.total_cycles
+                or mapper.force_connectivity
+            ) and mapper.mem_size_idle_time &lt; 0.1 * mapper.total_cycles:
+                break
+            # (area / in_area)
+            config = generator.backward_pass_design(mapper)
+            generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
+            mapper.complete_config(config)
+            i += 1
+
+        (in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
+        print(&#34;===============Optimizing Technology=============&#34;)
+        for j in range(10):
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
+            time, energy, design, tech, area = generator.save_stats(
+                mapper, backprop, get_backprop_memory(graph.nodes), print_stats
+            )
+            config = generator.backward_pass_tech(mapper, &#34;time&#34;)
+            generator.writeconfig(config, str(j + i) + &#34;hw.yaml&#34;)
+            mapper.complete_config(config)
+        print(in_time[0] / time[0], in_energy[0] / energy[0])
+    return time, energy, area
+
+
 def perf(
     graph, backprop, print_stats, filename, mapping=&#34;nn_dataflow&#34;, *args, **kwargs
 ):
-    scheduler = Scheduling(hwfile=filename)
+    &#34;&#34;&#34;
+
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): [description]
+        print_stats ([type]): [description]
+        filename ([type]): [description]
+        mapping (str, optional): [description]. Defaults to &#34;nn_dataflow&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    mapper = Mapper(hwfile=filename)
     if mapping == &#34;asap&#34;:
-        scheduler.run_asap(graph)
+        mapper.run_asap(graph)
     elif mapping == &#34;nn_dataflow&#34;:
-        scheduler.run_nn_dataflow(graph)
+        mapper.run_nn_dataflow(graph)
     elif mapping == &#34;reuse_full&#34;:
-        scheduler.run_reuse_full(graph)
+        mapper.run_reuse_full(graph)
     elif mapping == &#34;reuse_leakage&#34;:
-        scheduler.run_reuse_leakage(graph)
+        mapper.run_reuse_leakage(graph)
     generator = Generator()
     in_time, in_energy, design, tech, area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     return in_time, in_energy, area
 
@@ -243,20 +241,20 @@ def all_design_updates(graph, backprop):
     design_names = []
     time_list = []
     energy_list = []
-    scheduler = Scheduling()
-    scheduler.run_asap(graph)
+    mapper = Mapper()
+    mapper.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
+        config = generator.backward_pass_design(mapper)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         design_list.append(design)
         time_list.append(time)
@@ -283,28 +281,28 @@ def all_tech_updates(graph, backprop):
     time_list = []
     energy_list = []
     base_dir = &#34;figures/&#34;
-    scheduler = Scheduling()
-    scheduler.run_asap(graph)
+    mapper = Mapper()
+    mapper.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
+        config = generator.backward_pass_design(mapper)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
     for i in range(10):
-        config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+        config = generator.backward_pass_tech(mapper, &#34;time&#34;)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         time_list.append(time)
         energy_list.append(energy)
@@ -319,25 +317,27 @@ def all_tech_updates(graph, backprop):
     ax.plot(energy_list[:, 0] / in_energy[0], label=&#34;Energy Consumption&#34;)
 
 
-# Fix Everything in Architecture and Just Sweep Memory Connectivity
 def s_mem_c_same_arch(
     graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
 ):
+    &#34;&#34;&#34;
+    Fix Everything in Architecture and Just Sweep Memory Connectivity
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     for en, graph in enumerate(graph_list):
         time_list = []
         energy_list = []
         for j in range(1, 4000, 4):
-            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
             generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
             if names[en] == &#34;SSD&#34;:
-                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
+                mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            mapper.complete_config(mapper.config)
+            mapper.run_asap(graph)
             in_time, in_energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
+                mapper, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
@@ -375,68 +375,45 @@ def s_mem_c_same_arch(
     plt.show()
 
 
-def s_mem_area_pitch(
-    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
-):
+def s_size_c_joint(graph, backprop):
+    &#34;&#34;&#34;
+    Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
+    for en, graph in enumerate(graph):
         time_list = []
         energy_list = []
-        for j in range(1, 4000, 4):
-            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+        for j in range(1, 100):
+            mapper = Mapper()
             generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-            if names[en] == &#34;SSD&#34;:
-                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
-            in_time, in_energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            mapper.complete_config(mapper.config)
+            mapper.run_asap(graph)
+            # mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
+            in_time, in_energy, design, tech = generator.save_stats(
+                mapper, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
-        if plot == &#34;time&#34;:
-            if names[en] == &#34;DLRM&#34;:
-                time_list = np.array(time_list) * 50
-            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
-        elif plot == &#34;energy&#34;:
-            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
-        else:
-            # plot edp
-            ax.plot(
-                [x * energy_list[enum] for enum, x in enumerate(time_list)],
-                &#34;o-&#34;,
-                label=names[en],
-            )
-    # ax.plot()
+        ax.plot(energy_list, &#34;o-&#34;)
+        ax.plot(time_list, &#34;o-&#34;)
     ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
-    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
+    ax.set_ylabel(&#34;Energy Consumption&#34;, fontsize=20, fontweight=&#34;bold&#34;)
     plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
     plt.rc(&#34;ytick&#34;, labelsize=20)
-    xposition = [1, 8, 256, 25600]
-    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
-    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
-    for i, xc in enumerate(xposition):
-        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
     ax.legend(fontsize=20)
     plt.yscale(&#34;log&#34;)
-    plt.xscale(&#34;log&#34;)
     fig.tight_layout()
-    plt.savefig(
-        &#34;figures/pitch_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
-        bbox_inches=&#34;tight&#34;,
-    )
+    plt.savefig(&#34;figures/connectivity_sweep_energy.png&#34;, bbox_inches=&#34;tight&#34;)
     plt.show()
 
 
-def sweep_area(
-    graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
-):
+def sweep(graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs):
     &#34;&#34;&#34;
-
+    Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.
     Args:
-        graph_list ([type]): [description]
+        graph_list ([type]): List of AI/Non AI Workloads to Run
         backprop ([type]): [description]
         names ([type], optional): [description]. Defaults to None.
         plot (str, optional): [description]. Defaults to &#34;time&#34;.
@@ -487,127 +464,119 @@ def sweep_area(
             for m, node in enumerate(node_name):
                 pitch_list = []
                 pitch_list2 = []
-                if names[en] == &#34;PageRank&#34;:
-                    pitch_list = [
-                        10000000,
-                        1300000,
-                        400000,
-                        140000,
-                        70000,
-                        20000,
-                        8000,
-                    ]
-                elif names[en] == &#34;Genomics&#34;:
-                    pitch_list = [
-                        10000000,
-                        900000,
-                        400000,
-                        200000,
-                        100000,
-                        70000,
-                        50000,
-                    ]
-                elif names[en] == &#34;SLAM&#34;:
-                    pitch_list = [
-                        10000000,
-                        1600000,
-                        600000,
-                        180000,
-                        90000,
-                        40000,
-                        20000,
-                    ]
-                else:
-                    for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
-                        percent_time_list = []
-                        percent_time_list2 = []
-                        for percent in range(5, 95, 10):
+                # if names[en] == &#34;PageRank&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         1300000,
+                #         400000,
+                #         140000,
+                #         70000,
+                #         20000,
+                #         8000,
+                #     ]
+                # elif names[en] == &#34;Genomics&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         900000,
+                #         400000,
+                #         200000,
+                #         100000,
+                #         70000,
+                #         50000,
+                #     ]
+                # elif names[en] == &#34;SLAM&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         1600000,
+                #         600000,
+                #         180000,
+                #         90000,
+                #         40000,
+                #         20000,
+                #     ]
+                # else:
+                for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
+                    percent_time_list = []
+                    percent_time_list2 = []
+                    for percent in range(5, 95, 10):
 
-                            connectivity_area = (
-                                percent * 1000 * 10 ** area_budget / node_density[m]
-                            )
-                            j = (
-                                connectivity_area
-                                / (2 * 32 * pitch ** 2)
-                                / total_mem[en]
-                            )
-                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
-                            generator = Generator()
-                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
-                                10 ** area_budget * precision_density_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
-                                node_speed[m] * precision_speed_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][
-                                &#34;per_op_energy&#34;
-                            ] *= node_energy[m]
-
-                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
-                                10 ** area_budget * precision_size_factor[p]
-                            )
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-                            scheduler.complete_config(scheduler.config)
-                            scheduler.run_asap(graph)
-                            (
-                                in_time,
-                                in_energy,
-                                design,
-                                tech,
-                                area,
-                            ) = generator.save_stats(
-                                scheduler, backprop, get_backprop_memory(graph.nodes)
-                            )
-                            new_area = area + connectivity_area
-                            percent_time_list2.append(in_time[0])
-                            energy_list2.append(in_energy[0])
-
-                            j2 = connectivity_area / (2 * 32 * pitch ** 2)
-                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
-                            generator = Generator()
-                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
-                                10 ** area_budget * precision_density_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
-                                node_speed[m] * precision_speed_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][
-                                &#34;per_op_energy&#34;
-                            ] *= node_energy[m]
-
-                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
-                                10 ** area_budget * precision_size_factor[p]
-                            )
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
-                            scheduler.complete_config(scheduler.config)
-                            scheduler.run_asap(graph)
-                            (
-                                in_time,
-                                in_energy,
-                                design,
-                                tech,
-                                area,
-                            ) = generator.save_stats(
-                                scheduler, backprop, get_backprop_memory(graph.nodes)
-                            )
-                            new_area = area / 17 + connectivity_area
-                            percent_time_list.append(in_time[0])
-                            energy_list.append(in_energy[0])
-
-                        pitch_list.append(
-                            min(percent_time_list)
-                            * node_energy[m]
-                            * 1
-                            / (precision_power_factor[p] * 0.3)
+                        connectivity_area = (
+                            percent * 1000 * 10 ** area_budget / node_density[m]
                         )
-                        pitch_list2.append(
-                            min(percent_time_list2)
-                            * node_energy[m]
-                            * 1
-                            / (precision_power_factor[p] * 0.3)
+                        j = connectivity_area / (2 * 32 * pitch ** 2) / total_mem[en]
+                        mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
+                        generator = Generator()
+                        mapper.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                            10 ** area_budget * precision_density_factor[p]
                         )
+                        mapper.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                            node_speed[m] * precision_speed_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;per_op_energy&#34;] *= node_energy[m]
+
+                        mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                            10 ** area_budget * precision_size_factor[p]
+                        )
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+                        mapper.complete_config(mapper.config)
+                        mapper.run_asap(graph)
+                        (
+                            in_time,
+                            in_energy,
+                            design,
+                            tech,
+                            area,
+                        ) = generator.save_stats(
+                            mapper, backprop, get_backprop_memory(graph.nodes)
+                        )
+                        new_area = area + connectivity_area
+                        percent_time_list2.append(in_time[0])
+                        energy_list2.append(in_energy[0])
+
+                        j2 = connectivity_area / (2 * 32 * pitch ** 2)
+                        mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
+                        generator = Generator()
+                        mapper.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                            10 ** area_budget * precision_density_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                            node_speed[m] * precision_speed_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;per_op_energy&#34;] *= node_energy[m]
+
+                        mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                            10 ** area_budget * precision_size_factor[p]
+                        )
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
+                        mapper.complete_config(mapper.config)
+                        mapper.run_asap(graph)
+                        (
+                            in_time,
+                            in_energy,
+                            design,
+                            tech,
+                            area,
+                        ) = generator.save_stats(
+                            mapper, backprop, get_backprop_memory(graph.nodes)
+                        )
+                        new_area = area / 17 + connectivity_area
+                        percent_time_list.append(in_time[0])
+                        energy_list.append(in_energy[0])
+
+                    pitch_list.append(
+                        min(percent_time_list)
+                        * node_energy[m]
+                        * 1
+                        / (precision_power_factor[p] * 0.3)
+                    )
+                    pitch_list2.append(
+                        min(percent_time_list2)
+                        * node_energy[m]
+                        * 1
+                        / (precision_power_factor[p] * 0.3)
+                    )
                     # np.arange(2,8000,8)
                     # temp = pitch_list2[0]
                     # for i in range(len(pitch_list)):
@@ -828,39 +797,7 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
     # fig.tight_layout()
     # plt.savefig(&#34;figures/memory_cap_req.png&#34;, bbox_inches=&#34;tight&#34;)
     # plt.show()
-    return total_mem
-
-
-# Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
-def s_size_c_joint(graph, backprop):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph):
-        time_list = []
-        energy_list = []
-        for j in range(1, 100):
-            scheduler = Scheduling()
-            generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
-            # scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
-            in_time, in_energy, design, tech = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
-            )
-            time_list.append(in_time[0])
-            energy_list.append(in_energy[0])
-        ax.plot(energy_list, &#34;o-&#34;)
-        ax.plot(time_list, &#34;o-&#34;)
-    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
-    ax.set_ylabel(&#34;Energy Consumption&#34;, fontsize=20, fontweight=&#34;bold&#34;)
-    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
-    plt.rc(&#34;ytick&#34;, labelsize=20)
-    ax.legend(fontsize=20)
-    plt.yscale(&#34;log&#34;)
-    fig.tight_layout()
-    plt.savefig(&#34;figures/connectivity_sweep_energy.png&#34;, bbox_inches=&#34;tight&#34;)
-    plt.show()</code></pre>
+    return total_mem</code></pre>
 </details>
 </section>
 <section>
@@ -899,20 +836,20 @@ def s_size_c_joint(graph, backprop):
     design_names = []
     time_list = []
     energy_list = []
-    scheduler = Scheduling()
-    scheduler.run_asap(graph)
+    mapper = Mapper()
+    mapper.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
+        config = generator.backward_pass_design(mapper)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         design_list.append(design)
         time_list.append(time)
@@ -955,28 +892,28 @@ def s_size_c_joint(graph, backprop):
     time_list = []
     energy_list = []
     base_dir = &#34;figures/&#34;
-    scheduler = Scheduling()
-    scheduler.run_asap(graph)
+    mapper = Mapper()
+    mapper.run_asap(graph)
     generator = Generator()
     print_stats = True
     in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     for i in range(num_iterations):
-        config = generator.backward_pass_design(scheduler)
+        config = generator.backward_pass_design(mapper)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
     for i in range(10):
-        config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+        config = generator.backward_pass_tech(mapper, &#34;time&#34;)
         generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-        scheduler.complete_config(config)
-        _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+        mapper.complete_config(config)
+        _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
         time, energy, design, tech, area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
         time_list.append(time)
         energy_list.append(energy)
@@ -995,7 +932,7 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">design_runner</span></span>(<span>graph_set, backprop=False, print_stats=False, file='default.yaml', stats_file='logs/stats.txt')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>[Runs the Input Graph : Optimizes Design Only]</p>
+<div class="desc"><p>Runs the Input Graph and Optimizes Design </p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>graph_set</code></strong> :&ensp;<code>[type]</code></dt>
@@ -1025,7 +962,7 @@ def s_size_c_joint(graph, backprop):
     file=&#34;default.yaml&#34;,
     stats_file=&#34;logs/stats.txt&#34;,
 ):
-    &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design Only]
+    &#34;&#34;&#34;Runs the Input Graph and Optimizes Design 
 
     Args:
         graph_set ([type]): [description]
@@ -1052,37 +989,37 @@ def s_size_c_joint(graph, backprop):
         #     write_bw_actual,
         #     cycles,
         #     free_cycles,
-        # ) = scheduler.run_asap(graph)
+        # ) = mapper.run_asap(graph)
         # read_bw_limit, write_bw_limit = (
-        #     scheduler.mem_read_bw[scheduler.mle - 1],
-        #     scheduler.mem_write_bw[scheduler.mle - 1],
+        #     mapper.mem_read_bw[mapper.mle - 1],
+        #     mapper.mem_write_bw[mapper.mle - 1],
         # )
         #         bandwidth_bar_graph(&#34;read_full.png&#34;, read_bw_req, read_bw_actual, read_bw_limit, graph.nodes)
         #         cycles_bar_graph(&#34;cycles.png&#34;, cycles, free_cycles, graph.nodes)
-        #         mem_util_bar_graph(&#34;mem_util.png&#34;,scheduler.mem_util_full/scheduler.mem_size[0],scheduler.mem_util_log/scheduler.mem_size[0], graph.nodes)
+        #         mem_util_bar_graph(&#34;mem_util.png&#34;,mapper.mem_util_full/mapper.mem_size[0],mapper.mem_util_log/mapper.mem_size[0], graph.nodes)
         generator = Generator()
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
-        scheduler.run_asap(graph)
+        mapper = Mapper(hwfile=file, stats_file=stats_file)
+        mapper.run_asap(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling(hwfile=file, stats_file=stats_file)
+        mapper = Mapper(hwfile=file, stats_file=stats_file)
         i = 0
         print(&#34;======Optimizing Design=========&#34;)
         while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+                mapper, backprop, get_backprop_memory(graph.nodes), print_stats
             )
             if (
-                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
-                or scheduler.force_connectivity
-            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                mapper.bandwidth_idle_time &lt; 0.1 * mapper.total_cycles
+                or mapper.force_connectivity
+            ) and mapper.mem_size_idle_time &lt; 0.1 * mapper.total_cycles:
                 break
             # print(area / in_area)
-            config = generator.backward_pass_design(scheduler)
+            config = generator.backward_pass_design(mapper)
             generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
+            mapper.complete_config(config)
             time_list.append(time)
             energy_list.append(energy)
             design_list.append(design)
@@ -1149,40 +1086,40 @@ def s_size_c_joint(graph, backprop):
     num_iterations = 50
     for graph in graph_set:
         generator = Generator()
-        scheduler = Scheduling(stats_file=stats_file)
-        scheduler.run_asap(graph)
+        mapper = Mapper(stats_file=stats_file)
+        mapper.run_asap(graph)
         in_time, in_energy, design, tech, in_area = generator.save_stats(
-            scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+            mapper, backprop, get_backprop_memory(graph.nodes), print_stats
         )
-        scheduler = Scheduling(stats_file=stats_file)
+        mapper = Mapper(stats_file=stats_file)
         (&#34;======Optimizing Design and Connectivity=========&#34;)
         i = 0
         while True:
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), _stats
+                mapper, backprop, get_backprop_memory(graph.nodes), _stats
             )
             if (
-                scheduler.bandwidth_idle_time &lt; 0.1 * scheduler.total_cycles
-                or scheduler.force_connectivity
-            ) and scheduler.mem_size_idle_time &lt; 0.1 * scheduler.total_cycles:
+                mapper.bandwidth_idle_time &lt; 0.1 * mapper.total_cycles
+                or mapper.force_connectivity
+            ) and mapper.mem_size_idle_time &lt; 0.1 * mapper.total_cycles:
                 break
             # (area / in_area)
-            config = generator.backward_pass_design(scheduler)
+            config = generator.backward_pass_design(mapper)
             generator.writeconfig(config, str(i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
+            mapper.complete_config(config)
             i += 1
 
         (in_time[0] / time[0], in_energy[0] / energy[0], in_area[0] / area[0])
         print(&#34;===============Optimizing Technology=============&#34;)
         for j in range(10):
-            _, _, _, _, cycles, free_cycles = scheduler.run_asap(graph)
+            _, _, _, _, cycles, free_cycles = mapper.run_asap(graph)
             time, energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+                mapper, backprop, get_backprop_memory(graph.nodes), print_stats
             )
-            config = generator.backward_pass_tech(scheduler, &#34;time&#34;)
+            config = generator.backward_pass_tech(mapper, &#34;time&#34;)
             generator.writeconfig(config, str(j + i) + &#34;hw.yaml&#34;)
-            scheduler.complete_config(config)
+            mapper.complete_config(config)
         print(in_time[0] / time[0], in_energy[0] / energy[0])
     return time, energy, area</code></pre>
 </details>
@@ -1191,7 +1128,24 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">perf</span></span>(<span>graph, backprop, print_stats, filename, mapping='nn_dataflow', *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>print_stats</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>filename</code></strong> :&ensp;<code>[type]</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>mapping</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>[description]. Defaults to "nn_dataflow".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>[description]</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1199,111 +1153,39 @@ def s_size_c_joint(graph, backprop):
 <pre><code class="python">def perf(
     graph, backprop, print_stats, filename, mapping=&#34;nn_dataflow&#34;, *args, **kwargs
 ):
-    scheduler = Scheduling(hwfile=filename)
+    &#34;&#34;&#34;
+
+    Args:
+        graph ([type]): [description]
+        backprop ([type]): [description]
+        print_stats ([type]): [description]
+        filename ([type]): [description]
+        mapping (str, optional): [description]. Defaults to &#34;nn_dataflow&#34;.
+
+    Returns:
+        [type]: [description]
+    &#34;&#34;&#34;
+    mapper = Mapper(hwfile=filename)
     if mapping == &#34;asap&#34;:
-        scheduler.run_asap(graph)
+        mapper.run_asap(graph)
     elif mapping == &#34;nn_dataflow&#34;:
-        scheduler.run_nn_dataflow(graph)
+        mapper.run_nn_dataflow(graph)
     elif mapping == &#34;reuse_full&#34;:
-        scheduler.run_reuse_full(graph)
+        mapper.run_reuse_full(graph)
     elif mapping == &#34;reuse_leakage&#34;:
-        scheduler.run_reuse_leakage(graph)
+        mapper.run_reuse_leakage(graph)
     generator = Generator()
     in_time, in_energy, design, tech, area = generator.save_stats(
-        scheduler, backprop, get_backprop_memory(graph.nodes), print_stats
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
     )
     return in_time, in_energy, area</code></pre>
-</details>
-</dd>
-<dt id="main.run_mapping"><code class="name flex">
-<span>def <span class="ident">run_mapping</span></span>(<span>scheduler, mapping, graph)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def run_mapping(scheduler, mapping, graph):
-    if mapping == &#34;asap&#34;:
-        scheduler.run_asap(graph)
-    elif mapping == &#34;nn_dataflow&#34;:
-        scheduler.run_nn_dataflow(graph)
-    elif mapping == &#34;reuse_full&#34;:
-        scheduler.run_reuse_full(graph)
-    elif mapping == &#34;reuse_leakage&#34;:
-        scheduler.run_reuse_leakage(graph)</code></pre>
-</details>
-</dd>
-<dt id="main.s_mem_area_pitch"><code class="name flex">
-<span>def <span class="ident">s_mem_area_pitch</span></span>(<span>graph_list, backprop, names=None, plot='time', area_budget=2.5, *args, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def s_mem_area_pitch(
-    graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
-):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    for en, graph in enumerate(graph_list):
-        time_list = []
-        energy_list = []
-        for j in range(1, 4000, 4):
-            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
-            generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-            if names[en] == &#34;SSD&#34;:
-                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
-            in_time, in_energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
-            )
-            time_list.append(in_time[0])
-            energy_list.append(in_energy[0])
-        if plot == &#34;time&#34;:
-            if names[en] == &#34;DLRM&#34;:
-                time_list = np.array(time_list) * 50
-            ax.plot(np.arange(2, 8000, 8), time_list, &#34;o-&#34;, label=names[en])
-        elif plot == &#34;energy&#34;:
-            ax.plot(energy_list, &#34;o-&#34;, label=names[en])
-        else:
-            # plot edp
-            ax.plot(
-                [x * energy_list[enum] for enum, x in enumerate(time_list)],
-                &#34;o-&#34;,
-                label=names[en],
-            )
-    # ax.plot()
-    ax.set_xlabel(&#34;Memory Connectivity&#34;, fontsize=20, fontweight=&#34;bold&#34;)
-    ax.set_ylabel(&#34;EDP&#34;, fontsize=20, fontweight=&#34;bold&#34;)
-    plt.rc(&#34;xtick&#34;, labelsize=20)  # fontsize of the tick labels
-    plt.rc(&#34;ytick&#34;, labelsize=20)
-    xposition = [1, 8, 256, 25600]
-    names = [&#34;DRAM&#34;, &#34;5um Pitch&#34;, &#34;1um Pitch&#34;, &#34;100nm Pitch&#34;]
-    colors = [&#34;r&#34;, &#34;b&#34;, &#34;g&#34;, &#34;k&#34;]
-    for i, xc in enumerate(xposition):
-        plt.axvline(x=xc, label=names[i], color=colors[i], linestyle=&#34;--&#34;)
-    ax.legend(fontsize=20)
-    plt.yscale(&#34;log&#34;)
-    plt.xscale(&#34;log&#34;)
-    fig.tight_layout()
-    plt.savefig(
-        &#34;figures/pitch_sweep_area&#34; + str(plot) + str(area_budget) + &#34;.png&#34;,
-        bbox_inches=&#34;tight&#34;,
-    )
-    plt.show()</code></pre>
 </details>
 </dd>
 <dt id="main.s_mem_c_same_arch"><code class="name flex">
 <span>def <span class="ident">s_mem_c_same_arch</span></span>(<span>graph_list, backprop, names=None, plot='time', area_budget=2.5, *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Fix Everything in Architecture and Just Sweep Memory Connectivity</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1311,21 +1193,24 @@ def s_size_c_joint(graph, backprop):
 <pre><code class="python">def s_mem_c_same_arch(
     graph_list, backprop, names=None, plot=&#34;time&#34;, area_budget=2.5, *args, **kwargs
 ):
+    &#34;&#34;&#34;
+    Fix Everything in Architecture and Just Sweep Memory Connectivity
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     for en, graph in enumerate(graph_list):
         time_list = []
         energy_list = []
         for j in range(1, 4000, 4):
-            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
+            mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
             generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 1
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
             if names[en] == &#34;SSD&#34;:
-                scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
+                mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 6
+            mapper.complete_config(mapper.config)
+            mapper.run_asap(graph)
             in_time, in_energy, design, tech, area = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
+                mapper, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
@@ -1367,26 +1252,29 @@ def s_size_c_joint(graph, backprop):
 <span>def <span class="ident">s_size_c_joint</span></span>(<span>graph, backprop)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def s_size_c_joint(graph, backprop):
+    &#34;&#34;&#34;
+    Change Memory Connectivity and Memory Size in Conjuction see how those two are correlated
+    &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     for en, graph in enumerate(graph):
         time_list = []
         energy_list = []
         for j in range(1, 100):
-            scheduler = Scheduling()
+            mapper = Mapper()
             generator = Generator()
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-            scheduler.complete_config(scheduler.config)
-            scheduler.run_asap(graph)
-            # scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+            mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+            mapper.complete_config(mapper.config)
+            mapper.run_asap(graph)
+            # mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= 2
             in_time, in_energy, design, tech = generator.save_stats(
-                scheduler, backprop, get_backprop_memory(graph.nodes)
+                mapper, backprop, get_backprop_memory(graph.nodes)
             )
             time_list.append(in_time[0])
             energy_list.append(in_energy[0])
@@ -1510,14 +1398,15 @@ def s_size_c_joint(graph, backprop):
     return total_mem</code></pre>
 </details>
 </dd>
-<dt id="main.sweep_area"><code class="name flex">
-<span>def <span class="ident">sweep_area</span></span>(<span>graph_list, backprop, names=None, plot='time', area_range=1, *args, **kwargs)</span>
+<dt id="main.sweep"><code class="name flex">
+<span>def <span class="ident">sweep</span></span>(<span>graph_list, backprop, names=None, plot='time', area_range=1, *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><h2 id="args">Args</h2>
+<div class="desc"><p>Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.</p>
+<h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>graph_list</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dd>List of AI/Non AI Workloads to Run</dd>
 <dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
 <dd>[description]</dd>
 <dt><strong><code>names</code></strong> :&ensp;<code>[type]</code>, optional</dt>
@@ -1531,13 +1420,11 @@ def s_size_c_joint(graph, backprop):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def sweep_area(
-    graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs
-):
+<pre><code class="python">def sweep(graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *args, **kwargs):
     &#34;&#34;&#34;
-
+    Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.
     Args:
-        graph_list ([type]): [description]
+        graph_list ([type]): List of AI/Non AI Workloads to Run
         backprop ([type]): [description]
         names ([type], optional): [description]. Defaults to None.
         plot (str, optional): [description]. Defaults to &#34;time&#34;.
@@ -1588,127 +1475,119 @@ def s_size_c_joint(graph, backprop):
             for m, node in enumerate(node_name):
                 pitch_list = []
                 pitch_list2 = []
-                if names[en] == &#34;PageRank&#34;:
-                    pitch_list = [
-                        10000000,
-                        1300000,
-                        400000,
-                        140000,
-                        70000,
-                        20000,
-                        8000,
-                    ]
-                elif names[en] == &#34;Genomics&#34;:
-                    pitch_list = [
-                        10000000,
-                        900000,
-                        400000,
-                        200000,
-                        100000,
-                        70000,
-                        50000,
-                    ]
-                elif names[en] == &#34;SLAM&#34;:
-                    pitch_list = [
-                        10000000,
-                        1600000,
-                        600000,
-                        180000,
-                        90000,
-                        40000,
-                        20000,
-                    ]
-                else:
-                    for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
-                        percent_time_list = []
-                        percent_time_list2 = []
-                        for percent in range(5, 95, 10):
+                # if names[en] == &#34;PageRank&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         1300000,
+                #         400000,
+                #         140000,
+                #         70000,
+                #         20000,
+                #         8000,
+                #     ]
+                # elif names[en] == &#34;Genomics&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         900000,
+                #         400000,
+                #         200000,
+                #         100000,
+                #         70000,
+                #         50000,
+                #     ]
+                # elif names[en] == &#34;SLAM&#34;:
+                #     pitch_list = [
+                #         10000000,
+                #         1600000,
+                #         600000,
+                #         180000,
+                #         90000,
+                #         40000,
+                #         20000,
+                #     ]
+                # else:
+                for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
+                    percent_time_list = []
+                    percent_time_list2 = []
+                    for percent in range(5, 95, 10):
 
-                            connectivity_area = (
-                                percent * 1000 * 10 ** area_budget / node_density[m]
-                            )
-                            j = (
-                                connectivity_area
-                                / (2 * 32 * pitch ** 2)
-                                / total_mem[en]
-                            )
-                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
-                            generator = Generator()
-                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
-                                10 ** area_budget * precision_density_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
-                                node_speed[m] * precision_speed_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][
-                                &#34;per_op_energy&#34;
-                            ] *= node_energy[m]
-
-                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
-                                10 ** area_budget * precision_size_factor[p]
-                            )
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
-                            scheduler.complete_config(scheduler.config)
-                            scheduler.run_asap(graph)
-                            (
-                                in_time,
-                                in_energy,
-                                design,
-                                tech,
-                                area,
-                            ) = generator.save_stats(
-                                scheduler, backprop, get_backprop_memory(graph.nodes)
-                            )
-                            new_area = area + connectivity_area
-                            percent_time_list2.append(in_time[0])
-                            energy_list2.append(in_energy[0])
-
-                            j2 = connectivity_area / (2 * 32 * pitch ** 2)
-                            scheduler = Scheduling(hwfile=&#34;illusion.yaml&#34;)
-                            generator = Generator()
-                            scheduler.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
-                                10 ** area_budget * precision_density_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
-                                node_speed[m] * precision_speed_factor[p]
-                            )
-                            scheduler.config[&#34;mm_compute&#34;][
-                                &#34;per_op_energy&#34;
-                            ] *= node_energy[m]
-
-                            scheduler.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
-                                10 ** area_budget * precision_size_factor[p]
-                            )
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
-                            scheduler.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
-                            scheduler.complete_config(scheduler.config)
-                            scheduler.run_asap(graph)
-                            (
-                                in_time,
-                                in_energy,
-                                design,
-                                tech,
-                                area,
-                            ) = generator.save_stats(
-                                scheduler, backprop, get_backprop_memory(graph.nodes)
-                            )
-                            new_area = area / 17 + connectivity_area
-                            percent_time_list.append(in_time[0])
-                            energy_list.append(in_energy[0])
-
-                        pitch_list.append(
-                            min(percent_time_list)
-                            * node_energy[m]
-                            * 1
-                            / (precision_power_factor[p] * 0.3)
+                        connectivity_area = (
+                            percent * 1000 * 10 ** area_budget / node_density[m]
                         )
-                        pitch_list2.append(
-                            min(percent_time_list2)
-                            * node_energy[m]
-                            * 1
-                            / (precision_power_factor[p] * 0.3)
+                        j = connectivity_area / (2 * 32 * pitch ** 2) / total_mem[en]
+                        mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
+                        generator = Generator()
+                        mapper.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                            10 ** area_budget * precision_density_factor[p]
                         )
+                        mapper.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                            node_speed[m] * precision_speed_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;per_op_energy&#34;] *= node_energy[m]
+
+                        mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                            10 ** area_budget * precision_size_factor[p]
+                        )
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j
+                        mapper.complete_config(mapper.config)
+                        mapper.run_asap(graph)
+                        (
+                            in_time,
+                            in_energy,
+                            design,
+                            tech,
+                            area,
+                        ) = generator.save_stats(
+                            mapper, backprop, get_backprop_memory(graph.nodes)
+                        )
+                        new_area = area + connectivity_area
+                        percent_time_list2.append(in_time[0])
+                        energy_list2.append(in_energy[0])
+
+                        j2 = connectivity_area / (2 * 32 * pitch ** 2)
+                        mapper = Mapper(hwfile=&#34;illusion.yaml&#34;)
+                        generator = Generator()
+                        mapper.config[&#34;mm_compute&#34;][&#34;N_PE&#34;] *= (
+                            10 ** area_budget * precision_density_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;frequency&#34;] *= (
+                            node_speed[m] * precision_speed_factor[p]
+                        )
+                        mapper.config[&#34;mm_compute&#34;][&#34;per_op_energy&#34;] *= node_energy[m]
+
+                        mapper.config[&#34;memory&#34;][&#34;level0&#34;][&#34;size&#34;] *= (
+                            10 ** area_budget * precision_size_factor[p]
+                        )
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] = 2
+                        mapper.config[&#34;memory&#34;][&#34;level1&#34;][&#34;banks&#34;] *= j2
+                        mapper.complete_config(mapper.config)
+                        mapper.run_asap(graph)
+                        (
+                            in_time,
+                            in_energy,
+                            design,
+                            tech,
+                            area,
+                        ) = generator.save_stats(
+                            mapper, backprop, get_backprop_memory(graph.nodes)
+                        )
+                        new_area = area / 17 + connectivity_area
+                        percent_time_list.append(in_time[0])
+                        energy_list.append(in_energy[0])
+
+                    pitch_list.append(
+                        min(percent_time_list)
+                        * node_energy[m]
+                        * 1
+                        / (precision_power_factor[p] * 0.3)
+                    )
+                    pitch_list2.append(
+                        min(percent_time_list2)
+                        * node_energy[m]
+                        * 1
+                        / (precision_power_factor[p] * 0.3)
+                    )
                     # np.arange(2,8000,8)
                     # temp = pitch_list2[0]
                     # for i in range(len(pitch_list)):
@@ -1868,12 +1747,10 @@ def s_size_c_joint(graph, backprop):
 <li><code><a title="main.design_runner" href="#main.design_runner">design_runner</a></code></li>
 <li><code><a title="main.design_tech_runner" href="#main.design_tech_runner">design_tech_runner</a></code></li>
 <li><code><a title="main.perf" href="#main.perf">perf</a></code></li>
-<li><code><a title="main.run_mapping" href="#main.run_mapping">run_mapping</a></code></li>
-<li><code><a title="main.s_mem_area_pitch" href="#main.s_mem_area_pitch">s_mem_area_pitch</a></code></li>
 <li><code><a title="main.s_mem_c_same_arch" href="#main.s_mem_c_same_arch">s_mem_c_same_arch</a></code></li>
 <li><code><a title="main.s_size_c_joint" href="#main.s_size_c_joint">s_size_c_joint</a></code></li>
 <li><code><a title="main.show_memory_capacity_req" href="#main.show_memory_capacity_req">show_memory_capacity_req</a></code></li>
-<li><code><a title="main.sweep_area" href="#main.sweep_area">sweep_area</a></code></li>
+<li><code><a title="main.sweep" href="#main.sweep">sweep</a></code></li>
 </ul>
 </li>
 </ul>
