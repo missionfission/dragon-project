@@ -23,17 +23,25 @@ logic_speed = 1
 
 
 class Generator:
-    """Generator Class 
+    """
+    Generator Class 
+
     1. Generates the Performance Statistics for Running the Workload on an Hardware.
+    
     2. Updates the Hardware Design by calling the Backward Pass Design functions via gradient descent.
+    
     3. Updates the Technology Parameters by calling the Backward Pass Technology functions via gradient descent.
+    
     4. Provides Technology Targets for the application.
     """
 
     def __init__(self, constraintfiles="max_constraints.yaml"):
         """
+
+        Max constraints values : bounds 
+        
         Args:
-            constraintfiles (str, optional): [description]. Defaults to "max_constraints.yaml".
+            constraintfiles (str, optional). Defaults to "max_constraints.yaml".
         """
         base_dir = "configs/"
 
@@ -58,15 +66,19 @@ def backward_pass_design(self, scheduler, opts=None):
 
     """
     opts = ["energy", "time", "area", "edp"]
-    Max values are the constraints in this contigous space, they create bounds for which we cannot go beyond ?
-    Time lost due to small memory size ?
-    Time lost due to small memory bandwidth ?
-    Time lost due to high of everything but compute is slow
-    Energy high due to smaller memory arrays ?
-    Energy high due to high memory bandwidth ?
-    Energy high due to high of everything but compute is slow  
-    Where is area getting consumed the most?
-    # check area somehow ?
+
+    1. Idle Times due to small memory size 
+
+    2. Idle Times due to small memory bandwidth 
+    
+    3. Idle Times due to slow compute
+    
+    4. Energy high due to smaller memory arrays 
+    
+    5. Energy high due to high memory bandwidth 
+    
+    6. Energy high due to slow compute
+    
     """
     config = scheduler.config
     config["mm_compute"] = self.update_comp_design(
@@ -78,14 +90,15 @@ def backward_pass_design(self, scheduler, opts=None):
 
 
 def backward_pass_tech(self, scheduler, opts=None):
-    """[summary]
+    """
+    Backward pass over the Technology Parameters
 
     Args:
-        scheduler ([type]): [description]
-        opts ([type], optional): [description]. Defaults to None.
+        scheduler 
+        opts ( optional). Defaults to None.
 
     Returns:
-        [type]: [description]
+        
     """
     alpha = 20000
     beta = 4
@@ -129,14 +142,14 @@ def backward_pass_tech(self, scheduler, opts=None):
 
 
 def update_comp_design(self, scheduler, comp_config):
-    """[summary]
+    """
 
     Args:
-        scheduler ([type]): [description]
-        comp_config ([type]): [description]
+        scheduler 
+        comp_config 
 
     Returns:
-        [type]: [description]
+        
     """
     scheduler.compute_time = scheduler.total_cycles - (
         scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
@@ -160,14 +173,15 @@ def update_comp_design(self, scheduler, comp_config):
 
 
 def update_mem_design(self, scheduler, mem_config):
-    """[summary]
+    """
+    
 
     Args:
-        scheduler ([type]): [description]
-        mem_config ([type]): [description]
+        scheduler 
+        mem_config 
 
     Returns:
-        [type]: [description]
+        
     """
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
     # print("Bandwidth Idle Time", scheduler.bandwidth_idle_time)
@@ -197,9 +211,9 @@ def update_mem_design(self, scheduler, mem_config):
 def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 
     """
-    Opts is of either frequency or its for energy -> can modulate the access time of the cell and the cell energy
     Opts = [frequency, read energy, write energy, leakage power, endurance]
-    Technology space can be loaded from the input files 
+
+    Technology space loaded from the input files 
     """
     # memory tech
     (
@@ -250,10 +264,11 @@ def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
 def get_mem_props(size, width, banks):
     """ 
     Gets the Memory Array properties for different Size and Width and Banks.
+
     Args:
-        size ([type]): [description]
-        width ([type]): [description]
-        banks ([type]): [description]
+        size 
+        width 
+        banks 
 
     Returns:
         Memory Array Performance : Read Latency, Write Latency, Read Bandwidth, Write Bandwidth, Leakage Power
@@ -272,8 +287,11 @@ def get_mem_props(size, width, banks):
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     """
     Execution statistics generated here : 
+
     1. Area, Energy, Time/Number of Cycles
+    
     2. Resource Utilization
+    
     3. Timing and Energy Breakdown of Components 
     """
     if backprop:
@@ -494,9 +512,10 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
 def functions(technology, design):
     """
     Provides Differentiable Functions of Modelling Hardware Description from Design and Technology Parameters.
+
     Args:
-        technology ([type]): [description]
-        design ([type]): [description]
+        technology 
+        design 
     """  # compute functions
     wire_cap, wire_res, node = technology["compute"]
     comp_config = design["compute"]
@@ -538,13 +557,13 @@ def functions(technology, design):
 def generate_tech_targets(graph, name, EDP=100):
     """
     Generates the Technology Targets for the Required EDP Benefit on a Given Workload
+    
     Args:
-        graph ([type]): [description]
-        name ([type]): [description]
-        EDP (int, optional): [description]. Defaults to 100.
+        graph 
+        name 
+        EDP (int, optional). Defaults to 100.
 
     Returns:
-        [type]: [description]
     """
     orderlist = []
     orderlist.append("connectivity")
