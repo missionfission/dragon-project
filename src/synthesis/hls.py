@@ -190,7 +190,7 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
 
 
 def check_and_parse(string, unrolled=1, loop_iters=1):
-    """[summary]
+    """
 
     Args:
         string (): 
@@ -273,7 +273,7 @@ def parse_graph(graph):
 
 
 def get_params(dfg, area_budget):
-    """[summary]
+    """
 
     Args:
         dfg (): 

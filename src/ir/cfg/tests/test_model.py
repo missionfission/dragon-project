@@ -109,7 +109,7 @@ class TestLink(unittest.TestCase):
 
 
 class TestCFG(unittest.TestCase):
-    """[summary]
+    """
 
     Args:
         unittest (): 

@@ -165,7 +165,7 @@ class Discriminator(nn.Module):
 
 
 def gan_graph(training=False):
-    """[summary]
+    """
 
     Args:
         training (bool, optional): . Defaults to False.
