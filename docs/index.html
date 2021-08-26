@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <!-- ======================================================================= -->
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+  <script type="text/javascript">
+    google.load("jquery", "1.3.2");
+  </script>
+  <style type="text/css">
+    body {
+      font-family: "Titillium Web", "HelveticaNeue-Light",
+        "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial,
+        "Lucida Grande", sans-serif;
+      font-weight: 300;
+      font-size: 18px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 1100px;
+    }
+
+    h1 {
+      font-weight: 300;
+    }
+
+    .disclaimerbox {
+      background-color: #eee;
+      border: 1px solid #eeeeee;
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      padding: 20px;
+    }
+
+    video.header-vid {
+      height: 140px;
+      border: 1px solid black;
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+    }
+
+    img.header-img {
+      height: 140px;
+      border: 1px solid black;
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+    }
+
+    img.rounded {
+      border: 1px solid #eeeeee;
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+    }
+
+    a:link,
+    a:visited {
+      color: #1367a7;
+      text-decoration: none;
+    }
+    a:hover {
+      color: #208799;
+    }
+
+    td.dl-link {
+      height: 160px;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .layered-paper-big {
+      /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+      box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The top layer shadow */ 5px 5px 0 0px #fff,
+        /* The second layer */ 5px 5px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The second layer shadow */ 10px 10px 0 0px #fff,
+        /* The third layer */ 10px 10px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The third layer shadow */ 15px 15px 0 0px #fff,
+        /* The fourth layer */ 15px 15px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The fourth layer shadow */ 20px 20px 0 0px #fff,
+        /* The fifth layer */ 20px 20px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The fifth layer shadow */ 25px 25px 0 0px #fff,
+        /* The fifth layer */ 25px 25px 1px 1px rgba(0, 0, 0, 0.35); /* The fifth layer shadow */
+      margin-left: 10px;
+      margin-right: 45px;
+    }
+
+    .layered-paper {
+      /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+      box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The top layer shadow */ 5px 5px 0 0px #fff,
+        /* The second layer */ 5px 5px 1px 1px rgba(0, 0, 0, 0.35),
+        /* The second layer shadow */ 10px 10px 0 0px #fff,
+        /* The third layer */ 10px 10px 1px 1px rgba(0, 0, 0, 0.35); /* The third layer shadow */
+      margin-top: 5px;
+      margin-left: 10px;
+      margin-right: 30px;
+      margin-bottom: 5px;
+    }
+
+    .vert-cent {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0)
+      );
+    }
+
+    #authors td {
+      padding-bottom: 5px;
+      padding-top: 30px;
+    }
+  </style>
+  <!-- ======================================================================= -->
+
+  <!-- Start : Google Analytics Code -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=UA-64069893-5"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "UA-64069893-5");
+  </script>
+  <!-- End : Google Analytics Code -->
+
+  <script type="text/javascript" src="resources/hidebib.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/png" href="resources/seal_icon.png" />
+    <title>DRAGON Framework</title>
+  </head>
+
+  <body>
+    <br />
+    <center>
+      <span style="font-size: 44px; font-weight: bold"
+        >Differentiable Graph Execution Framework for 21st Century
+        Applications</span
+      >
+    </center>
+    <br />
+    <div></div>
+
+    <center id="sourceCode"><h1>Source Code and Environment</h1></center>
+    <table align="center" width="900px">
+      <tr>
+        <!-- <p style="margin-top:4px;"></p> -->
+        <td width="300px" align="center">
+          <span style="font-size: 28px"
+            ><a href="https://github.com/missionfission/dragon-project/"
+              >GitHub</a
+            ></span
+          >
+        </td>
+      </tr>
+    </table>
+    <br />
+    <hr />
+    <article id="content">
+    <nav id="sidebar">
+      <h1>Index</h1>
+      <ul id="index">
+
+        <ul> Mapper Package
+          <li> <a href="mapper/mapping.html">Mappings</a></li>
+          <li> <a href="mapper/mapper.html">Mapper Class</a></li>
+        </ul>
+        <ul>IR Package
+          <li> <a href="ir/trace.html">Trace</a></li>
+          <li> <a href="ir/graph.html">Graph</a></li>
+          <li> <a href="ir/node.html">Node</a></li>
+          <li> <a href="ir/flatten.html">Flatten</a></li>
+          </ul>
+        <ul>AI Models Package
+          <li> <a href="ai_models/a3c_model.html">a3c_model</a></li>
+          <li> <a href="ai_models/base_model_rs34.html">a3c_model</a></li>
+          <li> <a href="ai_models/gan_model.html">gan_model</a></li>
+          <li> <a href="ai_models/rnnt.html">rnnt</a></li>
+          <li> <a href="ai_models/ssd_rs34.html">ssd_rs34</a></li>
+          <li> <a href="common_models.html">common_models</a></li>
+          </ul>
+        <ul>Non AI Models Package
+          <li> <a href="nonai_models/aes.html">aes</a></li>
+          <li> <a href="nonai_models/pagerank.html">pagerank</a></li>
+          <li> <a href="nonai_models/hpcg.html">hpcg</a></li>
+          </ul>
+        <ul>Synthesis Package
+          <li> <a href="synthesis/ai_utils.html">AI Utilites</a></li>
+          <li> <a href="synthesis/dataflow_solver.html">dataflow_solver</a></li>
+          <li> <a href="synthesis/hls.html">HLS - Non AI Synthesis</a></li>
+          <li> <a href="synthesis/loop_blocking.html">loop_blocking</a></li>
+          <li> <a href="synthesis/partition.html">partition</a></li>
+          <li> <a href="synthesis/schedule.html">schedule</a></li>
+          <li> <a href="synthesis/map_eyeriss.html">map_eyeriss</a></li>
+          </ul>
+        <ul>Utilties
+          <li> <a href="nonai_models/aes.html">aes</a></li>
+          <li> <a href="nonai_models/pagerank.html">pagerank</a></li>
+          <li> <a href="nonai_models/hpcg.html">hpcg</a></li>
+          </ul>
+        <li><a href="generator.html">Generator Class</a></li>
+        <li><a href="main.html">Main Function</a></li>
+        <li>Testing Scripts : Available in src/testing</li>
+      </ul>
+    </nav>
+
+    <script xml:space="preserve" language="JavaScript">
+      hideallbibs();
+    </script>
+  </body>
+</html>
