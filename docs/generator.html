@@ -299,7 +299,10 @@ def get_mem_props(size, width, banks):
 
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     &#34;&#34;&#34;
-    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    Execution statistics generated here : 
+    1. Area, Energy, Time/Number of Cycles
+    2. Resource Utilization
+    3. Timing and Energy Breakdown of Components 
     &#34;&#34;&#34;
     if backprop:
         scheduler.total_cycles = (
@@ -626,7 +629,7 @@ def generate_tech_targets(graph, name, EDP=100):
 #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 def improvement_paths():
     &#34;&#34;&#34;
-    Plot Multiple Improvement Paths for Technology Targets
+    Plots Multiple Improvement Paths for Technology Targets
     &#34;&#34;&#34;
 
     path = os.path.join(os.path.dirname(__file__))
@@ -969,14 +972,14 @@ Where is area getting consumed the most?</p>
 <span>def <span class="ident">improvement_paths</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Plot Multiple Improvement Paths for Technology Targets</p></div>
+<div class="desc"><p>Plots Multiple Improvement Paths for Technology Targets</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def improvement_paths():
     &#34;&#34;&#34;
-    Plot Multiple Improvement Paths for Technology Targets
+    Plots Multiple Improvement Paths for Technology Targets
     &#34;&#34;&#34;
 
     path = os.path.join(os.path.dirname(__file__))
@@ -1008,14 +1011,20 @@ Where is area getting consumed the most?</p>
 <span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles</p></div>
+<div class="desc"><p>Execution statistics generated here :
+1. Area, Energy, Time/Number of Cycles
+2. Resource Utilization
+3. Timing and Energy Breakdown of Components</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     &#34;&#34;&#34;
-    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    Execution statistics generated here : 
+    1. Area, Energy, Time/Number of Cycles
+    2. Resource Utilization
+    3. Timing and Energy Breakdown of Components 
     &#34;&#34;&#34;
     if backprop:
         scheduler.total_cycles = (
@@ -1587,14 +1596,20 @@ Where is area getting consumed the most?</p>
 <span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles</p></div>
+<div class="desc"><p>Execution statistics generated here :
+1. Area, Energy, Time/Number of Cycles
+2. Resource Utilization
+3. Timing and Energy Breakdown of Components</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     &#34;&#34;&#34;
-    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    Execution statistics generated here : 
+    1. Area, Energy, Time/Number of Cycles
+    2. Resource Utilization
+    3. Timing and Energy Breakdown of Components 
     &#34;&#34;&#34;
     if backprop:
         scheduler.total_cycles = (

@@ -271,7 +271,10 @@ def get_mem_props(size, width, banks):
 
 def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
     """
-    Execution statistics also have to be generated : Area, Energy, Time/Number of Cycles 
+    Execution statistics generated here : 
+    1. Area, Energy, Time/Number of Cycles
+    2. Resource Utilization
+    3. Timing and Energy Breakdown of Components 
     """
     if backprop:
         scheduler.total_cycles = (
@@ -598,7 +601,7 @@ def generate_tech_targets(graph, name, EDP=100):
 #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
 def improvement_paths():
     """
-    Plot Multiple Improvement Paths for Technology Targets
+    Plots Multiple Improvement Paths for Technology Targets
     """
 
     path = os.path.join(os.path.dirname(__file__))

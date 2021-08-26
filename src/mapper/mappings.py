@@ -1,147 +1,39 @@
-import collections
-import logging
-import pdb
-
-import numpy as np
-import yaml
-import yamlordereddictloader
-
-from generator import *
-from generator import Generator, get_mem_props
-from synthesis import ai_utils
-from utils.logger import create_logger
-from utils.visualizer import *
-
-eff = 0.5
+from mapper import Mapper
 
 
-class Scheduling:
-    def __init__(self, hwfile="default.yaml", stats_file="logs/stats.txt"):
-        """[summary]
-
-        Args:
-            hwfile (str, optional): [description]. Defaults to "default.yaml".
-            stats_file (str, optional): [description]. Defaults to "logs/stats.txt".
-        """
-        base_dir = "configs/"
-        self.total_cycles = 0
-        self.technology = [1, 1, 40]
-        # maybe change this later to peripheral logic node or speed
-        #     [wire_cap , sense_amp_time, plogic_node],
-        self.logger = create_logger(stats_file=stats_file)
-        self.config = self.complete_config(
-            yaml.load(open(base_dir + hwfile), Loader=yamlordereddictloader.Loader)
-        )
-
-
-def complete_config(self, config):
-    """[Complete the Config for Hardware Description by using Technology Models]
-
-    Args:
-        config ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
-
-    self.logger.debug("Config Statistics : ")
-
-    self.mle = config["memory_levels"]
-    self.mem_energy = np.zeros((self.mle))
-    self.compute_energy = 0
-    self.mem_read_access = np.zeros((self.mle))
-    self.mem_write_access = np.zeros((self.mle))
-    self.mem_size = np.zeros((self.mle))
-    self.mem_util = np.zeros((self.mle))
-    self.mem_free = np.zeros((self.mle))
-    self.mem_read_bw = np.zeros((self.mle))
-    self.mem_write_bw = np.zeros((self.mle))
-    self.internal_bandwidth_time = 0
-    self.total_cycles = 0
-    self.bandwidth_idle_time = 0
-    self.compute_idle_time = 0
-    self.mem_size_idle_time = 0
-
-    self.force_connectivity = config["force_connectivity"]
-    mm_compute = config["mm_compute"]
-    vector_compute = config["vector_compute"]
-
-    if mm_compute["class"] == "systolic_array":
-        config["mm_compute_per_cycle"] = (
-            ((mm_compute["size"]) ** 2) * mm_compute["N_PE"] / (4)
-        )
-        config["comp_bw"] = (
-            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"] * 2 / 4
-        )
-
-        self.logger.debug("MM Compute per cycle : %d", config["mm_compute_per_cycle"])
-        self.logger.debug("Compute Bandwidth Required : %d", config["comp_bw"])
-
-    if config["mm_compute"]["class"] == "mac":
-        config["mm_compute_per_cycle"] = (mm_compute["size"]) * mm_compute["N_PE"]
-        config["comp_read_bw"] = (
-            mm_compute["size"] * mm_compute["N_PE"] * mm_compute["frequency"]
-        )
-
-    for i in range(self.mle):
-        memory = config["memory"]["level" + str(i)]
-        self.mem_read_bw[i] = (
-            memory["frequency"]
-            * memory["banks"]
-            * memory["read_ports"]
-            * memory["width"]
-        )
-        self.mem_write_bw[i] = (
-            memory["frequency"]
-            * memory["banks"]
-            * memory["write_ports"]
-            * memory["width"]
-        )
-        self.mem_size[i] = memory["size"]
-
-        self.logger.debug(
-            "Memory at Level %d, Read Bandwidth %d Write Bandwidth %d",
-            i,
-            self.mem_read_bw[i],
-            self.mem_write_bw[i],
-        )
-    # complete_functional_config
-    # complete_performance_config
-    # memory
-    for i in range(self.mle - 1):
-        memory = config["memory"]["level" + str(i)]
-        read_energy, write_energy, leakage_power, area = get_mem_props(
-            memory["size"], memory["width"], memory["banks"]
-        )
-        config["memory"]["level" + str(i)]["read_energy"] = str(read_energy)
-        config["memory"]["level" + str(i)]["write_energy"] = str(write_energy)
-        config["memory"]["level" + str(i)]["leakage_power"] = str(leakage_power)
-        config["memory"]["level" + str(i)]["area"] = str(area)
-    # compute
-    # config["memory"] = mem_space(config["memory"], technology)
-    # config["mm_compute"] = comp_space(config["mm_compute"], technology)
-    return config
+"""Provides Mapping Interface for 5 types of mapping :
+1. ASAP Mapping
+2. Energy Efficienct Mapping
+3. Energy Efficienct Mapping with Power Gating
+4. NN-Dataflow Mapping
+5. Illusion Mapping for Multiple Chips
+"""
 
 
 def run_asap(self, graph):
 
     """
-    [Runs the Graph on the Hardware ASAP Mapped]
+    Runs the Graph on the Hardware ASAP Mapped
+
+    We following a Dynamic State Variable Execution Mapping :
+    1. Memory Size and Maximum Allowed Bandwidth are taken from Hardware Config
+    2. Current Memory Size and Memory Utilization are calculated by Mapping the Nodes Serially
 
     Memory Management Scenarios :
-        1. Check both size, utilization and bandwidths at every node
-        2. What about memory size that can also get exhausted 
-        3. If memory size is exhausted, then to go to a previous level and write there 
-        4. If any level utilization is exhausted then only the immediate memory required will be kept.
-        5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
-        6. If Prefetching : Read access of the next node will decrease
-        7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
-        whether to do fetches of the same node or a different node
-        8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
-        slower so it will take its own time
+
+    1. Check both size, utilization and bandwidths at every node
+    2. What about memory size that can also get exhausted 
+    3. If memory size is exhausted, then to go to a previous level and write there 
+    4. If any level utilization is exhausted then only the immediate memory required will be kept.
+    5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
+    6. If Prefetching : Read access of the next node will decrease
+    7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
+    whether to do fetches of the same node or a different node
+    8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
+    slower so it will take its own time
 
     Compute Management Scenarios :
-        1. Pipelined vs Parallel Scheduling 
+        1. Pipelined vs Parallel Mapper 
         2. When do vector operations happen 
         3. Scale up vs Scale out for Systolic Arrays
 
@@ -1007,8 +899,8 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
         print(np.sum(message_passed))
 
 
-Scheduling.complete_config = complete_config
-Scheduling.run_asap = run_asap
-Scheduling.run_reuse_full = run_reuse_full
-Scheduling.run_reuse_leakage = run_reuse_leakage
-Scheduling.run_nn_dataflow = run_nn_dataflow
+Mapper.run_asap = run_asap
+Mapper.run_reuse_full = run_reuse_full
+Mapper.run_reuse_leakage = run_reuse_leakage
+Mapper.run_nn_dataflow = run_nn_dataflow
+Mapper.illusion_mapping = illusion_mapping

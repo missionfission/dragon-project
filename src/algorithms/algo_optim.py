@@ -3,13 +3,32 @@
 # from ..scheduling import run_asap
 
 
-def get_bottlenecks(graph, algo, hw):
+def get_bottlenecks(graph, hw):
+    """Finds the Bottlenecks from Timing Gradients (ASAP Mapped)
+
+    Args:
+        graph ([type]): [description]
+        algo ([type]): [description]
+        hw ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     bottlenecks = run_asap(hw)
     print(bottlenecks)
     return bottleneckss
 
 
 def optim_exec_bottlenecks(graph, hw):
+    """Optimizes Execution Bottlenecks
+
+    Args:
+        graph ([type]): [description]
+        hw ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     for bottleneck in bottlenecks:
         node = lib_match(bottleneck.node())
         if is_tranform(node.type):
