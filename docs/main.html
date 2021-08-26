@@ -464,37 +464,6 @@ def sweep(graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *
             for m, node in enumerate(node_name):
                 pitch_list = []
                 pitch_list2 = []
-                # if names[en] == &#34;PageRank&#34;:
-                #     pitch_list = [
-                #         10000000,
-                #         1300000,
-                #         400000,
-                #         140000,
-                #         70000,
-                #         20000,
-                #         8000,
-                #     ]
-                # elif names[en] == &#34;Genomics&#34;:
-                #     pitch_list = [
-                #         10000000,
-                #         900000,
-                #         400000,
-                #         200000,
-                #         100000,
-                #         70000,
-                #         50000,
-                #     ]
-                # elif names[en] == &#34;SLAM&#34;:
-                #     pitch_list = [
-                #         10000000,
-                #         1600000,
-                #         600000,
-                #         180000,
-                #         90000,
-                #         40000,
-                #         20000,
-                #     ]
-                # else:
                 for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
                     percent_time_list = []
                     percent_time_list2 = []
