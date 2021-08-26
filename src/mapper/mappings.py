@@ -679,12 +679,12 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
     """ Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.'20
 
     Args:
-        graph ([type]): [description]
-        num_of_chips ([type]): [description]
-        depth ([type]): [description]
-        capacity ([type]): [description]
-        deeper (bool, optional): [description]. Defaults to False.
-        wider (bool, optional): [description]. Defaults to False.
+        graph (): 
+        num_of_chips (): 
+        depth (): 
+        capacity (): 
+        deeper (bool, optional): . Defaults to False.
+        wider (bool, optional): . Defaults to False.
     """
     mem_size_util = np.zeros((num_of_chips + 1))
     mem_free = np.zeros((num_of_chips + 1))

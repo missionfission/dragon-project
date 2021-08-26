@@ -20,8 +20,8 @@ class Mapper:
         """Mapper Class that Provides Interface for Different Mappings on the Architecture 
 
         Args:
-            hwfile (str, optional): [description]. Defaults to "default.yaml".
-            stats_file (str, optional): [description]. Defaults to "logs/stats.txt".
+            hwfile (str, optional): . Defaults to "default.yaml".
+            stats_file (str, optional): . Defaults to "logs/stats.txt".
         """
         base_dir = "configs/"
         self.total_cycles = 0
@@ -39,10 +39,10 @@ class Mapper:
         2. Adds State Variables as Args that are Tracked for ASAP Mapping
 
         Args:
-            config ([type]): [description]
+            config (): 
 
         Returns:
-            [type]: [description]
+            : 
         """
 
         self.logger.debug("Config Statistics : ")

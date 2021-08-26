@@ -169,9 +169,9 @@ def plot_gradients(
     """Plot the gradients
 
     Args:
-        time_list ([type]): [description]
-        bandwidth_time_list ([type]): [description]
-        mem_size_idle_time_list ([type]): [description]
+        time_list (): 
+        bandwidth_time_list (): 
+        mem_size_idle_time_list (): 
     """
     fig, ax = plt.subplots(figsize=(30, 10))
     base_dir = "figures/"

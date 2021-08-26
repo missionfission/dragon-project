@@ -149,11 +149,11 @@ def schedule(expr, type):
     &#34;&#34;&#34;[Schedules the expr from AST]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
+        expr (): 
+        type (): 
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
     # upsamplelloops
@@ -178,10 +178,10 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     &#34;&#34;&#34;[Parse the input Python Code file]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        expr (): 
+        type (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     if type in [&#34;assign&#34;, &#34;expr&#34;, &#34;binop_nested&#34;, &#34;constant&#34;]:
         expr_cycles, hw_need = schedule(expr, type)
@@ -221,9 +221,9 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
     &#34;&#34;&#34;[summary]
 
     Args:
-        string ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        string (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     if type(string) == ast.BinOp or ast.BoolOp:
         parse_code(astor.to_source(string), &#34;binop_nested&#34;, unrolled)
@@ -304,8 +304,8 @@ def get_params(dfg, area_budget):
     &#34;&#34;&#34;[summary]
 
     Args:
-        dfg ([type]): [description]
-        area_budget ([type]): [description]
+        dfg (): 
+        area_budget (): 
     &#34;&#34;&#34;
     allocated_area = 0
     while allocated_area &lt; 0.9 * area or allocated_area &gt; 1.2 * area:
@@ -329,7 +329,7 @@ def allocate_memory_cfgs():
     &#34;&#34;&#34;[allocate_memory_cfgs]
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     mem_list = {}
     for key, value in memory_cfgs.items():
@@ -475,8 +475,8 @@ def get_stats(cfg):
 <div class="desc"><p>[allocate_memory_cfgs]</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -486,7 +486,7 @@ def get_stats(cfg):
     &#34;&#34;&#34;[allocate_memory_cfgs]
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     mem_list = {}
     for key, value in memory_cfgs.items():
@@ -504,12 +504,12 @@ def get_stats(cfg):
 <div class="desc"><p>[summary]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>string</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>string</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 <dt><strong><code>unrolled</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>[description]. Defaults to 1.</dd>
+<dd>. Defaults to 1.</dd>
 <dt><strong><code>loop_iters</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>[description]. Defaults to 1.</dd>
+<dd>. Defaults to 1.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -519,9 +519,9 @@ def get_stats(cfg):
     &#34;&#34;&#34;[summary]
 
     Args:
-        string ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        string (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     if type(string) == ast.BinOp or ast.BoolOp:
         parse_code(astor.to_source(string), &#34;binop_nested&#34;, unrolled)
@@ -540,10 +540,10 @@ def get_stats(cfg):
 <div class="desc"><p>[summary]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dfg</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>area_budget</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>dfg</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>area_budget</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -553,8 +553,8 @@ def get_stats(cfg):
     &#34;&#34;&#34;[summary]
 
     Args:
-        dfg ([type]): [description]
-        area_budget ([type]): [description]
+        dfg (): 
+        area_budget (): 
     &#34;&#34;&#34;
     allocated_area = 0
     while allocated_area &lt; 0.9 * area or allocated_area &gt; 1.2 * area:
@@ -622,14 +622,14 @@ def get_stats(cfg):
 <div class="desc"><p>[Parse the input Python Code file]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>expr</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>expr</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>type</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 <dt><strong><code>unrolled</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>[description]. Defaults to 1.</dd>
+<dd>. Defaults to 1.</dd>
 <dt><strong><code>loop_iters</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>[description]. Defaults to 1.</dd>
+<dd>. Defaults to 1.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -639,10 +639,10 @@ def get_stats(cfg):
     &#34;&#34;&#34;[Parse the input Python Code file]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        expr (): 
+        type (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     if type in [&#34;assign&#34;, &#34;expr&#34;, &#34;binop_nested&#34;, &#34;constant&#34;]:
         expr_cycles, hw_need = schedule(expr, type)
@@ -759,15 +759,15 @@ def get_stats(cfg):
 <div class="desc"><p>[Schedules the expr from AST]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>expr</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>expr</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>type</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -777,11 +777,11 @@ def get_stats(cfg):
     &#34;&#34;&#34;[Schedules the expr from AST]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
+        expr (): 
+        type (): 
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
     # upsamplelloops

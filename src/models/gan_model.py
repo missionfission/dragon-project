@@ -168,10 +168,10 @@ def gan_graph(training=False):
     """[summary]
 
     Args:
-        training (bool, optional): [description]. Defaults to False.
+        training (bool, optional): . Defaults to False.
 
     Returns:
-        [type]: [description]
+        : 
     """
     netD = Discriminator(ngpu).to(device)
     netG = Generator(ngpu).to(device)

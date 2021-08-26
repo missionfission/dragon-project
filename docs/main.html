@@ -65,14 +65,14 @@ def design_runner(
     &#34;&#34;&#34;Runs the Input Graph and Optimizes Design 
 
     Args:
-        graph_set ([type]): [description]
-        backprop (bool, optional): [description]. Defaults to False.
-        print_stats (bool, optional): [description]. Defaults to False.
-        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
-        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        graph_set (): 
+        backprop (bool, optional): . Defaults to False.
+        print_stats (bool, optional): . Defaults to False.
+        file (str, optional): . Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): . Defaults to &#34;logs/stats.txt&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
 
     time_list = []
@@ -147,14 +147,14 @@ def design_tech_runner(
     &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
 
     Args:
-        graph_set ([type]): [description]
-        backprop (bool, optional): [description]. Defaults to False.
-        print_stats (bool, optional): [description]. Defaults to False.
-        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
-        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        graph_set (): 
+        backprop (bool, optional): . Defaults to False.
+        print_stats (bool, optional): . Defaults to False.
+        file (str, optional): . Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): . Defaults to &#34;logs/stats.txt&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     num_iterations = 50
     for graph in graph_set:
@@ -203,14 +203,14 @@ def perf(
     &#34;&#34;&#34;
 
     Args:
-        graph ([type]): [description]
-        backprop ([type]): [description]
-        print_stats ([type]): [description]
-        filename ([type]): [description]
-        mapping (str, optional): [description]. Defaults to &#34;nn_dataflow&#34;.
+        graph (): 
+        backprop (): 
+        print_stats (): 
+        filename (): 
+        mapping (str, optional): . Defaults to &#34;nn_dataflow&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     mapper = Mapper(hwfile=filename)
     if mapping == &#34;asap&#34;:
@@ -231,8 +231,8 @@ def perf(
 def all_design_updates(graph, backprop):
     &#34;&#34;&#34;Plots the Design Parameters Updates in Backward Pass on Running a Given DFG
     Args:
-        graph ([type]): [description]
-        backprop ([type]): True to Run the Workload in Training
+        graph (): 
+        backprop (): True to Run the Workload in Training
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
@@ -271,8 +271,8 @@ def all_design_updates(graph, backprop):
 def all_tech_updates(graph, backprop):
     &#34;&#34;&#34;Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG
     Args:
-        graph ([type]): [description]
-        backprop ([type]): [description]
+        graph (): 
+        backprop (): 
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
@@ -413,11 +413,11 @@ def sweep(graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *
     &#34;&#34;&#34;
     Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.
     Args:
-        graph_list ([type]): List of AI/Non AI Workloads to Run
-        backprop ([type]): [description]
-        names ([type], optional): [description]. Defaults to None.
-        plot (str, optional): [description]. Defaults to &#34;time&#34;.
-        area_range (int, optional): [description]. Defaults to 1.
+        graph_list (): List of AI/Non AI Workloads to Run
+        backprop (): 
+        names (, optional): . Defaults to None.
+        plot (str, optional): . Defaults to &#34;time&#34;.
+        area_range (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -721,13 +721,13 @@ def sweep(graph_list, backprop, names=None, plot=&#34;time&#34;, area_range=1, *
 def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
     &#34;&#34;&#34; No. of Monolithic Memory Layers Required by the Workloads 
     Args:
-        graph_list ([type]): [description]
-        backprop ([type]): [description]
-        names ([type], optional): [description]. Defaults to None.
-        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+        graph_list (): 
+        backprop (): 
+        names (, optional): . Defaults to None.
+        plot (str, optional): . Defaults to &#34;time&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(6, 6))
     total_mem = []
@@ -814,9 +814,9 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>Plots the Design Parameters Updates in Backward Pass on Running a Given DFG</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
+<dt><strong><code>graph</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code></code></dt>
 <dd>True to Run the Workload in Training</dd>
 </dl></div>
 <details class="source">
@@ -826,8 +826,8 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <pre><code class="python">def all_design_updates(graph, backprop):
     &#34;&#34;&#34;Plots the Design Parameters Updates in Backward Pass on Running a Given DFG
     Args:
-        graph ([type]): [description]
-        backprop ([type]): True to Run the Workload in Training
+        graph (): 
+        backprop (): True to Run the Workload in Training
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
@@ -870,10 +870,10 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -882,8 +882,8 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <pre><code class="python">def all_tech_updates(graph, backprop):
     &#34;&#34;&#34;Plots the Technology Parameters Updates in Backward Pass on Running a Given DFG
     Args:
-        graph ([type]): [description]
-        backprop ([type]): [description]
+        graph (): 
+        backprop (): 
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax2 = ax.twinx()
@@ -935,21 +935,21 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>Runs the Input Graph and Optimizes Design </p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph_set</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph_set</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 <dt><strong><code>backprop</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>[description]. Defaults to False.</dd>
+<dd>. Defaults to False.</dd>
 <dt><strong><code>print_stats</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>[description]. Defaults to False.</dd>
+<dd>. Defaults to False.</dd>
 <dt><strong><code>file</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "default.yaml".</dd>
+<dd>. Defaults to "default.yaml".</dd>
 <dt><strong><code>stats_file</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "logs/stats.txt".</dd>
+<dd>. Defaults to "logs/stats.txt".</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -965,14 +965,14 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
     &#34;&#34;&#34;Runs the Input Graph and Optimizes Design 
 
     Args:
-        graph_set ([type]): [description]
-        backprop (bool, optional): [description]. Defaults to False.
-        print_stats (bool, optional): [description]. Defaults to False.
-        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
-        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        graph_set (): 
+        backprop (bool, optional): . Defaults to False.
+        print_stats (bool, optional): . Defaults to False.
+        file (str, optional): . Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): . Defaults to &#34;logs/stats.txt&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
 
     time_list = []
@@ -1044,21 +1044,21 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>[Runs the Input Graph : Optimizes Design and Technology]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph_set</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph_set</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 <dt><strong><code>backprop</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>[description]. Defaults to False.</dd>
+<dd>. Defaults to False.</dd>
 <dt><strong><code>print_stats</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>[description]. Defaults to False.</dd>
+<dd>. Defaults to False.</dd>
 <dt><strong><code>file</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "default.yaml".</dd>
+<dd>. Defaults to "default.yaml".</dd>
 <dt><strong><code>stats_file</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "logs/stats.txt".</dd>
+<dd>. Defaults to "logs/stats.txt".</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1074,14 +1074,14 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
     &#34;&#34;&#34;[Runs the Input Graph : Optimizes Design and Technology]
 
     Args:
-        graph_set ([type]): [description]
-        backprop (bool, optional): [description]. Defaults to False.
-        print_stats (bool, optional): [description]. Defaults to False.
-        file (str, optional): [description]. Defaults to &#34;default.yaml&#34;.
-        stats_file (str, optional): [description]. Defaults to &#34;logs/stats.txt&#34;.
+        graph_set (): 
+        backprop (bool, optional): . Defaults to False.
+        print_stats (bool, optional): . Defaults to False.
+        file (str, optional): . Defaults to &#34;default.yaml&#34;.
+        stats_file (str, optional): . Defaults to &#34;logs/stats.txt&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     num_iterations = 50
     for graph in graph_set:
@@ -1130,21 +1130,21 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <dd>
 <div class="desc"><h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>print_stats</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>filename</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>print_stats</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>filename</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 <dt><strong><code>mapping</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "nn_dataflow".</dd>
+<dd>. Defaults to "nn_dataflow".</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1156,14 +1156,14 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
     &#34;&#34;&#34;
 
     Args:
-        graph ([type]): [description]
-        backprop ([type]): [description]
-        print_stats ([type]): [description]
-        filename ([type]): [description]
-        mapping (str, optional): [description]. Defaults to &#34;nn_dataflow&#34;.
+        graph (): 
+        backprop (): 
+        print_stats (): 
+        filename (): 
+        mapping (str, optional): . Defaults to &#34;nn_dataflow&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     mapper = Mapper(hwfile=filename)
     if mapping == &#34;asap&#34;:
@@ -1298,19 +1298,19 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>No. of Monolithic Memory Layers Required by the Workloads </p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph_list</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>names</code></strong> :&ensp;<code>[type]</code>, optional</dt>
-<dd>[description]. Defaults to None.</dd>
+<dt><strong><code>graph_list</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>names</code></strong> :&ensp;<code></code>, optional</dt>
+<dd>. Defaults to None.</dd>
 <dt><strong><code>plot</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "time".</dd>
+<dd>. Defaults to "time".</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1319,13 +1319,13 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <pre><code class="python">def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#34;):
     &#34;&#34;&#34; No. of Monolithic Memory Layers Required by the Workloads 
     Args:
-        graph_list ([type]): [description]
-        backprop ([type]): [description]
-        names ([type], optional): [description]. Defaults to None.
-        plot (str, optional): [description]. Defaults to &#34;time&#34;.
+        graph_list (): 
+        backprop (): 
+        names (, optional): . Defaults to None.
+        plot (str, optional): . Defaults to &#34;time&#34;.
 
     Returns:
-        [type]: [description]
+        : 
     &#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=(6, 6))
     total_mem = []
@@ -1405,16 +1405,16 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
 <div class="desc"><p>Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph_list</code></strong> :&ensp;<code>[type]</code></dt>
+<dt><strong><code>graph_list</code></strong> :&ensp;<code></code></dt>
 <dd>List of AI/Non AI Workloads to Run</dd>
-<dt><strong><code>backprop</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>names</code></strong> :&ensp;<code>[type]</code>, optional</dt>
-<dd>[description]. Defaults to None.</dd>
+<dt><strong><code>backprop</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>names</code></strong> :&ensp;<code></code>, optional</dt>
+<dd>. Defaults to None.</dd>
 <dt><strong><code>plot</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>[description]. Defaults to "time".</dd>
+<dd>. Defaults to "time".</dd>
 <dt><strong><code>area_range</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>[description]. Defaults to 1.</dd>
+<dd>. Defaults to 1.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1424,11 +1424,11 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot=&#34;time&#3
     &#34;&#34;&#34;
     Sweeps over Connectivity, Precision, Nodes (nm), Area Budget and Uniform/Non Uniform Memory Configurations.
     Args:
-        graph_list ([type]): List of AI/Non AI Workloads to Run
-        backprop ([type]): [description]
-        names ([type], optional): [description]. Defaults to None.
-        plot (str, optional): [description]. Defaults to &#34;time&#34;.
-        area_range (int, optional): [description]. Defaults to 1.
+        graph_list (): List of AI/Non AI Workloads to Run
+        backprop (): 
+        names (, optional): . Defaults to None.
+        plot (str, optional): . Defaults to &#34;time&#34;.
+        area_range (int, optional): . Defaults to 1.
     &#34;&#34;&#34;
     total_mem = show_memory_capacity_req(graph_list, backprop, names=names, plot=&#34;time&#34;)
     fig, ax = plt.subplots(figsize=(6, 6))

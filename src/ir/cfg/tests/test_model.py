@@ -112,7 +112,7 @@ class TestCFG(unittest.TestCase):
     """[summary]
 
     Args:
-        unittest ([type]): [description]
+        unittest (): 
     """
 
     def test_instanciation(self):

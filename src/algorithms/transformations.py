@@ -5,11 +5,11 @@ def transform_graph(graph, cond):
     """Transforms AST Graph into a New Graph
 
     Args:
-        graph ([type]): [description]
-        cond ([type]): [description]
+        graph (): 
+        cond (): 
 
     Returns:
-        [type]: [description]
+        : 
     """
     for src in graph:
         graph.edit(src, dst)

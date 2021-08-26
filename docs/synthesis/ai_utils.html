@@ -35,7 +35,7 @@ def get_reuse(node):
     &#34;&#34;&#34;Get Reuse Possible for Conv and Matmul nodes
 
     Args:
-        node ([type]): [description]
+        node (): 
     &#34;&#34;&#34;
     # for node.type in conv2d
     #
@@ -55,8 +55,8 @@ def complete_functional_config(graph, config, area_constraint=0):
 def generate_local_mem(graph, config):
     &#34;&#34;&#34; Create Scratchpad Memory Config from HW config
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     &#34;&#34;&#34;
     return config
 
@@ -65,8 +65,8 @@ def generate_systolic_array(graph, config):
     &#34;&#34;&#34;
     Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     &#34;&#34;&#34;
     total_eff = 0
     min_eff = 1
@@ -94,8 +94,8 @@ def generate_systolic_array(graph, config):
 def get_efficiency(graph_node, array_size):
     &#34;&#34;&#34;Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
     Args:
-        graph_node ([type]): [description]
-        array_size ([type]): [description]
+        graph_node (): 
+        array_size (): 
     &#34;&#34;&#34;
     efficiency = 0
     if node.type == &#34;aten::convolution&#34;:
@@ -156,10 +156,10 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <div class="desc"><p>Create Scratchpad Memory Config from HW config</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>config</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>config</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -168,8 +168,8 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <pre><code class="python">def generate_local_mem(graph, config):
     &#34;&#34;&#34; Create Scratchpad Memory Config from HW config
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     &#34;&#34;&#34;
     return config</code></pre>
 </details>
@@ -181,10 +181,10 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <div class="desc"><p>Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>config</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>config</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -194,8 +194,8 @@ This will be updated upon interations in the backward_pass_design</p></div>
     &#34;&#34;&#34;
     Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     &#34;&#34;&#34;
     total_eff = 0
     min_eff = 1
@@ -227,10 +227,10 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <div class="desc"><p>Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>graph_node</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
-<dt><strong><code>array_size</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>graph_node</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
+<dt><strong><code>array_size</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -239,8 +239,8 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <pre><code class="python">def get_efficiency(graph_node, array_size):
     &#34;&#34;&#34;Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
     Args:
-        graph_node ([type]): [description]
-        array_size ([type]): [description]
+        graph_node (): 
+        array_size (): 
     &#34;&#34;&#34;
     efficiency = 0
     if node.type == &#34;aten::convolution&#34;:
@@ -257,8 +257,8 @@ This will be updated upon interations in the backward_pass_design</p></div>
 <div class="desc"><p>Get Reuse Possible for Conv and Matmul nodes</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>[type]</code></dt>
-<dd>[description]</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code></code></dt>
+<dd></dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -268,7 +268,7 @@ This will be updated upon interations in the backward_pass_design</p></div>
     &#34;&#34;&#34;Get Reuse Possible for Conv and Matmul nodes
 
     Args:
-        node ([type]): [description]
+        node (): 
     &#34;&#34;&#34;
     # for node.type in conv2d
     #

@@ -6,7 +6,7 @@ def get_reuse(node):
     """Get Reuse Possible for Conv and Matmul nodes
 
     Args:
-        node ([type]): [description]
+        node (): 
     """
     # for node.type in conv2d
     #
@@ -26,8 +26,8 @@ def complete_functional_config(graph, config, area_constraint=0):
 def generate_local_mem(graph, config):
     """ Create Scratchpad Memory Config from HW config
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     """
     return config
 
@@ -36,8 +36,8 @@ def generate_systolic_array(graph, config):
     """
     Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes
     Args:
-        graph ([type]): [description]
-        config ([type]): [description]
+        graph (): 
+        config (): 
     """
     total_eff = 0
     min_eff = 1
@@ -65,8 +65,8 @@ def generate_systolic_array(graph, config):
 def get_efficiency(graph_node, array_size):
     """Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
     Args:
-        graph_node ([type]): [description]
-        array_size ([type]): [description]
+        graph_node (): 
+        array_size (): 
     """
     efficiency = 0
     if node.type == "aten::convolution":

@@ -7,12 +7,12 @@ def get_bottlenecks(graph, hw):
     """Finds the Bottlenecks from Timing Gradients (ASAP Mapped)
 
     Args:
-        graph ([type]): [description]
-        algo ([type]): [description]
-        hw ([type]): [description]
+        graph (): 
+        algo (): 
+        hw (): 
 
     Returns:
-        [type]: [description]
+        : 
     """
     bottlenecks = run_asap(hw)
     print(bottlenecks)
@@ -23,11 +23,11 @@ def optim_exec_bottlenecks(graph, hw):
     """Optimizes Execution Bottlenecks
 
     Args:
-        graph ([type]): [description]
-        hw ([type]): [description]
+        graph (): 
+        hw (): 
 
     Returns:
-        [type]: [description]
+        : 
     """
     for bottleneck in bottlenecks:
         node = lib_match(bottleneck.node())

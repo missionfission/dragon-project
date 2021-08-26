@@ -121,11 +121,11 @@ def schedule(expr, type):
     """[Schedules the expr from AST]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
+        expr (): 
+        type (): 
 
     Returns:
-        [type]: [description]
+        : 
     """
     # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
     # upsamplelloops
@@ -150,10 +150,10 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     """[Parse the input Python Code file]
 
     Args:
-        expr ([type]): [description]
-        type ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        expr (): 
+        type (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     """
     if type in ["assign", "expr", "binop_nested", "constant"]:
         expr_cycles, hw_need = schedule(expr, type)
@@ -193,9 +193,9 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
     """[summary]
 
     Args:
-        string ([type]): [description]
-        unrolled (int, optional): [description]. Defaults to 1.
-        loop_iters (int, optional): [description]. Defaults to 1.
+        string (): 
+        unrolled (int, optional): . Defaults to 1.
+        loop_iters (int, optional): . Defaults to 1.
     """
     if type(string) == ast.BinOp or ast.BoolOp:
         parse_code(astor.to_source(string), "binop_nested", unrolled)
@@ -276,8 +276,8 @@ def get_params(dfg, area_budget):
     """[summary]
 
     Args:
-        dfg ([type]): [description]
-        area_budget ([type]): [description]
+        dfg (): 
+        area_budget (): 
     """
     allocated_area = 0
     while allocated_area < 0.9 * area or allocated_area > 1.2 * area:
@@ -301,7 +301,7 @@ def allocate_memory_cfgs():
     """[allocate_memory_cfgs]
 
     Returns:
-        [type]: [description]
+        : 
     """
     mem_list = {}
     for key, value in memory_cfgs.items():
