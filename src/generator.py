@@ -62,7 +62,7 @@ def writeconfig(self, content, filename):
     )
 
 
-def backward_pass_design(self, scheduler, opts=None):
+def backward_pass_design(self, mapper, opts=None):
 
     """
     opts = ["energy", "time", "area", "edp"]
@@ -80,21 +80,19 @@ def backward_pass_design(self, scheduler, opts=None):
     6. Energy high due to slow compute
     
     """
-    config = scheduler.config
-    config["mm_compute"] = self.update_comp_design(
-        scheduler, scheduler.config["mm_compute"]
-    )
-    config["memory"] = self.update_mem_design(scheduler, scheduler.config["memory"])
+    config = mapper.config
+    config["mm_compute"] = self.update_comp_design(mapper, mapper.config["mm_compute"])
+    config["memory"] = self.update_mem_design(mapper, mapper.config["memory"])
 
     return config
 
 
-def backward_pass_tech(self, scheduler, opts=None):
+def backward_pass_tech(self, mapper, opts=None):
     """
     Backward pass over the Technology Parameters
 
     Args:
-        scheduler 
+        mapper 
         opts ( optional). Defaults to None.
 
     Returns:
@@ -102,31 +100,25 @@ def backward_pass_tech(self, scheduler, opts=None):
     """
     alpha = 20000
     beta = 4
-    technology = scheduler.technology
-    config = scheduler.config
+    technology = mapper.technology
+    config = mapper.config
     mem_config = config["memory"]
     comp_config = config["mm_compute"]
-    scheduler.compute_time = (
-        scheduler.total_cycles
-        - scheduler.bandwidth_idle_time
-        + scheduler.mem_size_idle_time
+    mapper.compute_time = (
+        mapper.total_cycles - mapper.bandwidth_idle_time + mapper.mem_size_idle_time
     )
     time_grads = {}
     energy_grads = {}
     # create a dictionary of time and energy grads calculation
-    time_grads["memory latency"] = (
-        scheduler.mem_size_idle_time
-    ) / scheduler.total_cycles
-    time_grads["compute latency"] = (scheduler.compute_time) / scheduler.total_cycles
+    time_grads["memory latency"] = (mapper.mem_size_idle_time) / mapper.total_cycles
+    time_grads["compute latency"] = (mapper.compute_time) / mapper.total_cycles
 
     # if mem energy consumption is too high at level 1, banks can be increased
-    energy_grads["memory energy"] = scheduler.mem_energy[0] / scheduler.total_energy
-    energy_grads["compute energy"] = scheduler.compute_energy / scheduler.total_energy
+    energy_grads["memory energy"] = mapper.mem_energy[0] / mapper.total_energy
+    energy_grads["compute energy"] = mapper.compute_energy / mapper.total_energy
 
     mem_config["level0"]["banks"] += (int)(
-        beta
-        * scheduler.mem_energy
-        / (np.sum(scheduler.mem_energy) + scheduler.compute_energy)
+        beta * mapper.mem_energy / (np.sum(mapper.mem_energy) + mapper.compute_energy)
     )
     # Compute_energy is too high, check if compute is larger than required, or slower than required
     # compute_array size can be reduced -> how does compute array size effect energy consumption ->
@@ -137,34 +129,34 @@ def backward_pass_tech(self, scheduler, opts=None):
     # if Energy is too high due to the leakage time : change sizing to energy efficient
     # If mem energy consumption is high -> which level ?
     # if mem_energy consumption is too high at level 0, its size can be reduced
-    scheduler.technology = technology
+    mapper.technology = technology
     return config
 
 
-def update_comp_design(self, scheduler, comp_config):
+def update_comp_design(self, mapper, comp_config):
     """
 
     Args:
-        scheduler 
+        mapper 
         comp_config 
 
     Returns:
         
     """
-    scheduler.compute_time = scheduler.total_cycles - (
-        scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time
+    mapper.compute_time = mapper.total_cycles - (
+        mapper.bandwidth_idle_time + mapper.mem_size_idle_time
     )
-    if scheduler.mem_size_idle_time > 0.90 * scheduler.total_cycles:
+    if mapper.mem_size_idle_time > 0.90 * mapper.total_cycles:
         gamma = 3
-        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+        pe_descent = ((mapper.compute_time) / mapper.total_cycles) / (
             comp_config["N_PE"] * comp_config["size"] ** 2
         )
         comp_config["N_PE"] += int(pe_descent * gamma)
         print("N_PEs changed")
 
-    if scheduler.mem_size_idle_time < 0.01 * scheduler.total_cycles:
+    if mapper.mem_size_idle_time < 0.01 * mapper.total_cycles:
         gamma = 3
-        pe_descent = ((scheduler.compute_time) / scheduler.total_cycles) / (
+        pe_descent = ((mapper.compute_time) / mapper.total_cycles) / (
             comp_config["N_PE"] * comp_config["size"] ** 2
         )
         comp_config["N_PE"] -= int(pe_descent * gamma)
@@ -172,36 +164,36 @@ def update_comp_design(self, scheduler, comp_config):
     return comp_config
 
 
-def update_mem_design(self, scheduler, mem_config):
+def update_mem_design(self, mapper, mem_config):
     """
     
 
     Args:
-        scheduler 
+        mapper 
         mem_config 
 
     Returns:
         
     """
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
-    # print("Bandwidth Idle Time", scheduler.bandwidth_idle_time)
-    # print("Compute Idle Time", scheduler.compute_idle_time)
-    # print("Memory Size Idle Time", scheduler.mem_size_idle_time)
+    # print("Bandwidth Idle Time", mapper.bandwidth_idle_time)
+    # print("Compute Idle Time", mapper.compute_idle_time)
+    # print("Memory Size Idle Time", mapper.mem_size_idle_time)
     ## Sweep Connectivity : External bandwidth is sweeped : Bandwidth cannot be a bottleneck, say connectivity between 8 and 128
     alpha = 30000
     beta = 10
-    # if scheduler.bandwidth_idle_time > 0.1 * scheduler.total_cycles:
-    if scheduler.force_connectivity == 0:
-        mem_config["level" + str(scheduler.mle - 1)]["banks"] += (int)(
-            beta * scheduler.bandwidth_idle_time / scheduler.total_cycles
+    # if mapper.bandwidth_idle_time > 0.1 * mapper.total_cycles:
+    if mapper.force_connectivity == 0:
+        mem_config["level" + str(mapper.mle - 1)]["banks"] += (int)(
+            beta * mapper.bandwidth_idle_time / mapper.total_cycles
         )
     ## Force Connectivity : External bandwidth is forced, then cannot change anything
     ## If Mem Size idle time, Update mem size, update of size is proportional to the sizing of the memory
     # print("Memory Size old", mem_config["level0"]["size"])
 
-    # if scheduler.mem_size_idle_time > 0.1 * scheduler.total_cycles:
+    # if mapper.mem_size_idle_time > 0.1 * mapper.total_cycles:
     mem_config["level0"]["size"] += (int)(
-        alpha * scheduler.mem_size_idle_time / scheduler.total_cycles
+        alpha * mapper.mem_size_idle_time / mapper.total_cycles
     )
     # print("Memory Size new", mem_config["level0"]["size"])
 
@@ -284,7 +276,7 @@ def get_mem_props(size, width, banks):
     return a[0, 5], a[0, 6], a[0, 7], a[0, 8] * 10 ** 4
 
 
-def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=False):
+def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=False):
     """
     Execution statistics generated here : 
 
@@ -295,27 +287,25 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     3. Timing and Energy Breakdown of Components 
     """
     if backprop:
-        scheduler.total_cycles = (
-            2 * scheduler.total_cycles
-            + backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        mapper.total_cycles = (
+            2 * mapper.total_cycles
+            + backprop_memory // mapper.mem_read_bw[mapper.mle - 1]
         )
-        scheduler.mem_read_access[0] *= 2
-        scheduler.mem_write_access[0] *= 2
-        scheduler.mem_read_access[1] += backprop_memory
-        scheduler.mem_write_access[1] += backprop_memory
-        scheduler.bandwidth_idle_time += (
-            backprop_memory // scheduler.mem_read_bw[scheduler.mle - 1]
+        mapper.mem_read_access[0] *= 2
+        mapper.mem_write_access[0] *= 2
+        mapper.mem_read_access[1] += backprop_memory
+        mapper.mem_write_access[1] += backprop_memory
+        mapper.bandwidth_idle_time += (
+            backprop_memory // mapper.mem_read_bw[mapper.mle - 1]
         )
-    config = scheduler.config
+    config = mapper.config
     mem_config = config["memory"]
     mm_compute = config["mm_compute"]
 
     total_energy = 0
-    mem_energy = np.zeros((scheduler.mle))
+    mem_energy = np.zeros((mapper.mle))
     rf_accesses = (
-        scheduler.total_cycles
-        - scheduler.bandwidth_idle_time
-        - scheduler.mem_size_idle_time
+        mapper.total_cycles - mapper.bandwidth_idle_time - mapper.mem_size_idle_time
     )
     rf_energy = (
         mm_compute["N_PE"]
@@ -329,34 +319,30 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
     compute_energy = (
         mm_compute["N_PE"]
         * (mm_compute["size"] ** 2)
-        * (
-            scheduler.total_cycles
-            - scheduler.bandwidth_idle_time
-            - scheduler.mem_size_idle_time
-        )
+        * (mapper.total_cycles - mapper.bandwidth_idle_time - mapper.mem_size_idle_time)
         / 4
         * eff
         * mm_compute["per_op_energy"]
     )
     # illusion_leakage = (
-    #     3.1 * 2 * (scheduler.bandwidth_idle_time + scheduler.mem_size_idle_time)
+    #     3.1 * 2 * (mapper.bandwidth_idle_time + mapper.mem_size_idle_time)
     # )
-    for i in range(scheduler.mle - 1):
+    for i in range(mapper.mle - 1):
         memory = config["memory"]["level" + str(i)]
         read_energy = float(memory["read_energy"])
         write_energy = float(memory["write_energy"])
         leakage_power = float(memory["leakage_power"])
         mem_energy[i] = (
-            scheduler.mem_read_access[i] * read_energy
-            + scheduler.mem_write_access[i] * write_energy
-            + leakage_power * scheduler.total_cycles / 1000
+            mapper.mem_read_access[i] * read_energy
+            + mapper.mem_write_access[i] * write_energy
+            + leakage_power * mapper.total_cycles / 1000
         )
         # print(read_energy, write_energy, leakage_power)
         # print(mem_energy)
-    mem_energy[scheduler.mle - 1] = (
-        scheduler.mem_read_access[1] * config["memory"]["level1"]["read_energy"]
-        + scheduler.mem_write_access[1] * config["memory"]["level1"]["write_energy"]
-    ) + scheduler.total_cycles * config["memory"]["level1"]["leakage_power"]
+    mem_energy[mapper.mle - 1] = (
+        mapper.mem_read_access[1] * config["memory"]["level1"]["read_energy"]
+        + mapper.mem_write_access[1] * config["memory"]["level1"]["write_energy"]
+    ) + mapper.total_cycles * config["memory"]["level1"]["leakage_power"]
 
     rf_area = config["rf"]["area"] * mm_compute["N_PE"] * mm_compute["size"]
     compute_area = (
@@ -364,95 +350,95 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
         * config["mm_compute"]["N_PE"]
         * (config["mm_compute"]["size"] ** 2)
     )
-    mem_area = float(scheduler.config["memory"]["level0"]["area"])
+    mem_area = float(mapper.config["memory"]["level0"]["area"])
     total_area = mem_area + compute_area + rf_area
     total_energy = np.sum(mem_energy) + compute_energy + rf_energy
     # total_energy = np.sum(mem_energy) + compute_energy + illusion_leakage
-    scheduler.mem_energy = mem_energy
-    scheduler.compute_energy = compute_energy
-    scheduler.logger.info("===========================")
-    scheduler.logger.info("Total No of cycles  = %d ", scheduler.total_cycles)
-    scheduler.logger.info("Bandwidth Idle Time  = %d ", scheduler.bandwidth_idle_time)
-    scheduler.logger.info("Memory Size Idle Time = %d", scheduler.mem_size_idle_time)
-    scheduler.logger.info("================ Energy Description ======================")
-    scheduler.logger.info(
+    mapper.mem_energy = mem_energy
+    mapper.compute_energy = compute_energy
+    mapper.logger.info("===========================")
+    mapper.logger.info("Total No of cycles  = %d ", mapper.total_cycles)
+    mapper.logger.info("Bandwidth Idle Time  = %d ", mapper.bandwidth_idle_time)
+    mapper.logger.info("Memory Size Idle Time = %d", mapper.mem_size_idle_time)
+    mapper.logger.info("================ Energy Description ======================")
+    mapper.logger.info(
         "Memory Level 0 Energy Consumption  = %f ", (mem_energy[0]) / total_energy
     )
-    scheduler.logger.info(
+    mapper.logger.info(
         "Memory Level 0 Energy Consumption Stats Read = %f, Write %f, Leakage %f ",
-        scheduler.mem_read_access[0] * read_energy / (mem_energy[0]),
-        scheduler.mem_write_access[0] * write_energy / (mem_energy[0]),
-        leakage_power * scheduler.total_cycles / 1000 / (mem_energy[0]),
+        mapper.mem_read_access[0] * read_energy / (mem_energy[0]),
+        mapper.mem_write_access[0] * write_energy / (mem_energy[0]),
+        leakage_power * mapper.total_cycles / 1000 / (mem_energy[0]),
     )
-    scheduler.logger.info(
+    mapper.logger.info(
         "Memory Level 1 Energy Consumption  = %f ", (mem_energy[1]) / total_energy
     )
-    scheduler.logger.info(
+    mapper.logger.info(
         "Memory Level 1 Energy Consumption Stats Read = %f, Write %f, Leakage %f ",
-        scheduler.mem_read_access[1]
+        mapper.mem_read_access[1]
         * config["memory"]["level1"]["read_energy"]
         / (mem_energy[1]),
-        scheduler.mem_write_access[1]
+        mapper.mem_write_access[1]
         * config["memory"]["level1"]["write_energy"]
         / (mem_energy[1]),
         config["memory"]["level1"]["leakage_power"]
-        * scheduler.total_cycles
+        * mapper.total_cycles
         / (mem_energy[1]),
     )
 
-    scheduler.logger.info(
+    mapper.logger.info(
         "Compute Energy Consumption  = %f ", compute_energy / total_energy
     )
-    scheduler.logger.info(
+    mapper.logger.info(
         "Register File Energy Consumption  = %f ", rf_energy / total_energy
     )
 
-    scheduler.logger.info(" Total Energy Consumption  = %d ", total_energy)
-    scheduler.logger.info("================ Area Description ======================")
-    scheduler.logger.info("Compute Area Consumption  = %d ", compute_area)
-    scheduler.logger.info("(32-bit) Register File Area Consumption  = %d ", rf_area)
-    scheduler.logger.info("Memory Area Consumption  = %d ", mem_area)
-    scheduler.logger.info("Total Area Consumption  = %d ", total_area)
-    scheduler.logger.info("================ Design Description ======================")
-    scheduler.logger.info("No. of PEs = %d", mm_compute["N_PE"])
-    scheduler.logger.info("Size of Each Systolic Array = %d", mm_compute["size"])
-    scheduler.logger.info(
+    mapper.logger.info(" Total Energy Consumption  = %d ", total_energy)
+    mapper.logger.info("================ Area Description ======================")
+    mapper.logger.info("Compute Area Consumption  = %d ", compute_area)
+    mapper.logger.info("(32-bit) Register File Area Consumption  = %d ", rf_area)
+    mapper.logger.info("Memory Area Consumption  = %d ", mem_area)
+    mapper.logger.info("Total Area Consumption  = %d ", total_area)
+    mapper.logger.info("================ Design Description ======================")
+    mapper.logger.info("No. of PEs = %d", mm_compute["N_PE"])
+    mapper.logger.info("Size of Each Systolic Array = %d", mm_compute["size"])
+    mapper.logger.info(
         "(32-bit) Register File Size = %d", mm_compute["N_PE"] * mm_compute["size"]
     )
-    scheduler.logger.info("Memory Level-0 Banks  = %d", mem_config["level0"]["banks"])
-    scheduler.logger.info("Memory Level-0 Size = %d", mem_config["level0"]["size"])
-    scheduler.logger.info(
+    mapper.logger.info("Memory Level-0 Banks  = %d", mem_config["level0"]["banks"])
+    mapper.logger.info("Memory Level-0 Size = %d", mem_config["level0"]["size"])
+    mapper.logger.info(
         "Memory Level-1 Connectivity = %d",
-        mem_config["level" + str(scheduler.mle - 1)]["banks"],
+        mem_config["level" + str(mapper.mle - 1)]["banks"],
     )
 
     if print_stats:
         print("==================================")
         print(
             "Time",
-            int(scheduler.total_cycles),
-            int(scheduler.bandwidth_idle_time),
-            int(scheduler.mem_size_idle_time),
+            int(mapper.total_cycles),
+            int(mapper.bandwidth_idle_time),
+            int(mapper.mem_size_idle_time),
         )
         print(
             "Energy",
             int(total_energy),
             int(compute_energy),
             int(rf_energy),
-            int(scheduler.mem_read_access[0] * read_energy),
-            int(scheduler.mem_write_access[0] * write_energy),
-            int(leakage_power * scheduler.total_cycles / 1000),
-            int(scheduler.mem_read_access[1] * read_energy),
-            int(scheduler.mem_write_access[1] * read_energy),
-            int(leakage_power * scheduler.total_cycles),
+            int(mapper.mem_read_access[0] * read_energy),
+            int(mapper.mem_write_access[0] * write_energy),
+            int(leakage_power * mapper.total_cycles / 1000),
+            int(mapper.mem_read_access[1] * read_energy),
+            int(mapper.mem_write_access[1] * read_energy),
+            int(leakage_power * mapper.total_cycles),
         )
         print("Area", int(total_area), int(compute_area), int(rf_area), int(mem_area))
         print(
             "memory accesses",
-            int(scheduler.mem_read_access[0]),
-            int(scheduler.mem_write_access[0]),
-            int(scheduler.mem_read_access[1]),
-            int(scheduler.mem_write_access[1]),
+            int(mapper.mem_read_access[0]),
+            int(mapper.mem_write_access[0]),
+            int(mapper.mem_read_access[1]),
+            int(mapper.mem_write_access[1]),
         )
         print(
             "rf access", 2 * mm_compute["N_PE"] * mm_compute["size"] * rf_accesses / 4
@@ -462,49 +448,46 @@ def save_stats(self, scheduler, backprop=False, backprop_memory=0, print_stats=F
             "No. of PEs : ",
             mm_compute["N_PE"],
             "\n Memory Level-1 Connectivity : ",
-            mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            mem_config["level" + str(mapper.mle - 1)]["banks"],
             "\n Memory Level-0 Size : ",
             mem_config["level0"]["size"],
             "\n Memory Level-0 Read Energy : ",
             mem_config["level0"]["read_energy"],
         )
 
-        print("Tech Params", scheduler.technology)
+        print("Tech Params", mapper.technology)
 
-    # print(scheduler.total_cycles, scheduler.mem_size_idle_time, scheduler.bandwidth_idle_time)
-    assert scheduler.total_cycles > scheduler.bandwidth_idle_time
-    assert scheduler.total_cycles > scheduler.mem_size_idle_time
-    assert scheduler.bandwidth_idle_time >= 0
-    assert scheduler.mem_size_idle_time >= 0
+    # print(mapper.total_cycles, mapper.mem_size_idle_time, mapper.bandwidth_idle_time)
+    assert mapper.total_cycles > mapper.bandwidth_idle_time
+    assert mapper.total_cycles > mapper.mem_size_idle_time
+    assert mapper.bandwidth_idle_time >= 0
+    assert mapper.mem_size_idle_time >= 0
     return (
         [
-            scheduler.total_cycles,
-            int(scheduler.bandwidth_idle_time),
-            int(scheduler.mem_size_idle_time),  #
-            scheduler.compute_idle_time,
+            mapper.total_cycles,
+            int(mapper.bandwidth_idle_time),
+            int(mapper.mem_size_idle_time),  #
+            mapper.compute_idle_time,
         ],
         [
             int(total_energy),
             int(compute_energy),
-            int(scheduler.mem_read_access[0] * read_energy),
-            int(scheduler.mem_write_access[0] * write_energy),
-            int(leakage_power * scheduler.total_cycles / 1000),
+            int(mapper.mem_read_access[0] * read_energy),
+            int(mapper.mem_write_access[0] * write_energy),
+            int(leakage_power * mapper.total_cycles / 1000),
+            int(mapper.mem_read_access[1] * config["memory"]["level1"]["read_energy"]),
             int(
-                scheduler.mem_read_access[1] * config["memory"]["level1"]["read_energy"]
+                mapper.mem_write_access[1] * config["memory"]["level1"]["write_energy"]
             ),
-            int(
-                scheduler.mem_write_access[1]
-                * config["memory"]["level1"]["write_energy"]
-            ),
-            int(config["memory"]["level1"]["leakage_power"] * scheduler.total_cycles),
+            int(config["memory"]["level1"]["leakage_power"] * mapper.total_cycles),
         ],
         [
-            mem_config["level" + str(scheduler.mle - 1)]["banks"],
+            mem_config["level" + str(mapper.mle - 1)]["banks"],
             int(int(mem_config["level0"]["size"]) / 1000),
             mem_config["level0"]["frequency"],
             mem_config["level0"]["read_energy"],
         ],
-        scheduler.technology,
+        mapper.technology,
         total_area,
     )
 

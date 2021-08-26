@@ -40,7 +40,7 @@ beta</p></div>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="generator.backward_pass_design"><code class="name flex">
-<span>def <span class="ident">backward_pass_design</span></span>(<span>self, scheduler, opts=None)</span>
+<span>def <span class="ident">backward_pass_design</span></span>(<span>self, mapper, opts=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>opts = ["energy", "time", "area", "edp"]</p>
@@ -66,12 +66,12 @@ beta</p></div>
 </ol></div>
 </dd>
 <dt id="generator.backward_pass_tech"><code class="name flex">
-<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, scheduler, opts=None)</span>
+<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, mapper, opts=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Backward pass over the Technology Parameters</p>
 <h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 opts ( optional). Defaults to None.
 Returns:</p></div>
 </dd>
@@ -117,7 +117,7 @@ banks </p>
 <div class="desc"><p>Plots Multiple Improvement Paths for Technology Targets</p></div>
 </dd>
 <dt id="generator.save_stats"><code class="name flex">
-<span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
+<span>def <span class="ident">save_stats</span></span>(<span>self, mapper, backprop=False, backprop_memory=0, print_stats=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Execution statistics generated here : </p>
@@ -134,20 +134,20 @@ banks </p>
 </ol></div>
 </dd>
 <dt id="generator.update_comp_design"><code class="name flex">
-<span>def <span class="ident">update_comp_design</span></span>(<span>self, scheduler, comp_config)</span>
+<span>def <span class="ident">update_comp_design</span></span>(<span>self, mapper, comp_config)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 comp_config
 Returns:</p></div>
 </dd>
 <dt id="generator.update_mem_design"><code class="name flex">
-<span>def <span class="ident">update_mem_design</span></span>(<span>self, scheduler, mem_config)</span>
+<span>def <span class="ident">update_mem_design</span></span>(<span>self, mapper, mem_config)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 mem_config
 Returns:</p></div>
 </dd>
@@ -195,7 +195,7 @@ Returns:</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="generator.Generator.backward_pass_design"><code class="name flex">
-<span>def <span class="ident">backward_pass_design</span></span>(<span>self, scheduler, opts=None)</span>
+<span>def <span class="ident">backward_pass_design</span></span>(<span>self, mapper, opts=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>opts = ["energy", "time", "area", "edp"]</p>
@@ -221,17 +221,17 @@ Returns:</p></div>
 </ol></div>
 </dd>
 <dt id="generator.Generator.backward_pass_tech"><code class="name flex">
-<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, scheduler, opts=None)</span>
+<span>def <span class="ident">backward_pass_tech</span></span>(<span>self, mapper, opts=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Backward pass over the Technology Parameters</p>
 <h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 opts ( optional). Defaults to None.
 Returns:</p></div>
 </dd>
 <dt id="generator.Generator.save_stats"><code class="name flex">
-<span>def <span class="ident">save_stats</span></span>(<span>self, scheduler, backprop=False, backprop_memory=0, print_stats=False)</span>
+<span>def <span class="ident">save_stats</span></span>(<span>self, mapper, backprop=False, backprop_memory=0, print_stats=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Execution statistics generated here : </p>
@@ -248,20 +248,20 @@ Returns:</p></div>
 </ol></div>
 </dd>
 <dt id="generator.Generator.update_comp_design"><code class="name flex">
-<span>def <span class="ident">update_comp_design</span></span>(<span>self, scheduler, comp_config)</span>
+<span>def <span class="ident">update_comp_design</span></span>(<span>self, mapper, comp_config)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 comp_config
 Returns:</p></div>
 </dd>
 <dt id="generator.Generator.update_mem_design"><code class="name flex">
-<span>def <span class="ident">update_mem_design</span></span>(<span>self, scheduler, mem_config)</span>
+<span>def <span class="ident">update_mem_design</span></span>(<span>self, mapper, mem_config)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="args">Args</h2>
-<p>scheduler
+<p>mapper
 mem_config
 Returns:</p></div>
 </dd>
