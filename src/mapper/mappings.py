@@ -1,11 +1,18 @@
 from mapper import Mapper
 
 
-"""Provides Mapping Interface for 5 types of mapping :
+"""
+
+Provides Mapping Interface for 5 types of mapping :
+
 1. ASAP Mapping
+
 2. Energy Efficienct Mapping
+
 3. Energy Efficienct Mapping with Power Gating
+
 4. NN-Dataflow Mapping
+
 5. Illusion Mapping for Multiple Chips
 """
 
