@@ -35,6 +35,7 @@ def generate_local_mem(graph, config):
 def generate_systolic_array(graph, config):
     """
     Best Systolic Array Sizing for the Entire Workload by Evaluating Mapping Efficiency at Different Sizes
+
     Args:
         graph (): 
         config (): 
@@ -63,7 +64,8 @@ def generate_systolic_array(graph, config):
 
 
 def get_efficiency(graph_node, array_size):
-    """Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
+    """
+    Efficiency of Mapping a node on Systolic Array of Size Array_Size [s_i, s_j]
     Args:
         graph_node (): 
         array_size (): 

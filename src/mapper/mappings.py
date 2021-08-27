@@ -40,9 +40,10 @@ def run_asap(self, graph):
     slower so it will take its own time
 
     Compute Management Scenarios :
-        1. Pipelined vs Parallel Mapper 
-        2. When do vector operations happen 
-        3. Scale up vs Scale out for Systolic Arrays
+
+    1. Pipelined vs Parallel Mapper 
+    2. When do vector operations happen 
+    3. Scale up vs Scale out for Systolic Arrays
 
     """
 
@@ -593,14 +594,14 @@ def run_nn_dataflow(self, graph):
     mem_free = True
     for n, node in enumerate(graph.nodes):
         node.mem_fetch = node.weights
+    
     for n, node in enumerate(graph.nodes):
 
         # These are last level read/write accesses
         compute_expense, weights = node.get_stats()
         """
         mem_reuse, comp_reuse = get_reuse(node)
-        time_reuse = 
-        # reusing memory : then time_reuse = time_taken - time_without_reuse
+        time_reuse = time_taken - time_without_reuse
         total_leakage_power = time_reuse *() # sum of leakage power of all
         is_reuse = True
         if(total_leakage_power > mem_reuse*mem_energy):
@@ -683,7 +684,9 @@ def run_nn_dataflow(self, graph):
 
 
 def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=False):
-    """ Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.'20
+    """ 
+    
+    Illusion Mapping for Deeper and Wider Networks from Radway et. al. Nat Ele.'20
 
     Args:
         graph (): 
