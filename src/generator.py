@@ -167,13 +167,11 @@ def update_comp_design(self, mapper, comp_config):
 def update_mem_design(self, mapper, mem_config):
     """
     
-
     Args:
         mapper 
         mem_config 
 
     Returns:
-        
     """
     #  Allow changing for bandwidth and Size_idle_time -> bottlenecks always consume more time/energy
     # print("Bandwidth Idle Time", mapper.bandwidth_idle_time)
@@ -284,7 +282,8 @@ def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=Fals
     
     2. Resource Utilization
     
-    3. Timing and Energy Breakdown of Components 
+    3. Timing and Energy Breakdown of Components
+
     """
     if backprop:
         mapper.total_cycles = (
@@ -499,9 +498,12 @@ def functions(technology, design):
     Args:
         technology 
         design 
-    """  # compute functions
+    """  
+    
+    # compute functions
     wire_cap, wire_res, node = technology["compute"]
     comp_config = design["compute"]
+    
     # memory functions
     (
         wire_cap,
@@ -516,9 +518,10 @@ def functions(technology, design):
     ) = technology["memory"]
     mem_config = design["memory"]
 
-    wire_cap = float(wire_cap)
-    sense_amp_time = float(sense_amp_time)
-    plogic_node = float(plogic_node)
+    # wire_cap = float(wire_cap)
+    # sense_amp_time = float(sense_amp_time)
+    # plogic_node = float(plogic_node)
+
     # mem_config["level0"]["write_latency"] = (
     #     0.558 * wire_cap + 1.4 * sense_amp_time + 1.4
     # )
@@ -551,6 +554,7 @@ def generate_tech_targets(graph, name, EDP=100):
     orderlist = []
     orderlist.append("connectivity")
     tech_targets = {}
+
     time_params = []
     energy_params = []
     tech_ratio_params = []
@@ -601,6 +605,8 @@ def generate_tech_targets(graph, name, EDP=100):
 #     step_cycles = read_bw_ll / self.mem_read_bw[self.mle - 1]
 # else:
 #     step_cycles = max(write_bw_ll / self.mem_write_bw[self.mle - 1])
+
+
 def improvement_paths():
     """
     Plots Multiple Improvement Paths for Technology Targets
