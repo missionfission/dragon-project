@@ -37,7 +37,6 @@ class Generator:
 
     def __init__(self, constraintfiles="max_constraints.yaml"):
         """
-
         Max constraints values : bounds 
         
         Args:
@@ -78,7 +77,6 @@ def backward_pass_design(self, mapper, opts=None):
     5. Energy high due to high memory bandwidth 
     
     6. Energy high due to slow compute
-    
     """
     config = mapper.config
     config["mm_compute"] = self.update_comp_design(mapper, mapper.config["mm_compute"])
@@ -96,7 +94,6 @@ def backward_pass_tech(self, mapper, opts=None):
         opts ( optional). Defaults to None.
 
     Returns:
-        
     """
     alpha = 20000
     beta = 4
@@ -135,13 +132,11 @@ def backward_pass_tech(self, mapper, opts=None):
 
 def update_comp_design(self, mapper, comp_config):
     """
-
     Args:
         mapper 
         comp_config 
 
     Returns:
-        
     """
     mapper.compute_time = mapper.total_cycles - (
         mapper.bandwidth_idle_time + mapper.mem_size_idle_time
@@ -166,7 +161,6 @@ def update_comp_design(self, mapper, comp_config):
 
 def update_mem_design(self, mapper, mem_config):
     """
-    
     Args:
         mapper 
         mem_config 
@@ -199,7 +193,6 @@ def update_mem_design(self, mapper, mem_config):
 
 
 def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
-
     """
     Opts = [frequency, read energy, write energy, leakage power, endurance]
 
@@ -283,7 +276,6 @@ def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=Fals
     2. Resource Utilization
     
     3. Timing and Energy Breakdown of Components
-
     """
     if backprop:
         mapper.total_cycles = (
