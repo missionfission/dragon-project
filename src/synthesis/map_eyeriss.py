@@ -6,7 +6,18 @@ from operator import mul, sub
 # from . import MemHierEnum as me
 # from . import Util
 # from .PhyDim2 import PhyDim2
+# Data
+FIL = 0
+IFM = 1
+OFM = 2
+NUM = 3
 
+# Mem
+DRAM = 0 
+GBUF = 1
+ITCN = 2
+REGF = 3
+NUM = 4
 
 def gen_nested_loop_desc(layer, batch_size, dim_array):
     """

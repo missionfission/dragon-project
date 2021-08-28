@@ -1,0 +1,5 @@
+OUTP = 0
+OFMP = 1
+BATP = 2
+INPP = 3
+NUM = 4
