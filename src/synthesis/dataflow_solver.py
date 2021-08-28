@@ -353,3 +353,7 @@ def gen_loopblocking_gbuf_regf(
             nested_loop_desc=nested_loop_desc,
             options=options,
         )
+
+
+def dataflow_solver_wrapper(node, self):
+    pass
