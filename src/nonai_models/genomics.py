@@ -1,16 +1,4 @@
-# Python implementation of DARWIN Algorithm
 # Python Implementation Denovo Single Gene Nanopore Sequencing by DARWIN-Whole Genome Alignment Workload
-# 
-# This notebook is a Python implementation of the DARWIN-WGA workflow.
-# 
-# The workflow is described in the following publication:
-# 
-# > **DARWIN-WGA: Single-Gene Nanopore Sequencing of Single-Cell DNA Barcodes**
-# >
-# > *Johannes Alneberg, Christopher Quince, Anders Andersson, Erik Jonsson, Johan Bengtsson*
-# >
-# > _Nature Biotechnology_, **Volume 34**, Issue 2, pages(?) 202–210, 2016.
-# >
 
 def read_fasta(fasta_file):
     """
