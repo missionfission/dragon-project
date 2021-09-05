@@ -2,9 +2,9 @@ import itertools
 
 import numpy as np
 
-# from . import DataCategoryEnum as de
-# from . import MemHierEnum as me
-# from . import Util
+from . import DataCategoryEnum as de
+from . import MemHierEnum as me
+from . import Util
 
 
 class NestedLoopDesc(object):

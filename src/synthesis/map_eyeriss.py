@@ -1,11 +1,11 @@
 import warnings
 from operator import mul, sub
 
-# from . import DataCategoryEnum as de
-# from . import LoopBlocking
-# from . import MemHierEnum as me
-# from . import Util
-# from .PhyDim2 import PhyDim2
+from . import DataCategoryEnum as de
+from . import LoopBlocking
+from . import MemHierEnum as me
+from . import Util
+from .PhyDim2 import PhyDim2
 # Data
 FIL = 0
 IFM = 1

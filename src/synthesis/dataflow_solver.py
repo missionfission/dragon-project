@@ -354,6 +354,3 @@ def gen_loopblocking_gbuf_regf(
             options=options,
         )
 
-
-def dataflow_solver_wrapper(node, self):
-    pass
