@@ -1,3 +1,9 @@
+Short Update : We will release stable features on the release-version branch. Master branche will be unstable with recent changes.
+
+To switch branch to release-1.0, use :
+
+git -b release-1.0
+
 ## DRAGON Framework Features :
 
 1. Runs on any Pytorch Model and provides the Graphical Analysis of Execution
