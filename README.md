@@ -2,7 +2,7 @@ Short Update : We will release stable features on the release-version branch. Ma
 
 To switch branch to release-1.0, use :
 
-git -b release-1.0
+git checkout release-1.0
 
 ## DRAGON Framework Features :
 
