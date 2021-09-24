@@ -561,20 +561,6 @@ def generate_tech_targets(graph, name, EDP=100):
     #     tech_targets[orderlist[i]] = int(improv) + 1
     #     total_benefit *= int(improv_ben)
 
-    if name == "BERT":
-        print("For Benefit of EDP ", EDP)
-        print("Generating Technology Targets")
-        print("Connectivity : 31x", "(T : 9.5, E : 2.3)")
-        print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
-        print("Logic Latency,  Connectivity : 2x", "(T: 1.9, E:1.1)")
-
-    if name == "hpcg":
-        print("For Benefit of EDP ", EDP)
-        print("Generating Technology Targets")
-        print("External Memory Connectivity : 31x", "(T : 9.5, E : 2.3)")
-        print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
-        print("Logic Latency,  NoC Connectivity : 2x", "(T: 1.9, E:1.1)")
-
     return tech_targets
 
 
