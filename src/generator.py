@@ -555,11 +555,11 @@ def generate_tech_targets(graph, name, EDP=100):
     energy_ratio_list = []
     # create the order list
     total_benefit = 1
-    # while total_benefit < benefit_target:
-    #     i += 1
-    #     improv, improv_ben = get_benefit(orderlist[i])
-    #     tech_targets[orderlist[i]] = int(improv) + 1
-    #     total_benefit *= int(improv_ben)
+    while total_benefit < benefit_target:
+        i += 1
+        improv, improv_ben = get_benefit(orderlist[i])
+        tech_targets[orderlist[i]] = int(improv) + 1
+        total_benefit *= int(improv_ben)
 
     return tech_targets
 
