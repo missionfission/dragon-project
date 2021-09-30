@@ -543,14 +543,13 @@ def generate_tech_targets(graph, name, EDP=100):
 
     Returns:
     """
-    orderlist = []
+    orderlist = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node"]
     orderlist.append("connectivity")
     tech_targets = {}
-
-    time_params = []
+    time_params = ["memory_size_idle_time", "memory_bandwidth_idle_time","compute_time"]
     energy_params = []
-    tech_ratio_params = []
-    tech_ratio_list = []
+    time_ratio_params = []
+    time_ratio_list = []
     energy_ratio_params = []
     energy_ratio_list = []
     # create the order list
@@ -563,7 +562,8 @@ def generate_tech_targets(graph, name, EDP=100):
 
     return tech_targets
 
-
+def get_benefit():
+    pass
 #############################################################################################################################
 
 # Snippet for Write Bandwidth
