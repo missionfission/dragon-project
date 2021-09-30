@@ -543,10 +543,10 @@ def generate_tech_targets(graph, name, EDP=100):
 
     Returns:
     """
-    orderlist = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node"]
+    orderlist = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node", "sense_amp_time"]
     orderlist.append("connectivity")
     tech_targets = {}
-    time_params = ["memory_size_idle_time", "memory_bandwidth_idle_time","compute_time"]
+    time_params = ["memory_size_idle_time", "memory_bandwidth_idle_time","compute_time","network_time"]
     energy_params = []
     time_ratio_params = []
     time_ratio_list = []
