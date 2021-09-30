@@ -104,8 +104,8 @@ def design_runner(
             in_area / area,
         )
 
-    # return time, energy, area
-    return time_list, energy_list, design_list, area
+    return time, energy, area
+#     return time_list, energy_list, design_list, area
 
 
 def design_tech_runner(
