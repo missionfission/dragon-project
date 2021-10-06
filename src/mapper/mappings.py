@@ -1,4 +1,4 @@
-from mapper import Mapper
+from mapper.mapper import Mapper
 
 
 """

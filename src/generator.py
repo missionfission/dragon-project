@@ -274,7 +274,7 @@ def get_mem_props(size, width, banks):
     return a[0, 5], a[0, 6], a[0, 7], a[0, 8] * 10 ** 4
 
 
-def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=False):
+def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=True):
     """
     Execution statistics generated here : 
 

@@ -433,232 +433,236 @@ def sweep(graph_list, backprop, names=None, plot="time", area_range=1, *args, **
             energy_list = []
             energy_list2 = []
             # connectivity = 2*j*32
-            for m, node in enumerate(node_name):
-                pitch_list = []
-                pitch_list2 = []
-                # if names[en] == "PageRank":
-                #     pitch_list = [
-                #         10000000,
-                #         1300000,
-                #         400000,
-                #         140000,
-                #         70000,
-                #         20000,
-                #         8000,
-                #     ]
-                # elif names[en] == "Genomics":
-                #     pitch_list = [
-                #         10000000,
-                #         900000,
-                #         400000,
-                #         200000,
-                #         100000,
-                #         70000,
-                #         50000,
-                #     ]
-                # elif names[en] == "SLAM":
-                #     pitch_list = [
-                #         10000000,
-                #         1600000,
-                #         600000,
-                #         180000,
-                #         90000,
-                #         40000,
-                #         20000,
-                #     ]
-                # else:
-                for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
-                    percent_time_list = []
-                    percent_time_list2 = []
-                    for percent in range(5, 95, 10):
+            # for m, node in enumerate(node_name):
+            pitch_list = []
+            pitch_list2 = []
+            # if names[en] == "PageRank":
+            #     pitch_list = [
+            #         10000000,
+            #         1300000,
+            #         400000,
+            #         140000,
+            #         70000,
+            #         20000,
+            #         8000,
+            #     ]
+            # elif names[en] == "Genomics":
+            #     pitch_list = [
+            #         10000000,
+            #         900000,
+            #         400000,
+            #         200000,
+            #         100000,
+            #         70000,
+            #         50000,
+            #     ]
+            # elif names[en] == "SLAM":
+            #     pitch_list = [
+            #         10000000,
+            #         1600000,
+            #         600000,
+            #         180000,
+            #         90000,
+            #         40000,
+            #         20000,
+            #     ]
+            # else:
+            for i, pitch in enumerate([10, 5, 3, 2, 1, 0.5, 0.1]):
+                percent_time_list = []
+                percent_time_list2 = []
+                for percent in range(5, 95, 10):
 
-                        connectivity_area = (
-                            percent * 1000 * 10 ** area_budget / node_density[m]
-                        )
-                        j = connectivity_area / (2 * 32 * pitch ** 2) / total_mem[en]
-                        mapper = Mapper(hwfile="illusion.yaml")
-                        generator = Generator()
-                        mapper.config["mm_compute"]["N_PE"] *= (
-                            10 ** area_budget * precision_density_factor[p]
-                        )
-                        mapper.config["mm_compute"]["frequency"] *= (
-                            node_speed[m] * precision_speed_factor[p]
-                        )
-                        mapper.config["mm_compute"]["per_op_energy"] *= node_energy[m]
-
-                        mapper.config["memory"]["level0"]["size"] *= (
-                            10 ** area_budget * precision_size_factor[p]
-                        )
-                        mapper.config["memory"]["level1"]["banks"] = 2
-                        mapper.config["memory"]["level1"]["banks"] *= j
-                        mapper.complete_config(mapper.config)
-                        mapper.run_asap(graph)
-                        (
-                            in_time,
-                            in_energy,
-                            design,
-                            tech,
-                            area,
-                        ) = generator.save_stats(
-                            mapper, backprop, get_backprop_memory(graph.nodes)
-                        )
-                        new_area = area + connectivity_area
-                        percent_time_list2.append(in_time[0])
-                        energy_list2.append(in_energy[0])
-
-                        j2 = connectivity_area / (2 * 32 * pitch ** 2)
-                        mapper = Mapper(hwfile="illusion.yaml")
-                        generator = Generator()
-                        mapper.config["mm_compute"]["N_PE"] *= (
-                            10 ** area_budget * precision_density_factor[p]
-                        )
-                        mapper.config["mm_compute"]["frequency"] *= (
-                            node_speed[m] * precision_speed_factor[p]
-                        )
-                        mapper.config["mm_compute"]["per_op_energy"] *= node_energy[m]
-
-                        mapper.config["memory"]["level0"]["size"] *= (
-                            10 ** area_budget * precision_size_factor[p]
-                        )
-                        mapper.config["memory"]["level1"]["banks"] = 2
-                        mapper.config["memory"]["level1"]["banks"] *= j2
-                        mapper.complete_config(mapper.config)
-                        mapper.run_asap(graph)
-                        (
-                            in_time,
-                            in_energy,
-                            design,
-                            tech,
-                            area,
-                        ) = generator.save_stats(
-                            mapper, backprop, get_backprop_memory(graph.nodes)
-                        )
-                        new_area = area / 17 + connectivity_area
-                        percent_time_list.append(in_time[0])
-                        energy_list.append(in_energy[0])
-
-                    pitch_list.append(
-                        min(percent_time_list)
-                        * node_energy[m]
-                        * 1
-                        / (precision_power_factor[p] * 0.3)
+                    connectivity_area = (
+                        percent * 1000 * 10 ** area_budget / node_density[m]
                     )
-                    pitch_list2.append(
-                        min(percent_time_list2)
-                        * node_energy[m]
-                        * 1
-                        / (precision_power_factor[p] * 0.3)
+                    j = connectivity_area / (2 * 32 * pitch ** 2) / total_mem[en]
+                    mapper = Mapper(hwfile="illusion.yaml")
+                    generator = Generator()
+                    mapper.config["mm_compute"]["N_PE"] *= (
+                        10 ** area_budget * precision_density_factor[p]
                     )
-                    # np.arange(2,8000,8)
-                    # temp = pitch_list2[0]
-                    # for i in range(len(pitch_list)):
-                    #     pitch_list2[i] = temp / pitch_list2[i]
-                    # print(pitch_list)
-
-                if m == 0:
-                    # if area_budget == 0:
-                    temp = pitch_list[0]
-                for i in range(len(pitch_list)):
-                    pitch_list[i] = temp / pitch_list[i]
-                if plot == "time":
-                    # ax.plot(['10','5','3','2','1','0.5','0.1'],pitch_list, color = colors[en],marker=markers_plot[area_budget], label=area_names[area_budget]+names[en] + "precision : "+ str(precision))
-                    if precision[p] == 32:
-                        # labels = names[en] + ":" + str(node) + "nm"
-                        # + ":fp32"
-                        labels = names[en]
-                        # labels = names[en] + ":" + area_names[area_budget]
-                        # labels = names[en] + ":" ":Uniform"
-                        # # # :fp32
-                        # labels2 = names[en] + ":Non-Uniform"
-                        # :fp32
-                    else:
-                        # labels = names[en] + ":" + str(node) + "nm"
-                        labels = names[en]
-                        # labels = names[en] + ":" + area_names[area_budget]
-                        # # ":int" + str(precision[p])
-                        # labels = names[en] + ":Uniform"
-
-                        # labels2 = names[en] + ":Non-Uniform"
-                        # ":int" + str(precision[p])
-                        # labels = (
-                        #     names[en]
-                        #     + ":"
-                        #     + str(node)
-                        #     + "nm"
-                        #     + ":"
-                        #     + "int"
-                        #     + str(precision[p])
-                        # )
-                        # labels = (
-                        #     names[en]
-                        #     + ":"
-                        #     + area_names[area_budget]
-                        #     + ":"
-                        #     + "int"
-                        #     + str(precision[p])
-                        # )
-                        # labels2 = (
-                        #     area_names[area_budget]
-                        #     + names[en]
-                        #     + "int"
-                        #     + str(precision[p])
-                        #     + " "
-                        #     + str(node)
-                        #     + "nm"
-                        #     + "NU"
-                        # )
-                    # ax.bar(
-                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget,
-                    #     pitch_list,
-                    #     width=0.4,
-                    #     color=colors[en],
-                    #     hatch=markers_plot[area_budget],
-                    #     label=labels,
-                    # )
-
-                    # ax.bar(
-                    #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget + 0.5,
-                    #     pitch_list2,
-                    #     width=0.4,
-                    #     color=colors[en],
-                    #     hatch="+",
-                    #     label=labels2,
-                    # )
-                    ax.plot(
-                        [10, 5, 3, 2, 1, 0.5, 0.1],
-                        pitch_list,
-                        color=colors[names[en]],
-                        marker=markers_plot[m],
-                        label=labels,
-                        linewidth=2,
+                    mapper.config["mm_compute"]["frequency"] *= (
+                        node_speed[m] * precision_speed_factor[p]
                     )
-                    # ax.plot(
-                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
-                    #     pitch_list,
-                    #     color=colors[names[en]],
-                    #     marker=markers_plot[area_budget],
-                    #     label=labels,
-                    #     linewidth=2,
-                    # )
-                    # ax.plot(
-                    #     [10, 5, 3, 2, 1, 0.5, 0.1],
-                    #     pitch_list2,
-                    #     color=colors[names[en]],
-                    #     marker=markers_plot[m + 1],
-                    #     label=labels2,
-                    #     linewidh=2,
-                    # )
-                    print(pitch_list)
+                    mapper.config["mm_compute"]["per_op_energy"] *= node_energy[m]
 
-                    # ax.plot(
-                    #     pitch_list,
-                    #     "o-",
-                    #     color=colors[en],
-                    #     marker=markers_plot[m],
-                    #     label=labels,
+                    mapper.config["memory"]["level0"]["size"] *= (
+                        10 ** area_budget * precision_size_factor[p]
+                    )
+                    mapper.config["memory"]["level1"]["banks"] = 2
+                    mapper.config["memory"]["level1"]["banks"] *= j
+                    mapper.complete_config(mapper.config)
+                    mapper.run_asap(graph)
+                    print_stats = False
+                    if percent == 95:
+                        print_stats = True
+                    (
+                        in_time,
+                        in_energy,
+                        design,
+                        tech,
+                        area,
+                    ) = generator.save_stats(
+                        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
+                    )
+                    
+                    new_area = area + connectivity_area
+                    percent_time_list2.append(in_time[0])
+                    energy_list2.append(in_energy[0])
+
+                    j2 = connectivity_area / (2 * 32 * pitch ** 2)
+                    mapper = Mapper(hwfile="illusion.yaml")
+                    generator = Generator()
+                    mapper.config["mm_compute"]["N_PE"] *= (
+                        10 ** area_budget * precision_density_factor[p]
+                    )
+                    mapper.config["mm_compute"]["frequency"] *= (
+                        node_speed[m] * precision_speed_factor[p]
+                    )
+                    mapper.config["mm_compute"]["per_op_energy"] *= node_energy[m]
+
+                    mapper.config["memory"]["level0"]["size"] *= (
+                        10 ** area_budget * precision_size_factor[p]
+                    )
+                    mapper.config["memory"]["level1"]["banks"] = 2
+                    mapper.config["memory"]["level1"]["banks"] *= j2
+                    mapper.complete_config(mapper.config)
+                    mapper.run_asap(graph)
+                    (
+                        in_time,
+                        in_energy,
+                        design,
+                        tech,
+                        area,
+                    ) = generator.save_stats(
+                        mapper, backprop, get_backprop_memory(graph.nodes)
+                    )
+                    new_area = area / 17 + connectivity_area
+                    percent_time_list.append(in_time[0])
+                    energy_list.append(in_energy[0])
+
+                pitch_list.append(
+                    min(percent_time_list)
+                    * node_energy[m]
+                    * 1
+                    / (precision_power_factor[p] * 0.3)
+                )
+                pitch_list2.append(
+                    min(percent_time_list2)
+                    * node_energy[m]
+                    * 1
+                    / (precision_power_factor[p] * 0.3)
+                )
+                # np.arange(2,8000,8)
+                # temp = pitch_list2[0]
+                # for i in range(len(pitch_list)):
+                #     pitch_list2[i] = temp / pitch_list2[i]
+                # print(pitch_list)
+
+            if m == 0:
+                # if area_budget == 0:
+                temp = pitch_list[0]
+            for i in range(len(pitch_list)):
+                pitch_list[i] = temp / pitch_list[i]
+            if plot == "time":
+                # ax.plot(['10','5','3','2','1','0.5','0.1'],pitch_list, color = colors[en],marker=markers_plot[area_budget], label=area_names[area_budget]+names[en] + "precision : "+ str(precision))
+                if precision[p] == 32:
+                    # labels = names[en] + ":" + str(node) + "nm"
+                    # + ":fp32"
+                    labels = names[en]
+                    # labels = names[en] + ":" + area_names[area_budget]
+                    # labels = names[en] + ":" ":Uniform"
+                    # # # :fp32
+                    # labels2 = names[en] + ":Non-Uniform"
+                    # :fp32
+                else:
+                    # labels = names[en] + ":" + str(node) + "nm"
+                    labels = names[en]
+                    # labels = names[en] + ":" + area_names[area_budget]
+                    # # ":int" + str(precision[p])
+                    # labels = names[en] + ":Uniform"
+
+                    # labels2 = names[en] + ":Non-Uniform"
+                    # ":int" + str(precision[p])
+                    # labels = (
+                    #     names[en]
+                    #     + ":"
+                    #     + str(node)
+                    #     + "nm"
+                    #     + ":"
+                    #     + "int"
+                    #     + str(precision[p])
                     # )
-                    # ['10','5','3','2','1','0.5','0.1']
-                    # ax.plot(['10','5','3','2','1','0.5','0.1'],pitch_list, color = colors[en],, label=area_names[area_budget]+names[en] + " fp32")
+                    # labels = (
+                    #     names[en]
+                    #     + ":"
+                    #     + area_names[area_budget]
+                    #     + ":"
+                    #     + "int"
+                    #     + str(precision[p])
+                    # )
+                    # labels2 = (
+                    #     area_names[area_budget]
+                    #     + names[en]
+                    #     + "int"
+                    #     + str(precision[p])
+                    #     + " "
+                    #     + str(node)
+                    #     + "nm"
+                    #     + "NU"
+                    # )
+                # ax.bar(
+                #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget,
+                #     pitch_list,
+                #     width=0.4,
+                #     color=colors[en],
+                #     hatch=markers_plot[area_budget],
+                #     label=labels,
+                # )
+
+                # ax.bar(
+                #     3.8 * np.arange(7) + en * 0.4 + 1.2 * area_budget + 0.5,
+                #     pitch_list2,
+                #     width=0.4,
+                #     color=colors[en],
+                #     hatch="+",
+                #     label=labels2,
+                # )
+                ax.plot(
+                    [10, 5, 3, 2, 1, 0.5, 0.1],
+                    pitch_list,
+                    color=colors[names[en]],
+                    marker=markers_plot[m],
+                    label=labels,
+                    linewidth=2,
+                )
+                # ax.plot(
+                #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                #     pitch_list,
+                #     color=colors[names[en]],
+                #     marker=markers_plot[area_budget],
+                #     label=labels,
+                #     linewidth=2,
+                # )
+                # ax.plot(
+                #     [10, 5, 3, 2, 1, 0.5, 0.1],
+                #     pitch_list2,
+                #     color=colors[names[en]],
+                #     marker=markers_plot[m + 1],
+                #     label=labels2,
+                #     linewidh=2,
+                # )
+                print(pitch_list)
+
+                # ax.plot(
+                #     pitch_list,
+                #     "o-",
+                #     color=colors[en],
+                #     marker=markers_plot[m],
+                #     label=labels,
+                # )
+                # ['10','5','3','2','1','0.5','0.1']
+                # ax.plot(['10','5','3','2','1','0.5','0.1'],pitch_list, color = colors[en],, label=area_names[area_budget]+names[en] + " fp32")
     ax.set_xlabel("Vertical Interconnect Pitch (in um)", fontsize=20, fontweight="bold")
     ax.set_ylabel(
         "EDP Benefit \n (Non-Uniform, 10um Pitch = 1)", fontsize=20, fontweight="bold"
