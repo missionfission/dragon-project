@@ -182,7 +182,7 @@ def _solve_lpbl_iofmap_gbuf_reside(resource, nested_loop_desc, reside_dce):
         to = tx
     # At gbuf, y is outside x; at regf, x is outside y. See docstring.
     orders = (None, (dce_x, dce_y), None, (dce_y, dce_x))
-
+    
     return ti, to, tb, orders
 
 
@@ -353,3 +353,4 @@ def gen_loopblocking_gbuf_regf(
             nested_loop_desc=nested_loop_desc,
             options=options,
         )
+

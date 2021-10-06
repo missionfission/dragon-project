@@ -37,7 +37,6 @@ class Generator:
 
     def __init__(self, constraintfiles="max_constraints.yaml"):
         """
-
         Max constraints values : bounds 
         
         Args:
@@ -78,7 +77,6 @@ def backward_pass_design(self, mapper, opts=None):
     5. Energy high due to high memory bandwidth 
     
     6. Energy high due to slow compute
-    
     """
     config = mapper.config
     config["mm_compute"] = self.update_comp_design(mapper, mapper.config["mm_compute"])
@@ -96,7 +94,6 @@ def backward_pass_tech(self, mapper, opts=None):
         opts ( optional). Defaults to None.
 
     Returns:
-        
     """
     alpha = 20000
     beta = 4
@@ -135,13 +132,11 @@ def backward_pass_tech(self, mapper, opts=None):
 
 def update_comp_design(self, mapper, comp_config):
     """
-
     Args:
         mapper 
         comp_config 
 
     Returns:
-        
     """
     mapper.compute_time = mapper.total_cycles - (
         mapper.bandwidth_idle_time + mapper.mem_size_idle_time
@@ -166,7 +161,6 @@ def update_comp_design(self, mapper, comp_config):
 
 def update_mem_design(self, mapper, mem_config):
     """
-    
     Args:
         mapper 
         mem_config 
@@ -199,7 +193,6 @@ def update_mem_design(self, mapper, mem_config):
 
 
 def update_tech(self, opts, technology, time_grads=0, energy_grads=0):
-
     """
     Opts = [frequency, read energy, write energy, leakage power, endurance]
 
@@ -283,7 +276,6 @@ def save_stats(self, mapper, backprop=False, backprop_memory=0, print_stats=True
     2. Resource Utilization
     
     3. Timing and Energy Breakdown of Components
-
     """
     if backprop:
         mapper.total_cycles = (
@@ -551,41 +543,27 @@ def generate_tech_targets(graph, name, EDP=100):
 
     Returns:
     """
-    orderlist = []
+    orderlist = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node", "sense_amp_time"]
     orderlist.append("connectivity")
     tech_targets = {}
-
-    time_params = []
+    time_params = ["memory_size_idle_time", "memory_bandwidth_idle_time","compute_time","network_time"]
     energy_params = []
-    tech_ratio_params = []
-    tech_ratio_list = []
+    time_ratio_params = []
+    time_ratio_list = []
     energy_ratio_params = []
     energy_ratio_list = []
     # create the order list
     total_benefit = 1
-    # while total_benefit < benefit_target:
-    #     i += 1
-    #     improv, improv_ben = get_benefit(orderlist[i])
-    #     tech_targets[orderlist[i]] = int(improv) + 1
-    #     total_benefit *= int(improv_ben)
-
-    if name == "BERT":
-        print("For Benefit of EDP ", EDP)
-        print("Generating Technology Targets")
-        print("Connectivity : 31x", "(T : 9.5, E : 2.3)")
-        print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
-        print("Logic Latency,  Connectivity : 2x", "(T: 1.9, E:1.1)")
-
-    if name == "hpcg":
-        print("For Benefit of EDP ", EDP)
-        print("Generating Technology Targets")
-        print("External Memory Connectivity : 31x", "(T : 9.5, E : 2.3)")
-        print("Logic Energy : 6x", "(T: 1.0, E: 2.1)")
-        print("Logic Latency,  NoC Connectivity : 2x", "(T: 1.9, E:1.1)")
+    while total_benefit < EDP:
+        i += 1
+        improv, improv_ben = get_benefit(orderlist[i])
+        tech_targets[orderlist[i]] = int(improv) + 1
+        total_benefit *= int(improv_ben)
 
     return tech_targets
 
-
+def get_benefit():
+    pass
 #############################################################################################################################
 
 # Snippet for Write Bandwidth

@@ -1,16 +1,16 @@
-# OUTP = 0
-# OFMP = 1
-# NUM = 2
+OUTP = 0
+OFMP = 1
+NUM = 2
 
-# Resource = namedtuple('Resource',
-#                       ['dim_nodes', 'dim_array', 'size_gbuf', 'size_regf'])
+Resource = namedtuple('Resource',
+                      ['dim_nodes', 'dim_array', 'size_gbuf', 'size_regf'])
 
-# OPTION_LIST = ['allow_gbuf_bypass',
-#                'solve_loopblocking',
-#                'hybrid_partition2d',
-#                'ntops',
-#                'nprocesses',
-#               ]
+OPTION_LIST = ['allow_gbuf_bypass',
+               'solve_loopblocking',
+               'hybrid_partition2d',
+               'ntops',
+               'nprocesses',
+              ]
 import heapq
 import math
 import multiprocessing

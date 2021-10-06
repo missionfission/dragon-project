@@ -617,7 +617,8 @@ def run_nn_dataflow(self, graph):
         # Total Free memory
         for i in range(self.mle - 1):
             self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
-        time_compute = compute_expense / config["mm_compute_per_cycle"]
+        time_compute = dataflow_solver_wrapper(self, node)
+        step_cycles += time_compute
         read_bw_ll = read_access / (time_compute)
         write_bw_ll = write_access / (time_compute)
         step_cycles = time_compute
@@ -631,8 +632,6 @@ def run_nn_dataflow(self, graph):
         self.mem_write_access[1] += node.out_edge_mem
         self.mem_util[0] += node.mem_util
         self.mem_free[0] -= node.mem_util
-        util = aisynthesis_utils.calculate_utillization(node)
-        steps_cycles += time_compute / util
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem
