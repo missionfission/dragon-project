@@ -3,16 +3,15 @@ import graphviz as gv
 def kotana_reader():
     file = open("../../vis-oos-16simd-32op-192-192reg.c0.txt",'r')
     lines = []
-    for line in file:
+    for line in file.readlines():
         instruction = line.split("\t")[-1]
         if len(instruction.split("="))>1:
             lines.append(instruction.split("=")[-1].split("(")[0].strip())
-    print(lines)
     return lines
 # {"I", "L", "S", "W","C", "E","R", "D"}
 stage =  {"F" "Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
-inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
+inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
 stage_energy = []
 total_cycles = 5066
 pattern1 = ['ld', 'fld', 'addi', 'slli', 'add', 'fld', 'fmadd.d','add']
@@ -41,20 +40,20 @@ class Processor_Graph(object):
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster'+self.name, format=format,
                            graph_attr={'label': self.name})
-        
-        # for i, node in enumerate(self.nodes):
-                # self.node[x] for x in range (k)
-                # graph.node(,label="subnode-mv")
-
-        # for i in range(1,len(self.nodes)):
-        #     graph.node(self.nodes[i-1], label=self.nodes[i-1])
-        #     graph.edge(self.nodes[i-1], self.nodes[i], label="next",
-        #                _attributes={'style': 'dashed'})
-        # them to the graph.
-        # for subcfg in self.nodes:
-        #     subgraph = self.nodes[subcfg]._build_visual(format=format,
-        #                                                        calls=calls)
-        #     graph.subgraph(subgraph)
+        id = 0
+        i = 0
+        while i < len(self.nodes):
+            node = self.nodes[i]
+            if node in pattern3:
+                count = 0
+                while self.nodes[i+1]==node:
+                    count += 1
+                    i+=1
+                graph.node(str(id),label=node+":"+str(count))
+                id +=1
+                if id>=2:
+                    graph.edge(str(id-2), str(id-1), label="next",_attributes={'style': 'dashed'})
+            i+=1
         return graph
 
     def build_visual(self, filepath, format, calls=True, show=True):
