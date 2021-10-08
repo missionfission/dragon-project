@@ -10,7 +10,7 @@ def kotana_reader():
             lines.append(instruction.split("=")[-1].split("(")[0].strip())
     return lines
 # {"I", "L", "S", "W","C", "E","R", "D"}
-stage =  {"F" "Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
+stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
 inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
 stage_energy = []
