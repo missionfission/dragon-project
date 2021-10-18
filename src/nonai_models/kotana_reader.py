@@ -1,14 +1,17 @@
 import os
 import graphviz as gv
 import numpy as np
+total_cycles = 0
+
 def kotana_reader():
     file = open("../../vis-oos-16simd-32op-192-192reg.c0.txt",'r')
     lines = []
     for line in file.readlines():
-        
+        global total_cycles
         instruction = line.split("\t")[-1]
         if('C' in line):
             print(line)
+            total_cycles += line.split("\t")[-1]
         if len(instruction.split("="))>1:
             lines.append(instruction.split("=")[-1].split("(")[0].strip())
     return lines
@@ -17,7 +20,6 @@ stage =  {"F" "Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
 inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
 stage_energy = []
-total_cycles = 0
 #total_cycles = 5066
 
 pattern1 = ['ld', 'fld', 'addi', 'slli', 'add', 'fld', 'fmadd.d','add']
