@@ -9,11 +9,12 @@ def kotana_reader():
     for line in file.readlines():
         global total_cycles
         instruction = line.split("\t")[-1]
-        if('C' in line):
-            print(line)
-            total_cycles += line.split("\t")[-1]
+        if('C\t' in line):
+            # print(line,line.split("\t")[-1])
+            total_cycles += int(line.split("\t")[-1])
         if len(instruction.split("="))>1:
             lines.append(instruction.split("=")[-1].split("(")[0].strip())
+    print(total_cycles)
     return lines
 # {"I", "L", "S", "W","C", "E","R", "D"}
 stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
