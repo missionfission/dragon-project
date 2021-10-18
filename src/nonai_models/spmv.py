@@ -1,8 +1,8 @@
 import numpy as np
 
 #CSR format
-A = np.array([[1,0,0,0,0],[0,0,2,0,3],[0,4,0,0,5],[0,0,6,0,0],[0,0,0,7,0],[0,0,0,0,8]])
-B = np.array([[1],[2],[3],[4],[5]])
+A = np.random.randint(512,512)
+B = np.random.randint(512)
 
 
 def csr(matrix1, matrix2):

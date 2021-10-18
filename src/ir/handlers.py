@@ -97,8 +97,13 @@ def lstm(node):
     print(node.inputs[1], os)
     return np.prod(inp), np.prod(os), 0
 
-
+def linear(node):
+    os = node.outputs[0].shape
+    inp = node.inputs[0].shape
+    return np.prod(inp), np.prod(os), 0
+    
 handlers = (
+    (("aten::linear","aten:flatten",), linear),
     ("aten::lstm", lstm),
     ("aten::addmm", addmm),
     ("aten::addmv", addmv),
