@@ -258,9 +258,11 @@ def parse_graph(graph):
                 print(ast.dump(i))
                 if isinstance(i.iter.args[0], ast.Constant):
                     loop_iters = [i.iter.args[0].value]
+                    # capture unrolling factor for DSE/ will change Number of Memory Banks
                 else:
                     print("Loop iters not captured")
                     loop_iters = 1
+                   
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
                 for string in i.body:
