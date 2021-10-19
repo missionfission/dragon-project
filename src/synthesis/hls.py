@@ -198,13 +198,13 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
         loop_iters (int, optional): . Defaults to 1.
     """
     if type(string) == ast.BinOp or ast.BoolOp:
-        parse_code(astor.to_source(string), "binop_nested", unrolled)
+        parse_code(astor.to_source(string), "binop_nested", unrolled, loop_iters)
     if type(string) == ast.Call:
         # cycles += visit(string)
         # latency calculation of traversal
         pass
     if type(string) == ast.Constant:
-        parse_code(astor.to_source(string), "constant", unrolled)
+        parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
 
 def parse_graph(graph):
@@ -267,7 +267,7 @@ def parse_graph(graph):
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
                 for string in i.body:
-                    check_and_parse(string, unrolled)
+                    check_and_parse(string, unrolled, loop_iters)
                 # print(ast.dump(i))
                 # transform
             # numpy library spmv, dot, conv
