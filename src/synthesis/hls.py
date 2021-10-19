@@ -254,16 +254,18 @@ def parse_graph(graph):
             if type(i) == ast.Return:
                 check_and_parse(i.value)
             if isinstance(i, ast.For):
-                unrolled = 1
                 print(ast.dump(i))
                 if isinstance(i.iter.args[0], ast.Constant):
                     loop_iters = [i.iter.args[0].value]
                     # capture unrolling factor for DSE/ will change Number of Memory Banks
                     unroll_params[str(i)] = loop_iters
+                if isinstance(i.iter.args[0], ast.Variable):
+                    loop_iters = [i.iter.args[0].value]
+                    print("Loop iters are Variable Initialized/Will be Captured by User input")
                 else:
                     print("Loop iters not captured")
                     loop_iters = 1
-                   
+                    unolled = 1
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
                 for string in i.body:
