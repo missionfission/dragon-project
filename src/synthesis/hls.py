@@ -265,10 +265,13 @@ def parse_graph(graph):
 #                     loop_iters = [i.iter.args[0].value]
 #                     print("Loop iters are Variable Initialized/Will be Captured by User input")
                 else:
-                    print("Loop iters not captured")
+                    print("Loop iters could not be captured")
+                    print("Enter Loop iters : ")
                     loop_iters = input()
+                    print("Enter Unroll Parameters : ")
                     unrolled = input()
-#                     loop_iters = 1
+#                   
+#                        loop_iters = 1
 #                     unrolled = 1
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
