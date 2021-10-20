@@ -267,9 +267,9 @@ def parse_graph(graph):
                 else:
                     print("Loop iters could not be captured")
                     print("Enter Loop iters : ")
-                    loop_iters = input()
+                    loop_iters = int(input())
                     print("Enter Unroll Parameters : ")
-                    unrolled = input()
+                    unrolled = int(input())
 #                   
 #                        loop_iters = 1
 #                     unrolled = 1
