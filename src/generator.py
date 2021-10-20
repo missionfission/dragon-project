@@ -565,9 +565,9 @@ def generate_tech_targets(graph, name, EDP=100):
 
 def get_benefit(param):
     tech_params = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node", "sense_amp_time"]
-    if param == param/5:
-        improv = 5
-        improv_ben =         
+#     if param == param/5:
+#         improv = 5
+#         improv_ben =         
     return improv, improv_ben
 #############################################################################################################################
 
