@@ -158,7 +158,7 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
     if type in ["assign", "expr", "binop_nested", "constant"]:
         expr_cycles, hw_need = schedule(expr, type)
         global cycles, hw_allocated, hw_utilized
-        cycles += expr_cycles * int(loop_iters / unrolled)
+        cycles += expr_cycles * (int(loop_iters) / int(unrolled))
         # hw_allocated = max(hw_need*unrolled, hw_allocated)
         hw_allocated = {
             key: max(value, hw_need[key] * unrolled)
