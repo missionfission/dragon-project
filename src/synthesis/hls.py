@@ -260,9 +260,9 @@ def parse_graph(graph):
                     # capture unrolling factor for DSE/ will change Number of Memory Banks
                     unroll_params[str(i)] = loop_iters
                     unrolled = loop_iters
-                if isinstance(i.iter.args[0], ast.Variable):
-                    loop_iters = [i.iter.args[0].value]
-                    print("Loop iters are Variable Initialized/Will be Captured by User input")
+#                 if isinstance(i.iter.args[0], ast.Variable):
+#                     loop_iters = [i.iter.args[0].value]
+#                     print("Loop iters are Variable Initialized/Will be Captured by User input")
                 else:
                     print("Loop iters not captured")
                     loop_iters = 1
