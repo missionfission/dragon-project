@@ -266,7 +266,7 @@ def parse_graph(graph):
                 else:
                     print("Loop iters not captured")
                     loop_iters = 1
-                    unolled = 1
+                    unrolled = 1
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
                 for string in i.body:
