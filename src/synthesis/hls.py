@@ -149,7 +149,8 @@ def schedule(expr, type):
     # Memory Bandwidth Req
     while (data_state and bandwidth_available):
         num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
-    
+    # Bandwidth-Rearrangements
+#     num_cycles =
     hw_need["Regs"] = num_vars
     return num_cycles, hw_need
 
