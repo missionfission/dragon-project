@@ -141,7 +141,7 @@ def schedule(expr, type):
     num_vars = len(strs)
     for i, op in enumerate(op2sym_map.values()):
         hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
-        num_cycles += latency[list(op2sym_map.keys())[i]]  # ALAP
+        num_cycles += hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]  # ALAP
     hw_need["Regs"] = num_vars
     return num_cycles, hw_need
 
