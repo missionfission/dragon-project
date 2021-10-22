@@ -131,6 +131,10 @@ def schedule(expr, type):
     # upsamplelloops
     # run
     hw_need = {}
+    data_state = False
+    mem_state = False
+    bw_avail = 0
+    bw_req = np.MAX
     num_cycles = 0
     for key in op2sym_map.keys():
         hw_need[key] = 0
@@ -147,10 +151,11 @@ def schedule(expr, type):
     # ASAP
     
     # Memory Bandwidth Req
-    while (data_state and bandwidth_available):
+    while (data_state and bw_avail):
         num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
-    # Bandwidth-Rearrangements
-#     num_cycles =
+    # Bandwidth-Rearrangements : Get op Control-Data-Flow
+        if bw_req < bw_avail and mem_state == False:
+    #     num_cycles =
     hw_need["Regs"] = num_vars
     return num_cycles, hw_need
 
