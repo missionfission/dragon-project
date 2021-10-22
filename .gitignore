@@ -17,4 +17,4 @@ interface/Execution.txt
 HEAWS.pdf
 src/req/common/obj/*
 src/req/common/aladdin
-__pycache__/*
+**/__pycache__/*

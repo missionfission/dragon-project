@@ -1,5 +1,5 @@
 from mapper.mapper import Mapper
-
+import numpy as np
 
 """
 
@@ -743,89 +743,89 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
                             ) * ic_partition + np.prod(node.outputs[0].shape)
                         i += 1
                         message_passed[i] += np.prod(node.outputs[0].shape)
-                    if node.operator == "aten::addmm":
-                        mem_size_util[i] += node.weights
+                    # if node.operator == "aten::addmm":
+                    #     mem_size_util[i] += node.weights
 
-                        if mem_size_util[i] < capacity:
-                            continue
-                        mem_size_util[i] -= node.weights
-                        n, m = node.inputs[1].shape
-                        m, p = node.inputs[2].shape
-                        if mem_size_util[i] + n * p > capacity:
-                            message_passed[i] += n * p
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
+                    #     mem_size_util[i] -= node.weights
+                    #     n, m = node.inputs[1].shape
+                    #     m, p = node.inputs[2].shape
+                    #     if mem_size_util[i] + n * p > capacity:
+                    #         message_passed[i] += n * p
 
-                        if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
-                            x = capacity // p
-                            message_passed[i] += m * p + (n - x) * m
-                            mem_size_util[i + 1] += (n - x) * p
-                        else:
-                            x = capacity // (n)
-                            message_passed[i] += m * (p - x) + n * m
-                            mem_size_util[i + 1] += (p - x) * n
-                        i += 1
-                    if node.operator == "aten::bmm":
-                        mem_size_util[i] += node.weights
+                    #     if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
+                    #         x = capacity // p
+                    #         message_passed[i] += m * p + (n - x) * m
+                    #         mem_size_util[i + 1] += (n - x) * p
+                    #     else:
+                    #         x = capacity // (n)
+                    #         message_passed[i] += m * (p - x) + n * m
+                    #         mem_size_util[i + 1] += (p - x) * n
+                    #     i += 1
+                    # if node.operator == "aten::bmm":
+                    #     mem_size_util[i] += node.weights
 
-                        if mem_size_util[i] < capacity:
-                            continue
-                        *b, n, p = node.outputs[0].shape
-                        *_, n, m = node.inputs[0].shape
-                        *_, m, p = node.inputs[1].shape
-                        if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
-                            x = capacity // (np.prod(b) * p)
-                            message_passed[i] += (
-                                np.prod(b) * m * p + np.prod(b) * (n - x) * m
-                            )
-                            mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
+                    #     *b, n, p = node.outputs[0].shape
+                    #     *_, n, m = node.inputs[0].shape
+                    #     *_, m, p = node.inputs[1].shape
+                    #     if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
+                    #         x = capacity // (np.prod(b) * p)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (n - x) * p
 
-                        else:
-                            x = capacity // (np.prod(b) * n)
-                            message_passed[i] += (
-                                np.prod(b) * m * (p - x) + np.prod(b) * n * m
-                            )
-                            mem_size_util[i + 1] += np.prod(b) * (p - x) * n
-                        i += 1
-                    if node.operator == "aten::matmul":
-                        mem_size_util[i] += node.weights
+                    #     else:
+                    #         x = capacity // (np.prod(b) * n)
+                    #         message_passed[i] += (
+                    #             np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #         )
+                    #         mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    #     i += 1
+                    # if node.operator == "aten::matmul":
+                    #     mem_size_util[i] += node.weights
 
-                        if mem_size_util[i] < capacity:
-                            continue
+                    #     if mem_size_util[i] < capacity:
+                    #         continue
 
-                        if len(node.inputs) > 1:
-                            if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
-                                n, p = node.outputs[0].shape
-                                n, m = node.inputs[0].shape
-                                m, p = node.inputs[1].shape
-                                if np.prod(node.inputs[0].shape) > np.prod(
-                                    node.inputs[1].shape
-                                ):
-                                    x = capacity // (p)
-                                    message_passed[i] += m * p + (n - x) * m
-                                    mem_size_util[i + 1] += (n - x) * p
-                                else:
-                                    x = capacity // (n)
-                                    message_passed[i] += m * (p - x) + n * m
-                                    mem_size_util[i + 1] += (p - x) * n
+                    #     if len(node.inputs) > 1:
+                    #         if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
+                    #             n, p = node.outputs[0].shape
+                    #             n, m = node.inputs[0].shape
+                    #             m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) > np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (p)
+                    #                 message_passed[i] += m * p + (n - x) * m
+                    #                 mem_size_util[i + 1] += (n - x) * p
+                    #             else:
+                    #                 x = capacity // (n)
+                    #                 message_passed[i] += m * (p - x) + n * m
+                    #                 mem_size_util[i + 1] += (p - x) * n
 
-                            elif node.inputs[0].ndim > 2 and node.inputs[1].ndim > 2:
-                                *b, n, p = node.outputs[0].shape
-                                *_, n, m = node.inputs[0].shape
-                                *_, m, p = node.inputs[1].shape
-                                if np.prod(node.inputs[0].shape) > np.prod(
-                                    node.inputs[1].shape
-                                ):
-                                    x = capacity // (np.prod(b) * p)
-                                    message_passed[i] += (
-                                        np.prod(b) * m * p + np.prod(b) * (n - x) * m
-                                    )
-                                    mem_size_util[i + 1] += np.prod(b) * (n - x) * p
-                                else:
-                                    x = capacity // (np.prod(b) * n)
-                                    message_passed[i] += (
-                                        np.prod(b) * m * (p - x) + np.prod(b) * n * m
-                                    )
-                                    mem_size_util[i + 1] += np.prod(b) * (p - x) * n
-                    i += 1
+                    #         elif node.inputs[0].ndim > 2 and node.inputs[1].ndim > 2:
+                    #             *b, n, p = node.outputs[0].shape
+                    #             *_, n, m = node.inputs[0].shape
+                    #             *_, m, p = node.inputs[1].shape
+                    #             if np.prod(node.inputs[0].shape) > np.prod(
+                    #                 node.inputs[1].shape
+                    #             ):
+                    #                 x = capacity // (np.prod(b) * p)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #             else:
+                    #                 x = capacity // (np.prod(b) * n)
+                    #                 message_passed[i] += (
+                    #                     np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #                 )
+                    #                 mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    # i += 1
         print(np.sum(message_passed))
 
     if wider:

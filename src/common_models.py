@@ -11,7 +11,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
 
-from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
+# from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
 from models.rnnt import RNNT
 from models.ssd_rs34 import SSD_R34
