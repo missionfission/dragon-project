@@ -79,14 +79,13 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model", type=str, choices=["bert", "resnet"], help="model to be swept")
     parser.add_argument("-r", "--real_model", action="store_true", default=False, help="use real model")
     parser.add_argument("-b", "--blocktype", type=str, choices=["BasicBlock", "Bottleneck"], help="resnet block type")
-    parser.add_argument("-s", "--chip_scale", type=float, help="#chip scaling factor")
+    parser.add_argument("-s", "--chip_scale", type=float, default=1.5, help="#chip scaling factor")
     args = parser.parse_args()
+    N_CHIP_SCALE = args.chip_scale
     if args.model == "resnet":
         if args.blocktype == "BasicBlock":
-            N_CHIP_SCALE = args.chip_scale
             calc_resnet_message([2, 2, 2, 2], "BasicBlock", args.real_model)
         if args.blocktype == "Bottleneck":
-            N_CHIP_SCALE = args.chip_scale
             calc_resnet_message([3, 4, 6, 3], "Bottleneck", args.real_model)
 
     elif args.model == "bert":

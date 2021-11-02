@@ -746,25 +746,40 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
                         i += 1
                         message_passed[i] += np.prod(node.outputs[0].shape)
                 if node.operator == "aten::addmm":
-                    mem_size_util[i] += node.weights
+                    weight, bias = np.prod(node.inputs[2].shape), np.prod(node.inputs[0].shape)
+                    mem_size_util[i] += weight + bias
                     act_size.append(np.prod(node.outputs[0].shape))
 
                     if mem_size_util[i] < capacity:
                         continue
-                    mem_size_util[i] -= node.weights
-                    n, m = node.inputs[1].shape
+                    mem_size_util[i] -= (weight + bias)
+                    batch_size = node.inputs[1].shape[0]
                     m, p = node.inputs[2].shape
-                    if mem_size_util[i] + n * p > capacity:
-                        message_passed[i] += n * p
+                    mem_free = capacity - mem_size_util[i]
 
-                    if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
-                        x = capacity // p
-                        message_passed[i] += m * p + (n - x) * m
-                        mem_size_util[i + 1] += (n - x) * p
-                    else:
-                        x = capacity // (n)
-                        message_passed[i] += m * (p - x) + n * m
-                        mem_size_util[i + 1] += (p - x) * n
+                    # put bias on the i+1 chip because we eventually would move (partial) sum on it
+                    if m > p: # cut in m
+                        max_allowed_m = mem_free // p
+                        message_passed[i] = batch_size * (m - max_allowed_m + p) # input partition, partial sum
+                        mem_size_util[i + 1] += (m - max_allowed_m) * p + bias
+                    
+                    else: # cut in p
+                        max_allowed_p = mem_free // m
+                        message_passed[i] = batch_size * (p - max_allowed_p + m) # output partition, input
+                        mem_size_util[i + 1] += (p - max_allowed_p) * m + bias
+                        
+
+                    # if mem_size_util[i] + n * p > capacity:
+                    #     message_passed[i] += n * p
+
+                    # if np.prod(node.inputs[0].shape) > np.prod(node.inputs[1].shape):
+                    #     x = capacity // p
+                    #     message_passed[i] += m * p + (n - x) * m
+                    #     mem_size_util[i + 1] += (n - x) * p
+                    # else:
+                    #     x = capacity // (n)
+                    #     message_passed[i] += m * (p - x) + n * m
+                    #     mem_size_util[i + 1] += (p - x) * n
                     i += 1
                 if node.operator == "aten::bmm":
                     mem_size_util[i] += node.weights
@@ -790,47 +805,77 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
                         mem_size_util[i + 1] += np.prod(b) * (p - x) * n
                     i += 1
                 if node.operator == "aten::matmul":
-                    mem_size_util[i] += node.weights
+                    # Hacking for attention layer
+                    HIDDEN_SIZE = 768
+                    INTERMEDIATE_SIZE = 3072
+                    allowed_shape = [[HIDDEN_SIZE, HIDDEN_SIZE], [HIDDEN_SIZE, INTERMEDIATE_SIZE], [INTERMEDIATE_SIZE, HIDDEN_SIZE]]
+                    if node.inputs[1].shape not in allowed_shape:
+                        continue
+                    
+                    weight = np.prod(node.inputs[1].shape)
+                    mem_size_util[i] += weight
                     act_size.append(np.prod(node.outputs[0].shape))
 
                     if mem_size_util[i] < capacity:
                         continue
+                    
+                    mem_size_util[i] -= weight
+                    batch_size, token_len, _ = node.inputs[0].shape
+                    m, p = node.inputs[1].shape
+                    mem_free = capacity - mem_size_util[i]
 
-                    if len(node.inputs) > 1:
-                        if node.inputs[0].ndim == 2 and node.inputs[1].ndim == 2:
-                            n, p = node.outputs[0].shape
-                            n, m = node.inputs[0].shape
-                            m, p = node.inputs[1].shape
-                            if np.prod(node.inputs[0].shape) > np.prod(
-                                node.inputs[1].shape
-                            ):
-                                x = capacity // (p)
-                                message_passed[i] += m * p + (n - x) * m
-                                mem_size_util[i + 1] += (n - x) * p
-                            else:
-                                x = capacity // (n)
-                                message_passed[i] += m * (p - x) + n * m
-                                mem_size_util[i + 1] += (p - x) * n
-
-                        elif node.inputs[0].ndim > 2 and node.inputs[1].ndim > 2:
-                            *b, n, p = node.outputs[0].shape
-                            *_, n, m = node.inputs[0].shape
-                            *_, m, p = node.inputs[1].shape
-                            if np.prod(node.inputs[0].shape) > np.prod(
-                                node.inputs[1].shape
-                            ):
-                                x = capacity // (np.prod(b) * p)
-                                message_passed[i] += (
-                                    np.prod(b) * m * p + np.prod(b) * (n - x) * m
-                                )
-                                mem_size_util[i + 1] += np.prod(b) * (n - x) * p
-                            else:
-                                x = capacity // (np.prod(b) * n)
-                                message_passed[i] += (
-                                    np.prod(b) * m * (p - x) + np.prod(b) * n * m
-                                )
-                                mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    if m > p: # cut in m
+                        max_allowed_m = mem_free // p
+                        message_passed[i] = batch_size * token_len * (m - max_allowed_m + p) # input partition, partial sum
+                        mem_size_util[i + 1] += (m - max_allowed_m) * p 
+                    
+                    else: # cut in p
+                        max_allowed_p = mem_free // m
+                        message_passed[i] = batch_size * token_len * (p - max_allowed_p + m) # output partition, input
+                        mem_size_util[i + 1] += (p - max_allowed_p) * m
+                    
                     i += 1
+
+                    # if len(node.inputs) > 1:
+
+                    #     if node.inputs[0].ndim == 2:
+                    #         assert node.input[1].ndim == 2
+                    #         n, p = node.outputs[0].shape
+                    #         n, m = node.inputs[0].shape
+                    #         m, p = node.inputs[1].shape
+                    #         if np.prod(node.inputs[0].shape) > np.prod(
+                    #             node.inputs[1].shape
+                    #         ):
+                    #             x = capacity // (p)
+                    #             message_passed[i] += m * p + (n - x) * m
+                    #             mem_size_util[i + 1] += (n - x) * p
+                    #         else:
+                    #             x = capacity // (n)
+                    #             message_passed[i] += m * (p - x) + n * m
+                    #             mem_size_util[i + 1] += (p - x) * n
+
+                    #     elif node.inputs[0].ndim > 2:
+                    #         *b, n, p = node.outputs[0].shape
+                    #         *_, n, m = node.inputs[0].shape
+                    #         if node.inputs[1].ndim == 2:
+                    #             m, p = node.inputs[1].shape
+                    #         else:
+                    #             *_, m, p = node.inputs[1].shape
+                    #         if np.prod(node.inputs[0].shape) > np.prod(
+                    #             node.inputs[1].shape
+                    #         ):
+                    #             x = capacity // (np.prod(b) * p)
+                    #             message_passed[i] += (
+                    #                 np.prod(b) * m * p + np.prod(b) * (n - x) * m
+                    #             )
+                    #             mem_size_util[i + 1] += np.prod(b) * (n - x) * p
+                    #         else:
+                    #             x = capacity // (np.prod(b) * n)
+                    #             message_passed[i] += (
+                    #                 np.prod(b) * m * (p - x) + np.prod(b) * n * m
+                    #             )
+                    #             mem_size_util[i + 1] += np.prod(b) * (p - x) * n
+                    # i += 1
         message_cost = np.sum(message_passed)
         avg_bound = sum(act_size) / len(act_size) * num_of_chips
         max_bound = max(act_size) * num_of_chips
@@ -848,6 +893,7 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
                 # depth first for residual blocks
 
                 mem_size_util[i] += depth * node.weights
+                act_size += [np.prod(node.outputs[0].shape)] * depth
                 if mem_size_util[i] < capacity:
                     continue
                 elif mem_size_util[i] > capacity:
@@ -912,8 +958,10 @@ def illusion_mapping(graph, num_of_chips, depth, capacity, deeper=False, wider=F
                         node.inputs[0].shape
                     )
 
-        # print(message_passed)
-        print(np.sum(message_passed))
+        message_cost = np.sum(message_passed)
+        avg_bound = sum(act_size) / len(act_size) * num_of_chips
+        max_bound = max(act_size) * num_of_chips
+        print("{:>12.3e}, {:>12.3e}, {:>12.3e}, {:>12}, {:>12}".format(message_cost, avg_bound, max_bound, message_cost > avg_bound, message_cost > max_bound))
 
 
 Mapper.run_asap = run_asap

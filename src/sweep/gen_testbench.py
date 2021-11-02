@@ -36,7 +36,7 @@ def gen_resnet(layers, block, **kwargs):
     return n_param, n_layer, resnet_graph
 
 def gen_bert(layers):
-    configuration = BertConfig(num_hidden_layers=layers)
+    configuration = BertConfig(num_hidden_layers=layers, num_attention_heads=1)
     model = BertModel(configuration)
 
     indexed_tokens = [

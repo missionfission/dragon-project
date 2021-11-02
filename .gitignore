@@ -18,3 +18,5 @@ HEAWS.pdf
 src/req/common/obj/*
 src/req/common/aladdin
 **/__pycache__/*
+.vscode/
+src/sweep/log/
