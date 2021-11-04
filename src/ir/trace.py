@@ -85,10 +85,13 @@ def trace(model, args=(), kwargs=None):
 
     for i, node in enumerate(nodes):
         if i < len(nodes) - 1:
-            node.next = nodes[i + 1]
+            node.next = [nodes[i+1]]
+            node.prev = [nodes[i-1]]
         # print(node.next, node.mem_util)
-        if node.inputs.shape[0] > 2:
-              node.prev = 
+#         if node.variables > 1:
+#             print(node.inputs)
+#         if node.variable > 2:
+              
     graph = Graph(
         name=model.__class__.__module__ + "." + model.__class__.__name__,
         variables=[v for v in variables.values()],
