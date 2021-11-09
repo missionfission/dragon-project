@@ -2,6 +2,10 @@ import os
 import graphviz as gv
 import numpy as np
 total_cycles = 0
+reads = 0
+writes = 0
+stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
+
 
 def kotana_reader():
     file = open("../../vis-oos-16simd-32op-192-192reg.c0.txt",'r')
@@ -14,10 +18,13 @@ def kotana_reader():
             total_cycles += int(line.split("\t")[-1])
         if len(instruction.split("="))>1:
             lines.append(instruction.split("=")[-1].split("(")[0].strip())
+        if "Rn" in line:
+            reads+=1
+        if "Wb" in line:
+            writes+=1
     print(total_cycles)
     return lines
 # {"I", "L", "S", "W","C", "E","R", "D"}
-stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
 inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
 stage_energy = []
@@ -133,7 +140,7 @@ def pareto_curve():
     #total_cycles = 1800
     # scaleup = [2x, 4x, 8x] design points
     # bandwidth vs execution time
-    
+    mem_bw = np.read(
     # no of cores vs execution time
     
     # cache size vs execution time
