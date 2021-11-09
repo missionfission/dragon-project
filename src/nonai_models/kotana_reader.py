@@ -126,3 +126,15 @@ class Processor_Graph(object):
         """
         graph = self._build_visual(format, calls)
         graph.render(filepath, view=False)
+    
+    
+    
+def pareto_curve():
+    #total_cycles = 1800
+    # scaleup = [2x, 4x, 8x] design points
+    # bandwidth vs execution time
+    
+    # no of cores vs execution time
+    
+    # cache size vs execution time
+    
