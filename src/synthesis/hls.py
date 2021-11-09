@@ -147,7 +147,6 @@ def schedule(expr, type):
     for i, op in enumerate(op2sym_map.values()):
         hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
         num_cycles += hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]] 
-        
     # ASAP
     
     # Memory Bandwidth Req
@@ -155,6 +154,7 @@ def schedule(expr, type):
         num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
     # Bandwidth-Rearrangements : Get op Control-Data-Flow
         if bw_req < bw_avail and mem_state == False:
+            pass
     #     num_cycles =
     hw_need["Regs"] = num_vars
     return num_cycles, hw_need
