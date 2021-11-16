@@ -10,6 +10,7 @@ stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 def kotana_reader():
     file = open("../../vis-oos-16simd-32op-192-192reg.c0.txt",'r')
     lines = []
+    global reads, writes
     for line in file.readlines():
         global total_cycles
         instruction = line.split("\t")[-1]
@@ -140,7 +141,7 @@ def pareto_curve():
     #total_cycles = 1800
     # scaleup = [2x, 4x, 8x] design points
     # bandwidth vs execution time
-    mem_bw = np.read(
+    # mem_bw = 
     # no of cores vs execution time
     
     # cache size vs execution time
