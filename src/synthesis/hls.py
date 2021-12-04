@@ -153,11 +153,12 @@ def schedule(expr, type):
     # ASAP
     
     # Memory Bandwidth Req
+    # Get data keys used, calculate bw_req, 
     while (data_state and bw_avail):
         num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
     
     # Bandwidth-Rearrangements : Get op Control-Data-Flow
-        if bw_req < bw_avail and mem_state == False:
+    if bw_req < bw_avail and mem_state == False:
             pass
     #     num_cycles =
     hw_need["Regs"] = num_vars
