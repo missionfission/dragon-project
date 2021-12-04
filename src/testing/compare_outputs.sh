@@ -1,3 +1,3 @@
 # compare outputs
  pip3 install polyphony
- polyphony aes.py
+ polyphony ../nonai_models/aesv2.py
