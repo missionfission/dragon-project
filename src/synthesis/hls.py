@@ -131,6 +131,9 @@ def schedule(expr, type):
     # upsamplelloops
     # run
     hw_need = {}
+#     generate unique data keys, add them to memories when bandwidth available
+#     check data_key is available and update mem_state
+#       data_state -> will prevent read-after-write hazards
     data_state = False
     mem_state = False
     bw_avail = 0
@@ -152,6 +155,7 @@ def schedule(expr, type):
     # Memory Bandwidth Req
     while (data_state and bw_avail):
         num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
+    
     # Bandwidth-Rearrangements : Get op Control-Data-Flow
         if bw_req < bw_avail and mem_state == False:
             pass
