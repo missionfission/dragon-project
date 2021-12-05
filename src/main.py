@@ -27,11 +27,21 @@ from utils.visualizer import (
 )
 
 
-def get_design_points_area_scaled():
+def get_design_points_area_scaled(area_budget, connectivity, node, pitch):
+    connectivity_area = connectivity/pitch^2
+    accel_area = area_budget - connectivity_area
+    
     # memory configuration, area scaling, buffer sizing happening in separate functions
     # converge them here
+    if node == 3:
+        print("scale config to 3")
+    if node == 7:
+        print("scale config to 7")
+        
+    print("Buffer size", pe*2)
+    print(""
     pass
-
+          
 def design_runner(
     graph_set,
     backprop=False,
