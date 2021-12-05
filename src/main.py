@@ -27,6 +27,11 @@ from utils.visualizer import (
 )
 
 
+def get_design_points_area_scaled():
+    # memory configuration, area scaling, buffer sizing happening in separate functions
+    # converge them here
+    pass
+
 def design_runner(
     graph_set,
     backprop=False,
