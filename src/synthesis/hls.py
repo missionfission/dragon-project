@@ -111,11 +111,14 @@ power = {
 hw_allocated = {}
 memory_cfgs = {}
 hw_utilized = {}
-
+bw_avail = 0
+mem_state = {}
+for variable in memory_cfgs.keys():
+    mem_state[variable]=False
+    print(variable)
 cycles = 0
 hw_allocated["Regs"] = 0
 hw_utilized["Regs"] = 0
-
 
 def schedule(expr, type):
     """[Schedules the expr from AST]
@@ -134,11 +137,9 @@ def schedule(expr, type):
 #     generate unique data keys, add them to memories when bandwidth available
 #     check data_key is available and update mem_state
 #       data_state -> will prevent read-after-write hazards
-    data_state = False
-    mem_state = False
-    bw_avail = 0
     bw_req = np.MAX
     num_cycles = 0
+    mem_cycles = 0
     for key in op2sym_map.keys():
         hw_need[key] = 0
     strs = re.split(regexPattern, expr)
@@ -151,18 +152,14 @@ def schedule(expr, type):
         hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
         num_cycles += hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]] 
     # ASAP
-    
+    bw_req = memory_cfgs[variable]/num_cycles
     # Memory Bandwidth Req
-    # Get data keys used, calculate bw_req, 
-    while (data_state and bw_avail):
-        num_cycles +=  hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]]
-    
-    # Bandwidth-Rearrangements : Get op Control-Data-Flow
-    if bw_req < bw_avail and mem_state == False:
-            pass
-    #     num_cycles =
+    # Get data keys used, calculate bw_req, Bandwidth-Rearrangements : Get op Control-Data-Flow
+    if bw_req < bw_avail and mem_state[variable] == False:
+        mem_cycles += memory_cfgs[variable]/bw_avail
+        mem_state[variable] = True
     hw_need["Regs"] = num_vars
-    return num_cycles, hw_need
+    return num_cycles+mem_cycles, hw_need
 
 
 def parse_code(expr, type, unrolled=1, loop_iters=1):

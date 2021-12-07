@@ -23,7 +23,6 @@ def kotana_reader():
             reads+=1
         if "Wb" in line:
             writes+=1
-    print(total_cycles)
     return lines
 # {"I", "L", "S", "W","C", "E","R", "D"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
@@ -145,4 +144,4 @@ def pareto_curve():
     # no of cores vs execution time
     
     # cache size vs execution time
-    
+    pass
