@@ -5,6 +5,9 @@ total_cycles = 0
 reads = 0
 writes = 0
 stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
+all_reads = []
+all_writes = []
+core_cycles = []
 
 
 def kotana_reader():
@@ -22,8 +25,10 @@ def kotana_reader():
             if len(instruction.split("="))>1:
                 lines.append(instruction.split("=")[-1].split("(")[0].strip())
             if "Rn" in line:
+                all_reads.append(int(line.split("\t")[-1]))
                 reads+=1
             if "Wb" in line:
+                all_writes.append(int(line.split("\t")[-1]))
                 writes+=1
         count += 1
     return lines
@@ -145,9 +150,36 @@ class Processor_Graph(object):
 def pareto_curve():
     #total_cycles = 1800
     # scaleup = [2x, 4x, 8x] design points
+    
     # bandwidth vs execution time
-    # mem_bw = 
+    
+    old_mem_cycles = reads+writes
+    bw_cycles = []
+    for bw_avail in np.arange(400, 1000, 200):
+        mem_cycles = 0
+        for reads in all_reads:
+            mem_bw_req = reads/cycle
+
+            mem_cycles += mem_bw_req/bw_avail
+        for writes in all_writes:
+            mem_bw_req = reads/cycle
+
+            mem_cycles += mem_bw_req/bw_avail
+    bw_cycles.append(total_cycles-old_mem_cycles+new_mem_cycles)
+        
     # no of cores vs execution time
+    core_cycles = []
+    old_c_cyles = 0
+    new_c_cycles = 0
+    cores = 16
+    for cores in np.arange(16, 128, 32):
+        
+        core_cycles.append(total_cycles-old_c_cycles+new_c_cycles)
     
     # cache size vs execution time
+    cache_cycles = []
+    old_cache_cyles = 0
+    for cache in [32,64]:
+        cache_cycles.append(total_cycles-old_cache_cycles+new_cache_cycles)
+        
     pass
