@@ -7,7 +7,6 @@ writes = 0
 stage =  {"F","Rn" "Wat", "Sr", "Sw", "Wb", "Cm"}
 all_reads = []
 all_writes = []
-core_cycles = []
 
 
 def kotana_reader():
