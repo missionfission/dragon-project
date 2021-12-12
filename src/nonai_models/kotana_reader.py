@@ -12,18 +12,24 @@ def kotana_reader():
     lines = []
     global reads, writes
     for line in file.readlines():
+        count = 0
         global total_cycles
-        instruction = line.split("\t")[-1]
-        if('C\t' in line):
-            # print(line,line.split("\t")[-1])
-            total_cycles += int(line.split("\t")[-1])
-        if len(instruction.split("="))>1:
-            lines.append(instruction.split("=")[-1].split("(")[0].strip())
-        if "Rn" in line:
-            reads+=1
-        if "Wb" in line:
-            writes+=1
+        if count > 8970 and count < 66345:
+            instruction = line.split("\t")[-1]
+            if('C\t' in line):
+                # print(line,line.split("\t")[-1])
+                total_cycles += int(line.split("\t")[-1])
+            if len(instruction.split("="))>1:
+                lines.append(instruction.split("=")[-1].split("(")[0].strip())
+            if "Rn" in line:
+                reads+=1
+            if "Wb" in line:
+                writes+=1
+        count += 1
     return lines
+# L   8970    0   10e4c r7 = vsetvli(r7)
+# and ends on
+# L   66345   0   10f24 bne(r28)
 # {"I", "L", "S", "W","C", "E","R", "D"}
 riscv_instruction_set = ['fmv.d.x','fmadd.d','vle64','vfmul.vv','vfmacc.vv','VFALU','VFXLD','vlxei64' 'addi','fld','addi','bne','add','slli','ld', "iLD", "iALU", "fLD", "iSFT", "fMUL"]
 inst_energy = ['0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1','0.1']
