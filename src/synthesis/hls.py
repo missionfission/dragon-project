@@ -223,7 +223,7 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
         parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
 
-def parse_graph(graph):
+def parse_graph(graph, dse_input):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
     """
@@ -280,6 +280,9 @@ def parse_graph(graph):
 #                 if isinstance(i.iter.args[0], ast.Variable):
 #                     loop_iters = [i.iter.args[0].value]
 #                     print("Loop iters are Variable Initialized/Will be Captured by User input")
+               elif:
+                    loop_iters = dse_input[0]
+                    unrolled = dse_input[1]
                 else:
                     print("Loop iters could not be captured")
                     print("Enter Loop iters : ")
