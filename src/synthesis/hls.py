@@ -159,7 +159,7 @@ def schedule(expr, type):
         mem_cycles += memory_cfgs[variable]/bw_avail
         mem_state[variable] = True
     hw_need["Regs"] = num_vars
-    return num_cycles+mem_cycles, hw_need
+    return num_cycles,mem_cycles, hw_need
 
 
 def parse_code(expr, type, unrolled=1, loop_iters=1):
@@ -172,9 +172,9 @@ def parse_code(expr, type, unrolled=1, loop_iters=1):
         loop_iters (int, optional): . Defaults to 1.
     """
     if type in ["assign", "expr", "binop_nested", "constant"]:
-        expr_cycles, hw_need = schedule(expr, type)
+        expr_cycles, mem_cycles, hw_need = schedule(expr, type)
         global cycles, hw_allocated, hw_utilized
-        cycles += expr_cycles * (int(loop_iters) / int(unrolled))
+        cycles += (expr_cycles+mem_cycles) * (int(loop_iters) / int(unrolled))
         # hw_allocated = max(hw_need*unrolled, hw_allocated)
         hw_allocated = {
             key: max(value, hw_need[key] * unrolled)
@@ -223,10 +223,12 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
         parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
 
-def parse_graph(graph, dse_input):
+def parse_graph(graph, dse_input, dse_given=False, given_bandwidth=1000000):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
     """
+    global bw_avail
+    bw_avail = given_bandwidth
     for key in op2sym_map.keys():
         hw_allocated[key] = 0
         hw_utilized[key] = 0
@@ -280,9 +282,9 @@ def parse_graph(graph, dse_input):
 #                 if isinstance(i.iter.args[0], ast.Variable):
 #                     loop_iters = [i.iter.args[0].value]
 #                     print("Loop iters are Variable Initialized/Will be Captured by User input")
-               elif:
-                    loop_iters = dse_input[0]
-                    unrolled = dse_input[1]
+                elif dse_given:
+                    loop_iters = dse_input["loop1"][0]
+                    unrolled = dse_input["loop1"][1]
                 else:
                     print("Loop iters could not be captured")
                     print("Enter Loop iters : ")
