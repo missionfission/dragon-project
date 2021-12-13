@@ -717,7 +717,7 @@ class AES:
 #     end = time.time()
 #     print(end-start)
 
-aes = AES()
+aes = AES("1212304810341341")
 
 # @testbench
 # def test(aes):
