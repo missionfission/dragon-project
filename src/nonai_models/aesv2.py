@@ -1,7 +1,7 @@
 import polyphony
 from polyphony import testbench, module, pure
 from polyphony.io import Port
-from polyphony.typing import uint3, uint4, string
+from polyphony.typing import uint3, uint4
 from polyphony.timing import clksleep, clkfence, wait_rising, wait_falling
 
 Sbox = (
