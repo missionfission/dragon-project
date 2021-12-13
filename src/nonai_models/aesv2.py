@@ -1,3 +1,9 @@
+import polyphony
+from polyphony import testbench, module, pure
+from polyphony.io import Port
+from polyphony.typing import uint3, uint4, string
+from polyphony.timing import clksleep, clkfence, wait_rising, wait_falling
+
 Sbox = (
     0x63,
     0x7C,
@@ -518,10 +524,6 @@ InvSbox = (
 
 
 # learnt from http://cs.ucsb.edu/~koc/cs178/projects/JT/aes.c
-def xtime(a):
-    return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
-
-
 Rcon = (
     0x00,
     0x01,
@@ -557,7 +559,7 @@ Rcon = (
     0x39,
 )
 
-
+@pure
 def text2matrix(text):
     matrix = []
     for i in range(16):
@@ -568,7 +570,7 @@ def text2matrix(text):
             matrix[i / 4].append(byte)
     return matrix
 
-
+@pure
 def matrix2text(matrix):
     text = 0
     for i in range(4):
@@ -576,9 +578,15 @@ def matrix2text(matrix):
             text |= matrix[i][j] << (120 - 8 * (4 * i + j))
     return text
 
+@pure        
+def xtime(a):
+    return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
+
+@module
 class AES:
     def __init__(self, master_key):
+#         self.in_1 = Port(string, 'in', protocol='valid')
         self.change_key(master_key)
 
     def change_key(self, master_key):
@@ -700,11 +708,20 @@ class AES:
 
         self.__mix_columns(s)
 
-if __name__ == "__main__" :
 
-    import time
-    start = time.time()
-    aes = AES("1212304810341341")
-    aes.encrypt("adflkadhlkfd")
-    end = time.time()
-    print(end-start)
+
+# if __name__ == "__main__" :
+
+#     import time
+#     start = time.time()
+#     end = time.time()
+#     print(end-start)
+
+aes = AES()
+
+# @testbench
+# def test(aes):
+#     aes.in_1.wr("1212304810341341")
+#     aes.encrypt("adflkadhlkfd")
+
+# test(aes)
