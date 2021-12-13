@@ -582,8 +582,8 @@ def matrix2text(matrix):
 def xtime(a):
     return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
-
-@module
+# use pure or polyphony.module depending on the output
+@polyphony.module
 class AES:
     def __init__(self, master_key):
 #         self.in_1 = Port(string, 'in', protocol='valid')
