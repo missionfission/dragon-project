@@ -559,18 +559,18 @@ Rcon = (
     0x39,
 )
 
-@pure
+# @pure
 def text2matrix(text):
     matrix = []
     for i in range(16):
-        byte = (text >> (8 * (15 - i))) & 0xFF
+        byte = (int(text) >> (8 * (15 - i))) & 0xFF
         if i % 4 == 0:
             matrix.append([byte])
         else:
-            matrix[i / 4].append(byte)
+            matrix[int(i / 4)].append(byte)
     return matrix
 
-@pure
+# @pure
 def matrix2text(matrix):
     text = 0
     for i in range(4):
@@ -578,16 +578,17 @@ def matrix2text(matrix):
             text |= matrix[i][j] << (120 - 8 * (4 * i + j))
     return text
 
-@pure        
+# @pure        
 def xtime(a):
     return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
 # use pure or polyphony.module depending on the output
-@polyphony.module
+# @polyphony.module
 class AES:
     def __init__(self, master_key):
-#         self.in_1 = Port(string, 'in', protocol='valid')
-        self.change_key(master_key)
+        pass
+        # self.in_1 = Port(string, 'in', protocol='valid')
+        # self.change_key(master_key)
 
     def change_key(self, master_key):
         self.round_keys = text2matrix(master_key)
@@ -599,7 +600,7 @@ class AES:
                 byte = (
                     self.round_keys[i - 4][0]
                     ^ Sbox[self.round_keys[i - 1][1]]
-                    ^ Rcon[i / 4]
+                    ^ Rcon[int(i / 4)]
                 )
                 self.round_keys[i].append(byte)
 
@@ -717,11 +718,11 @@ class AES:
 #     end = time.time()
 #     print(end-start)
 
-aes = AES("1212304810341341")
+aes = AES(1212304810341341)
 
-# @testbench
-# def test(aes):
-#     aes.in_1.wr("1212304810341341")
-#     aes.encrypt("adflkadhlkfd")
+@testbench
+def test(aes):
+    aes.in_1.wr("1212304810341341")
+    aes.encrypt("adflkadhlkfd")
 
-# test(aes)
+test(aes)

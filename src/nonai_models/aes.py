@@ -565,7 +565,7 @@ def text2matrix(text):
         if i % 4 == 0:
             matrix.append([byte])
         else:
-            matrix[i / 4].append(byte)
+            matrix[int(i / 4)].append(byte)
     return matrix
 
 
@@ -591,7 +591,7 @@ class AES:
                 byte = (
                     self.round_keys[i - 4][0]
                     ^ Sbox[self.round_keys[i - 1][1]]
-                    ^ Rcon[i / 4]
+                    ^ Rcon[int(i / 4)]
                 )
                 self.round_keys[i].append(byte)
 
@@ -704,7 +704,7 @@ if __name__ == "__main__" :
 
     import time
     start = time.time()
-    aes = AES("1212304810341341")
-    aes.encrypt("adflkadhlkfd")
+    aes = AES(1212304810341341)
+    aes.encrypt(1212304810341341)
     end = time.time()
     print(end-start)
