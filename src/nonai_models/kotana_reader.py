@@ -170,18 +170,19 @@ def pareto_curve():
     core_cycles = []
     #vfmul, vleix64, vfmacc.vv, vse64, add, sub, bne
     
-    old_c_cyles = 0
+    old_c_cyles = 1612
     new_c_cycles = 0
     cores = 16
     for cores in np.arange(16, 128, 32):
-        
+        new_c_cycles = old_c_cycles*cores//16
         core_cycles.append(total_cycles-old_c_cycles+new_c_cycles)
     
     # cache size vs execution time
     cache_cycles = []
     # vle64, ld, mv
-    old_cache_cyles = 0
+    old_cache_cyles = 130
     for cache in [32,64]:
+        new_cache_cycles = old_cache_cyles*cache//32
         cache_cycles.append(total_cycles-old_cache_cycles+new_cache_cycles)
         
-    pass
+    print(core_cycles, cache_cycles)
