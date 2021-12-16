@@ -16,7 +16,7 @@ def kotana_reader():
     for line in file.readlines():
         count = 0
         global total_cycles
-        if count > 8970 and count < 66345:
+        if count >= 40088 and count <= 3234212:
             instruction = line.split("\t")[-1]
             if('C\t' in line):
                 # print(line,line.split("\t")[-1])
