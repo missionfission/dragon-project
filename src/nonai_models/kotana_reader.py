@@ -168,6 +168,8 @@ def pareto_curve():
         
     # no of cores vs execution time
     core_cycles = []
+    #vfmul, vleix64, vfmacc.vv, vse64, add, sub, bne
+    
     old_c_cyles = 0
     new_c_cycles = 0
     cores = 16
@@ -177,6 +179,7 @@ def pareto_curve():
     
     # cache size vs execution time
     cache_cycles = []
+    # vle64, ld, mv
     old_cache_cyles = 0
     for cache in [32,64]:
         cache_cycles.append(total_cycles-old_cache_cycles+new_cache_cycles)
