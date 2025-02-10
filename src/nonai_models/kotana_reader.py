@@ -16,7 +16,7 @@ def kotana_reader():
     for line in file.readlines():
         count = 0
         global total_cycles
-        if count > 8970 and count < 66345:
+        if count >= 40088 and count <= 3234212:
             instruction = line.split("\t")[-1]
             if('C\t' in line):
                 # print(line,line.split("\t")[-1])
@@ -168,17 +168,21 @@ def pareto_curve():
         
     # no of cores vs execution time
     core_cycles = []
-    old_c_cyles = 0
+    #vfmul, vleix64, vfmacc.vv, vse64, add, sub, bne
+    
+    old_c_cyles = 1612
     new_c_cycles = 0
     cores = 16
     for cores in np.arange(16, 128, 32):
-        
+        new_c_cycles = old_c_cycles*cores//16
         core_cycles.append(total_cycles-old_c_cycles+new_c_cycles)
     
     # cache size vs execution time
     cache_cycles = []
-    old_cache_cyles = 0
+    # vle64, ld, mv
+    old_cache_cyles = 130
     for cache in [32,64]:
+        new_cache_cycles = old_cache_cyles*cache//32
         cache_cycles.append(total_cycles-old_cache_cycles+new_cache_cycles)
         
-    pass
+    print(core_cycles, cache_cycles)
