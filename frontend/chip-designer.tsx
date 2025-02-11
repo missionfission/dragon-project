@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -60,6 +60,14 @@ export default function ChipDesigner() {
   const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<WorkloadTemplate[]>([]);
   const [activeTab, setActiveTab] = useState<'design' | 'metrics'>('design');
+  const [optimizationResults, setOptimizationResults] = useState<{
+    graph: string;
+    animation_frames: string[];
+  } | null>(null);
+  const [currentFrame, setCurrentFrame] = useState(0);
+
+  // Add ref for canvas
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   // Add template fetching
   useEffect(() => {
@@ -130,17 +138,13 @@ export default function ChipDesigner() {
     setError(null);
     
     try {
-      // Ensure we're sending the correct data structure
-      const requestData = {
-        powerBudget: requirements.powerBudget,
-        areaConstraint: requirements.areaConstraint,
-        performanceTarget: requirements.performanceTarget,
-        selectedWorkloads: requirements.selectedWorkloads,
-        optimizationPriority: requirements.optimizationPriority
-      };
-      
-      const response = await axios.post('http://localhost:8000/api/generate-chip', requestData);
+      const response = await axios.post('http://localhost:8000/api/generate-chip', requirements);
       setChipDesign(response.data);
+      
+      // Fetch optimization results
+      const resultsResponse = await axios.get('http://localhost:8000/api/optimization-results');
+      setOptimizationResults(resultsResponse.data);
+      
       setActiveTab('metrics');
     } catch (err) {
       setError('Failed to generate chip design. Please try again.');
@@ -149,6 +153,65 @@ export default function ChipDesigner() {
       setLoading(false);
     }
   };
+
+  // Add function to render animation frames
+  const renderAnimationFrames = (frames: string[]) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let currentFrame = 0
+    const images: HTMLImageElement[] = []
+    let isPlaying = true
+
+    // Preload all images
+    const loadImages = async () => {
+      for (const frame of frames) {
+        const img = new Image()
+        img.src = `data:image/png;base64,${frame}`
+        await new Promise((resolve) => {
+          img.onload = resolve
+        })
+        images.push(img)
+      }
+
+      // Set canvas size based on first image
+      if (images[0]) {
+        canvas.width = images[0].width
+        canvas.height = images[0].height
+      }
+
+      // Start animation loop
+      const animate = () => {
+        if (!isPlaying) return
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(images[currentFrame], 0, 0)
+        
+        currentFrame = (currentFrame + 1) % images.length
+        requestAnimationFrame(animate)
+      }
+
+      animate()
+    }
+
+    loadImages()
+
+    // Return cleanup function
+    return () => {
+      isPlaying = false
+    }
+  }
+
+  // Use effect to start animation when results are available
+  useEffect(() => {
+    if (optimizationResults?.animation_frames) {
+      const cleanup = renderAnimationFrames(optimizationResults.animation_frames)
+      return cleanup
+    }
+  }, [optimizationResults])
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -379,6 +442,36 @@ export default function ChipDesigner() {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Optimization Results */}
+        {optimizationResults && (
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Optimization Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Progress Graph</h3>
+                  <img 
+                    src={`data:image/png;base64,${optimizationResults.graph}`}
+                    alt="Optimization Progress"
+                    className="w-full rounded-lg"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Design Evolution</h3>
+                  <div className="relative aspect-square w-full max-w-[600px] mx-auto">
+                    <canvas
+                      ref={canvasRef}
+                      className="w-full h-full rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
