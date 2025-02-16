@@ -63,13 +63,46 @@ def run_asap(self, graph):
     # Mem Fetch time of the last Nodes
     #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
+    # Add performance tracking arrays
+    self.compute_util_log = []  # Track compute utilization
+    self.memory_bandwidth_log = []  # Track memory bandwidth usage
+    self.cycle_count_log = []  # Track cycle counts
+    self.event_log = []  # Track events for animation
+
     mem_free = True
     for n, node in enumerate(graph.nodes):
         node.mem_fetch = node.weights
     for n, node in enumerate(graph.nodes):
 
-        # These are last level read/write accesses
+        # Log initial state
+        event = {
+            'step': n,
+            'node': node.operator,
+            'phase': 'start',
+            'compute_util': 0,
+            'mem_util': self.mem_util[0] / self.mem_size[0],
+            'bandwidth': 0,
+            'cycles': 0
+        }
+        self.event_log.append(event)
+
+        # Calculate compute metrics
         compute_expense, weights = node.get_stats()
+        time_compute = compute_expense / config["mm_compute_per_cycle"]
+        
+        # Log compute phase
+        event = {
+            'step': n,
+            'node': node.operator,
+            'phase': 'compute',
+            'compute_util': compute_expense / config["mm_compute_per_cycle"] / self.total_cycles,
+            'mem_util': self.mem_util[0] / self.mem_size[0],
+            'bandwidth': 0,
+            'cycles': time_compute
+        }
+        self.event_log.append(event)
+
+        # Memory operations
         read_access = node.mem_fetch
         write_access = 0
         self.mem_read_access[1] += weights
@@ -201,8 +234,19 @@ def run_asap(self, graph):
         cycles.append(step_cycles)
         read_bw_actual.append(read_access / step_cycles)
         write_bw_actual.append(write_access / step_cycles)
-    #         print("actual",read_access / step_cycles, write_access / step_cycles, step_cycles)
-    #     print("The total cycles are ", self.total_cycles)
+
+        # Log completion
+        event = {
+            'step': n,
+            'node': node.operator,
+            'phase': 'complete',
+            'compute_util': 0,
+            'mem_util': self.mem_util[0] / self.mem_size[0],
+            'bandwidth': 0,
+            'cycles': 0
+        }
+        self.event_log.append(event)
+
     self.mem_write_access[1] += node.out_edge_mem
     return (
         read_bw_req,

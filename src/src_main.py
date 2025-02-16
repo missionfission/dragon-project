@@ -791,3 +791,82 @@ def show_memory_capacity_req(graph_list, backprop, names=None, plot="time"):
     # plt.savefig("figures/memory_cap_req.png", bbox_inches="tight")
     # plt.show()
     return total_mem
+
+
+def visualize_performance_estimation(mapper, graph, backprop=False):
+    """Creates an animated visualization of performance estimation using rectangles
+    
+    Args:
+        mapper: Mapper object containing mapping state
+        graph: Input computation graph
+        backprop: Whether backpropagation is enabled
+        
+    Returns:
+        List of base64 encoded PNG frames showing the estimation process
+    """
+    frames = []
+    
+    # Run mapping to collect event log
+    mapper.run_asap(graph)
+    events = mapper.event_log
+    
+    # Create frames for each event
+    for event in events:
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        # Setup the plot area
+        ax.set_xlim(-0.5, 2.5)
+        ax.set_ylim(-0.5, 1.5)
+        ax.axis('off')
+        
+        # Draw compute unit rectangle
+        compute_rect = plt.Rectangle(
+            (0, 0), 1, 1, 
+            facecolor=f'blue',
+            alpha=max(0.1, event['compute_util']),
+            edgecolor='black',
+            linewidth=2
+        )
+        ax.add_patch(compute_rect)
+        
+        # Add compute utilization text
+        ax.text(0.5, -0.2, f"Compute\n{event['compute_util']*100:.1f}%", 
+                ha='center', va='center')
+        
+        # Draw memory unit rectangle
+        memory_rect = plt.Rectangle(
+            (1.5, 0), 1, 1,
+            facecolor='green',
+            alpha=max(0.1, event['mem_util']),
+            edgecolor='black',
+            linewidth=2
+        )
+        ax.add_patch(memory_rect)
+        
+        # Add memory utilization text
+        ax.text(2.0, -0.2, f"Memory\n{event['mem_util']*100:.1f}%",
+                ha='center', va='center')
+        
+        # Draw bandwidth indicator
+        if event['bandwidth'] > 0:
+            arrow = plt.Arrow(
+                1.1, 0.5, 0.3, 0,
+                width=0.2,
+                color='red',
+                alpha=min(1.0, event['bandwidth'] / mapper.mem_read_bw[mapper.mle-1])
+            )
+            ax.add_patch(arrow)
+        
+        # Add title with node and phase info
+        plt.title(f"Node: {event['node']}\nPhase: {event['phase']}\nCycles: {event['cycles']:.0f}",
+                 pad=20, fontsize=12)
+        
+        # Save frame
+        buf = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf, format='png', dpi=100)
+        plt.close()
+        buf.seek(0)
+        frames.append(base64.b64encode(buf.getvalue()).decode())
+    
+    return frames

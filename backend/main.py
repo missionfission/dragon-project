@@ -12,7 +12,8 @@ from pathlib import Path
 import numpy as np
 from dataclasses import dataclass
 import imageio
-from src.src_main import design_runner
+from src.src_main import design_runner, visualize_performance_estimation
+from src.src_main import Mapper
 
 app = FastAPI(
     title="Chip Designer API",
@@ -59,6 +60,7 @@ class OptimizationState:
     performance: float
     area: float
     design: Dict
+    perf_estimation_frames: List[str] = None
 
 class DesignOptimizer:
     def __init__(self, requirements: ChipRequirements):
@@ -103,21 +105,29 @@ class DesignOptimizer:
                 graph_set=self.graph_set,
                 backprop=backprop,
                 print_stats=print_stats,
-                file="default.yaml",  # You might want to make this configurable
+                file="default.yaml",
                 stats_file=f"logs/stats_{self.iteration}.txt"
             )
+            
+            # Generate performance estimation visualization
+            perf_frames = []
+            for graph in self.graph_set:
+                mapper = Mapper(hwfile="default.yaml")
+                frames = visualize_performance_estimation(mapper, graph, backprop)
+                perf_frames.extend(frames)
             
             # Store optimization state
             state = OptimizationState(
                 iteration=self.iteration,
-                power=energy[0],  # Using first energy value
-                performance=1/time[0],  # Convert time to performance
+                power=energy[0],
+                performance=1/time[0],
                 area=area,
-                design=self._create_design_from_metrics(time, energy, area)
+                design=self._create_design_from_metrics(time, energy, area),
+                perf_estimation_frames=perf_frames  # Add frames to state
             )
             self.optimization_states.append(state)
             
-            # Update best design
+            # Update best design if needed
             current_design = ChipDesign(**state.design)
             if self.best_design is None or self._is_better_design(current_design):
                 self.best_design = current_design
@@ -253,6 +263,14 @@ class DesignOptimizer:
         buf.seek(0)
         return base64.b64encode(buf.getvalue()).decode()
 
+    def get_performance_estimation_animation(self) -> List[str]:
+        """Get all performance estimation visualization frames"""
+        frames = []
+        for state in self.optimization_states:
+            if hasattr(state, 'perf_estimation_frames'):
+                frames.extend(state.perf_estimation_frames)
+        return frames
+
 def calculate_block_metrics(block_type: str, power_budget: float, performance_target: float) -> Dict:
     """Calculate power consumption and performance metrics for a block"""
     base_metrics = {
@@ -278,7 +296,8 @@ async def generate_chip(requirements: ChipRequirements):
         # Store optimization results
         optimization_data = {
             "graph": optimizer.generate_optimization_graph(),
-            "animation_frames": optimizer.generate_animation_frames()
+            "animation_frames": optimizer.generate_animation_frames(),
+            "performance_estimation_frames": optimizer.get_performance_estimation_animation()
         }
         
         # You might want to store this in a database or cache
@@ -297,6 +316,20 @@ async def get_optimization_results():
         raise HTTPException(status_code=404, detail="No optimization results available")
     
     return app.state.last_optimization
+
+@app.get("/api/performance-estimation")
+async def get_performance_estimation():
+    """Get the performance estimation visualization frames"""
+    if not hasattr(app.state, 'last_optimization'):
+        raise HTTPException(status_code=404, detail="No optimization results available")
+    
+    optimizer = app.state.last_optimization
+    frames = optimizer["performance_estimation_frames"]
+    
+    return {
+        "frames": frames,
+        "frameCount": len(frames)
+    }
 
 @app.get("/api/workload-templates")
 async def get_workload_templates():
