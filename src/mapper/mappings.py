@@ -1,4 +1,5 @@
 from mapper.mapper import Mapper
+import numpy as np
 
 
 """
@@ -18,38 +19,15 @@ Provides Mapping Interface for 5 types of mapping :
 
 
 def run_asap(self, graph):
-
     """
-    Runs the Graph on the Hardware ASAP Mapped
+    Runs the Graph on the Hardware ASAP Mapped with FX graph edge awareness
 
-    We following a Dynamic State Variable Execution Mapping :
+    We following a Dynamic State Variable Execution Mapping:
     1. Memory Size and Maximum Allowed Bandwidth are taken from Hardware Config
     2. Current Memory Size and Memory Utilization are calculated by Mapping the Nodes Serially
-
-    Memory Management Scenarios :
-
-    1. Check both size, utilization and bandwidths at every node
-    2. What about memory size that can also get exhausted 
-    3. If memory size is exhausted, then to go to a previous level and write there 
-    4. If any level utilization is exhausted then only the immediate memory required will be kept.
-    5. If the memory is empty in size, but there is no bandwidth, it is useless : Cannot do prefetching
-    6. If Prefetching : Read access of the next node will decrease
-    7. Bandwidth is available but size is not : Can do prefetching, but now the memory fetches have to check,
-    whether to do fetches of the same node or a different node
-    8. Say bandwidth at level0 is sufficient, at level1 is insufficient, then at level1 we have a bottlenecks
-    slower so it will take its own time
-
-    Compute Management Scenarios :
-
-    1. Pipelined vs Parallel Mapper 
-    2. When do vector operations happen 
-    3. Scale up vs Scale out for Systolic Arrays
-
+    3. Uses FX graph edges for better prefetching decisions
     """
-
     config = self.config
-    # TODO in_edge_mem can change by pooling/batch_norm
-    # TODO compute is very much higher than bandwidth time and mem size idle time
     read_bw_req = []
     write_bw_req = []
     read_bw_actual = []
@@ -60,8 +38,6 @@ def run_asap(self, graph):
     all_checkpointed_edge = []
     self.mem_util_log = []
     self.mem_util_full = []
-    # Mem Fetch time of the last Nodes
-    #     print(self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
     # Add performance tracking arrays
     self.compute_util_log = []  # Track compute utilization
@@ -70,10 +46,13 @@ def run_asap(self, graph):
     self.event_log = []  # Track events for animation
 
     mem_free = True
-    for n, node in enumerate(graph.nodes):
+    
+    # Initialize memory fetch requirements
+    for node in graph.nodes:
         node.mem_fetch = node.weights
+        
+    # Process nodes in topological order
     for n, node in enumerate(graph.nodes):
-
         # Log initial state
         event = {
             'step': n,
@@ -90,18 +69,6 @@ def run_asap(self, graph):
         compute_expense, weights = node.get_stats()
         time_compute = compute_expense / config["mm_compute_per_cycle"]
         
-        # Log compute phase
-        event = {
-            'step': n,
-            'node': node.operator,
-            'phase': 'compute',
-            'compute_util': compute_expense / config["mm_compute_per_cycle"] / self.total_cycles,
-            'mem_util': self.mem_util[0] / self.mem_size[0],
-            'bandwidth': 0,
-            'cycles': time_compute
-        }
-        self.event_log.append(event)
-
         # Memory operations
         read_access = node.mem_fetch
         write_access = 0
@@ -110,29 +77,36 @@ def run_asap(self, graph):
         assert self.mem_util[0] <= self.mem_size[0]
         self.mem_util[0] += node.in_edge_mem
         node.mem_util = node.out_edge_mem + node.mem_fetch
+        
         # Total Free memory
         for i in range(self.mle - 1):
             self.mem_free[i] = self.mem_size[i] - self.mem_util[i]
-        time_compute = compute_expense / config["mm_compute_per_cycle"]
-        read_bw_ll = read_access / (time_compute)
-        write_bw_ll = write_access / (time_compute)
+            
+        read_bw_ll = read_access / time_compute
+        write_bw_ll = write_access / time_compute
         step_cycles = time_compute
+        
         read_bw_req.append(read_bw_ll)
         write_bw_req.append(write_bw_ll)
         free_cycles.append(step_cycles)
         n_swaps = 1
         total_mem = 0
+
+        # Memory management
         if self.mem_free[0] < node.mem_util:
             mem_free = False
             self.mem_util[0] -= node.in_edge_mem
             self.mem_util[0] -= node.weights - node.mem_fetch
             self.mem_free[0] = self.mem_size[0] - self.mem_util[0]
             total_mem = node.in_edge_mem + node.out_edge_mem + node.weights
+            
             if self.mem_free[0] <= 0:
                 print(self.mem_free[0])
             assert self.mem_free[0] > 0, self.mem_util[0]
+            
             n_swaps = total_mem // self.mem_free[0] + 1
-            swap_time = max(config["mm_compute"]["size"] * 4, time_compute // n_swaps)
+            swap_time = max(config["mm_compute_per_cycle"] * 4, time_compute // n_swaps)
+            
             self.mem_size_idle_time += (
                 swap_time * n_swaps
                 + ((node.out_edge_mem // n_swaps - 1) * n_swaps)
@@ -141,12 +115,14 @@ def run_asap(self, graph):
             self.bandwidth_idle_time += (
                 (node.out_edge_mem // n_swaps - 1) * n_swaps
             ) // self.mem_read_bw[self.mle - 1]
+            
             step_cycles += (
                 swap_time * n_swaps
                 + 2
                 * ((node.out_edge_mem // n_swaps - 1) * n_swaps)
                 // self.mem_read_bw[self.mle - 1]
             )
+            
             self.mem_read_access[0] += node.mem_util + node.in_edge_mem
             self.mem_write_access[0] += node.mem_util + node.in_edge_mem
             self.mem_write_access[1] += node.out_edge_mem
@@ -157,12 +133,12 @@ def run_asap(self, graph):
         self.mem_util_log.append(self.mem_util[0])
         self.mem_read_access[0] += node.weights + node.out_edge_mem
         self.mem_write_access[0] += node.weights + node.out_edge_mem
-        # assert self.mem_free[0] <= self.mem_size[0]
-        # Last level memory fetch takes more time, so that may be a bottleneck
+        
+        # Check bandwidth availability
         bandwidth_available = read_bw_ll < self.mem_read_bw[self.mle - 1]
 
-        # If Bandwidth is not available : Cannot Prefetch
-        if (bandwidth_available) == False:
+        # If Bandwidth is not available: Cannot Prefetch
+        if not bandwidth_available:
             step_cycles += (
                 read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
             ) * time_compute
@@ -170,44 +146,33 @@ def run_asap(self, graph):
                 read_bw_ll / self.mem_read_bw[self.mle - 1] - 1
             ) * time_compute
 
-        # If memory is not free for the next node and Bandwidth is available : Move nodes back and forth
-        # if(total_mem_free[0] == 0 and (bandwidth_available)):
-        # for(nodes in checkpointed_nodes):
-        # checkpointed but not immediate node
-
-        # Check if memory is free and Bandwidth available : From the Data Dependence Graph, Prefetch new node
-
-        # pdb.set_trace()
-        if self.mem_free[0] > 0 and (bandwidth_available):
-            if n < len(graph.nodes) - 1:
-                if self.mem_free[0] > node.next.mem_fetch:
-                    read_access += node.next.mem_fetch
+        # Prefetch using FX graph edges
+        if self.mem_free[0] > 0 and bandwidth_available:
+            # Get successors from FX graph edges
+            successors = graph.get_node_successors(node)
+            for next_node in successors:
+                if self.mem_free[0] > next_node.mem_fetch:
+                    read_access += next_node.mem_fetch
                     if read_access / step_cycles < self.mem_read_bw[self.mle - 1]:
-                        self.mem_util[0] += node.next.mem_fetch
-                        self.mem_free[0] -= node.next.mem_fetch
-                        node.next.mem_fetch = 0
+                        self.mem_util[0] += next_node.mem_fetch
+                        self.mem_free[0] -= next_node.mem_fetch
+                        next_node.mem_fetch = 0
                     else:
                         read_access = self.mem_read_bw[self.mle - 1] * step_cycles
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
-                        node.next.mem_fetch -= (
-                            read_access - read_bw_ll * step_cycles
-                        )  # Next node mem fetch gets updated
-
+                        next_node.mem_fetch -= read_access - read_bw_ll * step_cycles
                 else:
                     read_access += self.mem_free[0]
                     if read_access / step_cycles < self.mem_read_bw[self.mle - 1]:
-                        node.next.mem_fetch = node.next.mem_fetch - self.mem_free[0]
-                        # Next node mem fetch gets updated
-
+                        next_node.mem_fetch = next_node.mem_fetch - self.mem_free[0]
                         self.mem_util[0] = self.mem_size[0]
                         self.mem_free[0] = 0
                     else:
                         read_access = self.mem_read_bw[self.mle - 1] * step_cycles
                         self.mem_util[0] += read_access - read_bw_ll * step_cycles
                         self.mem_free[0] -= read_access - read_bw_ll * step_cycles
-                        node.next.mem_fetch -= read_access - read_bw_ll * step_cycles
-                        # Next node mem fetch gets updated
+                        next_node.mem_fetch -= read_access - read_bw_ll * step_cycles
 
         #         print("3",self.mem_free[0], self.mem_util[0], self.mem_size[0])
         self.mem_util_full.append(self.mem_util[0])
@@ -219,8 +184,9 @@ def run_asap(self, graph):
             self.mem_util[0] -= node.out_edge_mem + node.weights + node.in_edge_mem
         #         print("5",self.mem_free[0], self.mem_util[0], self.mem_size[0])
 
+        # Log node completion
         self.logger.debug(
-            "Node operator %r, Compute Expense %d,   Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d , No of Swaps %d, Total_mem %d",
+            "Node operator %r, Compute Expense %d, Time Compute %d, Step Cycles %d, Read Accesses %d, Write Accesses %d, No of Swaps %d, Total_mem %d",
             node.operator,
             compute_expense,
             time_compute,
@@ -230,20 +196,21 @@ def run_asap(self, graph):
             n_swaps,
             total_mem,
         )
+        
         self.total_cycles += step_cycles
         cycles.append(step_cycles)
         read_bw_actual.append(read_access / step_cycles)
         write_bw_actual.append(write_access / step_cycles)
 
-        # Log completion
+        # Log completion state
         event = {
             'step': n,
             'node': node.operator,
             'phase': 'complete',
-            'compute_util': 0,
+            'compute_util': compute_expense / (config["mm_compute_per_cycle"] * step_cycles),
             'mem_util': self.mem_util[0] / self.mem_size[0],
-            'bandwidth': 0,
-            'cycles': 0
+            'bandwidth': read_access / step_cycles,
+            'cycles': step_cycles
         }
         self.event_log.append(event)
 
