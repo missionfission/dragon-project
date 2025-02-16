@@ -360,6 +360,93 @@ async def get_workload_templates():
         ]
     }
 
+class ChipSpecs(BaseModel):
+    clockSpeed: float = Field(..., gt=0, description="Clock speed in MHz")
+    coreCount: int = Field(..., gt=0, description="Number of cores")
+    cacheSize: float = Field(..., gt=0, description="Cache size in MB")
+    memoryBandwidth: float = Field(..., gt=0, description="Memory bandwidth in GB/s")
+
+@app.post("/api/estimate-performance")
+async def estimate_performance(specs: ChipSpecs):
+    # Calculate base MIPS (Million Instructions Per Second)
+    # Using a simplified performance model:
+    # MIPS = clock_speed * cores * IPC * efficiency_factor
+    IPC = 2.5  # Instructions per cycle (typical for modern processors)
+    efficiency_factor = 0.8  # Account for various inefficiencies
+    
+    base_mips = specs.clockSpeed * specs.coreCount * IPC * efficiency_factor
+    
+    # Apply cache and memory bandwidth effects
+    # Cache effect: Larger cache generally improves performance up to a point
+    cache_factor = 1.0 + (math.log2(specs.cacheSize) / 10)
+    
+    # Memory bandwidth effect: Higher bandwidth helps with data-intensive operations
+    bandwidth_factor = 1.0 + (math.log2(specs.memoryBandwidth) / 15)
+    
+    total_mips = base_mips * cache_factor * bandwidth_factor
+    
+    # Calculate power consumption (in Watts)
+    # Simple power model: P = C * V^2 * f
+    # Where C is proportional to core count and cache size
+    base_power = specs.clockSpeed * specs.coreCount * 0.1  # Basic CPU power
+    cache_power = specs.cacheSize * 0.5  # Cache power consumption
+    memory_power = specs.memoryBandwidth * 0.05  # Memory system power
+    total_power = base_power + cache_power + memory_power
+    
+    # Calculate power efficiency
+    power_efficiency = total_mips / total_power
+    
+    # Calculate utilization based on memory bandwidth and core count
+    max_theoretical_bandwidth = specs.coreCount * specs.clockSpeed * 8  # bytes/s
+    utilization = min(95, (specs.memoryBandwidth * 1000 / max_theoretical_bandwidth) * 100)
+    
+    # Calculate thermal profile (°C)
+    # Simple thermal model based on power consumption and core density
+    base_temp = 45  # Base temperature
+    power_temp_factor = total_power * 0.1
+    density_factor = (specs.coreCount / 16) * 10  # Normalized to 16 cores
+    thermal_profile = base_temp + power_temp_factor + density_factor
+    
+    # Generate performance visualization frames
+    frames = []
+    num_frames = 30
+    
+    for i in range(num_frames):
+        # Create a figure for visualization
+        plt.figure(figsize=(10, 6))
+        
+        # Plot utilization over time (simulated)
+        time_points = np.linspace(0, 10, 100)
+        base_utilization = utilization + np.random.normal(0, 2, 100)
+        utilization_data = base_utilization + 5 * np.sin(time_points + i/5)
+        plt.plot(time_points, utilization_data, 'b-', alpha=0.6, label='Core Utilization')
+        
+        # Plot memory bandwidth usage
+        bandwidth_usage = (specs.memoryBandwidth * 0.7) + (specs.memoryBandwidth * 0.3 * np.random.rand(100))
+        plt.plot(time_points, bandwidth_usage, 'r-', alpha=0.6, label='Memory Bandwidth')
+        
+        plt.title(f'Performance Visualization (t={i/10:.1f}s)')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Utilization / Bandwidth')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        
+        # Convert plot to base64 image
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        img_str = base64.b64encode(buf.getvalue()).decode()
+        frames.append(f"data:image/png;base64,{img_str}")
+        plt.close()
+    
+    return {
+        "mips": total_mips,
+        "powerEfficiency": power_efficiency,
+        "utilizationPercentage": utilization,
+        "thermalProfile": thermal_profile,
+        "animationFrames": frames
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000) 
