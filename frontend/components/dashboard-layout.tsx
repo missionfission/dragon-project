@@ -1,8 +1,12 @@
-"use client"
-
-import { SidebarProvider } from "@/components/ui/sidebar"
 import { Suspense } from "react"
+import dynamic from "next/dynamic"
 import { DashboardSidebar } from "./dashboard-sidebar"
+
+// Import SidebarProvider dynamically to avoid SSR issues
+const SidebarProvider = dynamic(
+  () => import("@/components/ui/sidebar").then((mod) => mod.SidebarProvider),
+  { ssr: false }
+)
 
 interface DashboardLayoutProps {
   children: React.ReactNode
