@@ -5,7 +5,6 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaGoogle } from 'react-icons/fa'
 
@@ -46,15 +45,6 @@ export default function HomePage() {
             >
               <FaGoogle className="w-5 h-5" />
               Sign in with Google
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              asChild
-            >
-              <Link href="/solutions">
-                Explore Solutions
-              </Link>
             </Button>
           </div>
         </div>
