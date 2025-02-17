@@ -1,11 +1,12 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 import DashboardLayout from "@/components/dashboard-layout"
 import ChipDesigner from "../../chip-designer"
 import ChipPerformanceEstimator from "@/components/chip-performance-estimator"
 
-export default function DashboardPage() {
+const DashboardContent = () => {
   const searchParams = useSearchParams()
   const view = searchParams.get("view") || "estimator"
 
@@ -20,10 +21,18 @@ export default function DashboardPage() {
   }
 
   return (
+    <div className="container mx-auto px-4 py-8">
+      {renderContent()}
+    </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
     <DashboardLayout>
-      <div className="container mx-auto px-4 py-8">
-        {renderContent()}
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <DashboardContent />
+      </Suspense>
     </DashboardLayout>
   )
 } 
