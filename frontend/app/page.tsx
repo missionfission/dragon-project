@@ -10,23 +10,34 @@ import { FaGoogle } from 'react-icons/fa'
 import Image from 'next/image'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-// Performance comparison data
-const performanceData = [
-  { name: 'Baseline', performance: 100 },
-  { name: 'Dragon Systems', performance: 285 },
+// Update the performance data section
+const developmentMetrics = [
+  { name: 'Development Time', reduction: 70 },
+  { name: 'Design Iterations', reduction: 65 },
+  { name: 'Development Costs', reduction: 60 },
+]
+
+const timeToMarketMetrics = [
+  { name: 'Traditional Process', months: 24 },
+  { name: 'With DragonX', months: 8 },
 ]
 
 // Testimonials data
 const testimonials = [
   {
-    quote: "Dragon Systems helped us achieve 3x performance improvement in our chip design process.",
+    quote: "Dragon Systems cut our chip design evaluation time by 70%, saving us millions in development costs.",
     author: "Sarah Chen",
     role: "Chief Architect, TechCorp"
   },
   {
-    quote: "The AI Architect feature saved us months of evaluation time.",
+    quote: "Whether it's AI accelerators or traditional processors, Dragon Systems consistently delivers accurate performance predictions.",
     author: "Michael Rodriguez",
     role: "VP Engineering, ChipWorks"
+  },
+  {
+    quote: "The rapid architecture evaluation helped us identify optimal designs in weeks instead of months.",
+    author: "David Kumar",
+    role: "Technical Director, Silicon Innovations"
   }
 ]
 
@@ -57,8 +68,22 @@ export default function HomePage() {
               DRAGONX SYSTEMS
             </h1>
             <p className="text-xl md:text-2xl text-gray-300">
-              Revolutionizing Chip Design with AI-Powered Solutions
+              Accelerate Chip Design Decisions with AI-Powered Architecture Evaluation
             </p>
+            <div className="space-y-4 text-gray-300">
+              <div className="flex items-center gap-2">
+                <span className="text-blue-500">✓</span>
+                <p>70% faster architecture evaluation time</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-blue-500">✓</span>
+                <p>90% accuracy for both AI and traditional workloads</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-blue-500">✓</span>
+                <p>Reduce development costs by up to 60%</p>
+              </div>
+            </div>
             <div className="flex gap-4 mt-8">
               <Button 
                 size="lg"
@@ -85,23 +110,97 @@ export default function HomePage() {
 
       {/* Performance Metrics Section */}
       <div className="container mx-auto px-4 py-16 bg-gray-800/30">
-        <h2 className="text-3xl font-bold text-center mb-12">Performance Impact</h2>
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={performanceData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip />
-              <Bar dataKey="performance" fill="#3b82f6" />
-            </BarChart>
-          </ResponsiveContainer>
+        <h2 className="text-3xl font-bold text-center mb-12">Our Impact</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card className="p-6 bg-gray-800/50 border-gray-700">
+            <h3 className="text-xl font-semibold mb-6 text-center">Development Improvements</h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={developmentMetrics}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: '#9CA3AF' }}
+                    axisLine={{ stroke: '#4B5563' }}
+                  />
+                  <YAxis 
+                    label={{ 
+                      value: 'Reduction (%)', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      fill: '#9CA3AF'
+                    }}
+                    tick={{ fill: '#9CA3AF' }}
+                    axisLine={{ stroke: '#4B5563' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937',
+                      border: 'none',
+                      borderRadius: '6px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="reduction" 
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={80}
+                  >
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gray-800/50 border-gray-700">
+            <h3 className="text-xl font-semibold mb-6 text-center">Time to Market Comparison</h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={timeToMarketMetrics}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: '#9CA3AF' }}
+                    axisLine={{ stroke: '#4B5563' }}
+                  />
+                  <YAxis 
+                    label={{ 
+                      value: 'Time to Market (Months)', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      fill: '#9CA3AF'
+                    }}
+                    tick={{ fill: '#9CA3AF' }}
+                    axisLine={{ stroke: '#4B5563' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937',
+                      border: 'none',
+                      borderRadius: '6px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="months" 
+                    fill="#8b5cf6"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={80}
+                  >
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
         </div>
       </div>
 
       {/* Solutions Section */}
       <div className="container mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-center mb-16">Our Solutions</h2>
+        <h2 className="text-4xl font-bold text-center mb-16">Comprehensive Solutions</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
             <Image
@@ -111,10 +210,15 @@ export default function HomePage() {
               height={200}
               className="mx-auto mb-6"
             />
-            <h3 className="text-xl font-semibold mb-4">Performance Estimation</h3>
+            <h3 className="text-xl font-semibold mb-4">Rapid Architecture Evaluation</h3>
             <p className="text-gray-400">
-              Achieve up to 90% accuracy with significant speedup compared to traditional methods.
+              Evaluate chip architectures 70% faster with our AI-powered platform. Support for both neural networks and traditional workloads.
             </p>
+            <ul className="mt-4 space-y-2 text-gray-400">
+              <li>• Multi-scenario performance modeling</li>
+              <li>• Power and area estimation</li>
+              <li>• Workload-specific optimization</li>
+            </ul>
           </Card>
 
           <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
@@ -125,10 +229,15 @@ export default function HomePage() {
               height={200}
               className="mx-auto mb-6"
             />
-            <h3 className="text-xl font-semibold mb-4">Design Space Exploration</h3>
+            <h3 className="text-xl font-semibold mb-4">Intelligent Design Space Exploration</h3>
             <p className="text-gray-400">
-              Explore multiple technology options and design parameters to find optimal solutions.
+              Automatically explore and evaluate thousands of design options to find the optimal solution for your requirements.
             </p>
+            <ul className="mt-4 space-y-2 text-gray-400">
+              <li>• Technology node comparison</li>
+              <li>• Memory hierarchy optimization</li>
+              <li>• Cost-performance trade-offs</li>
+            </ul>
           </Card>
 
           <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
@@ -139,10 +248,15 @@ export default function HomePage() {
               height={200}
               className="mx-auto mb-6"
             />
-            <h3 className="text-xl font-semibold mb-4">System Integration</h3>
+            <h3 className="text-xl font-semibold mb-4">ROI-Focused Integration</h3>
             <p className="text-gray-400">
-              Comprehensive system-level evaluation combining logic, memory, and interconnects.
+              Comprehensive system-level evaluation that helps reduce development costs and time-to-market.
             </p>
+            <ul className="mt-4 space-y-2 text-gray-400">
+              <li>• Early-stage cost estimation</li>
+              <li>• Time-to-market optimization</li>
+              <li>• Risk assessment and mitigation</li>
+            </ul>
           </Card>
         </div>
       </div>
@@ -175,6 +289,83 @@ export default function HomePage() {
         <p className="text-center text-gray-300 mt-8 max-w-2xl mx-auto">
           Our integrated approach combines device-level parameters, advanced simulators, and system-level evaluation for comprehensive chip design optimization.
         </p>
+      </div>
+
+      {/* Code & Library Support Section */}
+      <div className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-center mb-16">Developer Tools & Library Support</h2>
+        <div className="grid md:grid-cols-2 gap-12">
+          {/* Python SDK Card */}
+          <Card className="p-8 bg-gray-800/50 border-gray-700">
+            <h3 className="text-2xl font-semibold mb-6">Python SDK & Libraries</h3>
+            <div className="space-y-4">
+              <div className="bg-gray-900/50 p-4 rounded-lg">
+                <code className="text-sm text-gray-300">
+                  pip install dragonx-optimizer
+                </code>
+              </div>
+              <p className="text-gray-300">Comprehensive Python libraries for:</p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2">
+                <li>Workload analysis and profiling</li>
+                <li>Neural network optimization</li>
+                <li>Auto-tuning and parameter optimization</li>
+                <li>Performance prediction and modeling</li>
+              </ul>
+            </div>
+          </Card>
+
+          {/* Compiler Optimizations Card */}
+          <Card className="p-8 bg-gray-800/50 border-gray-700">
+            <h3 className="text-2xl font-semibold mb-6">Compiler Optimizations</h3>
+            <div className="space-y-4">
+              <div className="bg-gray-900/50 p-4 rounded-lg">
+                <code className="text-sm text-gray-300">
+                  dragonx-compile --target=accelerator --opt-level=3 workload.py
+                </code>
+              </div>
+              <p className="text-gray-300">Advanced compilation features:</p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2">
+                <li>Hardware-specific code generation</li>
+                <li>Automatic vectorization and parallelization</li>
+                <li>Memory access pattern optimization</li>
+                <li>Dynamic runtime adaptation</li>
+              </ul>
+            </div>
+          </Card>
+        </div>
+
+        {/* Code Example Section */}
+        <div className="mt-12">
+          <Card className="p-8 bg-gray-800/50 border-gray-700">
+            <h3 className="text-2xl font-semibold mb-6">Quick Start Example</h3>
+            <div className="bg-gray-900/50 p-4 rounded-lg">
+              <pre className="text-sm text-gray-300">
+                <code>{`import dragonx as dx
+
+# Initialize optimizer with your architecture
+optimizer = dx.Optimizer(architecture="custom_accelerator")
+
+# Define your workload
+@dx.workload
+def my_neural_network(input_data):
+    # Your model definition
+    return processed_result
+
+# Optimize for your specific hardware
+optimized_model = optimizer.optimize(
+    model=my_neural_network,
+    target_metrics={
+        "latency": "minimal",
+        "power_consumption": "<5W"
+    }
+)
+
+# Deploy with hardware-specific optimizations
+dx.deploy(optimized_model, platform="accelerator")`}</code>
+              </pre>
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Testimonials Section */}
