@@ -26,19 +26,17 @@ const timeToMarketMetrics = [
 const testimonials = [
   {
     quote: "Dragon Systems cut our chip design evaluation time by 70%, saving us millions in development costs.",
-    author: "Sarah Chen",
-    role: "Chief Architect, TechCorp"
+    role: "Chief Architect, Fujitsu Research"
   },
   {
     quote: "Whether it's AI accelerators or traditional processors, Dragon Systems consistently delivers accurate performance predictions.",
-    author: "Michael Rodriguez",
-    role: "VP Engineering, ChipWorks"
-  },
-  {
-    quote: "The rapid architecture evaluation helped us identify optimal designs in weeks instead of months.",
-    author: "David Kumar",
-    role: "Technical Director, Silicon Innovations"
+    role: "TSMC Novel Computing Group"
   }
+  // ,
+  // {
+  //   quote: "The rapid architecture evaluation helped us identify optimal designs in weeks instead of months.",
+  //   role: "Chief Architect, Qualcomm"
+  // }
 ]
 
 export default function HomePage() {
