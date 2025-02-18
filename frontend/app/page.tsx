@@ -71,7 +71,7 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <Image 
               src="/acc.png"
               alt="Performance Comparison"
@@ -79,7 +79,7 @@ export default function HomePage() {
               height={400}
               className="rounded-lg shadow-2xl"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -102,16 +102,16 @@ export default function HomePage() {
       {/* Solutions Section */}
       <div className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-16">Our Solutions</h2>
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
             <Image
               src="/acc.png"
               alt="Performance Acceleration"
-              width={400}
-              height={300}
+              width={200}
+              height={200}
               className="mx-auto mb-6"
             />
-            <h3 className="text-xl font-semibold mb-4">Performance Optimization</h3>
+            <h3 className="text-xl font-semibold mb-4">Performance Estimation</h3>
             <p className="text-gray-400">
               Achieve up to 90% accuracy with significant speedup compared to traditional methods.
             </p>
@@ -121,8 +121,8 @@ export default function HomePage() {
             <Image
               src="/designspace.jpg"
               alt="Design Space Exploration"
-              width={400}
-              height={300}
+              width={200}
+              height={200}
               className="mx-auto mb-6"
             />
             <h3 className="text-xl font-semibold mb-4">Design Space Exploration</h3>
@@ -130,7 +130,51 @@ export default function HomePage() {
               Explore multiple technology options and design parameters to find optimal solutions.
             </p>
           </Card>
+
+          <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
+            <Image
+              src="/system.png"
+              alt="System Architecture"
+              width={200}
+              height={200}
+              className="mx-auto mb-6"
+            />
+            <h3 className="text-xl font-semibold mb-4">System Integration</h3>
+            <p className="text-gray-400">
+              Comprehensive system-level evaluation combining logic, memory, and interconnects.
+            </p>
+          </Card>
         </div>
+      </div>
+
+      {/* System Architecture Section */}
+      <div className="container mx-auto px-4 py-16 bg-gray-800/30">
+        <h2 className="text-3xl font-bold text-center mb-12">System Architecture</h2>
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <Image
+              src="/framework-diagram.jpg"
+              alt="Framework Architecture"
+              width={600}
+              height={400}
+              className="rounded-lg shadow-2xl"
+            />
+            <p className="text-center text-gray-300 mt-4">Framework Architecture</p>
+          </div>
+          <div>
+            <Image
+              src="/symbolic-diagram.jpg"
+              alt="Symbolic Execution"
+              width={600}
+              height={400}
+              className="rounded-lg shadow-2xl"
+            />
+            <p className="text-center text-gray-300 mt-4">Symbolic Execution</p>
+          </div>
+        </div>
+        <p className="text-center text-gray-300 mt-8 max-w-2xl mx-auto">
+          Our integrated approach combines device-level parameters, advanced simulators, and system-level evaluation for comprehensive chip design optimization.
+        </p>
       </div>
 
       {/* Testimonials Section */}
