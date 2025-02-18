@@ -1,0 +1,54 @@
+technology:
+  wire_cap: 1
+  sense_amp_time: 1
+  plogic_node: 40
+  logic_node: 22
+voltage: 1
+memory_levels: 2
+memory:
+  level0:
+    class: SRAM
+    frequency: 1000
+    banks: 4
+    read_ports: 1
+    write_ports: 1
+    width: 32
+    size: 2000000
+    leakage_power: 0
+  level1:
+    class: DRAM
+    frequency: 5
+    banks: 2
+    read_ports: 1
+    write_ports: 1
+    width: 2
+    size: 100000000000
+    leakage_power: 1
+    read_energy: 0.24
+    write_energy: 0.24
+mm_compute:
+  type1:
+    class: systolic_array
+    frequency: 1000
+    size: 64
+    N_PE: 10
+    area: 12.32
+    per_op_energy: 3.532019e-02
+  type2:
+    class: mac
+    frequency: 1000
+    size: 1
+    N_PE: 256
+    Tile:
+      TileX: 16
+      TileY: 16
+      Number: 1
+rf:
+  energy: 3.68
+  area: 5.981433e+00
+vector_compute:
+  class: vector_array
+  frequency: 1000
+  size: 1
+  N_PE: 128
+force_connectivity: 0

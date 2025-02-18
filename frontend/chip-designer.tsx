@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2 } from "lucide-react"
 import axios from 'axios'
+import yaml from 'js-yaml'
+import Editor from '@monaco-editor/react'
 
 // Add interfaces
 interface ChipRequirements {
@@ -45,6 +47,201 @@ interface WorkloadTemplate {
   recommendedPerformance: number;
 }
 
+// Add new interfaces for YAML config
+interface TechnologyConfig {
+  wire_cap: number;
+  sense_amp_time: number;
+  plogic_node: number;
+  logic_node: number;
+}
+
+interface MemoryConfig {
+  class: string;
+  frequency: number;
+  banks: number;
+  read_ports: number;
+  write_ports: number;
+  width: number;
+  size: number;
+  leakage_power: number;
+  read_energy?: number;
+  write_energy?: number;
+}
+
+interface ComputeConfig {
+  type1: {
+    class: string;
+    frequency: number;
+    size: number;
+    N_PE: number;
+    area: number;
+    per_op_energy: number;
+  };
+  type2: {
+    class: string;
+    frequency: number;
+    size: number;
+    N_PE: number;
+    Tile: {
+      TileX: number;
+      TileY: number;
+      Number: number;
+    };
+  };
+}
+
+interface ChipConfig {
+  technology: TechnologyConfig;
+  voltage: number;
+  memory_levels: number;
+  memory: {
+    level0: MemoryConfig;
+    level1: MemoryConfig;
+  };
+  mm_compute: ComputeConfig;
+  rf: {
+    energy: number;
+    area: number;
+  };
+  vector_compute: ComputeConfig;
+  force_connectivity: number;
+}
+
+// Add this after your existing interfaces
+interface ChipLayout {
+  blocks: {
+    type: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    color: string;
+    details: any;
+  }[];
+}
+
+// Add this function to convert config to visual layout
+function generateChipLayout(config: ChipConfig): ChipLayout {
+  const blocks = [];
+  // Define container dimensions
+  const containerWidth = 700;
+  const containerHeight = 500;
+  const padding = 20; // Padding from container edges
+  
+  // Calculate available space
+  const usableWidth = containerWidth - (2 * padding);
+  const usableHeight = containerHeight - (2 * padding);
+  
+  // Define relative sizes (percentages of usable space)
+  const globalBufferHeight = usableHeight * 0.15;
+  const systolicArrayHeight = usableHeight * 0.5;
+  const simdUnitsHeight = usableHeight * 0.15;
+  const mainMemoryHeight = usableHeight * 0.15;
+  
+  // Add Global Buffer (24MB split into 2 banks)
+  blocks.push({
+    type: 'Global Buffer',
+    x: padding,
+    y: padding,
+    width: usableWidth,
+    height: globalBufferHeight,
+    color: 'rgba(59, 130, 246, 0.3)', // blue with higher opacity
+    details: {
+      size: '24 MB',
+      banks: 2
+    }
+  });
+
+  // Calculate systolic array position and dimensions
+  const systolicStartY = padding + globalBufferHeight + 10;
+  const systolicWidth = usableWidth * 0.8;
+  const systolicStartX = padding + (usableWidth - systolicWidth) / 2;
+
+  // Calculate PE dimensions based on active compute type
+  const activeCompute = config.mm_compute.type1.class === 'systolic_array' 
+    ? config.mm_compute.type1 
+    : config.mm_compute.type2;
+
+  const peRows = activeCompute.class === 'systolic_array'
+    ? Math.floor(Math.sqrt(activeCompute.N_PE))
+    : activeCompute.Tile.TileX;
+    
+  const peCols = activeCompute.class === 'systolic_array'
+    ? peRows
+    : activeCompute.Tile.TileY;
+
+  // Calculate PE size to fit within systolic array area
+  const peSize = Math.min(
+    Math.floor(systolicWidth / peCols),
+    Math.floor(systolicArrayHeight / peRows)
+  ) - 2; // Subtract for gap
+
+  // Add Processing Elements (PEs) in a grid
+  for (let i = 0; i < peRows; i++) {
+    for (let j = 0; j < peCols; j++) {
+      blocks.push({
+        type: 'PE',
+        x: systolicStartX + (j * (peSize + 2)),
+        y: systolicStartY + (i * (peSize + 2)),
+        width: peSize,
+        height: peSize,
+        color: 'rgba(16, 185, 129, 0.3)', // green with higher opacity
+        details: {
+          frequency: `${activeCompute.frequency} MHz`,
+          size: activeCompute.size
+        }
+      });
+    }
+  }
+
+  // Add SIMD Units
+  const simdStartY = systolicStartY + systolicArrayHeight + 10;
+  const simdWidth = (usableWidth - 30) / 4; // 30 is total gap between units
+  const simdSpacing = 10;
+
+  for (let i = 0; i < 4; i++) {
+    blocks.push({
+      type: 'SIMD Unit',
+      x: padding + (i * (simdWidth + simdSpacing)),
+      y: simdStartY,
+      width: simdWidth,
+      height: simdUnitsHeight,
+      color: 'rgba(249, 115, 22, 0.3)', // orange with higher opacity
+      details: {
+        type: 'Vector Processing'
+      }
+    });
+  }
+
+  // Add Main Memory
+  blocks.push({
+    type: 'Main Memory',
+    x: padding,
+    y: simdStartY + simdUnitsHeight + 10,
+    width: usableWidth,
+    height: mainMemoryHeight,
+    color: 'rgba(107, 114, 128, 0.3)', // gray with higher opacity
+    details: {
+      class: config.memory.level1.class,
+      size: `${config.memory.level1.size / 1000000} MB`,
+      banks: config.memory.level1.banks
+    }
+  });
+
+  // Add container block
+  blocks.push({
+    type: 'Container',
+    x: 0,
+    y: 0,
+    width: containerWidth,
+    height: containerHeight,
+    color: 'rgba(0, 0, 0, 0)', // transparent
+    details: {},
+  });
+
+  return { blocks };
+}
+
 export default function ChipDesigner() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [optimization, setOptimization] = useState("balanced")
@@ -65,6 +262,9 @@ export default function ChipDesigner() {
     animation_frames: string[];
   } | null>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [chipLayout, setChipLayout] = useState<ChipLayout | null>(null);
+  const [config, setConfig] = useState<ChipConfig | null>(null);
+  const [yamlContent, setYamlContent] = useState<string>('');
 
   // Add ref for canvas
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -213,6 +413,41 @@ export default function ChipDesigner() {
     }
   }, [optimizationResults])
 
+  // Modify the loadConfig function to update YAML editor content
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const response = await fetch('/default.yaml');
+        const yamlText = await response.text();
+        setYamlContent(yamlText); // Set the YAML content for editor
+        const config = yaml.load(yamlText) as ChipConfig;
+        setConfig(config);
+        setChipLayout(generateChipLayout(config));
+      } catch (err) {
+        console.error('Failed to load config:', err);
+      }
+    };
+    loadConfig();
+  }, []);
+
+  // Add YAML editor change handler
+  const handleYamlChange = (value: string | undefined) => {
+    if (!value) return;
+    setYamlContent(value);
+    try {
+      const newConfig = yaml.load(value) as ChipConfig;
+      handleConfigUpdate(newConfig);
+    } catch (err) {
+      console.error('Invalid YAML:', err);
+    }
+  };
+
+  // Update handleConfigUpdate to work with local state
+  const handleConfigUpdate = (newConfig: ChipConfig) => {
+    setConfig(newConfig);
+    setChipLayout(generateChipLayout(newConfig));
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -299,6 +534,73 @@ export default function ChipDesigner() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Add YAML Editor Card */}
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Chip Configuration</CardTitle>
+              <CardDescription className="text-gray-400">Edit YAML configuration directly</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px]">
+              <Editor
+                height="100%"
+                defaultLanguage="yaml"
+                theme="vs-dark"
+                value={yamlContent}
+                onChange={handleYamlChange}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 12,
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Chip Layout Preview Card */}
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Chip Layout</CardTitle>
+              <CardDescription className="text-gray-400">Real-time visualization of chip architecture</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {chipLayout && (
+                <div className="border-2 rounded-lg relative bg-gray-950 overflow-hidden"
+                     style={{ width: '700px', height: '500px' }}>
+                  {chipLayout.blocks.map((block, index) => (
+                    <div
+                      key={index}
+                      className="absolute rounded-lg shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                      style={{
+                        left: `${block.x}px`,
+                        top: `${block.y}px`,
+                        width: `${block.width}px`,
+                        height: `${block.height}px`,
+                        backgroundColor: block.color,
+                        border: block.type === 'Container' ? '2px solid rgba(255,255,255,0.1)' : '1px solid',
+                        borderColor: block.color.replace('0.2', '1'),
+                      }}
+                    >
+                      <div className="h-full p-3 flex flex-col justify-between">
+                        {block.type !== 'Container' && (
+                          <>
+                            <div className="text-xs font-semibold text-white">{block.type}</div>
+                            {block.details && (
+                              <div className="text-xs text-gray-300">
+                                {Object.entries(block.details).map(([key, value]) => (
+                                  <div key={key}>{`${key}: ${value}`}</div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Optimization Priority */}
@@ -361,7 +663,7 @@ export default function ChipDesigner() {
         </Card>
 
         {/* Results Section */}
-        {chipDesign && (
+        {chipLayout && (
           <Card className="bg-gray-900/50 border-gray-800">
             <CardHeader>
               <CardTitle>Design Results</CardTitle>
@@ -380,36 +682,30 @@ export default function ChipDesigner() {
             </CardHeader>
             <CardContent>
               {activeTab === 'design' ? (
-                <div className="border-2 rounded-lg h-[400px] relative bg-muted/50">
-                  {chipDesign.blocks.map(block => (
+                <div className="border-2 rounded-lg h-[600px] relative bg-gray-950">
+                  {chipLayout.blocks.map((block, index) => (
                     <div
-                      key={block.id}
-                      className="absolute rounded-lg shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl backdrop-blur-sm"
+                      key={index}
+                      className="absolute rounded-lg shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                       style={{
-                        left: block.position.x,
-                        top: block.position.y,
-                        width: block.size.width,
-                        height: block.size.height,
-                        backgroundColor: block.type === 'Computing' ? 'rgba(249, 115, 22, 0.2)' :
-                                       block.type === 'Memory' ? 'rgba(59, 130, 246, 0.2)' :
-                                       block.type === 'Network' ? 'rgba(16, 185, 129, 0.2)' :
-                                       block.type === 'Security' ? 'rgba(239, 68, 68, 0.2)' :
-                                       'rgba(107, 114, 128, 0.2)',
+                        left: `${block.x}px`,
+                        top: `${block.y}px`,
+                        width: `${block.width}px`,
+                        height: `${block.height}px`,
+                        backgroundColor: block.color,
                         border: '1px solid',
-                        borderColor: block.type === 'Computing' ? 'rgb(249, 115, 22)' :
-                                    block.type === 'Memory' ? 'rgb(59, 130, 246)' :
-                                    block.type === 'Network' ? 'rgb(16, 185, 129)' :
-                                    block.type === 'Security' ? 'rgb(239, 68, 68)' :
-                                    'rgb(107, 114, 128)',
+                        borderColor: block.color.replace('0.2', '1'),
                       }}
                     >
                       <div className="h-full p-3 flex flex-col justify-between">
                         <div className="text-xs font-semibold">{block.type}</div>
-                        <div className="text-xs text-muted-foreground">
-                          Power: {block.powerConsumption.toFixed(1)}W
-                          <br />
-                          Util: {(block.utilization * 100).toFixed(0)}%
-                        </div>
+                        {block.details && (
+                          <div className="text-xs text-muted-foreground">
+                            {Object.entries(block.details).map(([key, value]) => (
+                              <div key={key}>{`${key}: ${value}`}</div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -419,25 +715,25 @@ export default function ChipDesigner() {
                   <div className="p-4 rounded-lg bg-muted">
                     <div className="text-sm font-medium text-muted-foreground">Total Power</div>
                     <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign.totalPower.toFixed(1)}W
+                      {chipDesign?.totalPower.toFixed(1)}W
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-muted">
                     <div className="text-sm font-medium text-muted-foreground">Total Area</div>
                     <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign.totalArea.toFixed(1)}mm²
+                      {chipDesign?.totalArea.toFixed(1)}mm²
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-muted">
                     <div className="text-sm font-medium text-muted-foreground">Performance</div>
                     <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign.estimatedPerformance.toFixed(0)} MIPS
+                      {chipDesign?.estimatedPerformance.toFixed(0)} MIPS
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-muted">
                     <div className="text-sm font-medium text-muted-foreground">Power Efficiency</div>
                     <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign.powerEfficiency.toFixed(1)} MIPS/W
+                      {chipDesign?.powerEfficiency.toFixed(1)} MIPS/W
                     </div>
                   </div>
                 </div>
