@@ -7,6 +7,28 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import { FaGoogle } from 'react-icons/fa'
+import Image from 'next/image'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+
+// Performance comparison data
+const performanceData = [
+  { name: 'Baseline', performance: 100 },
+  { name: 'Dragon Systems', performance: 285 },
+]
+
+// Testimonials data
+const testimonials = [
+  {
+    quote: "Dragon Systems helped us achieve 3x performance improvement in our chip design process.",
+    author: "Sarah Chen",
+    role: "Chief Architect, TechCorp"
+  },
+  {
+    quote: "The AI Architect feature saved us months of evaluation time.",
+    author: "Michael Rodriguez",
+    role: "VP Engineering, ChipWorks"
+  }
+]
 
 export default function HomePage() {
   const [loading, setLoading] = useState(false)
@@ -29,77 +51,103 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-20">
-        <div className="text-center space-y-6">
-          <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">
-            DRAGON SYSTEMS
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300">
-            Full Stack Chip Design Solutions
-          </p>
-          <div className="flex justify-center gap-4 mt-8">
-            <Button 
-              size="lg"
-              onClick={handleGoogleSignIn}
-              disabled={loading}
-              className="bg-white text-black hover:bg-gray-200 flex items-center gap-2"
-            >
-              <FaGoogle className="w-5 h-5" />
-              Sign in with Google
-            </Button>
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="flex-1 text-left space-y-6">
+            <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">
+              DRAGON SYSTEMS
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300">
+              Revolutionizing Chip Design with AI-Powered Solutions
+            </p>
+            <div className="flex gap-4 mt-8">
+              <Button 
+                size="lg"
+                onClick={handleGoogleSignIn}
+                disabled={loading}
+                className="bg-white text-black hover:bg-gray-200 flex items-center gap-2"
+              >
+                <FaGoogle className="w-5 h-5" />
+                Sign in with Google
+              </Button>
+            </div>
           </div>
+          <div className="flex-1">
+            <Image 
+              src="/acc.png"
+              alt="Performance Comparison"
+              width={600}
+              height={400}
+              className="rounded-lg shadow-2xl"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Metrics Section */}
+      <div className="container mx-auto px-4 py-16 bg-gray-800/30">
+        <h2 className="text-3xl font-bold text-center mb-12">Performance Impact</h2>
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={performanceData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis label={{ value: 'Performance (%)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip />
+              <Bar dataKey="performance" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
       {/* Solutions Section */}
       <div className="container mx-auto px-4 py-20">
-        <div className="space-y-24">
-          {/* Solution 1 */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-4xl font-bold text-blue-500">01</span>
-              <h2 className="text-3xl font-bold">Optimize Workloads</h2>
-            </div>
-            <Card className="p-8 bg-gray-800/50 border-gray-700">
-              <h3 className="text-xl font-semibold mb-4">
-                Optimize Workloads to run faster on your Custom Chip
-              </h3>
-              <p className="text-gray-400">
-                Configure your compilers with best-in-class software optimizers for maximum performance.
-              </p>
-            </Card>
-          </div>
+        <h2 className="text-4xl font-bold text-center mb-16">Our Solutions</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
+            <Image
+              src="/acc.png"
+              alt="Performance Acceleration"
+              width={400}
+              height={300}
+              className="mx-auto mb-6"
+            />
+            <h3 className="text-xl font-semibold mb-4">Performance Optimization</h3>
+            <p className="text-gray-400">
+              Achieve up to 90% accuracy with significant speedup compared to traditional methods.
+            </p>
+          </Card>
 
-          {/* Solution 2 */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-4xl font-bold text-blue-500">02</span>
-              <h2 className="text-3xl font-bold">AI Architect</h2>
-            </div>
-            <Card className="p-8 bg-gray-800/50 border-gray-700">
+          <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
+            <Image
+              src="/designspace.jpg"
+              alt="Design Space Exploration"
+              width={400}
+              height={300}
+              className="mx-auto mb-6"
+            />
+            <h3 className="text-xl font-semibold mb-4">Design Space Exploration</h3>
+            <p className="text-gray-400">
+              Explore multiple technology options and design parameters to find optimal solutions.
+            </p>
+          </Card>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="container mx-auto px-4 py-20 bg-gray-800/30">
+        <h2 className="text-4xl font-bold text-center mb-16">What Our Clients Say</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <Card key={index} className="p-8 bg-gray-800/50 border-gray-700">
               <div className="space-y-4">
-                <p className="text-gray-300">- Evaluate Your Micro-Architecture</p>
-                <p className="text-gray-300">
-                  - Explore a large design space for evaluating Architecture Choices, in seconds not months
-                </p>
+                <p className="text-gray-300 italic mb-4">{testimonial.quote}</p>
+                <div>
+                  <p className="font-semibold">{testimonial.author}</p>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
+                </div>
               </div>
             </Card>
-          </div>
-
-          {/* Solution 3 */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-4xl font-bold text-blue-500">03</span>
-              <h2 className="text-3xl font-bold">Technology Derivations</h2>
-            </div>
-            <Card className="p-8 bg-gray-800/50 border-gray-700">
-              <div className="space-y-4">
-                <p className="text-gray-300">- Evaluate different foundry technology choices</p>
-                <p className="text-gray-300">
-                  - Configure for the best choices of Packaging, Thermal Conduits, and Connectivity Integration
-                </p>
-              </div>
-            </Card>
-          </div>
+          ))}
         </div>
       </div>
 
