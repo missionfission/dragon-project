@@ -54,7 +54,7 @@ export default function HomePage() {
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 text-left space-y-6">
             <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">
-              DRAGON SYSTEMS
+              DRAGONX SYSTEMS
             </h1>
             <p className="text-xl md:text-2xl text-gray-300">
               Revolutionizing Chip Design with AI-Powered Solutions
