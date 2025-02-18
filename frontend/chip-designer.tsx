@@ -90,6 +90,14 @@ interface ComputeConfig {
   };
 }
 
+// Update the interface for vector compute to match YAML
+interface VectorComputeConfig {
+  class: string;
+  frequency: number;
+  size: number;
+  N_PE: number;
+}
+
 interface ChipConfig {
   technology: TechnologyConfig;
   voltage: number;
@@ -103,7 +111,7 @@ interface ChipConfig {
     energy: number;
     area: number;
   };
-  vector_compute: ComputeConfig;
+  vector_compute: VectorComputeConfig;
   force_connectivity: number;
 }
 
@@ -120,7 +128,7 @@ interface ChipLayout {
   }[];
 }
 
-// Add this function to convert config to visual layout
+// Update the generateChipLayout function to handle vector array better
 function generateChipLayout(config: ChipConfig): ChipLayout {
   const blocks = [];
   // Define container dimensions
@@ -135,10 +143,10 @@ function generateChipLayout(config: ChipConfig): ChipLayout {
   // Define relative sizes (percentages of usable space)
   const globalBufferHeight = usableHeight * 0.15;
   const systolicArrayHeight = usableHeight * 0.5;
-  const simdUnitsHeight = usableHeight * 0.15;
+  const vectorArrayHeight = usableHeight * 0.15;
   const mainMemoryHeight = usableHeight * 0.15;
   
-  // Add Global Buffer (24MB split into 2 banks)
+  // Add Global Buffer using SRAM parameters
   blocks.push({
     type: 'Global Buffer',
     x: padding,
@@ -147,84 +155,107 @@ function generateChipLayout(config: ChipConfig): ChipLayout {
     height: globalBufferHeight,
     color: 'rgba(59, 130, 246, 0.3)', // blue with higher opacity
     details: {
-      size: '24 MB',
-      banks: 2
+      class: config.memory.level0.class,
+      size: `${config.memory.level0.size / 1000000} MB`,
+      banks: config.memory.level0.banks,
+      frequency: `${config.memory.level0.frequency} MHz`
     }
   });
 
-  // Calculate systolic array position and dimensions
+  // Calculate systolic array and MAC array positions
   const systolicStartY = padding + globalBufferHeight + 10;
-  const systolicWidth = usableWidth * 0.8;
-  const systolicStartX = padding + (usableWidth - systolicWidth) / 2;
+  const computeWidth = usableWidth * 0.4; // Each compute block takes 40% of width
+  const computeSpacing = usableWidth * 0.1; // 10% spacing between compute blocks
+  
+  // Left side for systolic array
+  const systolicStartX = padding;
+  
+  // Right side for MAC array
+  const macStartX = padding + computeWidth + computeSpacing;
 
-  // Calculate PE dimensions based on active compute type
-  const activeCompute = config.mm_compute.type1.class === 'systolic_array' 
-    ? config.mm_compute.type1 
-    : config.mm_compute.type2;
-
-  const peRows = activeCompute.class === 'systolic_array'
-    ? Math.floor(Math.sqrt(activeCompute.N_PE))
-    : activeCompute.Tile.TileX;
+  // Add systolic array PEs on the left
+  if (config.mm_compute.type1.class === 'systolic_array') {
+    const totalPEs = config.mm_compute.type1.N_PE;
+    const peRows = Math.floor(Math.sqrt(totalPEs));
+    const peCols = Math.ceil(totalPEs / peRows);
     
-  const peCols = activeCompute.class === 'systolic_array'
-    ? peRows
-    : activeCompute.Tile.TileY;
+    const peSize = Math.min(
+      Math.floor(computeWidth / peCols),
+      Math.floor(systolicArrayHeight / peRows)
+    ) - 2;
 
-  // Calculate PE size to fit within systolic array area
-  const peSize = Math.min(
-    Math.floor(systolicWidth / peCols),
-    Math.floor(systolicArrayHeight / peRows)
-  ) - 2; // Subtract for gap
-
-  // Add Processing Elements (PEs) in a grid
-  for (let i = 0; i < peRows; i++) {
-    for (let j = 0; j < peCols; j++) {
-      blocks.push({
-        type: 'PE',
-        x: systolicStartX + (j * (peSize + 2)),
-        y: systolicStartY + (i * (peSize + 2)),
-        width: peSize,
-        height: peSize,
-        color: 'rgba(16, 185, 129, 0.3)', // green with higher opacity
-        details: {
-          frequency: `${activeCompute.frequency} MHz`,
-          size: activeCompute.size
+    for (let i = 0; i < peRows; i++) {
+      for (let j = 0; j < peCols; j++) {
+        if ((i * peCols + j) < totalPEs) {
+          blocks.push({
+            type: 'PE',
+            x: systolicStartX + (j * (peSize + 2)),
+            y: systolicStartY + (i * (peSize + 2)),
+            width: peSize,
+            height: peSize,
+            color: 'rgba(16, 185, 129, 0.3)', // green with higher opacity
+            details: {
+              frequency: `${config.mm_compute.type1.frequency} MHz`,
+              size: config.mm_compute.type1.size,
+              id: `PE ${i * peCols + j + 1}/${totalPEs}`
+            }
+          });
         }
-      });
+      }
     }
   }
 
-  // Add SIMD Units
-  const simdStartY = systolicStartY + systolicArrayHeight + 10;
-  const simdWidth = (usableWidth - 30) / 4; // 30 is total gap between units
-  const simdSpacing = 10;
-
-  for (let i = 0; i < 4; i++) {
+  // Add MAC array on the right
+  if (config.mm_compute.type2.class === 'mac') {
     blocks.push({
-      type: 'SIMD Unit',
-      x: padding + (i * (simdWidth + simdSpacing)),
-      y: simdStartY,
-      width: simdWidth,
-      height: simdUnitsHeight,
-      color: 'rgba(249, 115, 22, 0.3)', // orange with higher opacity
+      type: 'MAC Array',
+      x: macStartX,
+      y: systolicStartY,
+      width: computeWidth,
+      height: systolicArrayHeight,
+      color: 'rgba(16, 185, 129, 0.3)', // green with higher opacity
       details: {
-        type: 'Vector Processing'
+        frequency: `${config.mm_compute.type2.frequency} MHz`,
+        size: config.mm_compute.type2.size,
+        total_instances: `${config.mm_compute.type2.N_PE} MAC units`,
+        class: config.mm_compute.type2.class
       }
     });
   }
 
-  // Add Main Memory
+  // Add Vector Array below both compute blocks
+  const vectorStartY = systolicStartY + systolicArrayHeight + 10;
+  const vectorArrayWidth = usableWidth * 0.8;
+  const vectorStartX = padding + (usableWidth - vectorArrayWidth) / 2;
+
+  blocks.push({
+    type: 'Vector Array',
+    x: vectorStartX,
+    y: vectorStartY,
+    width: vectorArrayWidth,
+    height: vectorArrayHeight,
+    color: 'rgba(249, 115, 22, 0.3)', // orange with higher opacity
+    details: {
+      class: config.vector_compute.class,
+      frequency: `${config.vector_compute.frequency} MHz`,
+      total_instances: `${config.vector_compute.N_PE} Vector Units`,
+      size: config.vector_compute.size
+    }
+  });
+
+  // Add Main Memory (DRAM)
   blocks.push({
     type: 'Main Memory',
     x: padding,
-    y: simdStartY + simdUnitsHeight + 10,
+    y: vectorStartY + vectorArrayHeight + 10,
     width: usableWidth,
     height: mainMemoryHeight,
     color: 'rgba(107, 114, 128, 0.3)', // gray with higher opacity
     details: {
       class: config.memory.level1.class,
       size: `${config.memory.level1.size / 1000000} MB`,
-      banks: config.memory.level1.banks
+      banks: config.memory.level1.banks,
+      frequency: `${config.memory.level1.frequency} MHz`
     }
   });
 
