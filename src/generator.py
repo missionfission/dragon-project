@@ -7,8 +7,13 @@ import pandas as pd
 import yaml
 import yamlordereddictloader
 from matplotlib.ticker import MaxNLocator
+import os
 
-mem_table = np.array(pd.read_csv("tables/sram.csv", header=None))
+# Get the directory containing the current script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Update the path to read the CSV file using os.path.join
+mem_table = np.array(pd.read_csv(os.path.join(BASE_DIR, "tables", "sram.csv"), header=None))
 # tech_table = np.array(pd.read_csv("tables/tech.csv"))
 
 """
@@ -42,10 +47,11 @@ class Generator:
         Args:
             constraintfiles (str, optional). Defaults to "max_constraints.yaml".
         """
-        base_dir = "configs/"
+        # Update base_dir to use absolute path
+        base_dir = os.path.join(BASE_DIR, "configs")
 
         self.maxval = yaml.load(
-            open(base_dir + constraintfiles), Loader=yamlordereddictloader.Loader
+            open(os.path.join(base_dir, constraintfiles)), Loader=yamlordereddictloader.Loader
         )
 
 
@@ -53,7 +59,11 @@ def writeconfig(self, content, filename):
     """
     Generate Hardware Description Yaml File 
     """
-    outfile = open("iters/" + filename, "w")
+    # Create iters directory if it doesn't exist
+    iters_dir = os.path.join(BASE_DIR, "iters")
+    os.makedirs(iters_dir, exist_ok=True)
+    
+    outfile = open(os.path.join(iters_dir, filename), "w")
     outfile.write(
         yaml.dump(
             content, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper,
@@ -555,6 +565,7 @@ def generate_tech_targets(graph, name, EDP=100):
     energy_ratio_list = []
     # create the order list
     total_benefit = 1
+    i = 0  # Initialize i before using it
     while total_benefit < EDP:
         i += 1
         improv, improv_ben = get_benefit(orderlist[i])
@@ -565,6 +576,15 @@ def generate_tech_targets(graph, name, EDP=100):
 
 def get_benefit(param):
     tech_params = ["wire_cap","wire_res","logic_node","memory_cell_lp", "memory_cell_rde", "memory_cell_wre", "plogic_node", "sense_amp_time"]
+    # Default values for improv and improv_ben
+    improv = 1
+    improv_ben = 1
+    
+    # Add your logic to calculate the actual values based on param
+    # For example:
+    if param in tech_params:
+        improv = 2  # Example value
+        improv_ben = 1.5  # Example value
 #     if param == param/5:
 #         improv = 5
 #         improv_ben =         
@@ -594,7 +614,6 @@ def improvement_paths():
     """
     Plots Multiple Improvement Paths for Technology Targets
     """
-
     path = os.path.join(os.path.dirname(__file__))
     print(path)
     fig, ax = plt.subplots()
