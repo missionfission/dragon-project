@@ -11,3 +11,4 @@ pillow
 scipy
 pyyaml  # `yaml` is not a valid package;
 yamlordereddictloader
+pandas
