@@ -5,10 +5,7 @@ from collections import deque
 from copy import deepcopy
 
 import numpy as np
-import torch
-import torch.nn as nn
-import yaml
-from torchvision import models
+
 from yaml import dump
 
 # from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
