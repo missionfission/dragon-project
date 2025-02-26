@@ -1,5 +1,5 @@
-torch @ https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.0%2Bcpu.cxx11.abi-cp310-cp310-linux_x86_64.whl#sha256=c334eeb746b1ca896ba6be84d3a9796b1f9b74efa1a5a818662c9b9d59f97550
-torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.10.0%2Bcpu-cp36-cp36m-linux_x86_64.whl#sha256=bc43b6ed08a6a6cee03b76bec99cbc3cd04a08c3efa97720a048aa22a58bd04b
+torch==2.0.0 --index-url https://download.pytorch.org/whl/cpu
+torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu
 fastapi
 pydantic
 uvicorn
@@ -9,3 +9,4 @@ imageio
 python-multipart
 pillow
 scipy
+pyyaml  # `yaml` is not a valid package;
