@@ -8,11 +8,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 import yaml
-import yamlordereddictloader
 from torchvision import models
 from yaml import dump
 
-from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
+# from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from generator import *
 from generator import Generator, get_mem_props
 from ir.handlers import handlers
