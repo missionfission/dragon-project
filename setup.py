@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dragonx-optimizer",
-    version="0.1.0",
+    version="0.1.1",
     description="Hardware-software co-design framework for AI accelerators",
     author="Your Name",
     author_email="your.email@example.com",
