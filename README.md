@@ -3,7 +3,7 @@
 DragonX is a hardware-software co-design framework for AI accelerators. It provides comprehensive tools for workload analysis, neural network optimization, auto-tuning, and performance modeling.
 
 ```
-pip install dragonx-optimizer
+pip install dragonx-optimizer==0.1.1
 ```
 ## Quick Start
 

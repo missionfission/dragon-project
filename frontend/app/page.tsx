@@ -299,7 +299,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="bg-gray-900/50 p-4 rounded-lg">
                 <code className="text-sm text-gray-300">
-                  pip install dragonx-optimizer
+                  pip install dragonx-optimizer==0.1.1
                 </code>
               </div>
               <p className="text-gray-300">Comprehensive Python libraries for:</p>
@@ -338,7 +338,7 @@ export default function HomePage() {
             <h3 className="text-2xl font-semibold mb-6">Quick Start Example</h3>
             <div className="bg-gray-900/50 p-4 rounded-lg">
               <pre className="text-sm text-gray-300">
-                <code>{`import src_main as dx
+                <code>{`import dragonx_optimizer.src_main as dx
 
 # Initialize optimizer with architecture config
 optimizer = dx.initialize(arch_config="custom_accelerator.yaml")
