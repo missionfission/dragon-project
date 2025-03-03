@@ -479,6 +479,23 @@ export default function ChipDesigner() {
     setChipLayout(generateChipLayout(newConfig));
   };
 
+  // Add to your existing useEffect blocks:
+  useEffect(() => {
+    // Check for previous design data
+    const previousDesign = localStorage.getItem('loadPreviousDesign')
+    if (previousDesign) {
+      const designData = JSON.parse(previousDesign)
+      // Load the previous design data
+      setRequirements(designData.requirements)
+      setChipDesign(designData.result)
+      if (designData.optimization_data) {
+        setOptimizationResults(designData.optimization_data)
+      }
+      // Clear the stored data
+      localStorage.removeItem('loadPreviousDesign')
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">

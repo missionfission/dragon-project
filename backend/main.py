@@ -14,6 +14,8 @@ from dataclasses import dataclass
 import imageio
 from src.src_main import design_runner, visualize_performance_estimation
 from src.src_main import Mapper
+from datetime import datetime
+from uuid import uuid4
 
 app = FastAPI(
     title="Chip Designer API",
@@ -287,23 +289,40 @@ def calculate_block_metrics(block_type: str, power_budget: float, performance_ta
         "utilization": 0.7 + (0.2 * random.random())  # Random utilization between 70-90%
     }
 
+# Add new model for history
+class DesignHistory(BaseModel):
+    id: str
+    timestamp: datetime
+    requirements: ChipRequirements
+    result: ChipDesign
+    optimization_data: Dict[str, Any]
+
+# Add in-memory storage (replace with database in production)
+design_history: List[DesignHistory] = []
+
 @app.post("/api/generate-chip", response_model=ChipDesign)
 async def generate_chip(requirements: ChipRequirements):
     try:
         optimizer = DesignOptimizer(requirements)
         best_design = optimizer.optimize(iterations=10)
         
-        # Store optimization results
         optimization_data = {
             "graph": optimizer.generate_optimization_graph(),
             "animation_frames": optimizer.generate_animation_frames(),
             "performance_estimation_frames": optimizer.get_performance_estimation_animation()
         }
         
-        # You might want to store this in a database or cache
-        # For now, we'll store it in memory (not recommended for production)
-        app.state.last_optimization = optimization_data
+        # Store in history
+        history_entry = DesignHistory(
+            id=str(uuid4()),
+            timestamp=datetime.now(),
+            requirements=requirements,
+            result=best_design,
+            optimization_data=optimization_data
+        )
+        design_history.append(history_entry)
         
+        app.state.last_optimization = optimization_data
         return best_design
     
     except Exception as e:
@@ -446,6 +465,19 @@ async def estimate_performance(specs: ChipSpecs):
         "thermalProfile": thermal_profile,
         "animationFrames": frames
     }
+
+# Add endpoint to get history
+@app.get("/api/design-history", response_model=List[DesignHistory])
+async def get_design_history():
+    return design_history
+
+# Add new endpoint to get a specific design history entry
+@app.get("/api/design-history/{design_id}", response_model=DesignHistory)
+async def get_design_history_entry(design_id: str):
+    for entry in design_history:
+        if entry.id == design_id:
+            return entry
+    raise HTTPException(status_code=404, detail="Design not found")
 
 if __name__ == "__main__":
     import uvicorn
