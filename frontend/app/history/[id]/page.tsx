@@ -1,7 +1,10 @@
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 
 interface HistoryEntry {
   id: string
@@ -35,21 +38,34 @@ interface HistoryEntry {
   }
 }
 
-async function getHistoryEntry(id: string): Promise<HistoryEntry> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/design-history/${id}`)
-  if (!res.ok) {
-    if (res.status === 404) notFound()
-    throw new Error('Failed to fetch history entry')
-  }
-  return res.json()
-}
-
-export default async function HistoryDetailPage({ params }: { params: { id: string } }) {
+export default function HistoryDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const entry = await getHistoryEntry(params.id)
+  const [entry, setEntry] = useState<HistoryEntry | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchHistoryEntry() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/design-history/${params.id}`)
+        if (!res.ok) {
+          if (res.status === 404) notFound()
+          throw new Error('Failed to fetch history entry')
+        }
+        const data = await res.json()
+        setEntry(data)
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchHistoryEntry()
+  }, [params.id])
+
+  if (loading) return <div>Loading...</div>
+  if (!entry) return <div>Entry not found</div>
 
   const handleLoadDesign = () => {
-    // Store the design data in localStorage and navigate to design page
     localStorage.setItem('loadPreviousDesign', JSON.stringify(entry))
     router.push('/')
   }
