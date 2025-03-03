@@ -338,28 +338,25 @@ export default function HomePage() {
             <h3 className="text-2xl font-semibold mb-6">Quick Start Example</h3>
             <div className="bg-gray-900/50 p-4 rounded-lg">
               <pre className="text-sm text-gray-300">
-                <code>{`import dragonx as dx
+                <code>{`import src_main as dx
 
-# Initialize optimizer with your architecture
-optimizer = dx.Optimizer(architecture="custom_accelerator")
+# Initialize optimizer with architecture config
+optimizer = dx.initialize(arch_config="custom_accelerator.yaml")
 
-# Define your workload
-@dx.workload
-def my_neural_network(input_data):
-    # Your model definition
-    return processed_result
+# Analyze workload
+graph = dx.analyze_workload(model)
 
-# Optimize for your specific hardware
-optimized_model = optimizer.optimize(
-    model=my_neural_network,
+# Optimize design for target metrics
+optimized_config = dx.optimize_design(
+    graph,
     target_metrics={
         "latency": "minimal",
-        "power_consumption": "<5W"
+        "power": "<5W"
     }
 )
 
-# Deploy with hardware-specific optimizations
-dx.deploy(optimized_model, platform="accelerator")`}</code>
+# Get performance estimates
+perf_stats = dx.estimate_performance(graph, optimized_config)`}</code>
               </pre>
             </div>
           </Card>
