@@ -1,27 +1,127 @@
+"""DragonX: Hardware-Software Co-Design Framework for AI Accelerators
+
+This module provides the main interfaces for:
+- Workload analysis and profiling
+- Neural network optimization 
+- Auto-tuning and parameter optimization
+- Performance prediction and modeling
+- Compiler optimizations
+
+Example usage:
+    import src_main as dx
+    
+    # Initialize optimizer with architecture config
+    optimizer = dx.initialize(arch_config="custom_accelerator.yaml") 
+
+    # Define and analyze workload
+    graph = dx.analyze_workload(model)
+    
+    # Optimize design for target metrics
+    optimized_config = dx.optimize_design(
+        graph,
+        target_metrics={
+            "latency": "minimal",
+            "power": "<5W"
+        }
+    )
+
+    # Get performance estimates
+    perf_stats = dx.estimate_performance(graph, optimized_config)
+"""
+
 import glob
 import os
 import sys
 from collections import deque
 from copy import deepcopy
-
+import io
+import base64
 import numpy as np
-
 from yaml import dump
-
-# from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from generator import *
 from generator import Generator, get_mem_props
-from ir.handlers import handlers
+from ir.handlers import handlers  
 from ir.trace import get_backprop_memory, trace
 from mapper.mapper import Mapper
-from utils.visualizer import *
 from utils.visualizer import (
     bandwidth_bar_graph,
-    cycles_bar_graph,
+    cycles_bar_graph, 
     mem_util_bar_graph,
-    plot_gradients,
+    plot_gradients
 )
+import matplotlib.pyplot as plt
 
+def initialize(arch_config="default.yaml", **kwargs):
+    """Initialize the DragonX framework.
+    
+    Args:
+        arch_config (str): Path to architecture configuration YAML
+        **kwargs: Additional configuration parameters
+        
+    Returns:
+        Generator: Configured optimization framework instance
+    """
+    return Generator(hwfile=arch_config, **kwargs)
+
+def analyze_workload(model, backprop=False):
+    """Analyze a workload/model to generate computation graph.
+    
+    Args:
+        model: PyTorch model or other workload to analyze
+        backprop (bool): Whether to include backpropagation
+        
+    Returns:
+        Graph: Computation graph representation
+    """
+    return trace(model, backprop)
+
+def optimize_design(graph, target_metrics, backprop=False, **kwargs):
+    """Optimize hardware design for target metrics.
+    
+    Args:
+        graph: Computation graph to optimize for
+        target_metrics (dict): Target performance metrics
+        **kwargs: Additional optimization parameters
+        
+    Returns:
+        dict: Optimized hardware configuration
+    """
+    generator = Generator()
+    mapper = Mapper()
+    
+    # Run optimization
+    time, energy, design, tech, area = generator.save_stats(
+        mapper, backprop, get_backprop_memory(graph.nodes)
+    )
+    
+    # Optimize based on target metrics
+    config = generator.backward_pass_design(mapper)
+    
+    return config
+
+def estimate_performance(graph, config, backprop=False, print_stats=True):
+    """Estimate performance of graph on given hardware config.
+    
+    Args:
+        graph: Computation graph to evaluate
+        config (dict): Hardware configuration
+        backprop (bool): Whether to include backpropagation
+        print_stats (bool): Whether to print detailed stats
+        
+    Returns:
+        tuple: (execution_time, energy, area) performance estimates
+    """
+    mapper = Mapper(hwfile=config)
+    mapper.run_asap(graph)
+    
+    generator = Generator()
+    time, energy, design, tech, area = generator.save_stats(
+        mapper, backprop, get_backprop_memory(graph.nodes), print_stats
+    )
+    
+    return time, energy, area
+
+# Other existing functions...
 
 def get_design_points_area_scaled(area_budget, connectivity, node, pitch):
     

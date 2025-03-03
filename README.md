@@ -1,69 +1,64 @@
-Short Update : We will release stable features on the release-version branch. Master branch will be unstable with recent changes.
+# DragonX
 
-To switch branch to release-1.0, use :
+DragonX is a hardware-software co-design framework for AI accelerators. It provides comprehensive tools for workload analysis, neural network optimization, auto-tuning, and performance modeling.
 
-git checkout release-1.0
-
-## DRAGON Framework Features :
-
-1. Runs on any Pytorch Model and provides the Graphical Analysis of Execution
-2. Fast Hardware Performance Estimation (Runtime, Energy and Area), allows overlapped execution and prefetching
-3. Rapid Automatic Hardware Design over a Set of Dataflow Graph, and the corresponding Scheduling Algorithm
-4. Allow Specifying Different Optimization and Constraints
-5. Evaluate Emerging Technologies (RRAM, CNFETs), Next Computing and Architectures (In-Memory, 3D SoCs)
+```
+pip install dragonx-optimizer
+```
+## Quick Start
 
 
----
-
+```
+import src_main as dx
+```
+Initialize optimizer with architecture config
+```
+optimizer = dx.initialize(arch_config="custom_accelerator.yaml")
+```
+Analyze workload
+```
+graph = dx.analyze_workload(model)
+```
+Optimize design for target metrics
+```
+optimized_config = dx.optimize_design(
+graph,
+target_metrics={
+"latency": "minimal",
+"power": "<5W"
+}
+)
+```
+Get performance estimates
+```
+perf_stats = dx.estimate_performance(graph, optimized_config)
+```
 ## Installation
+## Features
 
-To get started from github, install the Google Colab Plugin : https://chrome.google.com/webstore/detail/open-in-colab/iogfkhleblhcpcekbiedikdehleodpjo?hl=en
+- Workload analysis and profiling
+- Neural network optimization
+- Auto-tuning and parameter optimization  
+- Performance prediction and modeling
+- Compiler optimizations
 
-And, click the Colab Chrom Plugin, when you open the Demo.ipynb on github.
+## Documentation
 
-The Demo provides running of all the different features of our Framework : 1) Performance Estimation 2) Hardware Architecture Optimization and Synthesis and 3) Technologies Target Derivations 
+See [docs/](docs/) for detailed documentation and API reference.
 
----
+## Contributing
 
-For manual installation on PC, install Miniconda3 : https://docs.conda.io/en/latest/miniconda.html (Python 3.6)
+Contributions are welcome! To contribute:
 
-Create a Conda environment
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
----
-conda create -n perf
+## License
 
-conda activate perf 
-
-conda install pytorch torchvision torchaudio cpuonly -c pytorch
-
----
-
-Open Demo.ipynb in jupyter notebook
-
----
-Performance Estimation for AI and Non-AI Workloads :
-
-1. Runs on Pytorch Model of an AI Workload and provides the Graphical Analysis of Execution
-
-For Running the Pytorch see models specified as in 'src/common_models.py', the default-hardware configurations supported are specified in 'src/configs/default.yaml'
-To specify the configs completely, detail all the energy and timing details for input to the simulation.
-
----
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
 
-2. For Running Non-AI Workload in C++, we have to get the LLVM-Trace :
-
-We have provided Generate LLVM-Trace for some applications in folder 'req/.."
-The application trace is given in form of .gz and is generated from LLVM 6.0,
-
-We use an open-source LLVM-Trace Generation for doing this : https://github.com/harvard-acc/LLVM-Tracer/tree/llvm-6.0, place the workload to run in the folder "src/req/your_app", with a cfg and trace file in "src/req/your_app/inputs/" directory
-
-Add the name of your app to src/ddfg_main.py which -> calls the C++ Non-AI synthesis Code. 
-
----
-
-
-3. For Running Non-AI Workload in Python, we have to got the Python HLS as follows :
-
-In the synthesis folder go to "src/hls.py", and call the gen_stats and cfg generation functions
 
