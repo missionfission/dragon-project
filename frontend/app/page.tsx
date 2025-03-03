@@ -314,7 +314,7 @@ export default function HomePage() {
 
           {/* Compiler Optimizations Card */}
           <Card className="p-8 bg-gray-800/50 border-gray-700">
-            <h3 className="text-2xl font-semibold mb-6">Compiler Optimizations</h3>
+            <h3 className="text-2xl font-semibold mb-6">Compiler Optimizations (Coming Soon!)</h3>
             <div className="space-y-4">
               <div className="bg-gray-900/50 p-4 rounded-lg">
                 <code className="text-sm text-gray-300">
