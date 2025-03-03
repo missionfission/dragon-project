@@ -29,7 +29,7 @@ export function DashboardSidebar() {
       id: "api-docs",
       label: "API Documentation",
       icon: FileJson,
-      href: "http://localhost:8000/docs",
+      href: "https://khushalsethi98.com/dragon-project/",
       external: true
     }
   ]
