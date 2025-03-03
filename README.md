@@ -9,7 +9,7 @@ pip install dragonx-optimizer==0.1.1
 
 
 ```
-import src_main as dx
+import dragonx_optimizer.src_main as dx
 ```
 Initialize optimizer with architecture config
 ```
