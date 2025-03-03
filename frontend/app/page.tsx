@@ -366,7 +366,7 @@ perf_stats = dx.estimate_performance(graph, optimized_config)`}</code>
       {/* Testimonials Section */}
       <div className="container mx-auto px-4 py-20 bg-gray-800/30">
         <h2 className="text-4xl font-bold text-center mb-16">What Our Clients Say</h2>
-        <div className="grid md:grid-cols-2 gap-8">
+        {/* <div className="grid md:grid-cols-2 gap-8">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="p-8 bg-gray-800/50 border-gray-700">
               <div className="space-y-4">
@@ -377,8 +377,8 @@ perf_stats = dx.estimate_performance(graph, optimized_config)`}</code>
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
+          ))} */}
+        {/* </div> */}
       </div>
 
       {/* Footer */}
