@@ -196,6 +196,64 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Products Section */}
+      <div className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-center mb-16">Our Products</h2>
+        <div className="grid md:grid-cols-2 gap-12">
+          <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
+            <div className="flex flex-col h-full">
+              <h3 className="text-2xl font-semibold mb-4 text-blue-400">DragonX Performance Estimator</h3>
+              <p className="text-gray-300 mb-6">
+                Fast and accurate performance estimation for chip designs. Evaluate your architecture decisions in minutes instead of months.
+              </p>
+              <div className="bg-gray-900/50 p-4 rounded-lg mb-6">
+                <h4 className="font-semibold mb-2 text-blue-300">Key Features:</h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li>• Rapid performance modeling</li>
+                  <li>• Power and area estimates</li>
+                  <li>• Support for AI and traditional workloads</li>
+                  <li>• Cloud-based simulation engine</li>
+                </ul>
+              </div>
+              <div className="mt-auto">
+                <Button 
+                  className="w-full bg-blue-500 hover:bg-blue-600"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Try Performance Estimator
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-8 bg-gray-800/50 border-gray-700 transform hover:scale-105 transition-transform">
+            <div className="flex flex-col h-full">
+              <h3 className="text-2xl font-semibold mb-4 text-purple-400">DragonX Chip Designer</h3>
+              <p className="text-gray-300 mb-6">
+                AI-powered chip design optimization platform. Automatically explore design spaces and find optimal configurations.
+              </p>
+              <div className="bg-gray-900/50 p-4 rounded-lg mb-6">
+                <h4 className="font-semibold mb-2 text-purple-300">Key Features:</h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li>• Automated design space exploration</li>
+                  <li>• Multi-objective optimization</li>
+                  <li>• Cost-performance trade-off analysis</li>
+                  <li>• Integration with major EDA tools</li>
+                </ul>
+              </div>
+              <div className="mt-auto">
+                <Button 
+                  className="w-full bg-purple-500 hover:bg-purple-600"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Try Chip Designer
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Solutions Section */}
       <div className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-16">Comprehensive Solutions</h2>
