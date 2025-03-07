@@ -120,24 +120,19 @@ cycles = 0
 hw_allocated["Regs"] = 0
 hw_utilized["Regs"] = 0
 
-def schedule(expr, type):
-    """[Schedules the expr from AST]
+def schedule(expr, type, variable=None):
+    """Schedules the expr from AST
 
     Args:
-        expr (): 
-        type (): 
+        expr (): Expression to schedule
+        type (): Type of expression
+        variable (str, optional): Variable being scheduled. Defaults to None.
 
     Returns:
-        : 
+        tuple: (num_cycles, mem_cycles, hw_need)
     """
-    # rescheduleNodesWhenNeeded : (ALAP) rescheduling for non-memory, non-control nodes.
-    # upsamplelloops
-    # run
     hw_need = {}
-#     generate unique data keys, add them to memories when bandwidth available
-#     check data_key is available and update mem_state
-#       data_state -> will prevent read-after-write hazards
-    bw_req = np.MAX
+    bw_req = np.inf
     num_cycles = 0
     mem_cycles = 0
     for key in op2sym_map.keys():
@@ -147,35 +142,39 @@ def schedule(expr, type):
     if strs.count("") > 0:
         strs.remove("")
     num_vars = len(strs)
-     # ALAP
+    # ALAP
     for i, op in enumerate(op2sym_map.values()):
         hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
         num_cycles += hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]] 
+    
     # ASAP
-    bw_req = memory_cfgs[variable]/num_cycles
-    # Memory Bandwidth Req
-    # Get data keys used, calculate bw_req, Bandwidth-Rearrangements : Get op Control-Data-Flow
-    if bw_req < bw_avail and mem_state[variable] == False:
-        mem_cycles += memory_cfgs[variable]/bw_avail
-        mem_state[variable] = True
+    # Only calculate bandwidth requirements if we have a valid variable
+    if variable and variable in memory_cfgs:
+        bw_req = memory_cfgs[variable]/num_cycles
+        # Memory Bandwidth Req
+        # Get data keys used, calculate bw_req, Bandwidth-Rearrangements : Get op Control-Data-Flow
+        if bw_req < bw_avail and mem_state[variable] == False:
+            mem_cycles += memory_cfgs[variable]/bw_avail
+            mem_state[variable] = True
+            
     hw_need["Regs"] = num_vars
-    return num_cycles,mem_cycles, hw_need
+    return num_cycles, mem_cycles, hw_need
 
 
-def parse_code(expr, type, unrolled=1, loop_iters=1):
-    """[Parse the input Python Code file]
+def parse_code(expr, type, unrolled=1, loop_iters=1, variable=None):
+    """Parse the input Python Code file
 
     Args:
-        expr (): 
-        type (): 
-        unrolled (int, optional): . Defaults to 1.
-        loop_iters (int, optional): . Defaults to 1.
+        expr (): Expression to parse
+        type (): Type of expression
+        unrolled (int, optional): Unroll factor. Defaults to 1.
+        loop_iters (int, optional): Number of loop iterations. Defaults to 1.
+        variable (str, optional): Variable being processed. Defaults to None.
     """
     if type in ["assign", "expr", "binop_nested", "constant"]:
-        expr_cycles, mem_cycles, hw_need = schedule(expr, type)
+        expr_cycles, mem_cycles, hw_need = schedule(expr, type, variable)
         global cycles, hw_allocated, hw_utilized
         cycles += (expr_cycles+mem_cycles) * (int(loop_iters) / int(unrolled))
-        # hw_allocated = max(hw_need*unrolled, hw_allocated)
         hw_allocated = {
             key: max(value, hw_need[key] * unrolled)
             for key, value in hw_allocated.items()
@@ -222,8 +221,8 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
     if type(string) == ast.Constant:
         parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
-
-def parse_graph(graph, dse_input, dse_given=False, given_bandwidth=1000000):
+import numpy as np
+def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
     """
@@ -274,14 +273,11 @@ def parse_graph(graph, dse_input, dse_given=False, given_bandwidth=1000000):
             if isinstance(i, ast.For):
                 print(ast.dump(i))
                 if isinstance(i.iter.args[0], ast.Constant):
-                    loop_iters = [i.iter.args[0].value]
+                    loop_iters = i.iter.args[0].value
                     # capture unrolling factor for DSE/ will change Number of Memory Banks
                     unroll_params[str(i)] = loop_iters
-                    unrolled = loop_iters
+                    unrolled = 1  # Default unroll factor to 1
                
-#                 if isinstance(i.iter.args[0], ast.Variable):
-#                     loop_iters = [i.iter.args[0].value]
-#                     print("Loop iters are Variable Initialized/Will be Captured by User input")
                 elif dse_given:
                     loop_iters = dse_input["loop1"][0]
                     unrolled = dse_input["loop1"][1]
@@ -291,9 +287,6 @@ def parse_graph(graph, dse_input, dse_given=False, given_bandwidth=1000000):
                     loop_iters = int(input())
                     print("Enter Unroll Parameters : ")
                     unrolled = int(input())
-#                   
-#                        loop_iters = 1
-#                     unrolled = 1
                 print("Loop Iters are", loop_iters)
                 print("Unrolled are", unrolled)
                 for string in i.body:
@@ -306,27 +299,26 @@ def parse_graph(graph, dse_input, dse_given=False, given_bandwidth=1000000):
 
 
 def get_params(dfg, area_budget):
-    """
+    """Adjust parameters to meet area budget
 
     Args:
-        dfg (): 
-        area_budget (): 
+        dfg: Data flow graph
+        area_budget: Target area constraint
     """
     allocated_area = 0
-    while allocated_area < 0.9 * area or allocated_area > 1.2 * area:
+    while allocated_area < 0.9 * area_budget or allocated_area > 1.2 * area_budget:
         # unroll_params -> modify
         # memory size -> modify
-        if area > allocated_area:
-            for param in unroll_params:
+        if area_budget > allocated_area:
+            for param in unroll_params.keys():  # Using unroll_params dictionary defined earlier
                 # decrease parallelism
                 # unroll_params --
                 pass
-            for mem_cfgs in memory_cfgs:
+            for mem_cfg in memory_cfgs.keys():  # Using memory_cfgs dictionary defined earlier
                 # high registers to sram
                 # decreases bandwidth
                 # update_memory_cfgs
                 pass
-        # if(area < allocated_area):
     pass
 
 
@@ -345,15 +337,25 @@ def allocate_memory_cfgs():
     return mem_list
 
 
-def prune_allocator():
+def prune_allocator(node=None, func=None):
+    """Prune and allocate resources
 
+    Args:
+        node: Node to process
+        func: Function to allocate
+
+    Returns:
+        list: Allocated nodes
+    """
     # conflict graph
     # interval graph for registers
-    if node.operator == "func":
+    if node and node.operator == "func":
         getall = []
-        for i in func:
-            getall.append(allocate_node(i))
-    return getall
+        if func:
+            for i in func:
+                getall.append(allocate_node(i))
+        return getall
+    return []
 
 
 # def get_fsm_overhead():
