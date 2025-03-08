@@ -263,6 +263,8 @@ interface ProcessorConfig {
   frequency: number;
   memory: number;
   tdp: number;
+  processorType: string;
+  memoryType: string;
 }
 
 interface SystemConfig {
@@ -280,7 +282,9 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 64,
     frequency: 3000,
     memory: 256,
-    tdp: 280
+    tdp: 280,
+    processorType: 'AMD EPYC 7763',
+    memoryType: 'DDR5'
   },
   {
     type: 'gpu',
@@ -288,7 +292,9 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 6912,
     frequency: 1800,
     memory: 48,
-    tdp: 350
+    tdp: 350,
+    processorType: 'NVIDIA A100',
+    memoryType: 'HBM3'
   }
 ];
 
@@ -1952,6 +1958,24 @@ export default function ChipDesigner() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
+                        <label className="text-sm text-gray-400">Processor Type</label>
+                        <input
+                          type="text"
+                          value={proc.processorType}
+                          onChange={(e) => updateProcessor(index, { processorType: e.target.value })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400">Memory Type</label>
+                        <input
+                          type="text"
+                          value={proc.memoryType}
+                          onChange={(e) => updateProcessor(index, { memoryType: e.target.value })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                      <div>
                         <label className="text-sm text-gray-400">Cores</label>
                         <input
                           type="number"
@@ -1966,6 +1990,24 @@ export default function ChipDesigner() {
                           type="number"
                           value={proc.frequency}
                           onChange={(e) => updateProcessor(index, { frequency: parseInt(e.target.value) })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400">Memory (GB)</label>
+                        <input
+                          type="number"
+                          value={proc.memory}
+                          onChange={(e) => updateProcessor(index, { memory: parseInt(e.target.value) })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400">TDP (W)</label>
+                        <input
+                          type="number"
+                          value={proc.tdp}
+                          onChange={(e) => updateProcessor(index, { tdp: parseInt(e.target.value) })}
                           className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
                         />
                       </div>
@@ -2068,6 +2110,7 @@ export default function ChipDesigner() {
             <div className="border-t border-gray-800 pt-6 mt-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">System Performance Analysis</h3>
+                <h4 className="text-lg font-semibold">Uses CPU, GPU and accelerator simulators and maps the workload to the entire system</h4>
                 <Button
                   onClick={calculateSystemPerformance}
                   disabled={calculatingPerformance || !requirements.selectedWorkloads.length || !systemConfig.chips.length}
