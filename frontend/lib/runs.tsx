@@ -27,6 +27,7 @@ interface RunContextType {
   createNewRun: () => string
   switchRun: (runId: string) => void
   saveToRun: (data: any) => void
+  updateRun: (runId: string, updatedRun: Run) => void
 }
 
 const RunContext = createContext<RunContextType | null>(null)
@@ -99,13 +100,26 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('runs', JSON.stringify(updatedRuns))
   }
 
+  const updateRun = (runId: string, updatedRun: Run) => {
+    const updatedRuns = runs.map(run => 
+      run.id === runId ? { ...updatedRun, lastModified: new Date().toISOString() } : run
+    )
+    
+    setRuns(updatedRuns)
+    if (activeRun?.id === runId) {
+      setActiveRun(updatedRun)
+    }
+    localStorage.setItem('runs', JSON.stringify(updatedRuns))
+  }
+
   return (
     <RunContext.Provider value={{
       activeRun,
       runs,
       createNewRun,
       switchRun,
-      saveToRun
+      saveToRun,
+      updateRun
     }}>
       {children}
     </RunContext.Provider>
