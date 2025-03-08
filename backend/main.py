@@ -16,6 +16,7 @@ from src.src_main import design_runner, visualize_performance_estimation
 from src.src_main import Mapper
 from datetime import datetime
 from uuid import uuid4
+import yaml
 
 app = FastAPI(
     title="Chip Designer API",
@@ -38,6 +39,7 @@ class ChipRequirements(BaseModel):
     performanceTarget: float = Field(..., gt=0, description="Performance target in MIPS")
     selectedWorkloads: List[str] = Field(..., description="List of selected workload types")
     optimizationPriority: Optional[str] = Field("balanced", description="Priority for optimization: 'power', 'performance', or 'balanced'")
+    systemConfig: Optional[SystemConfig]
 
 class ChipBlock(BaseModel):
     id: str
@@ -300,16 +302,138 @@ class DesignHistory(BaseModel):
 # Add in-memory storage (replace with database in production)
 design_history: List[DesignHistory] = []
 
-@app.post("/api/generate-chip", response_model=ChipDesign)
+# Add new class for chip configuration validation
+class ChipConfig(BaseModel):
+    technology: TechnologyConfig
+    voltage: float
+    memory_levels: int
+    memory: Dict[str, MemoryConfig]
+    mm_compute: ComputeConfig
+    rf: Dict[str, float]
+    vector_compute: VectorComputeConfig
+    force_connectivity: int
+
+    @classmethod
+    def get_default_config(cls):
+        """Return a default chip configuration"""
+        return {
+            "technology": {
+                "wire_cap": 0.1,
+                "sense_amp_time": 100,
+                "plogic_node": 7,
+                "logic_node": 7
+            },
+            "voltage": 0.8,
+            "memory_levels": 2,
+            "memory": {
+                "level0": {
+                    "class": "SRAM",
+                    "frequency": 1000,
+                    "banks": 16,
+                    "read_ports": 2,
+                    "write_ports": 2,
+                    "width": 32,
+                    "size": 1048576,
+                    "leakage_power": 0.1
+                },
+                "level1": {
+                    "class": "DRAM",
+                    "frequency": 3200,
+                    "banks": 8,
+                    "read_ports": 1,
+                    "write_ports": 1,
+                    "width": 64,
+                    "size": 8589934592,
+                    "leakage_power": 0.5
+                }
+            },
+            "mm_compute": {
+                "type1": {
+                    "class": "systolic_array",
+                    "frequency": 1000,
+                    "size": 256,
+                    "N_PE": 256,
+                    "area": 2.0,
+                    "per_op_energy": 0.1
+                },
+                "type2": {
+                    "class": "mac",
+                    "frequency": 1000,
+                    "size": 128,
+                    "N_PE": 128,
+                    "Tile": {
+                        "TileX": 8,
+                        "TileY": 8,
+                        "Number": 16
+                    }
+                }
+            },
+            "rf": {
+                "energy": 0.1,
+                "area": 0.5
+            },
+            "vector_compute": {
+                "class": "vector",
+                "frequency": 1000,
+                "size": 128,
+                "N_PE": 128
+            },
+            "force_connectivity": 0
+        }
+
+    @classmethod
+    def from_yaml(cls, yaml_str: str) -> "ChipConfig":
+        """Create ChipConfig from YAML string"""
+        try:
+            config_dict = yaml.safe_load(yaml_str)
+            return cls(**config_dict)
+        except Exception as e:
+            raise ValueError(f"Invalid YAML configuration: {str(e)}")
+
+    def to_yaml(self) -> str:
+        """Convert config to YAML string"""
+        return yaml.dump(self.dict(), default_flow_style=False)
+
+# Update SystemConfig to use default chip config
+class SystemConfig(BaseModel):
+    chips: List[ChipConfig] = Field(default_factory=lambda: [ChipConfig(**ChipConfig.get_default_config())])
+    processors: List[ProcessorConfig] = Field(default_factory=list)
+    networks: List[NetworkConfig] = Field(default_factory=list)
+    topology: str = "mesh"
+
+@app.post("/api/generate-chip")
 async def generate_chip(requirements: ChipRequirements):
     try:
-        optimizer = DesignOptimizer(requirements)
+        # Ensure system config has at least one chip
+        if requirements.systemConfig:
+            if not requirements.systemConfig.chips:
+                requirements.systemConfig.chips = [ChipConfig(**ChipConfig.get_default_config())]
+        else:
+            # Create default system config with one chip
+            requirements.systemConfig = SystemConfig(
+                chips=[ChipConfig(**ChipConfig.get_default_config())],
+                processors=defaultProcessors,
+                networks=defaultNetworks,
+                topology="mesh"
+            )
+
+        # Initialize system-level optimizer
+        optimizer = SystemOptimizer(requirements)
         best_design = optimizer.optimize(iterations=10)
+        
+        # Get system-level performance estimates
+        perf_results = estimate_system_performance(
+            requirements.systemConfig,
+            requirements.selectedWorkloads
+        )
         
         optimization_data = {
             "graph": optimizer.generate_optimization_graph(),
             "animation_frames": optimizer.generate_animation_frames(),
-            "performance_estimation_frames": optimizer.get_performance_estimation_animation()
+            "performance_estimation": {
+                "system": perf_results,
+                "visualization": generate_system_visualization(perf_results)
+            }
         }
         
         # Store in history
@@ -478,6 +602,279 @@ async def get_design_history_entry(design_id: str):
         if entry.id == design_id:
             return entry
     raise HTTPException(status_code=404, detail="Design not found")
+
+# Add new models for system configuration
+class NetworkConfig(BaseModel):
+    type: str
+    bandwidth: float
+    latency: float
+    ports: int
+
+class ProcessorConfig(BaseModel):
+    type: str
+    name: str
+    cores: int
+    frequency: float
+    memory: float
+    tdp: float
+
+class SystemOptimizer:
+    def __init__(self, requirements: ChipRequirements):
+        self.requirements = requirements
+        self.best_design = None
+        self.optimization_states = []
+        self.iteration = 0
+        
+        # Convert workload names to graph objects
+        self.graph_set = self._prepare_graph_set(requirements.selectedWorkloads)
+        
+    def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
+        """
+        Convert workload types to corresponding graph objects
+        This is a placeholder - you'll need to implement the actual graph creation
+        based on your workload types
+        """
+        # TODO: Implement actual graph creation based on workload types
+        graphs = []
+        for workload in workload_types:
+            if workload == "Machine Learning":
+                # Create ML graph
+                pass
+            elif workload == "Image Processing":
+                # Create image processing graph
+                pass
+            elif workload == "Network Processing":
+                # Create network processing graph
+                pass
+            # Add more workload types as needed
+        return graphs
+    
+    def optimize(self, iterations=10):
+        """Run optimization using design_runner"""
+        try:
+            # Configure optimization parameters
+            backprop = self.requirements.optimizationPriority == "performance"
+            print_stats = True
+            
+            # Run design optimization
+            time, energy, area = design_runner(
+                graph_set=self.graph_set,
+                backprop=backprop,
+                print_stats=print_stats,
+                file="default.yaml",
+                stats_file=f"logs/stats_{self.iteration}.txt"
+            )
+            
+            # Generate performance estimation visualization
+            perf_frames = []
+            for graph in self.graph_set:
+                mapper = Mapper(hwfile="default.yaml")
+                frames = visualize_performance_estimation(mapper, graph, backprop)
+                perf_frames.extend(frames)
+            
+            # Store optimization state
+            state = OptimizationState(
+                iteration=self.iteration,
+                power=energy[0],
+                performance=1/time[0],
+                area=area,
+                design=self._create_design_from_metrics(time, energy, area),
+                perf_estimation_frames=perf_frames  # Add frames to state
+            )
+            self.optimization_states.append(state)
+            
+            # Update best design if needed
+            current_design = ChipDesign(**state.design)
+            if self.best_design is None or self._is_better_design(current_design):
+                self.best_design = current_design
+            
+            self.iteration += 1
+            
+            return self.best_design
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+    
+    def _create_design_from_metrics(self, time: List[float], energy: List[float], area: float) -> Dict:
+        """Convert optimization metrics to ChipDesign format"""
+        # Calculate block sizes based on area distribution
+        total_area = area
+        block_width = math.sqrt(total_area)
+        
+        blocks = []
+        
+        # Add compute block
+        blocks.append(ChipBlock(
+            id="compute",
+            type="Computing",
+            size={"width": block_width * 0.5, "height": block_width * 0.5},
+            position={"x": 0, "y": 0},
+            powerConsumption=energy[0] * 0.6,  # 60% of total power
+            performance=1/time[0],  # Convert time to performance
+            utilization=0.85
+        ))
+        
+        # Add memory block if ML workload present
+        if "Machine Learning" in self.requirements.selectedWorkloads:
+            blocks.append(ChipBlock(
+                id="memory",
+                type="Memory",
+                size={"width": block_width * 0.5, "height": block_width * 0.3},
+                position={"x": block_width * 0.5, "y": 0},
+                powerConsumption=energy[0] * 0.4,  # 40% of total power
+                performance=1/time[0] * 0.8,  # 80% of compute performance
+                utilization=0.75
+            ))
+        
+        return {
+            "blocks": [block.dict() for block in blocks],
+            "totalPower": energy[0],
+            "totalArea": area,
+            "estimatedPerformance": 1/time[0],
+            "powerEfficiency": 1/(time[0] * energy[0])
+        }
+    
+    def _is_better_design(self, design: ChipDesign) -> bool:
+        """Evaluate if new design is better based on optimization priority"""
+        if not self.best_design:
+            return True
+            
+        priority = self.requirements.optimizationPriority
+        
+        if priority == "power":
+            return design.powerEfficiency > self.best_design.powerEfficiency
+        elif priority == "performance":
+            return design.estimatedPerformance > self.best_design.estimatedPerformance
+        else:  # balanced
+            current_score = (design.powerEfficiency + design.estimatedPerformance) / 2
+            best_score = (self.best_design.powerEfficiency + self.best_design.estimatedPerformance) / 2
+            return current_score > best_score
+    
+    def generate_optimization_graph(self) -> str:
+        """Generate optimization progress visualization"""
+        plt.figure(figsize=(10, 6))
+        iterations = [s.iteration for s in self.optimization_states]
+        power = [s.power for s in self.optimization_states]
+        perf = [s.performance for s in self.optimization_states]
+        
+        plt.plot(iterations, power, label='Power (W)', marker='o')
+        plt.plot(iterations, perf, label='Performance (MIPS)', marker='s')
+        
+        plt.xlabel('Iteration')
+        plt.ylabel('Value')
+        plt.title('Optimization Progress')
+        plt.legend()
+        plt.grid(True)
+        
+        # Save to base64 string
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+    
+    def generate_animation_frames(self) -> List[str]:
+        """Generate frames showing design evolution"""
+        frames = []
+        for state in self.optimization_states:
+            frame = self._generate_design_frame(state.design)
+            frames.append(frame)
+        return frames
+    
+    def _generate_design_frame(self, design: Dict) -> str:
+        """Generate a single frame visualizing the chip design"""
+        plt.figure(figsize=(8, 8))
+        
+        # Plot blocks
+        for block in design['blocks']:
+            x = block['position']['x']
+            y = block['position']['y']
+            w = block['size']['width']
+            h = block['size']['height']
+            
+            color = {
+                'Computing': 'lightcoral',
+                'Memory': 'lightblue',
+                'Network': 'lightgreen',
+                'Security': 'plum'
+            }.get(block['type'], 'gray')
+            
+            plt.gca().add_patch(
+                plt.Rectangle((x, y), w, h, 
+                            facecolor=color,
+                            edgecolor='black',
+                            alpha=0.7)
+            )
+            plt.text(x + w/2, y + h/2, block['type'],
+                    ha='center', va='center')
+        
+        plt.xlim(0, 400)
+        plt.ylim(0, 400)
+        plt.title(f'Chip Design Layout')
+        
+        # Save to base64 string
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+
+    def get_performance_estimation_animation(self) -> List[str]:
+        """Get all performance estimation visualization frames"""
+        frames = []
+        for state in self.optimization_states:
+            if hasattr(state, 'perf_estimation_frames'):
+                frames.extend(state.perf_estimation_frames)
+        return frames
+
+# Add new function for system-level performance estimation
+def estimate_system_performance(system_config: SystemConfig, workloads: List[str]):
+    """Estimate performance for multi-chip system configuration"""
+    
+    results = {
+        'chips': [],
+        'network': {
+            'bandwidth_utilization': [],
+            'latency_distribution': [],
+            'bottlenecks': []
+        },
+        'workload_distribution': {}
+    }
+    
+    # Analyze each chip
+    for chip in system_config.chips:
+        chip_perf = estimate_chip_performance(chip)
+        results['chips'].append(chip_perf)
+    
+    # Analyze network performance
+    for network in system_config.networks:
+        util = analyze_network_utilization(network, workloads)
+        results['network']['bandwidth_utilization'].append(util)
+        
+        latency = analyze_network_latency(network, system_config.topology)
+        results['network']['latency_distribution'].append(latency)
+    
+    # Analyze workload distribution
+    results['workload_distribution'] = analyze_workload_distribution(
+        workloads, 
+        system_config.chips,
+        system_config.processors
+    )
+    
+    return results
+
+@app.get("/api/default-config")
+async def get_default_config():
+    """Return the default chip configuration from default.yaml"""
+    try:
+        with open("default.yaml", "r") as f:
+            default_config = f.read()
+        return {"config": default_config}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to load default configuration: {str(e)}"
+        )
 
 if __name__ == "__main__":
     import uvicorn

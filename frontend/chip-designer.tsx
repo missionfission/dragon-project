@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2 } from "lucide-react"
+import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2, PlusCircle, Trash2, Network, Cpu as CpuIcon, ChevronDown } from "lucide-react"
 import axios from 'axios'
 import yaml from 'js-yaml'
 import Editor from '@monaco-editor/react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // Add interfaces
 interface ChipRequirements {
@@ -99,6 +100,7 @@ interface VectorComputeConfig {
 }
 
 interface ChipConfig {
+  name?: string;
   technology: TechnologyConfig;
   voltage: number;
   memory_levels: number;
@@ -127,6 +129,103 @@ interface ChipLayout {
     details: any;
   }[];
 }
+
+// Add new interfaces for workload types and performance metrics
+interface WorkloadPerformance {
+  throughput: number;
+  latency: number;
+  powerEfficiency: number;
+  utilizationRate: number;
+}
+
+interface WorkloadCategory {
+  name: string;
+  workloads: {
+    name: string;
+    description: string;
+    performance?: WorkloadPerformance;
+  }[];
+}
+
+// Add after existing interfaces
+const workloadCategories: WorkloadCategory[] = [
+  {
+    name: "AI/ML Workloads",
+    workloads: [
+      {
+        name: "ResNet-50",
+        description: "Deep CNN for image classification",
+      },
+      {
+        name: "BERT",
+        description: "Transformer-based NLP model",
+      },
+      {
+        name: "GPT-4",
+        description: "Large language model inference",
+      },
+      {
+        name: "DLRM",
+        description: "Deep Learning Recommendation Model",
+      },
+      {
+        name: "SSD",
+        description: "Single Shot MultiBox Detector",
+      }
+    ]
+  },
+  {
+    name: "High Performance Computing",
+    workloads: [
+      {
+        name: "HPCG",
+        description: "High Performance Conjugate Gradient",
+      },
+      {
+        name: "LINPACK",
+        description: "Linear algebra benchmark",
+      },
+      {
+        name: "STREAM",
+        description: "Memory bandwidth benchmark",
+      }
+    ]
+  },
+  {
+    name: "Graph Processing",
+    workloads: [
+      {
+        name: "BFS",
+        description: "Breadth-First Search",
+      },
+      {
+        name: "PageRank",
+        description: "Graph ranking algorithm",
+      },
+      {
+        name: "Connected Components",
+        description: "Graph connectivity analysis",
+      }
+    ]
+  },
+  {
+    name: "Cryptography",
+    workloads: [
+      {
+        name: "AES-256",
+        description: "Advanced Encryption Standard",
+      },
+      {
+        name: "SHA-3",
+        description: "Secure Hash Algorithm",
+      },
+      {
+        name: "RSA",
+        description: "Public-key cryptography",
+      }
+    ]
+  }
+];
 
 // Update the generateChipLayout function to handle vector array better
 function generateChipLayout(config: ChipConfig): ChipLayout {
@@ -273,6 +372,82 @@ function generateChipLayout(config: ChipConfig): ChipLayout {
   return { blocks };
 }
 
+// Add new interfaces for system-level configuration
+interface NetworkConfig {
+  type: 'ethernet' | 'pcie' | 'nvlink' | 'infinity-fabric';
+  bandwidth: number; // GB/s
+  latency: number; // ns
+  ports: number;
+}
+
+interface ProcessorConfig {
+  type: 'cpu' | 'gpu' | 'accelerator';
+  name: string;
+  cores: number;
+  frequency: number;
+  memory: number;
+  tdp: number;
+}
+
+interface SystemConfig {
+  chips: ChipConfig[];
+  processors: ProcessorConfig[];
+  networks: NetworkConfig[];
+  topology: 'mesh' | 'ring' | 'star' | 'fully-connected';
+}
+
+// Add default configurations
+const defaultProcessors: ProcessorConfig[] = [
+  {
+    type: 'cpu',
+    name: 'Host CPU',
+    cores: 64,
+    frequency: 3000,
+    memory: 256,
+    tdp: 280
+  },
+  {
+    type: 'gpu',
+    name: 'GPU Accelerator',
+    cores: 6912,
+    frequency: 1800,
+    memory: 48,
+    tdp: 350
+  }
+];
+
+const defaultNetworks: NetworkConfig[] = [
+  {
+    type: 'pcie',
+    bandwidth: 64,
+    latency: 500,
+    ports: 64
+  },
+  {
+    type: 'nvlink',
+    bandwidth: 300,
+    latency: 100,
+    ports: 12
+  }
+];
+
+// Add new state for YAML editors
+interface YamlEditors {
+  [chipId: string]: string;
+}
+
+// Add new function to fetch local YAML file
+const fetchDefaultConfig = async () => {
+  try {
+    const response = await fetch('/default.yaml');
+    const yamlText = await response.text();
+    return yamlText;
+  } catch (error) {
+    console.error('Error loading default configuration:', error);
+    throw new Error('Failed to load default configuration');
+  }
+};
+
 export default function ChipDesigner() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [optimization, setOptimization] = useState("balanced")
@@ -296,9 +471,18 @@ export default function ChipDesigner() {
   const [chipLayout, setChipLayout] = useState<ChipLayout | null>(null);
   const [config, setConfig] = useState<ChipConfig | null>(null);
   const [yamlContent, setYamlContent] = useState<string>('');
+  const [systemConfig, setSystemConfig] = useState<SystemConfig>({
+    chips: [config as ChipConfig],
+    processors: defaultProcessors,
+    networks: defaultNetworks,
+    topology: 'mesh'
+  });
 
   // Add ref for canvas
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // Add new state for YAML editors
+  const [yamlEditors, setYamlEditors] = useState<YamlEditors>({});
 
   // Add template fetching
   useEffect(() => {
@@ -496,6 +680,118 @@ export default function ChipDesigner() {
     }
   }, [])
 
+  // Initialize first chip with default.yaml on component mount
+  useEffect(() => {
+    const initializeFirstChip = async () => {
+      try {
+        const defaultYaml = await fetchDefaultConfig();
+        const newChipConfig = yaml.load(defaultYaml) as ChipConfig;
+        newChipConfig.name = "Chip 1"; // Add default name
+        
+        setYamlEditors({
+          'chip-0': defaultYaml
+        });
+
+        setSystemConfig(prev => ({
+          ...prev,
+          chips: [newChipConfig]
+        }));
+      } catch (error) {
+        setError('Failed to load initial configuration');
+        console.error('Error:', error);
+      }
+    };
+
+    initializeFirstChip();
+  }, []);
+
+  // Update addChip to include chip name
+  const addChip = async () => {
+    try {
+      const defaultYaml = await fetchDefaultConfig();
+      const newChipConfig = yaml.load(defaultYaml) as ChipConfig;
+      const chipIndex = systemConfig.chips.length;
+      newChipConfig.name = `Chip ${chipIndex + 1}`; // Add default name
+      
+      const newChipId = `chip-${chipIndex}`;
+      
+      setYamlEditors(prev => ({
+        ...prev,
+        [newChipId]: defaultYaml
+      }));
+
+      setSystemConfig(prev => ({
+        ...prev,
+        chips: [...prev.chips, newChipConfig]
+      }));
+    } catch (error) {
+      setError('Failed to load default configuration');
+      console.error('Error:', error);
+    }
+  };
+
+  const removeChip = (index: number) => {
+    setSystemConfig(prev => ({
+      ...prev,
+      chips: prev.chips.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateProcessor = (index: number, updates: Partial<ProcessorConfig>) => {
+    setSystemConfig(prev => ({
+      ...prev,
+      processors: prev.processors.map((p, i) => 
+        i === index ? { ...p, ...updates } : p
+      )
+    }));
+  };
+
+  const updateNetwork = (index: number, updates: Partial<NetworkConfig>) => {
+    setSystemConfig(prev => ({
+      ...prev,
+      networks: prev.networks.map((n, i) => 
+        i === index ? { ...n, ...updates } : n
+      )
+    }));
+  };
+
+  // Add handler for chip name change
+  const handleChipNameChange = (index: number, name: string) => {
+    setSystemConfig(prev => ({
+      ...prev,
+      chips: prev.chips.map((chip, i) => 
+        i === index ? { ...chip, name } : chip
+      )
+    }));
+  };
+
+  // Add back the handleChipYamlChange function
+  const handleChipYamlChange = (chipId: string, value: string) => {
+    try {
+      // Update YAML editor content
+      setYamlEditors(prev => ({
+        ...prev,
+        [chipId]: value
+      }));
+
+      // Parse YAML and update system config
+      const chipConfig = yaml.load(value) as ChipConfig;
+      const chipIndex = parseInt(chipId.split('-')[1]);
+      
+      setSystemConfig(prev => ({
+        ...prev,
+        chips: prev.chips.map((chip, i) => 
+          i === chipIndex ? { ...chipConfig, name: chip.name } : chip
+        )
+      }));
+
+      setError(null);
+    } catch (error) {
+      setError('Invalid YAML configuration');
+      console.error('YAML parsing error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -680,32 +976,216 @@ export default function ChipDesigner() {
         <Card className="bg-gray-900/50 border-gray-800">
           <CardHeader>
             <CardTitle>Workloads</CardTitle>
-            <CardDescription className="text-gray-400">Select the primary workloads for your chip</CardDescription>
+            <CardDescription className="text-gray-400">Select workloads for performance optimization</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {[
-                "Machine Learning",
-                "Image Processing",
-                "Data Analytics",
-                "Cryptography",
-                "Network Processing",
-                "General Computing",
-              ].map((workload) => (
-                <label
-                  key={workload}
-                  className="flex items-center space-x-3 border border-gray-800 rounded-lg p-4 hover:bg-gray-800/50 transition-colors"
-                >
-                  <Checkbox 
-                    id={workload}
-                    checked={requirements.selectedWorkloads.includes(workload)}
-                    onCheckedChange={() => handleWorkloadToggle(workload)}
-                  />
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    {workload}
-                  </span>
-                </label>
+            <div className="space-y-6">
+              {workloadCategories.map((category) => (
+                <div key={category.name} className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white/90">{category.name}</h3>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {category.workloads.map((workload) => (
+                      <div
+                        key={workload.name}
+                        className="relative"
+                      >
+                        <label
+                          className="flex items-center space-x-3 border border-gray-800 rounded-lg p-4 hover:bg-gray-800/50 transition-colors"
+                        >
+                          <Checkbox 
+                            id={workload.name}
+                            checked={requirements.selectedWorkloads.includes(workload.name)}
+                            onCheckedChange={() => handleWorkloadToggle(workload.name)}
+                          />
+                          <div className="space-y-1">
+                            <span className="text-sm font-medium leading-none">
+                              {workload.name}
+                            </span>
+                            <p className="text-xs text-gray-400">
+                              {workload.description}
+                            </p>
+                          </div>
+                        </label>
+                        {workload.performance && (
+                          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+                            <Badge variant="secondary" className="bg-green-600/20 text-green-400">
+                              {workload.performance.throughput} TOPS
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Configuration */}
+        <Card className="bg-gray-900/50 border-gray-800">
+          <CardHeader>
+            <CardTitle>System Configuration</CardTitle>
+            <CardDescription className="text-gray-400">Configure multi-chip system and networking</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Chips Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Custom Chips</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={addChip}
+                  className="flex items-center gap-2"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  Add Chip
+                </Button>
+              </div>
+              <div className="grid gap-6">
+                {systemConfig.chips.map((chip, index) => (
+                  <div
+                    key={`chip-${index}`}
+                    className="space-y-4 border border-gray-800 rounded-lg p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-2 w-full">
+                        <input
+                          type="text"
+                          value={chip?.name || `Chip ${index + 1}`}
+                          onChange={(e) => handleChipNameChange(index, e.target.value)}
+                          className="bg-transparent border-none font-medium text-lg focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1 w-full"
+                        />
+                        <p className="text-sm text-gray-400">
+                          {chip?.mm_compute?.type1?.class || chip?.mm_compute?.type2?.class || 'Custom'} Architecture
+                          {chip?.vector_compute?.class && ' + Vector Compute'}
+                        </p>
+                      </div>
+                      {index > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeChip(index)}
+                          className="text-red-500 hover:text-red-400 ml-4"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* YAML Editor */}
+                    <div className="h-[300px] border border-gray-700 rounded-lg">
+                      <Editor
+                        height="100%"
+                        defaultLanguage="yaml"
+                        theme="vs-dark"
+                        value={yamlEditors[`chip-${index}`]}
+                        onChange={(value) => handleChipYamlChange(`chip-${index}`, value || '')}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 12,
+                          scrollBeyondLastLine: false,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Processors Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Host Processors</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                {systemConfig.processors.map((proc, index) => (
+                  <div key={index} className="p-4 border border-gray-800 rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CpuIcon className="w-4 h-4" />
+                        <span className="font-medium">{proc.name}</span>
+                      </div>
+                      <Badge variant="outline">{proc.type.toUpperCase()}</Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm text-gray-400">Cores</label>
+                        <input
+                          type="number"
+                          value={proc.cores}
+                          onChange={(e) => updateProcessor(index, { cores: parseInt(e.target.value) })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400">Frequency (MHz)</label>
+                        <input
+                          type="number"
+                          value={proc.frequency}
+                          onChange={(e) => updateProcessor(index, { frequency: parseInt(e.target.value) })}
+                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Network Configuration */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Network Configuration</h3>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <Network className="w-4 h-4" />
+                  <Select
+                    value={systemConfig.topology}
+                    onValueChange={(value) => 
+                      setSystemConfig(prev => ({ ...prev, topology: value as SystemConfig['topology'] }))
+                    }
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select topology" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mesh">Mesh Network</SelectItem>
+                      <SelectItem value="ring">Ring Network</SelectItem>
+                      <SelectItem value="star">Star Network</SelectItem>
+                      <SelectItem value="fully-connected">Fully Connected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {systemConfig.networks.map((network, index) => (
+                    <div key={index} className="p-4 border border-gray-800 rounded-lg space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{network.type.toUpperCase()}</span>
+                        <Badge variant="outline">{network.bandwidth} GB/s</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm text-gray-400">Latency (ns)</label>
+                          <input
+                            type="number"
+                            value={network.latency}
+                            onChange={(e) => updateNetwork(index, { latency: parseInt(e.target.value) })}
+                            className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm text-gray-400">Ports</label>
+                          <input
+                            type="number"
+                            value={network.ports}
+                            onChange={(e) => updateNetwork(index, { ports: parseInt(e.target.value) })}
+                            className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -846,6 +1326,62 @@ export default function ChipDesigner() {
             </>
           )}
         </Button>
+
+        {/* Add a new Performance Details card after the Results Section */}
+        {chipDesign && (
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Workload Performance Details</CardTitle>
+              <CardDescription className="text-gray-400">Detailed performance metrics for selected workloads</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {requirements.selectedWorkloads.map((workloadName) => {
+                  const workload = workloadCategories
+                    .flatMap(cat => cat.workloads)
+                    .find(w => w.name === workloadName);
+                  
+                  if (!workload) return null;
+
+                  return (
+                    <div key={workloadName} className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">{workloadName}</h3>
+                        <Badge variant="outline">{workload.description}</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="p-4 rounded-lg bg-gray-800/50">
+                          <div className="text-sm text-gray-400">Throughput</div>
+                          <div className="text-xl font-semibold mt-1">
+                            {(Math.random() * 100).toFixed(1)} TOPS
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-gray-800/50">
+                          <div className="text-sm text-gray-400">Latency</div>
+                          <div className="text-xl font-semibold mt-1">
+                            {(Math.random() * 10).toFixed(2)} ms
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-gray-800/50">
+                          <div className="text-sm text-gray-400">Power Efficiency</div>
+                          <div className="text-xl font-semibold mt-1">
+                            {(Math.random() * 5).toFixed(2)} TOPS/W
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-gray-800/50">
+                          <div className="text-sm text-gray-400">Utilization</div>
+                          <div className="text-xl font-semibold mt-1">
+                            {(Math.random() * 100).toFixed(0)}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

@@ -966,3 +966,111 @@ def visualize_performance_estimation(mapper, graph, backprop=False):
         frames.append(base64.b64encode(buf.getvalue()).decode())
     
     return frames
+
+def generate_system_visualization(perf_results):
+    """Generate visualization frames for system-level performance"""
+    frames = []
+    
+    # Create system topology visualization
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Plot chips and processors
+    chip_positions = calculate_node_positions(perf_results)
+    
+    for pos, chip_result in zip(chip_positions, perf_results['chips']):
+        # Draw chip
+        rect = plt.Rectangle(
+            pos, 1, 1,
+            facecolor='blue',
+            alpha=chip_result['utilization'],
+            label=f"Chip {chip_result['id']}"
+        )
+        ax.add_patch(rect)
+        
+        # Add performance metrics
+        ax.text(
+            pos[0] + 0.5, pos[1] + 0.5,
+            f"Perf: {chip_result['performance']:.1f}\nUtil: {chip_result['utilization']*100:.1f}%",
+            ha='center', va='center'
+        )
+    
+    # Draw network connections
+    for i, latency in enumerate(perf_results['network']['latency_distribution']):
+        start = chip_positions[i]
+        end = chip_positions[i+1]
+        
+        # Draw connection with width proportional to bandwidth utilization
+        bandwidth_util = perf_results['network']['bandwidth_utilization'][i]
+        line = plt.Arrow(
+            start[0], start[1],
+            end[0] - start[0], end[1] - start[1],
+            width=0.1 * bandwidth_util,
+            color='red',
+            alpha=0.6
+        )
+        ax.add_patch(line)
+        
+        # Add latency label
+        mid_x = (start[0] + end[0]) / 2
+        mid_y = (start[1] + end[1]) / 2
+        ax.text(mid_x, mid_y, f"{latency:.1f}ns", ha='center', va='center')
+    
+    # Add workload distribution info
+    for workload, distribution in perf_results['workload_distribution'].items():
+        # Add workload allocation visualization
+        pass
+        
+    plt.title("System Performance Visualization")
+    
+    # Save frame
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=100)
+    plt.close()
+    buf.seek(0)
+    frames.append(base64.b64encode(buf.getvalue()).decode())
+    
+    return frames
+
+def analyze_network_utilization(network, workloads):
+    """Analyze network bandwidth utilization for given workloads"""
+    # Calculate data movement requirements
+    data_movement = calculate_data_movement(workloads)
+    
+    # Calculate utilization based on network bandwidth
+    utilization = data_movement / (network.bandwidth * 1e9)  # Convert GB/s to B/s
+    
+    return min(1.0, utilization)
+
+def analyze_network_latency(network, topology):
+    """Analyze network latency based on topology"""
+    base_latency = network.latency
+    
+    # Add topology-specific latency factors
+    topology_factors = {
+        'mesh': 1.2,
+        'ring': 1.5,
+        'star': 1.0,
+        'fully-connected': 1.0
+    }
+    
+    return base_latency * topology_factors.get(topology, 1.0)
+
+def analyze_workload_distribution(workloads, chips, processors):
+    """Analyze how workloads are distributed across chips"""
+    distribution = {}
+    
+    for workload in workloads:
+        # Determine optimal chip allocation based on workload type
+        if workload in ['ResNet-50', 'BERT', 'GPT-4']:
+            # AI workloads - prefer chips with systolic arrays
+            allocation = allocate_ai_workload(workload, chips)
+        elif workload in ['AES-256', 'SHA-3']:
+            # Cryptography workloads - prefer security accelerators
+            allocation = allocate_crypto_workload(workload, chips)
+        else:
+            # General compute - distribute based on available resources
+            allocation = allocate_general_workload(workload, chips, processors)
+            
+        distribution[workload] = allocation
+        
+    return distribution
