@@ -3,7 +3,7 @@
 import { useRuns } from '@/lib/runs'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { ChipDesigner } from '@/components/chip-designer'
+import  ChipDesigner  from "../../../chip-designer"
 
 export default function ActiveRunPage() {
   const { activeRun } = useRuns()

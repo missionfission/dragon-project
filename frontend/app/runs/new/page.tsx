@@ -9,19 +9,10 @@ export default function NewRunPage() {
   const router = useRouter()
 
   useEffect(() => {
-    async function createRun() {
-      const runId = await createNewRun()
-      router.push('/runs/active')
-    }
-    createRun()
-  }, [createNewRun, router])
+    // Create run and redirect immediately
+    createNewRun()
+    router.replace('/runs/active') // Use replace instead of push to prevent back navigation
+  }, [])
 
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <h2 className="text-xl font-semibold mb-2">Creating new run...</h2>
-        <p className="text-muted-foreground">Please wait</p>
-      </div>
-    </div>
-  )
+  return null
 } 

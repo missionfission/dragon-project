@@ -24,7 +24,7 @@ export interface Run {
 interface RunContextType {
   activeRun: Run | null
   runs: Run[]
-  createNewRun: () => Promise<string> // returns new run ID
+  createNewRun: () => string
   switchRun: (runId: string) => void
   saveToRun: (data: any) => void
 }
@@ -51,10 +51,10 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const createNewRun = async () => {
+  const createNewRun = () => {
     const newRun: Run = {
       id: Math.random().toString(36).substr(2, 9),
-      name: `Run ${runs.length + 1}`,
+      name: 'Untitled Run',
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString(),
       designs: [],
