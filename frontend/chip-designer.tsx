@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2, PlusCircle, Trash2, Network, Cpu as CpuIcon, ChevronDown } from "lucide-react"
+import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2, PlusCircle, Trash2, Network, Cpu as CpuIcon, ChevronDown, History } from "lucide-react"
 import axios from 'axios'
 import yaml from 'js-yaml'
 import Editor from '@monaco-editor/react'
@@ -149,17 +149,27 @@ interface WorkloadPerformance {
   utilizationRate: number;
 }
 
+// Add new interface for custom workload
+interface CustomWorkload {
+  name: string;
+  description: string;
+  filename: string;
+  content: string;
+}
+
+// Add to existing interfaces section
 interface WorkloadCategory {
   name: string;
   workloads: {
     name: string;
     description: string;
     performance?: WorkloadPerformance;
+    isCustom?: boolean;
   }[];
 }
 
-// Add after existing interfaces
-const workloadCategories: WorkloadCategory[] = [
+// Move this constant outside the component
+const DEFAULT_WORKLOAD_CATEGORIES: WorkloadCategory[] = [
   {
     name: "AI/ML Workloads",
     workloads: [
@@ -172,7 +182,7 @@ const workloadCategories: WorkloadCategory[] = [
         description: "Transformer-based NLP model",
       },
       {
-        name: "GPT-4",
+        name: "GPT-4", 
         description: "Large language model inference",
       },
       {
@@ -238,7 +248,136 @@ const workloadCategories: WorkloadCategory[] = [
   }
 ];
 
-// Update the generateChipLayout function to handle vector array better
+// Add new interfaces for system-level configuration
+interface NetworkConfig {
+  type: 'ethernet' | 'pcie' | 'nvlink' | 'infinity-fabric';
+  bandwidth: number; // GB/s
+  latency: number; // ns
+  ports: number;
+}
+
+interface ProcessorConfig {
+  type: 'cpu' | 'gpu' | 'accelerator';
+  name: string;
+  cores: number;
+  frequency: number;
+  memory: number;
+  tdp: number;
+}
+
+interface SystemConfig {
+  chips: ChipConfig[];
+  processors: ProcessorConfig[];
+  networks: NetworkConfig[];
+  topology: 'mesh' | 'ring' | 'star' | 'fully-connected';
+}
+
+// Add default configurations
+const defaultProcessors: ProcessorConfig[] = [
+  {
+    type: 'cpu',
+    name: 'Host CPU',
+    cores: 64,
+    frequency: 3000,
+    memory: 256,
+    tdp: 280
+  },
+  {
+    type: 'gpu',
+    name: 'GPU Accelerator',
+    cores: 6912,
+    frequency: 1800,
+    memory: 48,
+    tdp: 350
+  }
+];
+
+const defaultNetworks: NetworkConfig[] = [
+  {
+    type: 'pcie',
+    bandwidth: 64,
+    latency: 500,
+    ports: 64
+  },
+  {
+    type: 'nvlink',
+    bandwidth: 300,
+    latency: 100,
+    ports: 12
+  }
+];
+
+// Add new state for YAML editors
+interface YamlEditors {
+  [chipId: string]: string;
+}
+
+// Add new function to fetch local YAML file
+const fetchDefaultConfig = async () => {
+  try {
+    const response = await fetch('/default.yaml');
+    const yamlText = await response.text();
+    return yamlText;
+  } catch (error) {
+    console.error('Error loading default configuration:', error);
+    throw new Error('Failed to load default configuration');
+  }
+};
+
+// Add new interfaces after the existing ones
+interface SavedChipDesign {
+  id: string;
+  name: string;
+  description?: string;
+  requirements: ChipRequirements;
+  design: ChipDesign;
+  config: ChipConfig;
+  createdAt: string;
+}
+
+// Add new interface for saved system configs
+interface SavedSystemConfig {
+  id: string;
+  name: string;
+  description?: string;
+  config: SystemConfig;
+  createdAt: string;
+}
+
+// Add new interface for system performance results
+interface SystemPerformanceMetrics {
+  totalThroughput: number;
+  systemLatency: number;
+  powerConsumption: number;
+  networkUtilization: number;
+  chipUtilizations: {
+    chipId: string;
+    utilization: number;
+  }[];
+  interconnectBandwidth: {
+    source: string;
+    destination: string;
+    bandwidth: number;
+    utilization: number;
+  }[];
+}
+
+// Add new interface after the existing interfaces
+interface DesignRun {
+  id: string;
+  timestamp: string;
+  requirements: ChipRequirements;
+  results: {
+    chipDesign: ChipDesign;
+    optimizationResults: {
+      graph: string;
+      animation_frames: string[];
+    } | null;
+  };
+  config: ChipConfig;
+}
+
+// Add this function after the interfaces and before the component
 function generateChipLayout(config: ChipConfig): ChipLayout {
   const blocks = [];
   // Define container dimensions
@@ -383,120 +522,6 @@ function generateChipLayout(config: ChipConfig): ChipLayout {
   return { blocks };
 }
 
-// Add new interfaces for system-level configuration
-interface NetworkConfig {
-  type: 'ethernet' | 'pcie' | 'nvlink' | 'infinity-fabric';
-  bandwidth: number; // GB/s
-  latency: number; // ns
-  ports: number;
-}
-
-interface ProcessorConfig {
-  type: 'cpu' | 'gpu' | 'accelerator';
-  name: string;
-  cores: number;
-  frequency: number;
-  memory: number;
-  tdp: number;
-}
-
-interface SystemConfig {
-  chips: ChipConfig[];
-  processors: ProcessorConfig[];
-  networks: NetworkConfig[];
-  topology: 'mesh' | 'ring' | 'star' | 'fully-connected';
-}
-
-// Add default configurations
-const defaultProcessors: ProcessorConfig[] = [
-  {
-    type: 'cpu',
-    name: 'Host CPU',
-    cores: 64,
-    frequency: 3000,
-    memory: 256,
-    tdp: 280
-  },
-  {
-    type: 'gpu',
-    name: 'GPU Accelerator',
-    cores: 6912,
-    frequency: 1800,
-    memory: 48,
-    tdp: 350
-  }
-];
-
-const defaultNetworks: NetworkConfig[] = [
-  {
-    type: 'pcie',
-    bandwidth: 64,
-    latency: 500,
-    ports: 64
-  },
-  {
-    type: 'nvlink',
-    bandwidth: 300,
-    latency: 100,
-    ports: 12
-  }
-];
-
-// Add new state for YAML editors
-interface YamlEditors {
-  [chipId: string]: string;
-}
-
-// Add new function to fetch local YAML file
-const fetchDefaultConfig = async () => {
-  try {
-    const response = await fetch('/default.yaml');
-    const yamlText = await response.text();
-    return yamlText;
-  } catch (error) {
-    console.error('Error loading default configuration:', error);
-    throw new Error('Failed to load default configuration');
-  }
-};
-
-// Add new interfaces after the existing ones
-interface SavedChipDesign {
-  id: string;
-  name: string;
-  description?: string;
-  requirements: ChipRequirements;
-  design: ChipDesign;
-  config: ChipConfig;
-  createdAt: string;
-}
-
-// Add new interface for saved system configs
-interface SavedSystemConfig {
-  id: string;
-  name: string;
-  description?: string;
-  config: SystemConfig;
-  createdAt: string;
-}
-
-// Add new interface for system performance results
-interface SystemPerformanceMetrics {
-  totalThroughput: number;
-  systemLatency: number;
-  powerConsumption: number;
-  networkUtilization: number;
-  chipUtilizations: {
-    chipId: string;
-    utilization: number;
-  }[];
-  interconnectBandwidth: {
-    source: string;
-    destination: string;
-    bandwidth: number;
-    utilization: number;
-  }[];
-}
-
 export default function ChipDesigner() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [optimization, setOptimization] = useState("balanced")
@@ -548,6 +573,22 @@ export default function ChipDesigner() {
   // Add new state for system performance
   const [systemPerformance, setSystemPerformance] = useState<SystemPerformanceMetrics | null>(null);
   const [calculatingPerformance, setCalculatingPerformance] = useState(false);
+
+  // Add new state for custom workloads dialog
+  const [showAddWorkloadDialog, setShowAddWorkloadDialog] = useState(false);
+  const [customWorkload, setCustomWorkload] = useState<CustomWorkload>({
+    name: '',
+    description: '',
+    filename: '',
+    content: ''
+  });
+
+  // Inside the ChipDesigner component, add the state:
+  const [workloadCategories, setWorkloadCategories] = useState<WorkloadCategory[]>(DEFAULT_WORKLOAD_CATEGORIES);
+
+  // Add new state for design history
+  const [designHistory, setDesignHistory] = useState<DesignRun[]>([]);
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
 
   // Move the saveSystemConfig function inside the component
   const saveSystemConfig = async () => {
@@ -1158,6 +1199,270 @@ export default function ChipDesigner() {
     );
   };
 
+  // Update the handleWorkloadFileUpload function
+  const handleWorkloadFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (!e.target) return;
+      const content = e.target.result as string;
+      setCustomWorkload(prev => ({
+        ...prev,
+        filename: file.name,
+        content: content
+      }));
+    };
+    reader.readAsText(file);
+  };
+
+  // Add function to save custom workload
+  const saveCustomWorkload = async () => {
+    try {
+      // Send workload to backend
+      await axios.post('http://localhost:8000/api/custom-workload', customWorkload);
+
+      // Add to workload categories
+      const customCategory = workloadCategories.find(cat => cat.name === "Custom Workloads") || {
+        name: "Custom Workloads",
+        workloads: []
+      };
+
+      customCategory.workloads.push({
+        name: customWorkload.name,
+        description: customWorkload.description,
+        isCustom: true
+      });
+
+      // Update workload categories
+      const updatedCategories = workloadCategories.filter(cat => cat.name !== "Custom Workloads");
+      updatedCategories.push(customCategory);
+      // Note: You'll need to modify the workloadCategories to be mutable state
+      // setWorkloadCategories(updatedCategories);
+
+      setShowAddWorkloadDialog(false);
+      setCustomWorkload({
+        name: '',
+        description: '',
+        filename: '',
+        content: ''
+      });
+    } catch (error) {
+      setError('Failed to save custom workload');
+      console.error('Error saving workload:', error);
+    }
+  };
+
+  // Add new dialog component for adding workloads
+  const AddWorkloadDialog = () => (
+    <Dialog open={showAddWorkloadDialog} onOpenChange={setShowAddWorkloadDialog}>
+      <DialogContent className="bg-gray-900 text-white">
+        <DialogHeader>
+          <DialogTitle>Add Custom Workload</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Upload a Python file containing your custom workload implementation
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">Workload Name</Label>
+            <Input
+              id="name"
+              value={customWorkload.name}
+              onChange={(e) => setCustomWorkload(prev => ({ ...prev, name: e.target.value }))}
+              className="bg-gray-800"
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={customWorkload.description}
+              onChange={(e) => setCustomWorkload(prev => ({ ...prev, description: e.target.value }))}
+              className="bg-gray-800"
+            />
+          </div>
+          <div>
+            <Label htmlFor="file">Python File</Label>
+            <Input
+              id="file"
+              type="file"
+              accept=".py"
+              onChange={handleWorkloadFileUpload}
+              className="bg-gray-800"
+            />
+          </div>
+          {customWorkload.content && (
+            <div>
+              <Label>File Preview</Label>
+              <div className="mt-2 p-4 bg-gray-800 rounded-md">
+                <pre className="text-sm overflow-x-auto">
+                  <code>{customWorkload.content}</code>
+                </pre>
+              </div>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowAddWorkloadDialog(false)}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={saveCustomWorkload}
+            disabled={!customWorkload.name || !customWorkload.content}
+          >
+            Save Workload
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // Modify the Workloads card content
+  const WorkloadsSection = () => (
+    <Card className="bg-gray-900/50 border-gray-800">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>Workloads</CardTitle>
+            <CardDescription className="text-gray-400">
+              Select workloads for performance optimization
+            </CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAddWorkloadDialog(true)}
+            className="flex items-center gap-2"
+          >
+            <PlusCircle className="w-4 h-4" />
+            Add Workload
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          {workloadCategories.map((category) => (
+            <div key={category.name} className="space-y-4">
+              <h3 className="text-lg font-semibold text-white/90">{category.name}</h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {category.workloads.map((workload) => (
+                  <div
+                    key={workload.name}
+                    className="relative"
+                  >
+                    <label className="flex items-center space-x-3 border border-gray-800 rounded-lg p-4 hover:bg-gray-800/50 transition-colors">
+                      <Checkbox 
+                        id={workload.name}
+                        checked={requirements.selectedWorkloads.includes(workload.name)}
+                        onCheckedChange={() => handleWorkloadToggle(workload.name)}
+                      />
+                      <div className="space-y-1">
+                        <span className="text-sm font-medium leading-none">
+                          {workload.name}
+                        </span>
+                        <p className="text-xs text-gray-400">
+                          {workload.description}
+                        </p>
+                      </div>
+                      {workload.isCustom && (
+                        <Badge variant="outline" className="ml-auto">
+                          Custom
+                        </Badge>
+                      )}
+                    </label>
+                    {workload.performance && (
+                      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+                        <Badge variant="secondary" className="bg-green-600/20 text-green-400">
+                          {workload.performance.throughput} TOPS
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Add after the existing handleGenerate function
+  const saveToHistory = () => {
+    if (!chipDesign || !config) return;
+    
+    const newRun: DesignRun = {
+      id: Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      requirements,
+      results: {
+        chipDesign,
+        optimizationResults
+      },
+      config
+    };
+
+    const updatedHistory = [...designHistory, newRun];
+    setDesignHistory(updatedHistory);
+    localStorage.setItem('designHistory', JSON.stringify(updatedHistory));
+  };
+
+  // Add useEffect to load history
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('designHistory');
+    if (savedHistory) {
+      setDesignHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  // Add new component for history dialog
+  const HistoryDialog = () => (
+    <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
+      <DialogContent className="bg-gray-900 text-white max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Design History</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            View and load previous chip designs
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+          {designHistory.map((run) => (
+            <Card key={run.id} className="bg-gray-800/50 border-gray-700">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-lg">
+                      Run from {new Date(run.timestamp).toLocaleString()}
+                    </CardTitle>
+                    <CardDescription>
+                      Power: {run.results.chipDesign.totalPower}W | 
+                      Area: {run.results.chipDesign.totalArea}mm² | 
+                      Performance: {run.results.chipDesign.estimatedPerformance} MIPS
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setRequirements(run.requirements);
+                      setChipDesign(run.results.chipDesign);
+                      setOptimizationResults(run.results.optimizationResults);
+                      setConfig(run.config);
+                      setShowHistoryDialog(false);
+                    }}
+                  >
+                    Load Design
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -1339,55 +1644,8 @@ export default function ChipDesigner() {
         </Card>
 
         {/* Workloads */}
-        <Card className="bg-gray-900/50 border-gray-800">
-          <CardHeader>
-            <CardTitle>Workloads</CardTitle>
-            <CardDescription className="text-gray-400">Select workloads for performance optimization</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {workloadCategories.map((category) => (
-                <div key={category.name} className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white/90">{category.name}</h3>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {category.workloads.map((workload) => (
-                      <div
-                        key={workload.name}
-                        className="relative"
-                      >
-                        <label
-                          className="flex items-center space-x-3 border border-gray-800 rounded-lg p-4 hover:bg-gray-800/50 transition-colors"
-                        >
-                          <Checkbox 
-                            id={workload.name}
-                            checked={requirements.selectedWorkloads.includes(workload.name)}
-                            onCheckedChange={() => handleWorkloadToggle(workload.name)}
-                          />
-                          <div className="space-y-1">
-                            <span className="text-sm font-medium leading-none">
-                              {workload.name}
-                            </span>
-                            <p className="text-xs text-gray-400">
-                              {workload.description}
-                            </p>
-                          </div>
-                        </label>
-                        {workload.performance && (
-                          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
-                            <Badge variant="secondary" className="bg-green-600/20 text-green-400">
-                              {workload.performance.throughput} TOPS
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
+        <WorkloadsSection />
+        <AddWorkloadDialog />
 
         {/* Results Section */}
         {chipLayout && (
@@ -1407,14 +1665,24 @@ export default function ChipDesigner() {
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowSaveDialog(true)}
-                  className="ml-4"
-                >
-                  Save Design
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowHistoryDialog(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <History className="w-4 h-4" />
+                    History
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSaveDialog(true)}
+                  >
+                    Save Design
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -1773,6 +2041,9 @@ export default function ChipDesigner() {
 
         {/* Save System Config Dialog */}
         <SaveSystemConfigDialog />
+
+        {/* History Dialog */}
+        <HistoryDialog />
       </div>
     </div>
   )
