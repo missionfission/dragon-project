@@ -377,6 +377,15 @@ interface DesignRun {
   config: ChipConfig;
 }
 
+// Add this interface with existing interfaces
+interface PerformanceEstimate {
+  mips: number;
+  powerEfficiency: number;
+  utilizationPercentage: number;
+  thermalProfile: number;
+  animationFrames: string[];
+}
+
 // Add this function after the interfaces and before the component
 function generateChipLayout(config: ChipConfig): ChipLayout {
   const blocks = [];
@@ -589,6 +598,10 @@ export default function ChipDesigner() {
   // Add new state for design history
   const [designHistory, setDesignHistory] = useState<DesignRun[]>([]);
   const [showHistoryDialog, setShowHistoryDialog] = useState(false);
+
+  // Add new state for performance estimation
+  const [isEstimating, setIsEstimating] = useState(false)
+  const [performanceEstimate, setPerformanceEstimate] = useState<PerformanceEstimate | null>(null)
 
   // Move the saveSystemConfig function inside the component
   const saveSystemConfig = async () => {
@@ -1463,13 +1476,35 @@ export default function ChipDesigner() {
     </Dialog>
   );
 
+  // Add this function after existing functions
+  const handleEstimatePerformance = async () => {
+    setIsEstimating(true)
+    try {
+      // Use the current chip configuration for estimation
+      const estimationParams = {
+        clockSpeed: config?.mm_compute?.type1?.frequency || 1000,
+        coreCount: config?.mm_compute?.type1?.N_PE || 4,
+        cacheSize: config?.memory?.level0?.size / (1024 * 1024) || 8, // Convert to MB
+        memoryBandwidth: config?.memory?.level1?.frequency || 100
+      }
+      
+      const response = await axios.post('http://localhost:8000/api/estimate-performance', estimationParams)
+      setPerformanceEstimate(response.data)
+    } catch (error) {
+      setError('Failed to estimate performance: ' + (error as Error).message)
+      console.error('Error:', error)
+    } finally {
+      setIsEstimating(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Chip Designer</h1>
-          <p className="text-muted-foreground">Design your custom chip by specifying requirements and workloads</p>
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Chip and System Performance Estimator and Designer</h1>
+          <p className="text-muted-foreground">Estimate your chip/system performance based on specifications, Design your custom chip by specifying requirements and workloads</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -1784,25 +1819,47 @@ export default function ChipDesigner() {
           </div>
         )}
 
-        {/* Generate Button */}
-        <Button
-          size="lg"
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          onClick={handleGenerate}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating Chip Design...
-            </>
-          ) : (
-            <>
-              <Cpu className="mr-2 h-4 w-4" />
-              Generate Chip Design
-            </>
-          )}
-        </Button>
+        {/* Generate and Estimate Buttons */}
+        <div className="flex gap-4">
+          <Button
+            size="lg"
+            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            onClick={handleGenerate}
+            disabled={loading || isEstimating}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating Chip Design...
+              </>
+            ) : (
+              <>
+                <Cpu className="mr-2 h-4 w-4" />
+                Generate Chip Design
+              </>
+            )}
+          </Button>
+
+          <Button
+            size="lg"
+            variant="outline"
+            className="flex-1"
+            onClick={handleEstimatePerformance}
+            disabled={loading || isEstimating || !config}
+          >
+            {isEstimating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Estimating...
+              </>
+            ) : (
+              <>
+                <Activity className="mr-2 h-4 w-4" />
+                Estimate Performance
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* System Configuration */}
         <Card className="bg-gray-900/50 border-gray-800">
@@ -2044,6 +2101,47 @@ export default function ChipDesigner() {
 
         {/* History Dialog */}
         <HistoryDialog />
+
+        {/* Performance Estimate Results */}
+        {performanceEstimate && (
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Performance Estimation</CardTitle>
+              <CardDescription>Estimated performance metrics based on current configuration</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-4 rounded-lg bg-gray-800/50">
+                  <div className="text-sm text-gray-400">Performance</div>
+                  <div className="text-xl font-semibold mt-1">
+                    {performanceEstimate.mips.toLocaleString()} MIPS
+                  </div>
+                </div>
+                
+                <div className="p-4 rounded-lg bg-gray-800/50">
+                  <div className="text-sm text-gray-400">Power Efficiency</div>
+                  <div className="text-xl font-semibold mt-1">
+                    {performanceEstimate.powerEfficiency.toFixed(2)} MIPS/W
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-gray-800/50">
+                  <div className="text-sm text-gray-400">Utilization</div>
+                  <div className="text-xl font-semibold mt-1">
+                    {performanceEstimate.utilizationPercentage}%
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-gray-800/50">
+                  <div className="text-sm text-gray-400">Thermal Profile</div>
+                  <div className="text-xl font-semibold mt-1">
+                    {performanceEstimate.thermalProfile}°C
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )
