@@ -12,8 +12,16 @@ from pathlib import Path
 import numpy as np
 from dataclasses import dataclass
 import imageio
-from src.src_main import design_runner, visualize_performance_estimation
-from src.src_main import Mapper
+from src.src_main import (
+    design_runner,
+    visualize_performance_estimation,
+    analyze_network_utilization,
+    analyze_network_latency,
+    analyze_workload_distribution,
+    generate_system_visualization,
+    get_backprop_memory,
+    Mapper
+)
 from datetime import datetime
 from uuid import uuid4
 import yaml
@@ -33,13 +41,149 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# First define all the base config models
+class TechnologyConfig(BaseModel):
+    wire_cap: float
+    sense_amp_time: float
+    plogic_node: int
+    logic_node: int
+
+class MemoryConfig(BaseModel):
+    class_type: str = Field(..., alias='class')
+    frequency: int
+    banks: int
+    read_ports: int
+    write_ports: int
+    width: int
+    size: int
+    leakage_power: float
+    read_energy: Optional[float] = None
+    write_energy: Optional[float] = None
+
+    class Config:
+        allow_population_by_field_name = True
+
+class ComputeConfig(BaseModel):
+    type1: Dict[str, Any]
+    type2: Dict[str, Any]
+
+class VectorComputeConfig(BaseModel):
+    class_type: str = Field(..., alias='class')
+    frequency: int
+    size: int
+    N_PE: int
+
+    class Config:
+        allow_population_by_field_name = True
+
+class ProcessorConfig(BaseModel):
+    type: str
+    name: str
+    cores: int
+    frequency: float
+    memory: float
+    tdp: float
+
+class NetworkConfig(BaseModel):
+    type: str
+    bandwidth: float
+    latency: float
+    ports: int
+
+# Define ChipConfig before SystemConfig
+class ChipConfig(BaseModel):
+    technology: TechnologyConfig
+    voltage: float
+    memory_levels: int
+    memory: Dict[str, MemoryConfig]
+    mm_compute: ComputeConfig
+    rf: Dict[str, float]
+    vector_compute: VectorComputeConfig
+    force_connectivity: int
+
+    @classmethod
+    def get_default_config(cls):
+        """Return a default chip configuration"""
+        return {
+            "technology": {
+                "wire_cap": 0.1,
+                "sense_amp_time": 100,
+                "plogic_node": 7,
+                "logic_node": 7
+            },
+            "voltage": 0.8,
+            "memory_levels": 2,
+            "memory": {
+                "level0": {
+                    "class": "SRAM",
+                    "frequency": 1000,
+                    "banks": 16,
+                    "read_ports": 2,
+                    "write_ports": 2,
+                    "width": 32,
+                    "size": 1048576,
+                    "leakage_power": 0.1
+                },
+                "level1": {
+                    "class": "DRAM",
+                    "frequency": 3200,
+                    "banks": 8,
+                    "read_ports": 1,
+                    "write_ports": 1,
+                    "width": 64,
+                    "size": 8589934592,
+                    "leakage_power": 0.5
+                }
+            },
+            "mm_compute": {
+                "type1": {
+                    "class": "systolic_array",
+                    "frequency": 1000,
+                    "size": 256,
+                    "N_PE": 256,
+                    "area": 2.0,
+                    "per_op_energy": 0.1
+                },
+                "type2": {
+                    "class": "mac",
+                    "frequency": 1000,
+                    "size": 128,
+                    "N_PE": 128,
+                    "Tile": {
+                        "TileX": 8,
+                        "TileY": 8,
+                        "Number": 16
+                    }
+                }
+            },
+            "rf": {
+                "energy": 0.1,
+                "area": 0.5
+            },
+            "vector_compute": {
+                "class": "vector",
+                "frequency": 1000,
+                "size": 128,
+                "N_PE": 128
+            },
+            "force_connectivity": 0
+        }
+
+# Now define SystemConfig
+class SystemConfig(BaseModel):
+    chips: List[ChipConfig] = Field(default_factory=lambda: [ChipConfig(**ChipConfig.get_default_config())])
+    processors: List[ProcessorConfig] = Field(default_factory=list)
+    networks: List[NetworkConfig] = Field(default_factory=list)
+    topology: str = "mesh"
+
+# Finally define ChipRequirements that uses SystemConfig
 class ChipRequirements(BaseModel):
     powerBudget: float = Field(..., gt=0, description="Power budget in Watts")
     areaConstraint: float = Field(..., gt=0, description="Area constraint in mm²")
     performanceTarget: float = Field(..., gt=0, description="Performance target in MIPS")
     selectedWorkloads: List[str] = Field(..., description="List of selected workload types")
     optimizationPriority: Optional[str] = Field("balanced", description="Priority for optimization: 'power', 'performance', or 'balanced'")
-    systemConfig: Optional[SystemConfig]
+    systemConfig: Optional[SystemConfig] = None
 
 class ChipBlock(BaseModel):
     id: str
@@ -301,105 +445,6 @@ class DesignHistory(BaseModel):
 
 # Add in-memory storage (replace with database in production)
 design_history: List[DesignHistory] = []
-
-# Add new class for chip configuration validation
-class ChipConfig(BaseModel):
-    technology: TechnologyConfig
-    voltage: float
-    memory_levels: int
-    memory: Dict[str, MemoryConfig]
-    mm_compute: ComputeConfig
-    rf: Dict[str, float]
-    vector_compute: VectorComputeConfig
-    force_connectivity: int
-
-    @classmethod
-    def get_default_config(cls):
-        """Return a default chip configuration"""
-        return {
-            "technology": {
-                "wire_cap": 0.1,
-                "sense_amp_time": 100,
-                "plogic_node": 7,
-                "logic_node": 7
-            },
-            "voltage": 0.8,
-            "memory_levels": 2,
-            "memory": {
-                "level0": {
-                    "class": "SRAM",
-                    "frequency": 1000,
-                    "banks": 16,
-                    "read_ports": 2,
-                    "write_ports": 2,
-                    "width": 32,
-                    "size": 1048576,
-                    "leakage_power": 0.1
-                },
-                "level1": {
-                    "class": "DRAM",
-                    "frequency": 3200,
-                    "banks": 8,
-                    "read_ports": 1,
-                    "write_ports": 1,
-                    "width": 64,
-                    "size": 8589934592,
-                    "leakage_power": 0.5
-                }
-            },
-            "mm_compute": {
-                "type1": {
-                    "class": "systolic_array",
-                    "frequency": 1000,
-                    "size": 256,
-                    "N_PE": 256,
-                    "area": 2.0,
-                    "per_op_energy": 0.1
-                },
-                "type2": {
-                    "class": "mac",
-                    "frequency": 1000,
-                    "size": 128,
-                    "N_PE": 128,
-                    "Tile": {
-                        "TileX": 8,
-                        "TileY": 8,
-                        "Number": 16
-                    }
-                }
-            },
-            "rf": {
-                "energy": 0.1,
-                "area": 0.5
-            },
-            "vector_compute": {
-                "class": "vector",
-                "frequency": 1000,
-                "size": 128,
-                "N_PE": 128
-            },
-            "force_connectivity": 0
-        }
-
-    @classmethod
-    def from_yaml(cls, yaml_str: str) -> "ChipConfig":
-        """Create ChipConfig from YAML string"""
-        try:
-            config_dict = yaml.safe_load(yaml_str)
-            return cls(**config_dict)
-        except Exception as e:
-            raise ValueError(f"Invalid YAML configuration: {str(e)}")
-
-    def to_yaml(self) -> str:
-        """Convert config to YAML string"""
-        return yaml.dump(self.dict(), default_flow_style=False)
-
-# Update SystemConfig to use default chip config
-class SystemConfig(BaseModel):
-    chips: List[ChipConfig] = Field(default_factory=lambda: [ChipConfig(**ChipConfig.get_default_config())])
-    processors: List[ProcessorConfig] = Field(default_factory=list)
-    networks: List[NetworkConfig] = Field(default_factory=list)
-    topology: str = "mesh"
 
 @app.post("/api/generate-chip")
 async def generate_chip(requirements: ChipRequirements):
@@ -875,6 +920,115 @@ async def get_default_config():
             status_code=500, 
             detail=f"Failed to load default configuration: {str(e)}"
         )
+
+# Add new endpoint for system performance calculation
+@app.post("/api/calculate-system-performance")
+async def calculate_system_performance(
+    request: Dict[str, Any]
+):
+    """Calculate performance metrics for multi-chip system"""
+    try:
+        system_config = request.get("systemConfig")
+        workloads = request.get("workloads", [])
+        optimization_priority = request.get("optimizationPriority", "balanced")
+
+        # Initialize performance metrics
+        results = {
+            'chips': [],
+            'network': {
+                'bandwidth_utilization': [],
+                'latency_distribution': [],
+                'bottlenecks': []
+            },
+            'workload_distribution': {}
+        }
+
+        # Analyze each chip's performance
+        for i, chip in enumerate(system_config['chips']):
+            # Create mapper instance for this chip
+            mapper = Mapper(hwfile="default.yaml")
+            mapper.complete_config(chip)
+
+            # Estimate chip performance
+            time, energy, design, tech, area = mapper.save_stats(
+                mapper, 
+                backprop=False,
+                memory=get_backprop_memory([]),  # Empty for now
+                print_stats=False
+            )
+
+            # Add chip performance metrics
+            results['chips'].append({
+                'id': f'chip_{i}',
+                'performance': 1/time[0] if time[0] > 0 else 0,
+                'power': energy[0],
+                'area': area,
+                'utilization': random.uniform(0.6, 0.9)  # Simulated for now
+            })
+
+        # Analyze network performance
+        for network in system_config['networks']:
+            # Calculate network utilization
+            utilization = analyze_network_utilization(network, workloads)
+            results['network']['bandwidth_utilization'].append(utilization)
+            
+            # Calculate network latency
+            latency = analyze_network_latency(network, system_config['topology'])
+            results['network']['latency_distribution'].append(latency)
+
+        # Analyze workload distribution
+        results['workload_distribution'] = analyze_workload_distribution(
+            workloads,
+            system_config['chips'],
+            system_config['processors']
+        )
+
+        # Generate visualization frames
+        visualization_frames = generate_system_visualization(results)
+        results['visualization'] = visualization_frames
+
+        return results
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to calculate system performance: {str(e)}"
+        )
+
+# Add default configurations
+defaultProcessors = [
+    ProcessorConfig(
+        type='cpu',
+        name='Host CPU',
+        cores=64,
+        frequency=3000,
+        memory=256,
+        tdp=280
+    ),
+    ProcessorConfig(
+        type='gpu',
+        name='GPU Accelerator',
+        cores=6912,
+        frequency=1800,
+        memory=48,
+        tdp=350
+    )
+]
+
+defaultNetworks = [
+    NetworkConfig(
+        type='pcie',
+        bandwidth=64,
+        latency=500,
+        ports=64
+    ),
+    NetworkConfig(
+        type='nvlink',
+        bandwidth=300,
+        latency=100,
+        ports=12
+    )
+]
 
 if __name__ == "__main__":
     import uvicorn

@@ -12,6 +12,17 @@ import axios from 'axios'
 import yaml from 'js-yaml'
 import Editor from '@monaco-editor/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 // Add interfaces
 interface ChipRequirements {
@@ -448,6 +459,44 @@ const fetchDefaultConfig = async () => {
   }
 };
 
+// Add new interfaces after the existing ones
+interface SavedChipDesign {
+  id: string;
+  name: string;
+  description?: string;
+  requirements: ChipRequirements;
+  design: ChipDesign;
+  config: ChipConfig;
+  createdAt: string;
+}
+
+// Add new interface for saved system configs
+interface SavedSystemConfig {
+  id: string;
+  name: string;
+  description?: string;
+  config: SystemConfig;
+  createdAt: string;
+}
+
+// Add new interface for system performance results
+interface SystemPerformanceMetrics {
+  totalThroughput: number;
+  systemLatency: number;
+  powerConsumption: number;
+  networkUtilization: number;
+  chipUtilizations: {
+    chipId: string;
+    utilization: number;
+  }[];
+  interconnectBandwidth: {
+    source: string;
+    destination: string;
+    bandwidth: number;
+    utilization: number;
+  }[];
+}
+
 export default function ChipDesigner() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [optimization, setOptimization] = useState("balanced")
@@ -483,6 +532,86 @@ export default function ChipDesigner() {
 
   // Add new state for YAML editors
   const [yamlEditors, setYamlEditors] = useState<YamlEditors>({});
+
+  // Add new state variables after the existing ones
+  const [savedDesigns, setSavedDesigns] = useState<SavedChipDesign[]>([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [designName, setDesignName] = useState('');
+  const [designDescription, setDesignDescription] = useState('');
+
+  // Add new state variables for system config saving
+  const [showSaveSystemDialog, setShowSaveSystemDialog] = useState(false);
+  const [systemConfigName, setSystemConfigName] = useState('');
+  const [systemConfigDescription, setSystemConfigDescription] = useState('');
+  const [savedSystemConfigs, setSavedSystemConfigs] = useState<SavedSystemConfig[]>([]);
+
+  // Add new state for system performance
+  const [systemPerformance, setSystemPerformance] = useState<SystemPerformanceMetrics | null>(null);
+  const [calculatingPerformance, setCalculatingPerformance] = useState(false);
+
+  // Move the saveSystemConfig function inside the component
+  const saveSystemConfig = async () => {
+    const newConfig: SavedSystemConfig = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: systemConfigName,
+      description: systemConfigDescription,
+      config: systemConfig,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      const existingConfigs = JSON.parse(localStorage.getItem('savedSystemConfigs') || '[]');
+      const updatedConfigs = [...existingConfigs, newConfig];
+      localStorage.setItem('savedSystemConfigs', JSON.stringify(updatedConfigs));
+      setSavedSystemConfigs(updatedConfigs);
+      setShowSaveSystemDialog(false);
+      setSystemConfigName('');
+      setSystemConfigDescription('');
+    } catch (error) {
+      setError('Failed to save system configuration');
+      console.error('Error saving system config:', error);
+    }
+  };
+
+  // Move the SaveSystemConfigDialog component inside too
+  const SaveSystemConfigDialog = () => (
+    <Dialog open={showSaveSystemDialog} onOpenChange={setShowSaveSystemDialog}>
+      <DialogContent className="bg-gray-900 text-white">
+        <DialogHeader>
+          <DialogTitle>Save System Configuration</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Save your system configuration for future use
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">Configuration Name</Label>
+            <Input
+              id="name"
+              value={systemConfigName}
+              onChange={(e) => setSystemConfigName(e.target.value)}
+              className="bg-gray-800"
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              value={systemConfigDescription}
+              onChange={(e) => setSystemConfigDescription(e.target.value)}
+              className="bg-gray-800"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowSaveSystemDialog(false)}>
+            Cancel
+          </Button>
+          <Button onClick={saveSystemConfig}>Save Configuration</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 
   // Add template fetching
   useEffect(() => {
@@ -792,6 +921,243 @@ export default function ChipDesigner() {
     }
   };
 
+  // Add these functions before the return statement
+  const saveChipDesign = async () => {
+    if (!chipDesign || !config) return;
+
+    const newDesign: SavedChipDesign = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: designName,
+      description: designDescription,
+      requirements,
+      design: chipDesign,
+      config,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      // Save to local storage for now (replace with API call in production)
+      const existingDesigns = JSON.parse(localStorage.getItem('savedChipDesigns') || '[]');
+      const updatedDesigns = [...existingDesigns, newDesign];
+      localStorage.setItem('savedChipDesigns', JSON.stringify(updatedDesigns));
+      setSavedDesigns(updatedDesigns);
+      setShowSaveDialog(false);
+      setDesignName('');
+      setDesignDescription('');
+    } catch (error) {
+      setError('Failed to save chip design');
+      console.error('Error saving design:', error);
+    }
+  };
+
+  const loadSavedDesign = (design: SavedChipDesign) => {
+    setRequirements(design.requirements);
+    setChipDesign(design.design);
+    setConfig(design.config);
+    
+    // Update YAML editor content
+    const yamlString = yaml.dump(design.config);
+    setYamlContent(yamlString);
+    
+    // Update chip layout
+    setChipLayout(generateChipLayout(design.config));
+  };
+
+  // Add useEffect to load saved designs
+  useEffect(() => {
+    const loadSavedDesigns = () => {
+      try {
+        const designs = JSON.parse(localStorage.getItem('savedChipDesigns') || '[]');
+        setSavedDesigns(designs);
+      } catch (error) {
+        console.error('Error loading saved designs:', error);
+      }
+    };
+    
+    loadSavedDesigns();
+  }, []);
+
+  // Add new component for saved designs dropdown in the system configuration section
+  const SavedDesignsDropdown = () => (
+    <Select
+      onValueChange={(designId) => {
+        const design = savedDesigns.find(d => d.id === designId);
+        if (design) loadSavedDesign(design);
+      }}
+    >
+      <SelectTrigger className="w-[200px]">
+        <SelectValue placeholder="Load saved design" />
+      </SelectTrigger>
+      <SelectContent>
+        {savedDesigns.map((design) => (
+          <SelectItem key={design.id} value={design.id}>
+            {design.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
+  // Add Dialog component for saving designs
+  const SaveDesignDialog = () => (
+    <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+      <DialogContent className="bg-gray-900 text-white">
+        <DialogHeader>
+          <DialogTitle>Save Chip Design</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Save your chip design for future use
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">Design Name</Label>
+            <Input
+              id="name"
+              value={designName}
+              onChange={(e) => setDesignName(e.target.value)}
+              className="bg-gray-800"
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              value={designDescription}
+              onChange={(e) => setDesignDescription(e.target.value)}
+              className="bg-gray-800"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+            Cancel
+          </Button>
+          <Button onClick={saveChipDesign}>Save Design</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // Update the calculateSystemPerformance function
+  const calculateSystemPerformance = async () => {
+    try {
+      setCalculatingPerformance(true);
+      setError(null);
+
+      const response = await axios.post('http://localhost:8000/api/calculate-system-performance', {
+        systemConfig,
+        workloads: requirements.selectedWorkloads,
+        optimizationPriority: requirements.optimizationPriority
+      });
+
+      setSystemPerformance(response.data);
+    } catch (err) {
+      setError('Failed to calculate system performance: ' + (err as Error).message);
+      console.error('Error calculating performance:', err);
+    } finally {
+      setCalculatingPerformance(false);
+    }
+  };
+
+  // Add new component for system performance display
+  const SystemPerformanceDisplay = () => {
+    if (!systemPerformance) return null;
+
+    return (
+      <Card className="bg-gray-900/50 border-gray-800">
+        <CardHeader>
+          <CardTitle>System Performance Results</CardTitle>
+          <CardDescription>Overall system performance metrics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Main Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 rounded-lg bg-gray-800/50">
+                <div className="text-sm text-gray-400">Total Throughput</div>
+                <div className="text-xl font-semibold mt-1">
+                  {systemPerformance.totalThroughput.toFixed(1)} TOPS
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-gray-800/50">
+                <div className="text-sm text-gray-400">System Latency</div>
+                <div className="text-xl font-semibold mt-1">
+                  {systemPerformance.systemLatency.toFixed(2)} ms
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-gray-800/50">
+                <div className="text-sm text-gray-400">Power Consumption</div>
+                <div className="text-xl font-semibold mt-1">
+                  {systemPerformance.powerConsumption.toFixed(1)} W
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-gray-800/50">
+                <div className="text-sm text-gray-400">Network Utilization</div>
+                <div className="text-xl font-semibold mt-1">
+                  {systemPerformance.networkUtilization.toFixed(1)}%
+                </div>
+              </div>
+            </div>
+
+            {/* Chip Utilizations */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Chip Utilizations</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                {systemPerformance.chipUtilizations.map((chip) => (
+                  <div key={chip.chipId} className="p-4 rounded-lg bg-gray-800/50">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">{chip.chipId}</span>
+                      <span className="text-lg font-semibold">{chip.utilization.toFixed(1)}%</span>
+                    </div>
+                    <div className="mt-2 h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 rounded-full"
+                        style={{ width: `${chip.utilization}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Interconnect Bandwidth */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Interconnect Performance</h3>
+              <div className="grid gap-4">
+                {systemPerformance.interconnectBandwidth.map((connection, index) => (
+                  <div key={index} className="p-4 rounded-lg bg-gray-800/50">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">
+                        {connection.source} → {connection.destination}
+                      </span>
+                      <Badge variant="outline">
+                        {connection.bandwidth.toFixed(1)} GB/s
+                      </Badge>
+                    </div>
+                    <div className="mt-2">
+                      <div className="text-sm text-gray-400">Utilization</div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-green-500 rounded-full"
+                            style={{ width: `${connection.utilization}%` }}
+                          />
+                        </div>
+                        <span className="text-sm font-medium">
+                          {connection.utilization.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -1022,11 +1388,163 @@ export default function ChipDesigner() {
           </CardContent>
         </Card>
 
+
+        {/* Results Section */}
+        {chipLayout && (
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Design Results</CardTitle>
+              <div className="flex justify-between items-center">
+                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'design' | 'metrics')} className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="design">
+                      <Cpu className="w-4 h-4 mr-2" />
+                      Chip Design
+                    </TabsTrigger>
+                    <TabsTrigger value="metrics">
+                      <BarChart2 className="w-4 h-4 mr-2" />
+                      Performance Metrics
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSaveDialog(true)}
+                  className="ml-4"
+                >
+                  Save Design
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {activeTab === 'design' ? (
+                <div className="border-2 rounded-lg h-[600px] relative bg-gray-950">
+                  {chipLayout.blocks.map((block, index) => (
+                    <div
+                      key={index}
+                      className="absolute rounded-lg shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                      style={{
+                        left: `${block.x}px`,
+                        top: `${block.y}px`,
+                        width: `${block.width}px`,
+                        height: `${block.height}px`,
+                        backgroundColor: block.color,
+                        border: '1px solid',
+                        borderColor: block.color.replace('0.2', '1'),
+                      }}
+                    >
+                      <div className="h-full p-3 flex flex-col justify-between">
+                        <div className="text-xs font-semibold">{block.type}</div>
+                        {block.details && (
+                          <div className="text-xs text-muted-foreground">
+                            {Object.entries(block.details).map(([key, value]) => (
+                              <div key={key}>{`${key}: ${value}`}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-muted">
+                    <div className="text-sm font-medium text-muted-foreground">Total Power</div>
+                    <div className="mt-1 text-2xl font-semibold">
+                      {chipDesign?.totalPower.toFixed(1)}W
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted">
+                    <div className="text-sm font-medium text-muted-foreground">Total Area</div>
+                    <div className="mt-1 text-2xl font-semibold">
+                      {chipDesign?.totalArea.toFixed(1)}mm²
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted">
+                    <div className="text-sm font-medium text-muted-foreground">Performance</div>
+                    <div className="mt-1 text-2xl font-semibold">
+                      {chipDesign?.estimatedPerformance.toFixed(0)} MIPS
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted">
+                    <div className="text-sm font-medium text-muted-foreground">Power Efficiency</div>
+                    <div className="mt-1 text-2xl font-semibold">
+                      {chipDesign?.powerEfficiency.toFixed(1)} MIPS/W
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Optimization Results */}
+        {optimizationResults && (
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardHeader>
+              <CardTitle>Optimization Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Progress Graph</h3>
+                  <img 
+                    src={`data:image/png;base64,${optimizationResults.graph}`}
+                    alt="Optimization Progress"
+                    className="w-full rounded-lg"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Design Evolution</h3>
+                  <div className="relative aspect-square w-full max-w-[600px] mx-auto">
+                    <canvas
+                      ref={canvasRef}
+                      className="w-full h-full rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error message */}
+        {error && (
+          <div className="p-4 text-destructive text-sm bg-destructive/10 rounded-lg border border-destructive/20">
+            {error}
+          </div>
+        )}
+
+        {/* Generate Button */}
+        <Button
+          size="lg"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+          onClick={handleGenerate}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating Chip Design...
+            </>
+          ) : (
+            <>
+              <Cpu className="mr-2 h-4 w-4" />
+              Generate Chip Design
+            </>
+          )}
+        </Button>
+
         {/* System Configuration */}
         <Card className="bg-gray-900/50 border-gray-800">
           <CardHeader>
-            <CardTitle>System Configuration</CardTitle>
-            <CardDescription className="text-gray-400">Configure multi-chip system and networking</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>System Configuration</CardTitle>
+                <CardDescription className="text-gray-400">Configure multi-chip system and networking</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Chips Section */}
@@ -1187,201 +1705,74 @@ export default function ChipDesigner() {
                 </div>
               </div>
             </div>
+
+            {/* System Configurations Section */}
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Saved System Configurations</h3>
+                <div className="flex items-center gap-4">
+                  <Select
+                    onValueChange={(configId) => {
+                      const config = savedSystemConfigs.find(c => c.id === configId);
+                      if (config) setSystemConfig(config.config);
+                    }}
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Load system config" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {savedSystemConfigs.map((config) => (
+                        <SelectItem key={config.id} value={config.id}>
+                          {config.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSaveSystemDialog(true)}
+                  >
+                    Save System Config
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Add Performance Analysis section at bottom */}
+            <div className="border-t border-gray-800 pt-6 mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">System Performance Analysis</h3>
+                <Button
+                  onClick={calculateSystemPerformance}
+                  disabled={calculatingPerformance || !requirements.selectedWorkloads.length || !systemConfig.chips.length}
+                  className="flex items-center gap-2"
+                >
+                  {calculatingPerformance ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Calculating...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart2 className="w-4 h-4" />
+                      Calculate Performance
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Performance Results */}
+              {systemPerformance && <SystemPerformanceDisplay />}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Results Section */}
-        {chipLayout && (
-          <Card className="bg-gray-900/50 border-gray-800">
-            <CardHeader>
-              <CardTitle>Design Results</CardTitle>
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'design' | 'metrics')} className="w-full">
-                <TabsList>
-                  <TabsTrigger value="design">
-                    <Cpu className="w-4 h-4 mr-2" />
-                    Chip Design
-                  </TabsTrigger>
-                  <TabsTrigger value="metrics">
-                    <BarChart2 className="w-4 h-4 mr-2" />
-                    Performance Metrics
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardHeader>
-            <CardContent>
-              {activeTab === 'design' ? (
-                <div className="border-2 rounded-lg h-[600px] relative bg-gray-950">
-                  {chipLayout.blocks.map((block, index) => (
-                    <div
-                      key={index}
-                      className="absolute rounded-lg shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
-                      style={{
-                        left: `${block.x}px`,
-                        top: `${block.y}px`,
-                        width: `${block.width}px`,
-                        height: `${block.height}px`,
-                        backgroundColor: block.color,
-                        border: '1px solid',
-                        borderColor: block.color.replace('0.2', '1'),
-                      }}
-                    >
-                      <div className="h-full p-3 flex flex-col justify-between">
-                        <div className="text-xs font-semibold">{block.type}</div>
-                        {block.details && (
-                          <div className="text-xs text-muted-foreground">
-                            {Object.entries(block.details).map(([key, value]) => (
-                              <div key={key}>{`${key}: ${value}`}</div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-muted">
-                    <div className="text-sm font-medium text-muted-foreground">Total Power</div>
-                    <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign?.totalPower.toFixed(1)}W
-                    </div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-muted">
-                    <div className="text-sm font-medium text-muted-foreground">Total Area</div>
-                    <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign?.totalArea.toFixed(1)}mm²
-                    </div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-muted">
-                    <div className="text-sm font-medium text-muted-foreground">Performance</div>
-                    <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign?.estimatedPerformance.toFixed(0)} MIPS
-                    </div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-muted">
-                    <div className="text-sm font-medium text-muted-foreground">Power Efficiency</div>
-                    <div className="mt-1 text-2xl font-semibold">
-                      {chipDesign?.powerEfficiency.toFixed(1)} MIPS/W
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        {/* Save Design Dialog */}
+        <SaveDesignDialog />
 
-        {/* Optimization Results */}
-        {optimizationResults && (
-          <Card className="bg-gray-900/50 border-gray-800">
-            <CardHeader>
-              <CardTitle>Optimization Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Progress Graph</h3>
-                  <img 
-                    src={`data:image/png;base64,${optimizationResults.graph}`}
-                    alt="Optimization Progress"
-                    className="w-full rounded-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Design Evolution</h3>
-                  <div className="relative aspect-square w-full max-w-[600px] mx-auto">
-                    <canvas
-                      ref={canvasRef}
-                      className="w-full h-full rounded-lg"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Error message */}
-        {error && (
-          <div className="p-4 text-destructive text-sm bg-destructive/10 rounded-lg border border-destructive/20">
-            {error}
-          </div>
-        )}
-
-        {/* Generate Button */}
-        <Button
-          size="lg"
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          onClick={handleGenerate}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating Chip Design...
-            </>
-          ) : (
-            <>
-              <Cpu className="mr-2 h-4 w-4" />
-              Generate Chip Design
-            </>
-          )}
-        </Button>
-
-        {/* Add a new Performance Details card after the Results Section */}
-        {chipDesign && (
-          <Card className="bg-gray-900/50 border-gray-800">
-            <CardHeader>
-              <CardTitle>Workload Performance Details</CardTitle>
-              <CardDescription className="text-gray-400">Detailed performance metrics for selected workloads</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {requirements.selectedWorkloads.map((workloadName) => {
-                  const workload = workloadCategories
-                    .flatMap(cat => cat.workloads)
-                    .find(w => w.name === workloadName);
-                  
-                  if (!workload) return null;
-
-                  return (
-                    <div key={workloadName} className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">{workloadName}</h3>
-                        <Badge variant="outline">{workload.description}</Badge>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="p-4 rounded-lg bg-gray-800/50">
-                          <div className="text-sm text-gray-400">Throughput</div>
-                          <div className="text-xl font-semibold mt-1">
-                            {(Math.random() * 100).toFixed(1)} TOPS
-                          </div>
-                        </div>
-                        <div className="p-4 rounded-lg bg-gray-800/50">
-                          <div className="text-sm text-gray-400">Latency</div>
-                          <div className="text-xl font-semibold mt-1">
-                            {(Math.random() * 10).toFixed(2)} ms
-                          </div>
-                        </div>
-                        <div className="p-4 rounded-lg bg-gray-800/50">
-                          <div className="text-sm text-gray-400">Power Efficiency</div>
-                          <div className="text-xl font-semibold mt-1">
-                            {(Math.random() * 5).toFixed(2)} TOPS/W
-                          </div>
-                        </div>
-                        <div className="p-4 rounded-lg bg-gray-800/50">
-                          <div className="text-sm text-gray-400">Utilization</div>
-                          <div className="text-xl font-semibold mt-1">
-                            {(Math.random() * 100).toFixed(0)}%
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Save System Config Dialog */}
+        <SaveSystemConfigDialog />
       </div>
     </div>
   )
