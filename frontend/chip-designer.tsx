@@ -1274,7 +1274,7 @@ export default function ChipDesigner() {
         <DialogHeader>
           <DialogTitle>Add Custom Workload</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Upload a Python file containing your custom workload implementation
+            Upload a Python file containing your custom workload implementation, should contain a main() function
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
