@@ -23,6 +23,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { FormControl, InputLabel, MenuItem, TextField } from "@mui/material"
 
 // Add interfaces
 interface ChipRequirements {
@@ -263,8 +264,6 @@ interface ProcessorConfig {
   frequency: number;
   memory: number;
   tdp: number;
-  processorType: string;
-  memoryType: string;
 }
 
 interface SystemConfig {
@@ -282,9 +281,7 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 64,
     frequency: 3000,
     memory: 256,
-    tdp: 280,
-    processorType: 'RISC-V ISA',
-    memoryType: 'DDR5'
+    tdp: 280
   },
   {
     type: 'gpu',
@@ -292,9 +289,7 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 6912,
     frequency: 1800,
     memory: 48,
-    tdp: 350,
-    processorType: 'NVIDIA A100',
-    memoryType: 'HBM3'
+    tdp: 350
   }
 ];
 
@@ -537,6 +532,9 @@ function generateChipLayout(config: ChipConfig): ChipLayout {
   return { blocks };
 }
 
+// Environment variables
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function ChipDesigner() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [optimization, setOptimization] = useState("balanced")
@@ -561,9 +559,39 @@ export default function ChipDesigner() {
   const [config, setConfig] = useState<ChipConfig | null>(null);
   const [yamlContent, setYamlContent] = useState<string>('');
   const [systemConfig, setSystemConfig] = useState<SystemConfig>({
-    chips: [config as ChipConfig],
-    processors: defaultProcessors,
-    networks: defaultNetworks,
+    chips: [],
+    processors: [
+      {
+        type: 'cpu',
+        name: 'Host CPU',
+        cores: 64,
+        frequency: 3000,
+        memory: 256,
+        tdp: 280
+      },
+      {
+        type: 'gpu',
+        name: 'GPU Accelerator',
+        cores: 6912,
+        frequency: 1800,
+        memory: 48,
+        tdp: 350
+      }
+    ],
+    networks: [
+      {
+        type: 'pcie',
+        bandwidth: 64,
+        latency: 500,
+        ports: 64
+      },
+      {
+        type: 'nvlink',
+        bandwidth: 300,
+        latency: 100,
+        ports: 12
+      }
+    ],
     topology: 'mesh'
   });
 
@@ -677,7 +705,7 @@ export default function ChipDesigner() {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/workload-templates');
+        const response = await axios.get(`${API_URL}/api/workload-templates`);
         setTemplates(response.data.templates);
       } catch (err) {
         console.error('Failed to fetch templates:', err);
@@ -742,11 +770,11 @@ export default function ChipDesigner() {
     setError(null);
     
     try {
-      const response = await axios.post('http://localhost:8000/api/generate-chip', requirements);
+      const response = await axios.post(`${API_URL}/api/generate-chip`, requirements);
       setChipDesign(response.data);
       
       // Fetch optimization results
-      const resultsResponse = await axios.get('http://localhost:8000/api/optimization-results');
+      const resultsResponse = await axios.get(`${API_URL}/api/optimization-results`);
       setOptimizationResults(resultsResponse.data);
       
       setActiveTab('metrics');
@@ -881,10 +909,14 @@ export default function ChipDesigner() {
           'chip-0': defaultYaml
         });
 
+        // Update system config with the parsed chip config
         setSystemConfig(prev => ({
           ...prev,
           chips: [newChipConfig]
         }));
+
+        // Also set the individual chip config
+        setConfig(newChipConfig);
       } catch (error) {
         setError('Failed to load initial configuration');
         console.error('Error:', error);
@@ -909,6 +941,7 @@ export default function ChipDesigner() {
         [newChipId]: defaultYaml
       }));
 
+      // Update system config with the new chip
       setSystemConfig(prev => ({
         ...prev,
         chips: [...prev.chips, newChipConfig]
@@ -954,7 +987,7 @@ export default function ChipDesigner() {
     }));
   };
 
-  // Add back the handleChipYamlChange function
+  // Update handleChipYamlChange to properly update both chip config and system config
   const handleChipYamlChange = (chipId: string, value: string) => {
     try {
       // Update YAML editor content
@@ -967,12 +1000,18 @@ export default function ChipDesigner() {
       const chipConfig = yaml.load(value) as ChipConfig;
       const chipIndex = parseInt(chipId.split('-')[1]);
       
+      // Update the system config with the new chip config
       setSystemConfig(prev => ({
         ...prev,
         chips: prev.chips.map((chip, i) => 
           i === chipIndex ? { ...chipConfig, name: chip.name } : chip
         )
       }));
+
+      // If this is the currently selected chip, update the individual chip config too
+      if (chipIndex === systemConfig.chips.findIndex(chip => chip === config)) {
+        setConfig(chipConfig);
+      }
 
       setError(null);
     } catch (error) {
@@ -1065,7 +1104,7 @@ export default function ChipDesigner() {
         <DialogHeader>
           <DialogTitle>Save Chip Design</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Save your chip design for future use
+            Save your chip design for future reference
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -1104,12 +1143,53 @@ export default function ChipDesigner() {
       setCalculatingPerformance(true);
       setError(null);
 
-      const response = await axios.post('http://localhost:8000/api/calculate-system-performance', {
-        systemConfig,
+      // Ensure we have valid system configuration
+      if (!systemConfig.chips.length) {
+        setError('No chips configured in the system');
+        return;
+      }
+
+      if (!requirements.selectedWorkloads.length) {
+        setError('No workloads selected');
+        return;
+      }
+
+      // Ensure we have at least one network configured
+      if (!systemConfig.networks.length) {
+        setError('No networks configured in the system');
+        return;
+      }
+
+      // Prepare the request payload
+      const payload = {
+        systemConfig: {
+          chips: systemConfig.chips.map(chip => ({
+            ...chip,
+            name: chip.name || `Chip ${systemConfig.chips.indexOf(chip)}`
+          })),
+          processors: systemConfig.processors.map(proc => ({
+            type: proc.type,
+            name: proc.name,
+            cores: proc.cores,
+            frequency: proc.frequency,
+            memory: proc.memory,
+            tdp: proc.tdp
+          })),
+          networks: systemConfig.networks.map(net => ({
+            type: net.type,
+            bandwidth: net.bandwidth,
+            latency: net.latency,
+            ports: net.ports
+          })),
+          topology: systemConfig.topology
+        },
         workloads: requirements.selectedWorkloads,
         optimizationPriority: requirements.optimizationPriority
-      });
+      };
 
+      console.log('Sending system performance calculation request:', payload);
+      const response = await axios.post(`${API_URL}/api/calculate-system-performance`, payload);
+      console.log('Received system performance response:', response.data);
       setSystemPerformance(response.data);
     } catch (err) {
       setError('Failed to calculate system performance: ' + (err as Error).message);
@@ -1171,7 +1251,7 @@ export default function ChipDesigner() {
                     </div>
                     <div className="mt-2 h-2 bg-gray-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-500 rounded-full"
+                        className="h-full bg-blue-500"
                         style={{ width: `${chip.utilization}%` }}
                       />
                     </div>
@@ -1186,27 +1266,27 @@ export default function ChipDesigner() {
               <div className="grid gap-4">
                 {systemPerformance.interconnectBandwidth.map((connection, index) => (
                   <div key={index} className="p-4 rounded-lg bg-gray-800/50">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400">
-                        {connection.source} → {connection.destination}
-                      </span>
-                      <Badge variant="outline">
-                        {connection.bandwidth.toFixed(1)} GB/s
-                      </Badge>
-                    </div>
-                    <div className="mt-2">
-                      <div className="text-sm text-gray-400">Utilization</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-500 rounded-full"
-                            style={{ width: `${connection.utilization}%` }}
-                          />
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="space-y-1">
+                        <div className="text-sm text-gray-400">
+                          {connection.source} → {connection.destination}
                         </div>
-                        <span className="text-sm font-medium">
-                          {connection.utilization.toFixed(1)}%
-                        </span>
+                        <div className="text-lg font-semibold">
+                          {connection.bandwidth.toFixed(1)} GB/s
+                        </div>
                       </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-400">Utilization</div>
+                        <div className="text-lg font-semibold">
+                          {(connection.utilization * 100).toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-500"
+                        style={{ width: `${connection.utilization * 100}%` }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -1219,57 +1299,36 @@ export default function ChipDesigner() {
   };
 
   // Update the handleWorkloadFileUpload function
-  const handleWorkloadFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (!e.target) return;
-      const content = e.target.result as string;
+  const handleWorkloadFileUpload = async (file: File) => {
+    try {
+      const content = await file.text();
       setCustomWorkload(prev => ({
         ...prev,
         filename: file.name,
         content: content
       }));
-    };
-    reader.readAsText(file);
+    } catch (error) {
+      setError('Failed to read workload file');
+      console.error('Error:', error);
+    }
   };
 
   // Add function to save custom workload
   const saveCustomWorkload = async () => {
     try {
-      // Send workload to backend
-      await axios.post('http://localhost:8000/api/custom-workload', customWorkload);
-
-      // Add to workload categories
-      const customCategory = workloadCategories.find(cat => cat.name === "Custom Workloads") || {
-        name: "Custom Workloads",
-        workloads: []
-      };
-
-      customCategory.workloads.push({
-        name: customWorkload.name,
-        description: customWorkload.description,
-        isCustom: true
-      });
-
-      // Update workload categories
-      const updatedCategories = workloadCategories.filter(cat => cat.name !== "Custom Workloads");
-      updatedCategories.push(customCategory);
-      // Note: You'll need to modify the workloadCategories to be mutable state
-      // setWorkloadCategories(updatedCategories);
-
-      setShowAddWorkloadDialog(false);
-      setCustomWorkload({
-        name: '',
-        description: '',
-        filename: '',
-        content: ''
-      });
+      const response = await axios.post(`${API_URL}/api/save-workload`, customWorkload);
+      if (response.data.success) {
+        setShowAddWorkloadDialog(false);
+        setCustomWorkload({
+          name: '',
+          description: '',
+          filename: '',
+          content: ''
+        });
+      }
     } catch (error) {
       setError('Failed to save custom workload');
-      console.error('Error saving workload:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -1280,59 +1339,46 @@ export default function ChipDesigner() {
         <DialogHeader>
           <DialogTitle>Add Custom Workload</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Upload a Python file containing your custom workload implementation, should contain a main() function
+            Upload your custom workload file and provide details
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name">Workload Name</Label>
+            <Label htmlFor="workload-name">Workload Name</Label>
             <Input
-              id="name"
+              id="workload-name"
               value={customWorkload.name}
               onChange={(e) => setCustomWorkload(prev => ({ ...prev, name: e.target.value }))}
               className="bg-gray-800"
             />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="workload-description">Description</Label>
             <Textarea
-              id="description"
+              id="workload-description"
               value={customWorkload.description}
               onChange={(e) => setCustomWorkload(prev => ({ ...prev, description: e.target.value }))}
               className="bg-gray-800"
             />
           </div>
           <div>
-            <Label htmlFor="file">Python File</Label>
+            <Label htmlFor="workload-file">Workload File</Label>
             <Input
-              id="file"
+              id="workload-file"
               type="file"
-              accept=".py"
-              onChange={handleWorkloadFileUpload}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleWorkloadFileUpload(file);
+              }}
               className="bg-gray-800"
             />
           </div>
-          {customWorkload.content && (
-            <div>
-              <Label>File Preview</Label>
-              <div className="mt-2 p-4 bg-gray-800 rounded-md">
-                <pre className="text-sm overflow-x-auto">
-                  <code>{customWorkload.content}</code>
-                </pre>
-              </div>
-            </div>
-          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowAddWorkloadDialog(false)}>
             Cancel
           </Button>
-          <Button 
-            onClick={saveCustomWorkload}
-            disabled={!customWorkload.name || !customWorkload.content}
-          >
-            Save Workload
-          </Button>
+          <Button onClick={saveCustomWorkload}>Add Workload</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1340,72 +1386,49 @@ export default function ChipDesigner() {
 
   // Modify the Workloads card content
   const WorkloadsSection = () => (
-    <Card className="bg-gray-900/50 border-gray-800">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Workloads</CardTitle>
-            <CardDescription className="text-gray-400">
-              Select workloads for performance optimization
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAddWorkloadDialog(true)}
-            className="flex items-center gap-2"
-          >
-            <PlusCircle className="w-4 h-4" />
-            Add Workload
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {workloadCategories.map((category) => (
-            <div key={category.name} className="space-y-4">
-              <h3 className="text-lg font-semibold text-white/90">{category.name}</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {category.workloads.map((workload) => (
-                  <div
-                    key={workload.name}
-                    className="relative"
-                  >
-                    <label className="flex items-center space-x-3 border border-gray-800 rounded-lg p-4 hover:bg-gray-800/50 transition-colors">
-                      <Checkbox 
-                        id={workload.name}
-                        checked={requirements.selectedWorkloads.includes(workload.name)}
-                        onCheckedChange={() => handleWorkloadToggle(workload.name)}
-                      />
-                      <div className="space-y-1">
-                        <span className="text-sm font-medium leading-none">
-                          {workload.name}
-                        </span>
-                        <p className="text-xs text-gray-400">
-                          {workload.description}
-                        </p>
-                      </div>
-                      {workload.isCustom && (
-                        <Badge variant="outline" className="ml-auto">
-                          Custom
-                        </Badge>
-                      )}
-                    </label>
-                    {workload.performance && (
-                      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
-                        <Badge variant="secondary" className="bg-green-600/20 text-green-400">
-                          {workload.performance.throughput} TOPS
-                        </Badge>
-                      </div>
-                    )}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Selected Workloads</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowAddWorkloadDialog(true)}
+        >
+          Add Custom Workload
+        </Button>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        {workloadCategories.map((category) => (
+          <div key={category.name} className="space-y-2">
+            <h4 className="font-medium text-gray-400">{category.name}</h4>
+            <div className="space-y-2">
+              {category.workloads.map((workload) => (
+                <div
+                  key={workload.name}
+                  className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50"
+                >
+                  <div>
+                    <div className="font-medium">{workload.name}</div>
+                    <div className="text-sm text-gray-400">{workload.description}</div>
                   </div>
-                ))}
-              </div>
+                  <Checkbox
+                    checked={requirements.selectedWorkloads.includes(workload.name)}
+                    onCheckedChange={(checked) => {
+                      setRequirements(prev => ({
+                        ...prev,
+                        selectedWorkloads: checked
+                          ? [...prev.selectedWorkloads, workload.name]
+                          : prev.selectedWorkloads.filter(w => w !== workload.name)
+                      }));
+                    }}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 
   // Add after the existing handleGenerate function
@@ -1439,43 +1462,36 @@ export default function ChipDesigner() {
   // Add new component for history dialog
   const HistoryDialog = () => (
     <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
-      <DialogContent className="bg-gray-900 text-white max-w-4xl">
+      <DialogContent className="bg-gray-900 text-white">
         <DialogHeader>
           <DialogTitle>Design History</DialogTitle>
           <DialogDescription className="text-gray-400">
-            View and load previous chip designs
+            View and compare previous design iterations
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="space-y-4">
           {designHistory.map((run) => (
-            <Card key={run.id} className="bg-gray-800/50 border-gray-700">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-lg">
-                      Run from {new Date(run.timestamp).toLocaleString()}
-                    </CardTitle>
-                    <CardDescription>
-                      Power: {run.results.chipDesign.totalPower}W | 
-                      Area: {run.results.chipDesign.totalArea}mm² | 
-                      Performance: {run.results.chipDesign.estimatedPerformance} MIPS
-                    </CardDescription>
+            <div key={run.id} className="p-4 border border-gray-800 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{run.id}</div>
+                  <div className="text-sm text-gray-400">
+                    {new Date(run.timestamp).toLocaleString()}
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setRequirements(run.requirements);
-                      setChipDesign(run.results.chipDesign);
-                      setOptimizationResults(run.results.optimizationResults);
-                      setConfig(run.config);
-                      setShowHistoryDialog(false);
-                    }}
-                  >
-                    Load Design
-                  </Button>
                 </div>
-              </CardHeader>
-            </Card>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setRequirements(run.requirements);
+                    setConfig(run.config);
+                    setShowHistoryDialog(false);
+                  }}
+                >
+                  Load
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
       </DialogContent>
@@ -1484,25 +1500,87 @@ export default function ChipDesigner() {
 
   // Add this function after existing functions
   const handleEstimatePerformance = async () => {
-    setIsEstimating(true)
+    setIsEstimating(true);
     try {
-      // Use the current chip configuration for estimation
       const estimationParams = {
         clockSpeed: config?.mm_compute?.type1?.frequency || 1000,
         coreCount: config?.mm_compute?.type1?.N_PE || 4,
-        cacheSize: config?.memory?.level0?.size / (1024 * 1024) || 8, // Convert to MB
+        cacheSize: config?.memory?.level0?.size ? config.memory.level0.size / (1024 * 1024) : 8, // Convert to MB
         memoryBandwidth: config?.memory?.level1?.frequency || 100
-      }
+      };
       
-      const response = await axios.post('http://localhost:8000/api/estimate-performance', estimationParams)
-      setPerformanceEstimate(response.data)
+      const estimateResponse = await axios.post(`${API_URL}/api/estimate-performance`, estimationParams);
+      setPerformanceEstimate(estimateResponse.data);
     } catch (error) {
-      setError('Failed to estimate performance: ' + (error as Error).message)
-      console.error('Error:', error)
+      setError('Failed to estimate performance: ' + (error as Error).message);
+      console.error('Error:', error);
     } finally {
-      setIsEstimating(false)
+      setIsEstimating(false);
     }
-  }
+  };
+
+  // Update processor form section
+  const ProcessorForm = ({ processor: proc, index }: { processor: ProcessorConfig, index: number }) => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Type</Label>
+          <Select
+            value={proc.type}
+            onValueChange={(value) => updateProcessor(index, { type: value as 'cpu' | 'gpu' | 'accelerator' })}
+          >
+            <option value="cpu">CPU</option>
+            <option value="gpu">GPU</option>
+            <option value="accelerator">Accelerator</option>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Name</Label>
+          <Input
+            type="text"
+            value={proc.name}
+            onChange={(e) => updateProcessor(index, { name: e.target.value })}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Cores</Label>
+          <Input
+            type="number"
+            value={proc.cores}
+            onChange={(e) => updateProcessor(index, { cores: parseInt(e.target.value) || 0 })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Frequency (MHz)</Label>
+          <Input
+            type="number"
+            value={proc.frequency}
+            onChange={(e) => updateProcessor(index, { frequency: parseFloat(e.target.value) || 0 })}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Memory (GB)</Label>
+          <Input
+            type="number"
+            value={proc.memory}
+            onChange={(e) => updateProcessor(index, { memory: parseFloat(e.target.value) || 0 })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>TDP (W)</Label>
+          <Input
+            type="number"
+            value={proc.tdp}
+            onChange={(e) => updateProcessor(index, { tdp: parseFloat(e.target.value) || 0 })}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -1943,10 +2021,10 @@ export default function ChipDesigner() {
               </div>
             </div>
 
-            {/* Processors Section */}
+            {/* Processor Configuration */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Host Processors</h3>
-              <div className="grid gap-4 md:grid-cols-2">
+              <h3 className="text-lg font-semibold">Processor Configuration</h3>
+              <div className="space-y-4">
                 {systemConfig.processors.map((proc, index) => (
                   <div key={index} className="p-4 border border-gray-800 rounded-lg space-y-4">
                     <div className="flex items-center justify-between">
@@ -1956,62 +2034,7 @@ export default function ChipDesigner() {
                       </div>
                       <Badge variant="outline">{proc.type.toUpperCase()}</Badge>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm text-gray-400">Processor Type</label>
-                        <input
-                          type="text"
-                          value={proc.processorType}
-                          onChange={(e) => updateProcessor(index, { processorType: e.target.value })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Memory Type</label>
-                        <input
-                          type="text"
-                          value={proc.memoryType}
-                          onChange={(e) => updateProcessor(index, { memoryType: e.target.value })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Cores</label>
-                        <input
-                          type="number"
-                          value={proc.cores}
-                          onChange={(e) => updateProcessor(index, { cores: parseInt(e.target.value) })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Frequency (MHz)</label>
-                        <input
-                          type="number"
-                          value={proc.frequency}
-                          onChange={(e) => updateProcessor(index, { frequency: parseInt(e.target.value) })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Memory (GB)</label>
-                        <input
-                          type="number"
-                          value={proc.memory}
-                          onChange={(e) => updateProcessor(index, { memory: parseInt(e.target.value) })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">TDP (W)</label>
-                        <input
-                          type="number"
-                          value={proc.tdp}
-                          onChange={(e) => updateProcessor(index, { tdp: parseInt(e.target.value) })}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                        />
-                      </div>
-                    </div>
+                    <ProcessorForm processor={proc} index={index} onUpdate={updateProcessor} />
                   </div>
                 ))}
               </div>

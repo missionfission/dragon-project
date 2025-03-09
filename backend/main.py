@@ -12,6 +12,11 @@ from pathlib import Path
 import numpy as np
 from dataclasses import dataclass
 import imageio
+import traceback  # Add for better error tracking
+from datetime import datetime
+from uuid import uuid4
+import yaml
+import logging  # Add for better logging
 from src.src_main import (
     design_runner,
     visualize_performance_estimation,
@@ -22,9 +27,11 @@ from src.src_main import (
     get_backprop_memory,
     Mapper
 )
-from datetime import datetime
-from uuid import uuid4
-import yaml
+import os
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Chip Designer API",
@@ -40,6 +47,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add these constants near the top after imports
+LOGS_DIR = Path("logs")
+CONFIGS_DIR = Path("configs")
+DEFAULT_CONFIG_FILE = CONFIGS_DIR / "default.yaml"
+
+# Ensure required directories exist
+LOGS_DIR.mkdir(exist_ok=True)
+CONFIGS_DIR.mkdir(exist_ok=True)
 
 # First define all the base config models
 class TechnologyConfig(BaseModel):
@@ -84,11 +100,17 @@ class ProcessorConfig(BaseModel):
     memory: float
     tdp: float
 
+    class Config:
+        from_attributes = True
+
 class NetworkConfig(BaseModel):
     type: str
     bandwidth: float
     latency: float
     ports: int
+
+    class Config:
+        from_attributes = True
 
 # Define ChipConfig before SystemConfig
 class ChipConfig(BaseModel):
@@ -217,9 +239,16 @@ class DesignOptimizer:
         self.optimization_states = []
         self.iteration = 0
         
+        # Ensure default config exists
+        if not DEFAULT_CONFIG_FILE.exists():
+            raise HTTPException(
+                status_code=500,
+                detail=f"Default configuration file not found at {DEFAULT_CONFIG_FILE}"
+            )
+        
         # Convert workload names to graph objects
         self.graph_set = self._prepare_graph_set(requirements.selectedWorkloads)
-        
+    
     def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
         """
         Convert workload types to corresponding graph objects
@@ -248,19 +277,23 @@ class DesignOptimizer:
             backprop = self.requirements.optimizationPriority == "performance"
             print_stats = True
             
+            # Create stats filename with timestamp to avoid conflicts
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            stats_file = LOGS_DIR / f"stats_{timestamp}_{self.iteration}.txt"
+            
             # Run design optimization
             time, energy, area = design_runner(
                 graph_set=self.graph_set,
                 backprop=backprop,
                 print_stats=print_stats,
-                file="default.yaml",
-                stats_file=f"logs/stats_{self.iteration}.txt"
+                file=str(DEFAULT_CONFIG_FILE),
+                stats_file=str(stats_file)
             )
             
             # Generate performance estimation visualization
             perf_frames = []
             for graph in self.graph_set:
-                mapper = Mapper(hwfile="default.yaml")
+                mapper = Mapper(hwfile=str(DEFAULT_CONFIG_FILE))
                 frames = visualize_performance_estimation(mapper, graph, backprop)
                 perf_frames.extend(frames)
             
@@ -271,7 +304,7 @@ class DesignOptimizer:
                 performance=1/time[0],
                 area=area,
                 design=self._create_design_from_metrics(time, energy, area),
-                perf_estimation_frames=perf_frames  # Add frames to state
+                perf_estimation_frames=perf_frames
             )
             self.optimization_states.append(state)
             
@@ -285,7 +318,12 @@ class DesignOptimizer:
             return self.best_design
             
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+            logger.error(f"Optimization failed: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Optimization failed: {str(e)}"
+            )
     
     def _create_design_from_metrics(self, time: List[float], energy: List[float], area: float) -> Dict:
         """Convert optimization metrics to ChipDesign format"""
@@ -449,35 +487,71 @@ design_history: List[DesignHistory] = []
 @app.post("/api/generate-chip")
 async def generate_chip(requirements: ChipRequirements):
     try:
+        logger.info("Starting chip generation with requirements: %s", requirements.dict())
+        
         # Ensure system config has at least one chip
         if requirements.systemConfig:
             if not requirements.systemConfig.chips:
+                logger.info("No chips in system config, adding default chip")
                 requirements.systemConfig.chips = [ChipConfig(**ChipConfig.get_default_config())]
         else:
-            # Create default system config with one chip
+            logger.info("No system config provided, creating default configuration")
             requirements.systemConfig = SystemConfig(
                 chips=[ChipConfig(**ChipConfig.get_default_config())],
-                processors=defaultProcessors,
-                networks=defaultNetworks,
+                processors=[{
+                    'type': 'cpu',
+                    'name': 'Host CPU',
+                    'cores': 64,
+                    'frequency': 3000.0,
+                    'memory': 256.0,
+                    'tdp': 280.0
+                },
+                {
+                    'type': 'gpu',
+                    'name': 'GPU Accelerator',
+                    'cores': 6912,
+                    'frequency': 1800.0,
+                    'memory': 48.0,
+                    'tdp': 350.0
+                }],
+                networks=[{
+                    'type': 'pcie',
+                    'bandwidth': 64.0,
+                    'latency': 500.0,
+                    'ports': 64
+                },
+                {
+                    'type': 'nvlink',
+                    'bandwidth': 300.0,
+                    'latency': 100.0,
+                    'ports': 12
+                }],
                 topology="mesh"
             )
 
-        # Initialize system-level optimizer
-        optimizer = SystemOptimizer(requirements)
+        # Initialize optimizer with the requirements
+        logger.info("Initializing DesignOptimizer")
+        optimizer = DesignOptimizer(requirements)
+        
+        logger.info("Starting optimization process")
         best_design = optimizer.optimize(iterations=10)
         
-        # Get system-level performance estimates
-        perf_results = estimate_system_performance(
-            requirements.systemConfig,
-            requirements.selectedWorkloads
-        )
+        logger.info("Generating visualization data")
+        # Get performance estimation frames
+        perf_frames = optimizer.get_performance_estimation_animation()
+        
+        # Generate optimization visualization
+        optimization_graph = optimizer.generate_optimization_graph()
+        
+        # Generate design evolution animation
+        design_frames = optimizer.generate_animation_frames()
         
         optimization_data = {
-            "graph": optimizer.generate_optimization_graph(),
-            "animation_frames": optimizer.generate_animation_frames(),
+            "graph": optimization_graph,
+            "animation_frames": design_frames,
             "performance_estimation": {
-                "system": perf_results,
-                "visualization": generate_system_visualization(perf_results)
+                "frames": perf_frames,
+                "frameCount": len(perf_frames)
             }
         }
         
@@ -491,11 +565,21 @@ async def generate_chip(requirements: ChipRequirements):
         )
         design_history.append(history_entry)
         
+        logger.info("Chip generation completed successfully")
         app.state.last_optimization = optimization_data
         return best_design
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Error in generate_chip: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "message": "Failed to generate chip design",
+                "error": str(e),
+                "type": type(e).__name__
+            }
+        )
 
 @app.get("/api/optimization-results")
 async def get_optimization_results():
@@ -928,7 +1012,7 @@ async def calculate_system_performance(
 ):
     """Calculate performance metrics for multi-chip system"""
     try:
-        system_config = request.get("systemConfig")
+        system_config = request.get("systemConfig", {})
         workloads = request.get("workloads", [])
         
         # Calculate total system metrics
@@ -944,27 +1028,27 @@ async def calculate_system_performance(
         for i, processor in enumerate(system_config.get('processors', [])):
             processor_perf = None
             
-            if processor['type'].lower() == 'riscv':
+            if processor.get('type', '').lower() == 'riscv':
                 # Calculate RISC-V performance for each workload
                 riscv_perf = [estimate_riscv_performance(processor, workload) for workload in workloads]
                 processor_perf = {
                     'type': 'riscv',
                     'total_mips': sum(p['mips'] for p in riscv_perf),
-                    'avg_utilization': sum(p['utilization'] for p in riscv_perf) / len(riscv_perf),
-                    'power_efficiency': sum(p['power_efficiency'] for p in riscv_perf) / len(riscv_perf),
-                    'memory_bandwidth': max(p['memory_bandwidth'] for p in riscv_perf)
+                    'avg_utilization': sum(p['utilization'] for p in riscv_perf) / len(riscv_perf) if riscv_perf else 0,
+                    'power_efficiency': sum(p['power_efficiency'] for p in riscv_perf) / len(riscv_perf) if riscv_perf else 0,
+                    'memory_bandwidth': max((p['memory_bandwidth'] for p in riscv_perf), default=0)
                 }
                 total_throughput += processor_perf['total_mips'] * 0.001  # Convert to GIPS
                 
-            elif processor['type'].lower() == 'gpu':
+            elif processor.get('type', '').lower() == 'gpu':
                 # Calculate GPU performance for each workload
                 gpu_perf = [estimate_gpu_performance(processor, workload) for workload in workloads]
                 processor_perf = {
                     'type': 'gpu',
                     'total_tflops': sum(p['tflops'] for p in gpu_perf),
-                    'sm_utilization': sum(p['sm_utilization'] for p in gpu_perf) / len(gpu_perf),
-                    'memory_bandwidth': max(p['memory_bandwidth'] for p in gpu_perf),
-                    'power_efficiency': sum(p['power_efficiency'] for p in gpu_perf) / len(gpu_perf)
+                    'sm_utilization': sum(p['sm_utilization'] for p in gpu_perf) / len(gpu_perf) if gpu_perf else 0,
+                    'memory_bandwidth': max((p['memory_bandwidth'] for p in gpu_perf), default=0),
+                    'power_efficiency': sum(p['power_efficiency'] for p in gpu_perf) / len(gpu_perf) if gpu_perf else 0
                 }
                 total_throughput += processor_perf['total_tflops'] * 1000  # Convert to GIPS equivalent
             
@@ -973,52 +1057,55 @@ async def calculate_system_performance(
                     "processorId": f"processor_{i}",
                     "metrics": processor_perf
                 })
-                total_power += processor['tdp']
+                total_power += processor.get('tdp', 0)
         
         # Then analyze accelerator chips
-        for i, chip in enumerate(system_config['chips']):
-            # Create mapper instance for this chip
-            mapper = Mapper(hwfile="default.yaml")
-            mapper.complete_config(chip)
+        for i, chip in enumerate(system_config.get('chips', [])):
+            # Calculate chip utilization directly without mapper
+            utilization = calculate_chip_utilization(None, chip, workloads)
             
-            # Get chip performance metrics
-            time, energy, _, _, _ = mapper.save_stats(
-                mapper,
-                backprop=False,
-                memory=get_backprop_memory([]),
-                print_stats=False
-            )
+            # Estimate chip performance based on configuration
+            throughput = (chip['mm_compute']['type1'].get('N_PE', 256) * 
+                        chip['mm_compute']['type1'].get('frequency', 1000) * 
+                        utilization) / 1e6  # Convert to GIPS
             
-            throughput = 1/time[0] if time[0] > 0 else 0
+            power = (chip['memory']['level0'].get('leakage_power', 0.1) +
+                    chip['memory']['level1'].get('leakage_power', 0.5)) * utilization
+            
             total_throughput += throughput
-            total_power += energy[0]
+            total_power += power
             
-            # Calculate realistic chip utilization
-            utilization = calculate_chip_utilization(mapper, chip, workloads)
             chip_utils.append({
                 "chipId": f"chip_{i}",
                 "utilization": utilization
             })
 
-        # Calculate network metrics with realistic utilization
-        for i in range(len(system_config['networks'])):
-            for j in range(i + 1, len(system_config['chips'])):
-                utilization = calculate_network_utilization(
-                    system_config['networks'][i],
-                    system_config['chips'][i],
-                    system_config['chips'][j],
-                    workloads
-                )
-                interconnect_bw.append({
-                    "source": f"chip_{i}",
-                    "destination": f"chip_{j}", 
-                    "bandwidth": system_config['networks'][i]['bandwidth'],
-                    "utilization": utilization
-                })
+        # Calculate network metrics
+        networks = system_config.get('networks', [])
+        system_latency = sum(net.get('latency', 0) for net in networks) / len(networks) if networks else 0
+        
+        # Calculate interconnect bandwidth utilization
+        interconnect_bw = []
+        chips = system_config.get('chips', [])
+        for i, network in enumerate(networks):
+            for j in range(len(chips)):
+                for k in range(j + 1, len(chips)):
+                    # Calculate actual network utilization between chips
+                    utilization = calculate_network_utilization(
+                        network_config=network,
+                        source_chip=chips[j],
+                        dest_chip=chips[k],
+                        workloads=workloads
+                    )
+                    
+                    interconnect_bw.append({
+                        "source": f"chip_{j}",
+                        "destination": f"chip_{k}",
+                        "bandwidth": network.get('bandwidth', 0),
+                        "utilization": utilization
+                    })
 
-        # Calculate system-wide metrics
-        system_latency = sum(net['latency'] for net in system_config['networks']) / len(system_config['networks'])
-        network_utilization = sum(bw['utilization'] for bw in interconnect_bw) / len(interconnect_bw)
+        network_utilization = sum(bw['utilization'] for bw in interconnect_bw) / len(interconnect_bw) if interconnect_bw else 0
 
         return {
             "totalThroughput": total_throughput,
@@ -1031,9 +1118,11 @@ async def calculate_system_performance(
         }
 
     except Exception as e:
+        logger.error(f"Failed to calculate system performance: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to calculate system performance: {str(e)}"
+            detail=f"Traceback: {traceback.format_exc()}"
         )
 
 # Add default configurations
@@ -1209,10 +1298,11 @@ def calculate_chip_utilization(mapper, chip_config, workloads):
     """Calculate realistic chip utilization based on workload characteristics and hardware capabilities"""
     try:
         # Get hardware capabilities
-        compute_capacity = chip_config['mm_compute']['type1']['N_PE'] * chip_config['mm_compute']['type1']['frequency']
-        memory_bandwidth = (chip_config['memory']['level0']['banks'] * 
-                          chip_config['memory']['level0']['width'] * 
-                          chip_config['memory']['level0']['frequency'] / 8)  # Convert to bytes/s
+        compute_capacity = (chip_config['mm_compute']['type1'].get('N_PE', 0) * 
+                          chip_config['mm_compute']['type1'].get('frequency', 1000))
+        memory_bandwidth = (chip_config['memory']['level0'].get('banks', 16) * 
+                          chip_config['memory']['level0'].get('width', 32) * 
+                          chip_config['memory']['level0'].get('frequency', 1000) / 8)  # Convert to bytes/s
         
         # Calculate actual resource usage
         compute_usage = 0
@@ -1223,10 +1313,10 @@ def calculate_chip_utilization(mapper, chip_config, workloads):
             chars = get_workload_characteristics(workload)
             
             # Account for data dependencies and parallel execution
-            dependency_factor = min(1.0, mapper.bandwidth_idle_time / mapper.total_cycles)
+            dependency_factor = 0.2  # Simplified dependency factor
             
             # Adjust parallel factor based on workload characteristics
-            base_parallel_factor = min(1.0, len(workloads) / chip_config['mm_compute']['type1']['N_PE'])
+            base_parallel_factor = min(1.0, len(workloads) / chip_config['mm_compute']['type1'].get('N_PE', 256))
             parallel_factor = base_parallel_factor if chars['parallel_friendly'] else base_parallel_factor * 0.5
             
             # Calculate resource usage considering workload characteristics
@@ -1234,7 +1324,6 @@ def calculate_chip_utilization(mapper, chip_config, workloads):
             memory_usage += chars['memory_intensity'] * parallel_factor
             
             # Add extra utilization for complementary operations
-            # (e.g., memory ops during compute, prefetching during memory ops)
             if chars['compute_intensity'] > chars['memory_intensity']:
                 memory_usage += chars['compute_intensity'] * 0.2  # Memory ops during compute
             else:
@@ -1254,7 +1343,7 @@ def calculate_chip_utilization(mapper, chip_config, workloads):
         return utilization
         
     except Exception as e:
-        print(f"Error calculating chip utilization: {e}")
+        logger.error(f"Error calculating chip utilization: {str(e)}")
         return 0.5  # Return moderate utilization on error
 
 def calculate_network_utilization(network_config, source_chip, dest_chip, workloads):
@@ -1338,14 +1427,14 @@ def estimate_riscv_performance(processor_config, workload):
         base_ipc = ipc_base.get(workload_type, 1.0)
         
         # Adjust IPC based on processor configuration
-        frequency_ghz = processor_config.frequency / 1000  # Convert MHz to GHz
-        core_scaling = min(1.0, (processor_config.cores / 4) ** 0.7)  # Diminishing returns
+        frequency_ghz = processor_config['frequency'] / 1000  # Convert MHz to GHz
+        core_scaling = min(1.0, (processor_config['cores'] / 4) ** 0.7)  # Diminishing returns
         
         # Calculate MIPS (Millions of Instructions Per Second)
-        mips = frequency_ghz * base_ipc * processor_config.cores * core_scaling * 1000
+        mips = frequency_ghz * base_ipc * processor_config['cores'] * core_scaling * 1000
         
         # Memory impact
-        memory_bandwidth_factor = min(1.0, (processor_config.memory / 32) ** 0.5)  # Memory size impact
+        memory_bandwidth_factor = min(1.0, (processor_config['memory'] / 32) ** 0.5)  # Memory size impact
         memory_impact = 1.0 - (chars['memory_intensity'] * (1 - memory_bandwidth_factor))
         
         # Adjust performance based on workload characteristics
@@ -1355,8 +1444,8 @@ def estimate_riscv_performance(processor_config, workload):
         performance = {
             'mips': mips * memory_impact * compute_scaling,
             'utilization': min(0.95, chars['compute_intensity'] * core_scaling),
-            'power_efficiency': mips / processor_config.tdp,
-            'memory_bandwidth': processor_config.memory * frequency_ghz * 0.1  # Rough estimate GB/s
+            'power_efficiency': mips / processor_config['tdp'],
+            'memory_bandwidth': processor_config['memory'] * frequency_ghz * 0.1  # Rough estimate GB/s
         }
         
         return performance
@@ -1378,8 +1467,8 @@ def estimate_gpu_performance(processor_config, workload):
         
         # GPU architecture parameters
         cuda_cores_per_sm = 128
-        sm_count = processor_config.cores / cuda_cores_per_sm
-        memory_bandwidth = processor_config.memory * 14  # Approximate GB/s per GB of memory
+        sm_count = processor_config['cores'] / cuda_cores_per_sm
+        memory_bandwidth = processor_config['memory'] * 14  # Approximate GB/s per GB of memory
         
         # Workload-specific GPU efficiency
         gpu_efficiency = {
@@ -1400,8 +1489,8 @@ def estimate_gpu_performance(processor_config, workload):
         }.get(workload, 0.60)
         
         # Calculate theoretical TFLOPS
-        frequency_ghz = processor_config.frequency / 1000
-        theoretical_tflops = (processor_config.cores * 2 * frequency_ghz) / 1000  # FMA = 2 ops
+        frequency_ghz = processor_config['frequency'] / 1000
+        theoretical_tflops = (processor_config['cores'] * 2 * frequency_ghz) / 1000  # FMA = 2 ops
         
         # Actual performance considering efficiency
         achieved_tflops = theoretical_tflops * gpu_efficiency
@@ -1414,7 +1503,7 @@ def estimate_gpu_performance(processor_config, workload):
         sm_utilization = min(0.95, chars['compute_intensity'] * gpu_efficiency)
         
         # Power efficiency (TFLOPS/W)
-        power_efficiency = achieved_tflops / processor_config.tdp
+        power_efficiency = achieved_tflops / processor_config['tdp']
         
         # Final performance metrics
         performance = {
