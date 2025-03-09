@@ -1102,16 +1102,17 @@ async def calculate_system_performance(
                         "source": f"chip_{j}",
                         "destination": f"chip_{k}",
                         "bandwidth": network.get('bandwidth', 0),
-                        "utilization": utilization
+                        "utilization": utilization  # Already in percentage
                     })
 
+        # Calculate average network utilization in percentage
         network_utilization = sum(bw['utilization'] for bw in interconnect_bw) / len(interconnect_bw) if interconnect_bw else 0
 
         return {
             "totalThroughput": total_throughput,
             "systemLatency": system_latency,
             "powerConsumption": total_power,
-            "networkUtilization": network_utilization,
+            "networkUtilization": network_utilization,  # Already in percentage
             "chipUtilizations": chip_utils,
             "interconnectBandwidth": interconnect_bw,
             "processorMetrics": processor_metrics
@@ -1350,8 +1351,8 @@ def calculate_network_utilization(network_config, source_chip, dest_chip, worklo
     """Calculate realistic network utilization between two chips"""
     try:
         # Get network capabilities
-        bandwidth = network_config['bandwidth']  # GB/s
-        ports = network_config['ports']
+        bandwidth = float(network_config.get('bandwidth', 1))  # GB/s
+        ports = int(network_config.get('ports', 1))
         
         # Calculate data movement requirements
         total_data = 0
@@ -1373,7 +1374,7 @@ def calculate_network_utilization(network_config, source_chip, dest_chip, worklo
         
         # Calculate base utilization based on required vs available bandwidth
         # Assume data transfer happens over 1 second intervals
-        utilization = total_data / max_bandwidth
+        utilization = total_data / max_bandwidth if max_bandwidth > 0 else 0
         
         # Account for protocol overhead and network contention
         protocol_overhead = {
@@ -1381,27 +1382,27 @@ def calculate_network_utilization(network_config, source_chip, dest_chip, worklo
             'nvlink': 0.08,  # NVLink is more efficient
             'ethernet': 0.2, # Ethernet has highest overhead
             'infinity-fabric': 0.1  # AMD Infinity Fabric
-        }.get(network_config['type'].lower(), 0.1)
+        }.get(str(network_config.get('type', '')).lower(), 0.1)
         
         # Calculate contention based on parallel transfers and available ports
-        contention_factor = min(1.0, max_parallel_transfers / ports)
+        contention_factor = min(1.0, max_parallel_transfers / ports) if ports > 0 else 0
         
         # Apply network-specific adjustments
         utilization = utilization * (1 + protocol_overhead) * (1 + contention_factor)
         
         # Add realistic variation based on network type
         base_variation = 0.05  # Base 5% variation
-        if network_config['type'].lower() == 'ethernet':
+        if str(network_config.get('type', '')).lower() == 'ethernet':
             base_variation = 0.1  # More variation for Ethernet
         
         variation = random.uniform(-base_variation, base_variation)
         utilization = max(0.05, min(0.95, utilization + variation))
         
-        return utilization
+        return utilization * 100  # Convert to percentage
         
     except Exception as e:
-        print(f"Error calculating network utilization: {e}")
-        return 0.3  # Return moderate utilization on error
+        logger.error(f"Error calculating network utilization: {str(e)}")
+        return 30  # Return default 30% utilization on error
 
 def estimate_riscv_performance(processor_config, workload):
     """Estimate RISC-V processor performance for a given workload"""

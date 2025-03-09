@@ -1278,14 +1278,14 @@ export default function ChipDesigner() {
                       <div className="text-right">
                         <div className="text-sm text-gray-400">Utilization</div>
                         <div className="text-lg font-semibold">
-                          {(connection.utilization * 100).toFixed(1)}%
+                          {connection.utilization.toFixed(1)}%
                         </div>
                       </div>
                     </div>
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-green-500"
-                        style={{ width: `${connection.utilization * 100}%` }}
+                        style={{ width: `${connection.utilization}%` }}
                       />
                     </div>
                   </div>
@@ -1523,17 +1523,6 @@ export default function ChipDesigner() {
   const ProcessorForm = ({ processor: proc, index }: { processor: ProcessorConfig, index: number }) => (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Type</Label>
-          <Select
-            value={proc.type}
-            onValueChange={(value) => updateProcessor(index, { type: value as 'cpu' | 'gpu' | 'accelerator' })}
-          >
-            <option value="cpu">CPU</option>
-            <option value="gpu">GPU</option>
-            <option value="accelerator">Accelerator</option>
-          </Select>
-        </div>
         <div className="space-y-2">
           <Label>Name</Label>
           <Input
