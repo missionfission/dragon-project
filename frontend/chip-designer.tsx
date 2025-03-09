@@ -283,7 +283,7 @@ const defaultProcessors: ProcessorConfig[] = [
     frequency: 3000,
     memory: 256,
     tdp: 280,
-    processorType: 'AMD EPYC 7763',
+    processorType: 'RISC-V ISA',
     memoryType: 'DDR5'
   },
   {

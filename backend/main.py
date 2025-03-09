@@ -934,12 +934,48 @@ async def calculate_system_performance(
         # Calculate total system metrics
         total_throughput = 0
         total_power = 0
+        processor_metrics = []
         
         # Track chip utilizations
         chip_utils = []
         interconnect_bw = []
         
-        # Analyze each chip's performance
+        # First analyze processors (CPU, GPU, RISC-V)
+        for i, processor in enumerate(system_config.get('processors', [])):
+            processor_perf = None
+            
+            if processor['type'].lower() == 'riscv':
+                # Calculate RISC-V performance for each workload
+                riscv_perf = [estimate_riscv_performance(processor, workload) for workload in workloads]
+                processor_perf = {
+                    'type': 'riscv',
+                    'total_mips': sum(p['mips'] for p in riscv_perf),
+                    'avg_utilization': sum(p['utilization'] for p in riscv_perf) / len(riscv_perf),
+                    'power_efficiency': sum(p['power_efficiency'] for p in riscv_perf) / len(riscv_perf),
+                    'memory_bandwidth': max(p['memory_bandwidth'] for p in riscv_perf)
+                }
+                total_throughput += processor_perf['total_mips'] * 0.001  # Convert to GIPS
+                
+            elif processor['type'].lower() == 'gpu':
+                # Calculate GPU performance for each workload
+                gpu_perf = [estimate_gpu_performance(processor, workload) for workload in workloads]
+                processor_perf = {
+                    'type': 'gpu',
+                    'total_tflops': sum(p['tflops'] for p in gpu_perf),
+                    'sm_utilization': sum(p['sm_utilization'] for p in gpu_perf) / len(gpu_perf),
+                    'memory_bandwidth': max(p['memory_bandwidth'] for p in gpu_perf),
+                    'power_efficiency': sum(p['power_efficiency'] for p in gpu_perf) / len(gpu_perf)
+                }
+                total_throughput += processor_perf['total_tflops'] * 1000  # Convert to GIPS equivalent
+            
+            if processor_perf:
+                processor_metrics.append({
+                    "processorId": f"processor_{i}",
+                    "metrics": processor_perf
+                })
+                total_power += processor['tdp']
+        
+        # Then analyze accelerator chips
         for i, chip in enumerate(system_config['chips']):
             # Create mapper instance for this chip
             mapper = Mapper(hwfile="default.yaml")
@@ -990,7 +1026,8 @@ async def calculate_system_performance(
             "powerConsumption": total_power,
             "networkUtilization": network_utilization,
             "chipUtilizations": chip_utils,
-            "interconnectBandwidth": interconnect_bw
+            "interconnectBandwidth": interconnect_bw,
+            "processorMetrics": processor_metrics
         }
 
     except Exception as e:
@@ -1276,6 +1313,129 @@ def calculate_network_utilization(network_config, source_chip, dest_chip, worklo
     except Exception as e:
         print(f"Error calculating network utilization: {e}")
         return 0.3  # Return moderate utilization on error
+
+def estimate_riscv_performance(processor_config, workload):
+    """Estimate RISC-V processor performance for a given workload"""
+    try:
+        # Get workload characteristics
+        chars = get_workload_characteristics(workload)
+        
+        # RISC-V specific parameters
+        ipc_base = {  # Instructions Per Cycle baseline for different workload types
+            "AI/ML": 1.2,      # Most ML ops vectorized
+            "HPC": 1.5,        # Good for numerical computation
+            "Graph": 0.8,      # Branch heavy, less predictable
+            "Crypto": 1.8      # Dedicated crypto extensions
+        }
+        
+        # Determine workload type
+        workload_type = "AI/ML" if workload in ["ResNet-50", "BERT", "GPT-4", "DLRM", "SSD"] else \
+                       "HPC" if workload in ["HPCG", "LINPACK", "STREAM"] else \
+                       "Graph" if workload in ["BFS", "PageRank", "Connected Components"] else \
+                       "Crypto" if workload in ["AES-256", "SHA-3", "RSA"] else "HPC"
+        
+        # Calculate base IPC
+        base_ipc = ipc_base.get(workload_type, 1.0)
+        
+        # Adjust IPC based on processor configuration
+        frequency_ghz = processor_config.frequency / 1000  # Convert MHz to GHz
+        core_scaling = min(1.0, (processor_config.cores / 4) ** 0.7)  # Diminishing returns
+        
+        # Calculate MIPS (Millions of Instructions Per Second)
+        mips = frequency_ghz * base_ipc * processor_config.cores * core_scaling * 1000
+        
+        # Memory impact
+        memory_bandwidth_factor = min(1.0, (processor_config.memory / 32) ** 0.5)  # Memory size impact
+        memory_impact = 1.0 - (chars['memory_intensity'] * (1 - memory_bandwidth_factor))
+        
+        # Adjust performance based on workload characteristics
+        compute_scaling = 1.0 - (0.3 * chars['compute_intensity'])  # RISC-V less efficient for heavy compute
+        
+        # Final performance metrics
+        performance = {
+            'mips': mips * memory_impact * compute_scaling,
+            'utilization': min(0.95, chars['compute_intensity'] * core_scaling),
+            'power_efficiency': mips / processor_config.tdp,
+            'memory_bandwidth': processor_config.memory * frequency_ghz * 0.1  # Rough estimate GB/s
+        }
+        
+        return performance
+        
+    except Exception as e:
+        print(f"Error estimating RISC-V performance: {e}")
+        return {
+            'mips': 0,
+            'utilization': 0,
+            'power_efficiency': 0,
+            'memory_bandwidth': 0
+        }
+
+def estimate_gpu_performance(processor_config, workload):
+    """Estimate GPU performance for a given workload"""
+    try:
+        # Get workload characteristics
+        chars = get_workload_characteristics(workload)
+        
+        # GPU architecture parameters
+        cuda_cores_per_sm = 128
+        sm_count = processor_config.cores / cuda_cores_per_sm
+        memory_bandwidth = processor_config.memory * 14  # Approximate GB/s per GB of memory
+        
+        # Workload-specific GPU efficiency
+        gpu_efficiency = {
+            "ResNet-50": 0.85,  # Excellent GPU utilization
+            "BERT": 0.80,       # Good for transformer ops
+            "GPT-4": 0.82,      # Good for large matrix ops
+            "DLRM": 0.70,       # Memory bound for embeddings
+            "SSD": 0.75,        # Good for convolutions
+            "HPCG": 0.65,       # Limited by memory access
+            "LINPACK": 0.90,    # Excellent for dense linear algebra
+            "STREAM": 0.95,     # Perfect for memory bandwidth
+            "BFS": 0.40,        # Poor for irregular access
+            "PageRank": 0.50,   # Limited by graph structure
+            "Connected Components": 0.45,  # Graph algorithm limitations
+            "AES-256": 0.70,    # Good with dedicated units
+            "SHA-3": 0.65,      # Decent parallelization
+            "RSA": 0.60         # Limited by sequential parts
+        }.get(workload, 0.60)
+        
+        # Calculate theoretical TFLOPS
+        frequency_ghz = processor_config.frequency / 1000
+        theoretical_tflops = (processor_config.cores * 2 * frequency_ghz) / 1000  # FMA = 2 ops
+        
+        # Actual performance considering efficiency
+        achieved_tflops = theoretical_tflops * gpu_efficiency
+        
+        # Memory bandwidth utilization
+        memory_utilization = min(1.0, chars['memory_intensity'] * 1.2)  # GPU memory system more efficient
+        effective_bandwidth = memory_bandwidth * memory_utilization
+        
+        # Calculate SM utilization
+        sm_utilization = min(0.95, chars['compute_intensity'] * gpu_efficiency)
+        
+        # Power efficiency (TFLOPS/W)
+        power_efficiency = achieved_tflops / processor_config.tdp
+        
+        # Final performance metrics
+        performance = {
+            'tflops': achieved_tflops,
+            'sm_utilization': sm_utilization,
+            'memory_bandwidth': effective_bandwidth,
+            'power_efficiency': power_efficiency,
+            'overall_utilization': min(sm_utilization, memory_utilization)
+        }
+        
+        return performance
+        
+    except Exception as e:
+        print(f"Error estimating GPU performance: {e}")
+        return {
+            'tflops': 0,
+            'sm_utilization': 0,
+            'memory_bandwidth': 0,
+            'power_efficiency': 0,
+            'overall_utilization': 0
+        }
 
 if __name__ == "__main__":
     import uvicorn
