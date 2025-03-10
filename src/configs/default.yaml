@@ -7,7 +7,7 @@ voltage: 1
 memory_levels: 2
 memory:
   level0:
-    class: SRAM
+    class_type: SRAM
     frequency: 1000
     banks: 4
     read_ports: 1
@@ -16,7 +16,7 @@ memory:
     size: 2000000
     leakage_power: 0
   level1:
-    class: DRAM
+    class_type: DRAM
     frequency: 5
     banks: 2
     read_ports: 1
@@ -27,7 +27,7 @@ memory:
     read_energy: 0.24
     write_energy: 0.24
 mm_compute:
-  class: systolic_array
+  class_type: systolic_array
   frequency: 1000
   size: 64
   N_PE: 10
@@ -37,7 +37,7 @@ rf:
   energy: 3.68
   area: 5.981433e+00
 vector_compute:
-  class: vector_array
+  class_type: vector_array
   frequency: 1000
   size: 1
   N_PE: 128

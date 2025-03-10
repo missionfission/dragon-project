@@ -9,7 +9,7 @@ memory_levels: 2
 
 memory:
   level0:
-    class: "SRAM"
+    class_type: "SRAM"
     frequency: 1000
     banks: 16
     read_ports: 2
@@ -20,7 +20,7 @@ memory:
     read_energy: 0.01
     write_energy: 0.02
   level1:
-    class: "DRAM"
+    class_type: "DRAM"
     frequency: 3200
     banks: 8
     read_ports: 1
@@ -33,14 +33,14 @@ memory:
 
 mm_compute:
   type1:
-    class: "systolic_array"
+    class_type: "systolic_array"
     frequency: 1000
     size: 256
     N_PE: 256
     area: 2.0
     per_op_energy: 0.1
   type2:
-    class: "mac"
+    class_type: "mac"
     frequency: 1000
     size: 128
     N_PE: 128
@@ -54,7 +54,7 @@ rf:
   area: 0.5
 
 vector_compute:
-  class: "vector"
+  class_type: "vector"
   frequency: 1000
   size: 128
   N_PE: 128

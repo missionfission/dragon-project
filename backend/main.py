@@ -28,7 +28,14 @@ from src.src_main import (
     Mapper
 )
 import os
-from src.common_models import alexnet_graph, vggnet_graph, resnet_50_graph, bert_graph, gpt2_graph, langmodel_graph
+from src.common_models import (
+    alexnet_graph,
+    vggnet_graph, 
+    resnet_50_graph,
+    bert_graph,
+    gpt2_graph,
+    langmodel_graph
+)
 import ast
 
 from src.ir.cfg.staticfg import CFGBuilder
@@ -76,7 +83,7 @@ class TechnologyConfig(BaseModel):
     logic_node: int
 
 class MemoryConfig(BaseModel):
-    class_type: str = Field(..., alias='class')
+    class_type: str
     frequency: int
     banks: int
     read_ports: int
@@ -95,7 +102,7 @@ class ComputeConfig(BaseModel):
     type2: Dict[str, Any]
 
 class VectorComputeConfig(BaseModel):
-    class_type: str = Field(..., alias='class')
+    class_type: str
     frequency: int
     size: int
     N_PE: int
@@ -148,7 +155,7 @@ class ChipConfig(BaseModel):
             "memory_levels": 2,
             "memory": {
                 "level0": {
-                    "class": "SRAM",
+                    "class_type": "SRAM",
                     "frequency": 1000,
                     "banks": 16,
                     "read_ports": 2,
@@ -158,7 +165,7 @@ class ChipConfig(BaseModel):
                     "leakage_power": 0.1
                 },
                 "level1": {
-                    "class": "DRAM",
+                    "class_type": "DRAM",
                     "frequency": 3200,
                     "banks": 8,
                     "read_ports": 1,
@@ -170,7 +177,7 @@ class ChipConfig(BaseModel):
             },
             "mm_compute": {
                 "type1": {
-                    "class": "systolic_array",
+                    "class_type": "systolic_array",
                     "frequency": 1000,
                     "size": 256,
                     "N_PE": 256,
@@ -178,7 +185,7 @@ class ChipConfig(BaseModel):
                     "per_op_energy": 0.1
                 },
                 "type2": {
-                    "class": "mac",
+                    "class_type": "mac",
                     "frequency": 1000,
                     "size": 128,
                     "N_PE": 128,
@@ -194,7 +201,7 @@ class ChipConfig(BaseModel):
                 "area": 0.5
             },
             "vector_compute": {
-                "class": "vector",
+                "class_type": "vector",
                 "frequency": 1000,
                 "size": 128,
                 "N_PE": 128
@@ -262,71 +269,24 @@ class DesignOptimizer:
         self.graph_set = self._prepare_graph_set(requirements.selectedWorkloads)
     
     def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
-        """
-        Convert workload types to corresponding graph objects.
-        Uses backprop=True for training mode workloads.
-        """
+        """Prepare the set of workload graphs for optimization"""
         graphs = []
-        
-        # Get workload types mapping for training/inference
-        workload_types_map = self.requirements.workloadTypes or {}
+        logger.info("Preparing workload graphs")
         
         for workload in workload_types:
-            # Check if this is a training workload
-            is_training = workload_types_map.get(workload) == 'training'
-            
-            # Initialize appropriate graph based on workload
             if workload == "ResNet-50":
-                graph = resnet_50_graph()
-                graphs.append(graph)
+                graphs.append(resnet_50_graph())
+            elif workload == "VGG16":
+                graphs.append(vggnet_graph())
             elif workload == "BERT":
-                graph = bert_graph()
-                graphs.append(graph)
-            elif workload == "GPT-4":
-                graph = gpt2_graph()  # Using GPT-2 as base for GPT-4
-                graphs.append(graph)
-            elif workload == "DLRM":
-                graph = langmodel_graph()  # Using language model for DLRM
-                graphs.append(graph)
-            elif workload == "SSD":
-                graph = alexnet_graph()  # Using AlexNet as base for SSD
-                graphs.append(graph)
-            elif workload == "HPCG":
-                cfg = CFGBuilder().build_from_file(
-                    "hpcg.py",
-                    "nonai_models/hpcg.py",
-                )
-                graphs.append(cfg)
-            elif workload == "LINPACK":
-                cfg = CFGBuilder().build_from_file(
-                    "linpack.py",
-                    "nonai_models/linpack.py",
-                )
-                graphs.append(cfg)
-            elif workload == "STREAM":
-                cfg = CFGBuilder().build_from_file(
-                    "stream.py",
-                    "nonai_models/stream.py",
-                )
-                graphs.append(cfg)
-            elif workload == "BFS":
-                cfg = CFGBuilder().build_from_file(
-                    "bfs.py",
-                    "nonai_models/bfs.py",
-                )
-                graphs.append(cfg)
-            elif workload == "PageRank":
-                cfg = CFGBuilder().build_from_file(
-                    "pagerank.py",
-                    "nonai_models/pagerank.py",
-                )
-                graphs.append(cfg)
-            elif workload == "Connected Components":
-                cfg = CFGBuilder().build_from_file(
-                    "connected_components.py",
-                    "nonai_models/connected_components.py",
-                )
-                graphs.append(cfg)
+                graphs.append(bert_graph())
+            elif workload == "GPT2":
+                graphs.append(gpt2_graph())
+            elif workload == "AlexNet":
+                graphs.append(alexnet_graph())
+            elif workload == "LangModel":
+                g1, g2 = langmodel_graph()
+                graphs.extend([g1, g2])
             elif workload == "AES-256":
                 cfg = CFGBuilder().build_from_file(
                     "aes.py",
@@ -335,18 +295,24 @@ class DesignOptimizer:
                 graphs.append(cfg)
             elif workload == "SHA-3":
                 cfg = CFGBuilder().build_from_file(
-                    "sha3.py",
+                    "sha3.py", 
                     "nonai_models/sha3.py",
                 )
                 graphs.append(cfg)
             elif workload == "RSA":
                 cfg = CFGBuilder().build_from_file(
                     "rsa.py",
-                    "nonai_models/rsa.py",
+                    "nonai_models/rsa.py", 
                 )
                 graphs.append(cfg)
             else:
                 logger.warning(f"Unknown workload type: {workload}")
+                continue
+            
+            logger.info(f"Added graph for workload: {workload}")
+        
+        if not graphs:
+            raise ValueError("No valid workload graphs could be prepared")
         
         return graphs
     
@@ -373,11 +339,11 @@ class DesignOptimizer:
             
             # Run design optimization
             try:
+
                 time, energy, area = design_runner(
                     graph_set=self.graph_set,
                     backprop=backprop,
                     print_stats=print_stats,
-                    file=str(DEFAULT_CONFIG_FILE),
                     stats_file=str(stats_file)
                 )
             except Exception as e:

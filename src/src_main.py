@@ -51,6 +51,7 @@ from utils.visualizer import (
 )
 import matplotlib.pyplot as plt
 import math
+import mapper.mappings
 
 def initialize(arch_config="default.yaml", **kwargs):
     """Initialize the DragonX framework.
@@ -164,6 +165,8 @@ def design_runner(
     design_list = []
     tech_list = []
     num_iterations = 50
+    print("======Optimizing Design=========")
+
     for graph in graph_set:
 
         # (
@@ -183,6 +186,7 @@ def design_runner(
         #         mem_util_bar_graph("mem_util.png",mapper.mem_util_full/mapper.mem_size[0],mapper.mem_util_log/mapper.mem_size[0], graph.nodes)
         generator = Generator()
         mapper = Mapper(hwfile=file, stats_file=stats_file)
+        print("in mapper")
         mapper.run_asap(graph)
         in_time, in_energy, in_design, in_tech, in_area = generator.save_stats(
             mapper, backprop, get_backprop_memory(graph.nodes), print_stats
