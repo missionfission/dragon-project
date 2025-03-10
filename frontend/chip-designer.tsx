@@ -33,6 +33,7 @@ interface ChipRequirements {
   performanceTarget: number;
   selectedWorkloads: string[];
   optimizationPriority: 'power' | 'performance' | 'balanced';
+  workloadTypes: { [workload: string]: 'inference' | 'training' };  // New field
 }
 
 interface ChipBlock {
@@ -167,6 +168,7 @@ interface WorkloadCategory {
     description: string;
     performance?: WorkloadPerformance;
     isCustom?: boolean;
+    workloadType?: 'inference' | 'training';  // New field for AI/ML workloads
   }[];
 }
 
@@ -178,22 +180,27 @@ const DEFAULT_WORKLOAD_CATEGORIES: WorkloadCategory[] = [
       {
         name: "ResNet-50",
         description: "Deep CNN for image classification",
+        workloadType: 'inference'
       },
       {
         name: "BERT",
         description: "Transformer-based NLP model",
+        workloadType: 'inference'
       },
       {
         name: "GPT-4", 
         description: "Large language model inference",
+        workloadType: 'inference'
       },
       {
         name: "DLRM",
         description: "Deep Learning Recommendation Model",
+        workloadType: 'inference'
       },
       {
         name: "SSD",
         description: "Single Shot MultiBox Detector",
+        workloadType: 'inference'
       }
     ]
   },
@@ -544,7 +551,8 @@ export default function ChipDesigner() {
     areaConstraint: 100,
     performanceTarget: 1000,
     selectedWorkloads: [],
-    optimizationPriority: 'balanced'
+    optimizationPriority: 'balanced',
+    workloadTypes: {}  // Initialize empty workload types
   });
   const [chipDesign, setChipDesign] = useState<ChipDesign | null>(null);
   const [loading, setLoading] = useState(false);
@@ -726,14 +734,27 @@ export default function ChipDesigner() {
     });
   };
 
-  // Add workload toggle handler
-  const handleWorkloadToggle = (workload: string) => {
-    setRequirements(prev => ({
-      ...prev,
-      selectedWorkloads: prev.selectedWorkloads.includes(workload)
+  // Update the handleWorkloadToggle function to handle workload types
+  const handleWorkloadToggle = (workload: string, workloadType?: 'inference' | 'training') => {
+    setRequirements(prev => {
+      const newSelectedWorkloads = prev.selectedWorkloads.includes(workload)
         ? prev.selectedWorkloads.filter(w => w !== workload)
-        : [...prev.selectedWorkloads, workload]
-    }));
+        : [...prev.selectedWorkloads, workload];
+      
+      // Update workload types
+      const newWorkloadTypes = { ...prev.workloadTypes };
+      if (!prev.selectedWorkloads.includes(workload) && workloadType) {
+        newWorkloadTypes[workload] = workloadType;
+      } else {
+        delete newWorkloadTypes[workload];
+      }
+      
+      return {
+        ...prev,
+        selectedWorkloads: newSelectedWorkloads,
+        workloadTypes: newWorkloadTypes
+      };
+    });
   };
 
   // Update the slider handlers to update requirements
@@ -1385,7 +1406,7 @@ export default function ChipDesigner() {
     </Dialog>
   );
 
-  // Modify the Workloads card content
+  // Modify the WorkloadsSection component
   const WorkloadsSection = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -1406,22 +1427,39 @@ export default function ChipDesigner() {
               {category.workloads.map((workload) => (
                 <div
                   key={workload.name}
-                  className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50"
+                  className="flex items-center justify-between p-4 rounded-lg bg-gray-800/50"
                 >
-                  <div>
+                  <div className="flex-grow">
                     <div className="font-medium">{workload.name}</div>
                     <div className="text-sm text-gray-400">{workload.description}</div>
+                    {workload.workloadType && requirements.selectedWorkloads.includes(workload.name) && (
+                      <div className="mt-2">
+                        <Select
+                          value={requirements.workloadTypes[workload.name] || 'inference'}
+                          onValueChange={(value: 'inference' | 'training') => {
+                            setRequirements(prev => ({
+                              ...prev,
+                              workloadTypes: {
+                                ...prev.workloadTypes,
+                                [workload.name]: value
+                              }
+                            }));
+                          }}
+                        >
+                          <SelectTrigger className="h-8 w-[120px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="inference">Inference</SelectItem>
+                            <SelectItem value="training">Training</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
                   <Checkbox
                     checked={requirements.selectedWorkloads.includes(workload.name)}
-                    onCheckedChange={(checked) => {
-                      setRequirements(prev => ({
-                        ...prev,
-                        selectedWorkloads: checked
-                          ? [...prev.selectedWorkloads, workload.name]
-                          : prev.selectedWorkloads.filter(w => w !== workload.name)
-                      }));
-                    }}
+                    onCheckedChange={() => handleWorkloadToggle(workload.name, workload.workloadType)}
                   />
                 </div>
               ))}

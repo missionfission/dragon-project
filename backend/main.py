@@ -205,6 +205,7 @@ class ChipRequirements(BaseModel):
     performanceTarget: float = Field(..., gt=0, description="Performance target in MIPS")
     selectedWorkloads: List[str] = Field(..., description="List of selected workload types")
     optimizationPriority: Optional[str] = Field("balanced", description="Priority for optimization: 'power', 'performance', or 'balanced'")
+    workloadTypes: Dict[str, str] = Field(default_factory=dict, description="Mapping of workload names to their types (inference/training)")
     systemConfig: Optional[SystemConfig] = None
 
 class ChipBlock(BaseModel):
@@ -1201,98 +1202,134 @@ def estimate_chip_performance(chip_config):
             'utilization': 0
         }
 
-def get_workload_characteristics(workload_name):
+def get_workload_characteristics(workload_name: str, workload_type: Optional[str] = None):
     """Get compute and memory characteristics for specific workloads"""
-    characteristics = {
-        # AI/ML Workloads
+    base_characteristics = {
+        # AI/ML Workloads with inference/training differentiation
         "ResNet-50": {
-            "compute_intensity": 0.85,  # Heavy CNN computations
-            "memory_intensity": 0.6,    # Regular weight/activation access
-            "data_transfer": 400,       # MB per batch (weights + activations)
-            "parallel_friendly": True
+            "inference": {
+                "compute_intensity": 0.85,
+                "memory_intensity": 0.6,
+                "data_transfer": 400,
+                "parallel_friendly": True
+            },
+            "training": {
+                "compute_intensity": 0.90,
+                "memory_intensity": 0.75,
+                "data_transfer": 800,  # Double for training (weights + gradients)
+                "parallel_friendly": True
+            }
         },
         "BERT": {
-            "compute_intensity": 0.75,  # Transformer computations
-            "memory_intensity": 0.8,    # Heavy attention matrix operations
-            "data_transfer": 600,       # MB per batch (large attention matrices)
-            "parallel_friendly": True
+            "inference": {
+                "compute_intensity": 0.75,
+                "memory_intensity": 0.8,
+                "data_transfer": 600,
+                "parallel_friendly": True
+            },
+            "training": {
+                "compute_intensity": 0.85,
+                "memory_intensity": 0.9,
+                "data_transfer": 1200,
+                "parallel_friendly": True
+            }
         },
         "GPT-4": {
-            "compute_intensity": 0.9,   # Very compute intensive
-            "memory_intensity": 0.85,   # Large model parameters
-            "data_transfer": 800,       # MB per batch (massive model size)
-            "parallel_friendly": True
+            "inference": {
+                "compute_intensity": 0.9,
+                "memory_intensity": 0.85,
+                "data_transfer": 800,
+                "parallel_friendly": True
+            },
+            "training": {
+                "compute_intensity": 0.95,
+                "memory_intensity": 0.95,
+                "data_transfer": 1600,
+                "parallel_friendly": True
+            }
         },
         "DLRM": {
-            "compute_intensity": 0.6,   # Embedding lookups + MLPs
-            "memory_intensity": 0.9,    # Heavy embedding table access
-            "data_transfer": 700,       # MB per batch (large embedding tables)
-            "parallel_friendly": True
+            "inference": {
+                "compute_intensity": 0.6,
+                "memory_intensity": 0.9,
+                "data_transfer": 700,
+                "parallel_friendly": True
+            },
+            "training": {
+                "compute_intensity": 0.7,
+                "memory_intensity": 0.95,
+                "data_transfer": 1400,
+                "parallel_friendly": True
+            }
         },
         "SSD": {
-            "compute_intensity": 0.8,   # Detection + classification
-            "memory_intensity": 0.7,    # Feature map processing
-            "data_transfer": 300,       # MB per batch
-            "parallel_friendly": True
+            "inference": {
+                "compute_intensity": 0.8,
+                "memory_intensity": 0.7,
+                "data_transfer": 300,
+                "parallel_friendly": True
+            },
+            "training": {
+                "compute_intensity": 0.85,
+                "memory_intensity": 0.8,
+                "data_transfer": 600,
+                "parallel_friendly": True
+            }
         },
         
-        # HPC Workloads
+        # Non-AI/ML workloads remain the same
         "HPCG": {
-            "compute_intensity": 0.7,   # Sparse matrix operations
-            "memory_intensity": 0.85,   # Irregular memory access
-            "data_transfer": 250,       # MB per iteration
+            "compute_intensity": 0.7,
+            "memory_intensity": 0.85,
+            "data_transfer": 250,
             "parallel_friendly": True
         },
         "LINPACK": {
-            "compute_intensity": 0.95,  # Dense matrix operations
-            "memory_intensity": 0.7,    # Regular memory access
-            "data_transfer": 400,       # MB per iteration
+            "compute_intensity": 0.95,
+            "memory_intensity": 0.7,
+            "data_transfer": 400,
             "parallel_friendly": True
         },
         "STREAM": {
-            "compute_intensity": 0.3,   # Memory benchmark
-            "memory_intensity": 0.95,   # Memory bandwidth bound
-            "data_transfer": 600,       # MB (large arrays)
+            "compute_intensity": 0.3,
+            "memory_intensity": 0.95,
+            "data_transfer": 600,
             "parallel_friendly": True
         },
-        
-        # Graph Processing
         "BFS": {
-            "compute_intensity": 0.4,   # Simple operations
-            "memory_intensity": 0.9,    # Random memory access
-            "data_transfer": 200,       # MB (graph structure)
+            "compute_intensity": 0.4,
+            "memory_intensity": 0.9,
+            "data_transfer": 200,
             "parallel_friendly": False
         },
         "PageRank": {
-            "compute_intensity": 0.5,   # Iterative calculations
-            "memory_intensity": 0.85,   # Graph structure access
-            "data_transfer": 300,       # MB (graph + ranks)
+            "compute_intensity": 0.5,
+            "memory_intensity": 0.85,
+            "data_transfer": 300,
             "parallel_friendly": True
         },
         "Connected Components": {
-            "compute_intensity": 0.45,  # Graph traversal
-            "memory_intensity": 0.8,    # Graph structure access
-            "data_transfer": 250,       # MB (graph structure)
+            "compute_intensity": 0.45,
+            "memory_intensity": 0.8,
+            "data_transfer": 250,
             "parallel_friendly": False
         },
-        
-        # Cryptography
         "AES-256": {
-            "compute_intensity": 0.9,   # Heavy encryption rounds
-            "memory_intensity": 0.4,    # Small state size
-            "data_transfer": 100,       # MB (block cipher)
+            "compute_intensity": 0.9,
+            "memory_intensity": 0.4,
+            "data_transfer": 100,
             "parallel_friendly": True
         },
         "SHA-3": {
-            "compute_intensity": 0.85,  # Hash computations
-            "memory_intensity": 0.3,    # Small state
-            "data_transfer": 80,        # MB (hash state)
+            "compute_intensity": 0.85,
+            "memory_intensity": 0.3,
+            "data_transfer": 80,
             "parallel_friendly": True
         },
         "RSA": {
-            "compute_intensity": 0.95,  # Heavy modular arithmetic
-            "memory_intensity": 0.2,    # Small key size
-            "data_transfer": 50,        # MB (keys + data)
+            "compute_intensity": 0.95,
+            "memory_intensity": 0.2,
+            "data_transfer": 50,
             "parallel_friendly": False
         }
     }
@@ -1305,11 +1342,20 @@ def get_workload_characteristics(workload_name):
         "parallel_friendly": True
     }
     
-    return characteristics.get(workload_name, default_chars)
+    # Handle AI/ML workloads with inference/training modes
+    workload_data = base_characteristics.get(workload_name)
+    if isinstance(workload_data, dict) and "inference" in workload_data:
+        # This is an AI/ML workload
+        mode = workload_type if workload_type in ["inference", "training"] else "inference"
+        return workload_data[mode]
+    
+    # Return regular characteristics for non-AI/ML workloads
+    return workload_data if workload_data else default_chars
 
-def calculate_chip_utilization(mapper, chip_config, workloads):
+def calculate_chip_utilization(mapper, chip_config, workloads, workload_types=None):
     """Calculate realistic chip utilization based on workload characteristics and hardware capabilities"""
     try:
+        workload_types = workload_types or {}
         # Get hardware capabilities
         compute_capacity = (chip_config['mm_compute']['type1'].get('N_PE', 0) * 
                           chip_config['mm_compute']['type1'].get('frequency', 1000))
@@ -1322,8 +1368,11 @@ def calculate_chip_utilization(mapper, chip_config, workloads):
         memory_usage = 0
         
         for workload in workloads:
-            # Get specific workload characteristics
-            chars = get_workload_characteristics(workload)
+            # Get workload type if available
+            workload_type = workload_types.get(workload)
+            
+            # Get specific workload characteristics with type consideration
+            chars = get_workload_characteristics(workload, workload_type)
             
             # Account for data dependencies and parallel execution
             dependency_factor = 0.2  # Simplified dependency factor
