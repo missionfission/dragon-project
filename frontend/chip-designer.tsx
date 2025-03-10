@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2, PlusCircle, Trash2, Network, Cpu as CpuIcon, ChevronDown, History } from "lucide-react"
+import { Cpu, Zap, Maximize2, Activity, Loader2, BarChart2, PlusCircle, Trash2, Network, Cpu as CpuIcon, ChevronDown, History, Info } from "lucide-react"
 import axios from 'axios'
 import yaml from 'js-yaml'
 import Editor from '@monaco-editor/react'
@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FormControl, InputLabel, MenuItem, TextField } from "@mui/material"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 // Add interfaces
 interface ChipRequirements {
@@ -1531,6 +1532,44 @@ export default function ChipDesigner() {
             onChange={(e) => updateProcessor(index, { name: e.target.value })}
           />
         </div>
+        <div className="space-y-2">
+          <Label>Type</Label>
+          {proc.type === 'cpu' ? (
+            <Select
+              value={proc.name}
+              onValueChange={(value) => updateProcessor(index, { name: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select CPU type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="RISC-V">RISC-V</SelectItem>
+                <SelectItem value="ARM">ARM</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : proc.type === 'gpu' ? (
+            <Select
+              value={proc.name}
+              onValueChange={(value) => updateProcessor(index, { name: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select GPU type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NVIDIA A100">NVIDIA A100</SelectItem>
+                <SelectItem value="NVIDIA B100">NVIDIA B100</SelectItem>
+                <SelectItem value="NVIDIA H100">NVIDIA H100</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              type="text"
+              value={proc.name}
+              onChange={(e) => updateProcessor(index, { name: e.target.value })}
+              placeholder="Accelerator name"
+            />
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -1894,44 +1933,68 @@ export default function ChipDesigner() {
 
         {/* Generate and Estimate Buttons */}
         <div className="flex gap-4">
-          <Button
-            size="lg"
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            onClick={handleGenerate}
-            disabled={loading || isEstimating}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating Chip Design...
-              </>
-            ) : (
-              <>
-                <Cpu className="mr-2 h-4 w-4" />
-                Generate Chip Design
-              </>
-            )}
-          </Button>
+          <div className="flex-1 flex items-center gap-2">
+            <Button
+              size="lg"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              onClick={handleGenerate}
+              disabled={loading || isEstimating}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating Chip Design...
+                </>
+              ) : (
+                <>
+                  <Cpu className="mr-2 h-4 w-4" />
+                  Generate Chip Design
+                </>
+              )}
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px]">
+                <p>For non-AI workloads, the design is generated from control data flow graph analysis. For AI workloads, optimized templates are used as the base configuration.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
 
-          <Button
-            size="lg"
-            variant="outline"
-            className="flex-1"
-            onClick={handleEstimatePerformance}
-            disabled={loading || isEstimating || !config}
-          >
-            {isEstimating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Estimating...
-              </>
-            ) : (
-              <>
-                <Activity className="mr-2 h-4 w-4" />
-                Estimate Performance
-              </>
-            )}
-          </Button>
+          <div className="flex-1 flex items-center gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-1"
+              onClick={handleEstimatePerformance}
+              disabled={loading || isEstimating || !config}
+            >
+              {isEstimating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Estimating...
+                </>
+              ) : (
+                <>
+                  <Activity className="mr-2 h-4 w-4" />
+                  Estimate Performance
+                </>
+              )}
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px]">
+                <p>For non-AI workloads, performance is estimated after the chip is designed. Chip component editing and visualization features are coming soon.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* System Configuration */}
