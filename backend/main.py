@@ -28,7 +28,18 @@ from src.src_main import (
     Mapper
 )
 import os
+from src.common_models import alexnet_graph, vggnet_graph, resnet_graph, bert_graph, gpt2_graph, langmodel_graph
+import ast
 
+from src.ir.cfg.staticfg import CFGBuilder
+
+# design_runner([vggnet_graph()])
+# # for node in dlrm_graph.nodes:
+# #     print(node.in_edge_mem + node.mem_fetch + node.out_edge_mem, node.compute_expense )
+
+# design_tech_runner([dlrm_graph])
+
+# 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -252,30 +263,103 @@ class DesignOptimizer:
     
     def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
         """
-        Convert workload types to corresponding graph objects
-        This is a placeholder - you'll need to implement the actual graph creation
-        based on your workload types
+        Convert workload types to corresponding graph objects.
+        Uses backprop=True for training mode workloads.
         """
-        # TODO: Implement actual graph creation based on workload types
         graphs = []
+        
+        # Get workload types mapping for training/inference
+        workload_types_map = self.requirements.workloadTypes or {}
+        
         for workload in workload_types:
-            if workload == "Machine Learning":
-                # Create ML graph
-                pass
-            elif workload == "Image Processing":
-                # Create image processing graph
-                pass
-            elif workload == "Network Processing":
-                # Create network processing graph
-                pass
-            # Add more workload types as needed
+            # Check if this is a training workload
+            is_training = workload_types_map.get(workload) == 'training'
+            
+            # Initialize appropriate graph based on workload
+            if workload == "ResNet-50":
+                graph = resnet_graph()
+                graphs.append(graph)
+            elif workload == "BERT":
+                graph = bert_graph()
+                graphs.append(graph)
+            elif workload == "GPT-4":
+                graph = gpt2_graph()  # Using GPT-2 as base for GPT-4
+                graphs.append(graph)
+            elif workload == "DLRM":
+                graph = langmodel_graph()  # Using language model for DLRM
+                graphs.append(graph)
+            elif workload == "SSD":
+                graph = alexnet_graph()  # Using AlexNet as base for SSD
+                graphs.append(graph)
+            elif workload == "HPCG":
+                cfg = CFGBuilder().build_from_file(
+                    "hpcg.py",
+                    "nonai_models/hpcg.py",
+                )
+                graphs.append(cfg)
+            elif workload == "LINPACK":
+                cfg = CFGBuilder().build_from_file(
+                    "linpack.py",
+                    "nonai_models/linpack.py",
+                )
+                graphs.append(cfg)
+            elif workload == "STREAM":
+                cfg = CFGBuilder().build_from_file(
+                    "stream.py",
+                    "nonai_models/stream.py",
+                )
+                graphs.append(cfg)
+            elif workload == "BFS":
+                cfg = CFGBuilder().build_from_file(
+                    "bfs.py",
+                    "nonai_models/bfs.py",
+                )
+                graphs.append(cfg)
+            elif workload == "PageRank":
+                cfg = CFGBuilder().build_from_file(
+                    "pagerank.py",
+                    "nonai_models/pagerank.py",
+                )
+                graphs.append(cfg)
+            elif workload == "Connected Components":
+                cfg = CFGBuilder().build_from_file(
+                    "connected_components.py",
+                    "nonai_models/connected_components.py",
+                )
+                graphs.append(cfg)
+            elif workload == "AES-256":
+                cfg = CFGBuilder().build_from_file(
+                    "aes.py",
+                    "nonai_models/aes.py",
+                )
+                graphs.append(cfg)
+            elif workload == "SHA-3":
+                cfg = CFGBuilder().build_from_file(
+                    "sha3.py",
+                    "nonai_models/sha3.py",
+                )
+                graphs.append(cfg)
+            elif workload == "RSA":
+                cfg = CFGBuilder().build_from_file(
+                    "rsa.py",
+                    "nonai_models/rsa.py",
+                )
+                graphs.append(cfg)
+            else:
+                logger.warning(f"Unknown workload type: {workload}")
+        
         return graphs
     
     def optimize(self, iterations=10):
         """Run optimization using design_runner"""
         try:
             # Configure optimization parameters
-            backprop = self.requirements.optimizationPriority == "performance"
+            workload_types_map = self.requirements.workloadTypes or {}
+        
+            for workload in self.requirements.selectedWorkloads:
+                is_training = workload_types_map.get(workload) == 'training'
+
+            backprop = is_training
             print_stats = True
             
             # Create stats filename with timestamp to avoid conflicts
@@ -772,30 +856,103 @@ class SystemOptimizer:
         
     def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
         """
-        Convert workload types to corresponding graph objects
-        This is a placeholder - you'll need to implement the actual graph creation
-        based on your workload types
+        Convert workload types to corresponding graph objects.
+        Uses backprop=True for training mode workloads.
         """
-        # TODO: Implement actual graph creation based on workload types
         graphs = []
+        
+        # Get workload types mapping for training/inference
+        workload_types_map = self.requirements.workloadTypes or {}
+        
         for workload in workload_types:
-            if workload == "Machine Learning":
-                # Create ML graph
-                pass
-            elif workload == "Image Processing":
-                # Create image processing graph
-                pass
-            elif workload == "Network Processing":
-                # Create network processing graph
-                pass
-            # Add more workload types as needed
+            # Check if this is a training workload
+            is_training = workload_types_map.get(workload) == 'training'
+            
+            # Initialize appropriate graph based on workload
+            if workload == "ResNet-50":
+                graph = resnet_graph()
+                graphs.append(graph)
+            elif workload == "BERT":
+                graph = bert_graph()
+                graphs.append(graph)
+            elif workload == "GPT-4":
+                graph = gpt2_graph()  # Using GPT-2 as base for GPT-4
+                graphs.append(graph)
+            elif workload == "DLRM":
+                graph = langmodel_graph()  # Using language model for DLRM
+                graphs.append(graph)
+            elif workload == "SSD":
+                graph = alexnet_graph()  # Using AlexNet as base for SSD
+                graphs.append(graph)
+            elif workload == "HPCG":
+                cfg = CFGBuilder().build_from_file(
+                    "hpcg.py",
+                    "nonai_models/hpcg.py",
+                )
+                graphs.append(cfg)
+            elif workload == "LINPACK":
+                cfg = CFGBuilder().build_from_file(
+                    "linpack.py",
+                    "nonai_models/linpack.py",
+                )
+                graphs.append(cfg)
+            elif workload == "STREAM":
+                cfg = CFGBuilder().build_from_file(
+                    "stream.py",
+                    "nonai_models/stream.py",
+                )
+                graphs.append(cfg)
+            elif workload == "BFS":
+                cfg = CFGBuilder().build_from_file(
+                    "bfs.py",
+                    "nonai_models/bfs.py",
+                )
+                graphs.append(cfg)
+            elif workload == "PageRank":
+                cfg = CFGBuilder().build_from_file(
+                    "pagerank.py",
+                    "nonai_models/pagerank.py",
+                )
+                graphs.append(cfg)
+            elif workload == "Connected Components":
+                cfg = CFGBuilder().build_from_file(
+                    "connected_components.py",
+                    "nonai_models/connected_components.py",
+                )
+                graphs.append(cfg)
+            elif workload == "AES-256":
+                cfg = CFGBuilder().build_from_file(
+                    "aes.py",
+                    "nonai_models/aes.py",
+                )
+                graphs.append(cfg)
+            elif workload == "SHA-3":
+                cfg = CFGBuilder().build_from_file(
+                    "sha3.py",
+                    "nonai_models/sha3.py",
+                )
+                graphs.append(cfg)
+            elif workload == "RSA":
+                cfg = CFGBuilder().build_from_file(
+                    "rsa.py",
+                    "nonai_models/rsa.py",
+                )
+                graphs.append(cfg)
+            else:
+                logger.warning(f"Unknown workload type: {workload}")
+        
         return graphs
     
     def optimize(self, iterations=10):
         """Run optimization using design_runner"""
         try:
             # Configure optimization parameters
-            backprop = self.requirements.optimizationPriority == "performance"
+            workload_types_map = self.requirements.workloadTypes or {}
+        
+            for workload in self.requirements.selectedWorkloads:
+            # Check if this is a training workload
+                is_training = workload_types_map.get(workload) == 'training'
+            backprop = is_training
             print_stats = True
             
             # Run design optimization
