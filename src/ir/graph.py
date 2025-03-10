@@ -2,22 +2,22 @@ import torch
 
 class Graph:
     def __init__(self, name, variables, inputs, outputs, nodes, fx_graph=None):
-        self.name = name
-        self.variables = variables
-        self.inputs = inputs
-        self.outputs = outputs
-        self.nodes = nodes
+        self._name = name
+        self._variables = variables
+        self._inputs = inputs
+        self._outputs = outputs
         self._fx_graph = fx_graph
-        
-        # Store edges as (source_node, target_node, edge_data)
         self._edges = []
+        self._nodes = nodes  # Direct assignment to avoid triggering setter during init
+        
+        # Extract edges if fx_graph is provided
         if fx_graph:
             self._extract_edges_from_fx()
 
     def _extract_edges_from_fx(self):
         """Extract edges from the FX graph structure"""
         self._edges = []
-        node_map = {node.name: node for node in self.nodes}
+        node_map = {node.name: node for node in self._nodes}
         
         # Iterate through FX nodes to get edges
         for fx_node in self._fx_graph.nodes:

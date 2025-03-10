@@ -28,7 +28,7 @@ from src.src_main import (
     Mapper
 )
 import os
-from src.common_models import alexnet_graph, vggnet_graph, resnet_graph, bert_graph, gpt2_graph, langmodel_graph
+from src.common_models import alexnet_graph, vggnet_graph, resnet_50_graph, bert_graph, gpt2_graph, langmodel_graph
 import ast
 
 from src.ir.cfg.staticfg import CFGBuilder
@@ -277,7 +277,7 @@ class DesignOptimizer:
             
             # Initialize appropriate graph based on workload
             if workload == "ResNet-50":
-                graph = resnet_graph()
+                graph = resnet_50_graph()
                 graphs.append(graph)
             elif workload == "BERT":
                 graph = bert_graph()
@@ -870,7 +870,7 @@ class SystemOptimizer:
             
             # Initialize appropriate graph based on workload
             if workload == "ResNet-50":
-                graph = resnet_graph()
+                graph = resnet_50_graph()
                 graphs.append(graph)
             elif workload == "BERT":
                 graph = bert_graph()

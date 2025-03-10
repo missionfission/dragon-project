@@ -27,8 +27,8 @@ def trace(model, args=(), kwargs=None):
     )
 
     # Use torch.fx to capture the graph
-    flattened_model = Flatten(model)
-    graph_module = torch.fx.symbolic_trace(flattened_model)
+    # flattened_model = Flatten(model)
+    graph_module = torch.fx.symbolic_trace(model)
     fx_graph = graph_module.graph
 
     # Create variables dictionary to track inputs/outputs

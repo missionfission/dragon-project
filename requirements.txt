@@ -12,3 +12,5 @@ scipy
 pyyaml  # `yaml` is not a valid package;
 yamlordereddictloader
 pandas
+astor
+graphviz

@@ -4,14 +4,12 @@ import sys
 import numpy as np
 
 # rnn_config = {rnn_type : "lstm", encoder_n_hidden : 1024, encoder_pre_rnn_layers : 2, encoder_stack_time_factor : 2, encoder_post_rnn_layers : 3, pred_n_hidden : 320, pred_rnn_layers : 2, forget_gate_bias : 1.0, joint_n_hidden : 512, dropout:0.32}
-import toml
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
 
-from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
 from ir.trace import trace
 from models.rnnt import RNNT
 from models.ssd_rs34 import SSD_R34
@@ -27,6 +25,7 @@ from models.Unet import Generic_UNet
 
 
 def dlrm_graph():
+    from dlrm.dlrm_s_pytorch import DLRM_Net, dash_separated_floats, dash_separated_ints
     
     import dlrm.dlrm_data_pytorch as dp
 
@@ -649,6 +648,8 @@ def Unet():
 
 
 def speech2text_model():
+    import toml
+
     config = toml.load("rnnt.toml")
     featurizer_config = config["input_eval"]
     model = RNNT(feature_config=featurizer_config, rnnt=config["rnnt"], num_classes=29)
