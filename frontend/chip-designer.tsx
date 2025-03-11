@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FormControl, InputLabel, MenuItem, TextField } from "@mui/material"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Switch } from "@/components/ui/switch"
 
 // Add interfaces
 interface ChipRequirements {
@@ -263,6 +264,7 @@ interface NetworkConfig {
   bandwidth: number; // GB/s
   latency: number; // ns
   ports: number;
+  enabled: boolean; // Add enabled field
 }
 
 interface ProcessorConfig {
@@ -272,6 +274,19 @@ interface ProcessorConfig {
   frequency: number;
   memory: number;
   tdp: number;
+  enabled: boolean;  // Add enabled field
+  cache?: {
+    l1: {
+      size: number;  // KB
+      associativity: number;
+      latency: number;  // cycles
+    };
+    l2: {
+      size: number;  // KB
+      associativity: number;
+      latency: number;  // cycles
+    };
+  };
 }
 
 interface SystemConfig {
@@ -289,7 +304,20 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 64,
     frequency: 3000,
     memory: 256,
-    tdp: 280
+    tdp: 280,
+    enabled: true,
+    cache: {
+      l1: {
+        size: 64,
+        associativity: 8,
+        latency: 4
+      },
+      l2: {
+        size: 512,
+        associativity: 16,
+        latency: 12
+      }
+    }
   },
   {
     type: 'gpu',
@@ -297,7 +325,8 @@ const defaultProcessors: ProcessorConfig[] = [
     cores: 6912,
     frequency: 1800,
     memory: 48,
-    tdp: 350
+    tdp: 350,
+    enabled: true
   }
 ];
 
@@ -306,13 +335,15 @@ const defaultNetworks: NetworkConfig[] = [
     type: 'pcie',
     bandwidth: 64,
     latency: 500,
-    ports: 64
+    ports: 64,
+    enabled: true
   },
   {
     type: 'nvlink',
     bandwidth: 300,
     latency: 100,
-    ports: 12
+    ports: 12,
+    enabled: true
   }
 ];
 
@@ -576,7 +607,20 @@ export default function ChipDesigner() {
         cores: 64,
         frequency: 3000,
         memory: 256,
-        tdp: 280
+        tdp: 280,
+        enabled: true,
+        cache: {
+          l1: {
+            size: 64,
+            associativity: 8,
+            latency: 4
+          },
+          l2: {
+            size: 512,
+            associativity: 16,
+            latency: 12
+          }
+        }
       },
       {
         type: 'gpu',
@@ -584,7 +628,8 @@ export default function ChipDesigner() {
         cores: 6912,
         frequency: 1800,
         memory: 48,
-        tdp: 350
+        tdp: 350,
+        enabled: true
       }
     ],
     networks: [
@@ -592,13 +637,15 @@ export default function ChipDesigner() {
         type: 'pcie',
         bandwidth: 64,
         latency: 500,
-        ports: 64
+        ports: 64,
+        enabled: true
       },
       {
         type: 'nvlink',
         bandwidth: 300,
         latency: 100,
-        ports: 12
+        ports: 12,
+        enabled: true
       }
     ],
     topology: 'mesh'
@@ -645,6 +692,9 @@ export default function ChipDesigner() {
   // Add new state for performance estimation
   const [isEstimating, setIsEstimating] = useState(false)
   const [performanceEstimate, setPerformanceEstimate] = useState<PerformanceEstimate | null>(null)
+
+  // Add new state variable after other state variables
+  const [showAddChipDialog, setShowAddChipDialog] = useState(false);
 
   // Move the saveSystemConfig function inside the component
   const saveSystemConfig = async () => {
@@ -948,13 +998,13 @@ export default function ChipDesigner() {
     initializeFirstChip();
   }, []);
 
-  // Update addChip to include chip name
-  const addChip = async () => {
+  // Replace the existing addChip function with these new functions
+  const addDefaultChip = async () => {
     try {
       const defaultYaml = await fetchDefaultConfig();
       const newChipConfig = yaml.load(defaultYaml) as ChipConfig;
       const chipIndex = systemConfig.chips.length;
-      newChipConfig.name = `Chip ${chipIndex + 1}`; // Add default name
+      newChipConfig.name = `Chip ${chipIndex + 1}`;
       
       const newChipId = `chip-${chipIndex}`;
       
@@ -963,13 +1013,36 @@ export default function ChipDesigner() {
         [newChipId]: defaultYaml
       }));
 
-      // Update system config with the new chip
       setSystemConfig(prev => ({
         ...prev,
         chips: [...prev.chips, newChipConfig]
       }));
     } catch (error) {
       setError('Failed to load default configuration');
+      console.error('Error:', error);
+    }
+  };
+
+  const addSavedChip = (design: SavedChipDesign) => {
+    try {
+      const chipIndex = systemConfig.chips.length;
+      const newChipId = `chip-${chipIndex}`;
+      const chipYaml = yaml.dump(design.config);
+      
+      // Update the chip name to avoid duplicates
+      const chipConfig = { ...design.config, name: `${design.name} (Copy ${chipIndex + 1})` };
+      
+      setYamlEditors(prev => ({
+        ...prev,
+        [newChipId]: chipYaml
+      }));
+
+      setSystemConfig(prev => ({
+        ...prev,
+        chips: [...prev.chips, chipConfig]
+      }));
+    } catch (error) {
+      setError('Failed to add saved chip design');
       console.error('Error:', error);
     }
   };
@@ -1044,12 +1117,21 @@ export default function ChipDesigner() {
 
   // Add these functions before the return statement
   const saveChipDesign = async () => {
-    if (!chipDesign || !config) return;
+    // Validate required fields
+    if (!designName.trim()) {
+      setError('Please enter a design name');
+      return;
+    }
+
+    if (!chipDesign || !config) {
+      setError('No chip design to save. Please generate a design first.');
+      return;
+    }
 
     const newDesign: SavedChipDesign = {
       id: Math.random().toString(36).substr(2, 9),
-      name: designName,
-      description: designDescription,
+      name: designName.trim(),
+      description: designDescription.trim(),
       requirements,
       design: chipDesign,
       config,
@@ -1065,8 +1147,9 @@ export default function ChipDesigner() {
       setShowSaveDialog(false);
       setDesignName('');
       setDesignDescription('');
+      setError(null); // Clear any existing errors
     } catch (error) {
-      setError('Failed to save chip design');
+      setError('Failed to save chip design: ' + (error as Error).message);
       console.error('Error saving design:', error);
     }
   };
@@ -1137,6 +1220,8 @@ export default function ChipDesigner() {
               value={designName}
               onChange={(e) => setDesignName(e.target.value)}
               className="bg-gray-800"
+              placeholder="Enter a name for your design"
+              required
             />
           </div>
           <div>
@@ -1146,14 +1231,28 @@ export default function ChipDesigner() {
               value={designDescription}
               onChange={(e) => setDesignDescription(e.target.value)}
               className="bg-gray-800"
+              placeholder="Add a description for your design"
             />
           </div>
+          {error && (
+            <div className="text-red-500 text-sm p-2 bg-red-500/10 rounded">
+              {error}
+            </div>
+          )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+          <Button variant="outline" onClick={() => {
+            setShowSaveDialog(false);
+            setError(null); // Clear any errors when closing
+          }}>
             Cancel
           </Button>
-          <Button onClick={saveChipDesign}>Save Design</Button>
+          <Button 
+            onClick={saveChipDesign}
+            disabled={!chipDesign || !config || !designName.trim()}
+          >
+            Save Design
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -1559,15 +1658,29 @@ export default function ChipDesigner() {
   };
 
   // Update processor form section
-  const ProcessorForm = ({ processor: proc, index }: { processor: ProcessorConfig, index: number }) => (
+  const ProcessorForm = ({ processor: proc, index, onUpdate = updateProcessor }: { 
+    processor: ProcessorConfig; 
+    index: number;
+    onUpdate?: (index: number, updates: Partial<ProcessorConfig>) => void;
+  }) => (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={proc.enabled}
+            onCheckedChange={(checked) => onUpdate(index, { enabled: checked })}
+          />
+          <Label>Enabled</Label>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Name</Label>
           <Input
             type="text"
             value={proc.name}
-            onChange={(e) => updateProcessor(index, { name: e.target.value })}
+            onChange={(e) => onUpdate(index, { name: e.target.value })}
+            disabled={!proc.enabled}
           />
         </div>
         <div className="space-y-2">
@@ -1575,7 +1688,8 @@ export default function ChipDesigner() {
           {proc.type === 'cpu' ? (
             <Select
               value={proc.name}
-              onValueChange={(value) => updateProcessor(index, { name: value })}
+              onValueChange={(value) => onUpdate(index, { name: value })}
+              disabled={!proc.enabled}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select CPU type" />
@@ -1588,7 +1702,8 @@ export default function ChipDesigner() {
           ) : proc.type === 'gpu' ? (
             <Select
               value={proc.name}
-              onValueChange={(value) => updateProcessor(index, { name: value })}
+              onValueChange={(value) => onUpdate(index, { name: value })}
+              disabled={!proc.enabled}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select GPU type" />
@@ -1603,8 +1718,9 @@ export default function ChipDesigner() {
             <Input
               type="text"
               value={proc.name}
-              onChange={(e) => updateProcessor(index, { name: e.target.value })}
+              onChange={(e) => onUpdate(index, { name: e.target.value })}
               placeholder="Accelerator name"
+              disabled={!proc.enabled}
             />
           )}
         </div>
@@ -1615,7 +1731,8 @@ export default function ChipDesigner() {
           <Input
             type="number"
             value={proc.cores}
-            onChange={(e) => updateProcessor(index, { cores: parseInt(e.target.value) || 0 })}
+            onChange={(e) => onUpdate(index, { cores: parseInt(e.target.value) || 0 })}
+            disabled={!proc.enabled}
           />
         </div>
         <div className="space-y-2">
@@ -1623,7 +1740,8 @@ export default function ChipDesigner() {
           <Input
             type="number"
             value={proc.frequency}
-            onChange={(e) => updateProcessor(index, { frequency: parseFloat(e.target.value) || 0 })}
+            onChange={(e) => onUpdate(index, { frequency: parseFloat(e.target.value) || 0 })}
+            disabled={!proc.enabled}
           />
         </div>
       </div>
@@ -1633,7 +1751,8 @@ export default function ChipDesigner() {
           <Input
             type="number"
             value={proc.memory}
-            onChange={(e) => updateProcessor(index, { memory: parseFloat(e.target.value) || 0 })}
+            onChange={(e) => onUpdate(index, { memory: parseFloat(e.target.value) || 0 })}
+            disabled={!proc.enabled}
           />
         </div>
         <div className="space-y-2">
@@ -1641,11 +1760,281 @@ export default function ChipDesigner() {
           <Input
             type="number"
             value={proc.tdp}
-            onChange={(e) => updateProcessor(index, { tdp: parseFloat(e.target.value) || 0 })}
+            onChange={(e) => onUpdate(index, { tdp: parseFloat(e.target.value) || 0 })}
+            disabled={!proc.enabled}
           />
         </div>
       </div>
+
+      {/* Add Cache Configuration for CPUs */}
+      {proc.type === 'cpu' && proc.enabled && (
+        <div className="space-y-4 border-t border-gray-800 pt-4">
+          <h4 className="font-medium">Cache Configuration</h4>
+          
+          {/* L1 Cache */}
+          <div className="space-y-2">
+            <Label>L1 Cache</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label className="text-sm">Size (KB)</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l1.size || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: parseInt(e.target.value) || 0,
+                        associativity: proc.cache?.l1.associativity || 8,
+                        latency: proc.cache?.l1.latency || 4
+                      },
+                      l2: {
+                        size: proc.cache?.l2.size || 512,
+                        associativity: proc.cache?.l2.associativity || 16,
+                        latency: proc.cache?.l2.latency || 12
+                      }
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label className="text-sm">Associativity</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l1.associativity || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: proc.cache?.l1.size || 64,
+                        associativity: parseInt(e.target.value) || 0,
+                        latency: proc.cache?.l1.latency || 4
+                      },
+                      l2: {
+                        size: proc.cache?.l2.size || 512,
+                        associativity: proc.cache?.l2.associativity || 16,
+                        latency: proc.cache?.l2.latency || 12
+                      }
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label className="text-sm">Latency (cycles)</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l1.latency || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: proc.cache?.l1.size || 64,
+                        associativity: proc.cache?.l1.associativity || 8,
+                        latency: parseInt(e.target.value) || 0
+                      },
+                      l2: {
+                        size: proc.cache?.l2.size || 512,
+                        associativity: proc.cache?.l2.associativity || 16,
+                        latency: proc.cache?.l2.latency || 12
+                      }
+                    }
+                  })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* L2 Cache */}
+          <div className="space-y-2">
+            <Label>L2 Cache</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label className="text-sm">Size (KB)</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l2.size || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: proc.cache?.l1.size || 64,
+                        associativity: proc.cache?.l1.associativity || 8,
+                        latency: proc.cache?.l1.latency || 4
+                      },
+                      l2: {
+                        size: parseInt(e.target.value) || 0,
+                        associativity: proc.cache?.l2.associativity || 16,
+                        latency: proc.cache?.l2.latency || 12
+                      }
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label className="text-sm">Associativity</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l2.associativity || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: proc.cache?.l1.size || 64,
+                        associativity: proc.cache?.l1.associativity || 8,
+                        latency: proc.cache?.l1.latency || 4
+                      },
+                      l2: {
+                        size: proc.cache?.l2.size || 512,
+                        associativity: parseInt(e.target.value) || 0,
+                        latency: proc.cache?.l2.latency || 12
+                      }
+                    }
+                  })}
+                />
+              </div>
+              <div>
+                <Label className="text-sm">Latency (cycles)</Label>
+                <Input
+                  type="number"
+                  value={proc.cache?.l2.latency || 0}
+                  onChange={(e) => onUpdate(index, {
+                    cache: {
+                      l1: {
+                        size: proc.cache?.l1.size || 64,
+                        associativity: proc.cache?.l1.associativity || 8,
+                        latency: proc.cache?.l1.latency || 4
+                      },
+                      l2: {
+                        size: proc.cache?.l2.size || 512,
+                        associativity: proc.cache?.l2.associativity || 16,
+                        latency: parseInt(e.target.value) || 0
+                      }
+                    }
+                  })}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+  );
+
+  // Update the network configuration section
+  const NetworkConfigSection = () => (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Network Configuration</h3>
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <Network className="w-4 h-4" />
+          <Select
+            value={systemConfig.topology}
+            onValueChange={(value) => 
+              setSystemConfig(prev => ({ ...prev, topology: value as SystemConfig['topology'] }))
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select topology" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mesh">Mesh Network</SelectItem>
+              <SelectItem value="ring">Ring Network</SelectItem>
+              <SelectItem value="star">Star Network</SelectItem>
+              <SelectItem value="fully-connected">Fully Connected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {systemConfig.networks.map((network, index) => (
+            <div key={index} className="p-4 border border-gray-800 rounded-lg space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={network.enabled}
+                    onCheckedChange={(checked) => updateNetwork(index, { enabled: checked })}
+                  />
+                  <span className="font-medium">{network.type.toUpperCase()}</span>
+                </div>
+                <Badge variant="outline">{network.bandwidth} GB/s</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-gray-400">Latency (ns)</label>
+                  <input
+                    type="number"
+                    value={network.latency}
+                    onChange={(e) => updateNetwork(index, { latency: parseInt(e.target.value) })}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                    disabled={!network.enabled}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400">Ports</label>
+                  <input
+                    type="number"
+                    value={network.ports}
+                    onChange={(e) => updateNetwork(index, { ports: parseInt(e.target.value) })}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
+                    disabled={!network.enabled}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Add the new dialog component before the return statement
+  const AddChipDialog = () => (
+    <Dialog open={showAddChipDialog} onOpenChange={setShowAddChipDialog}>
+      <DialogContent className="bg-gray-900 text-white">
+        <DialogHeader>
+          <DialogTitle>Add New Chip</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Choose a starting configuration for your new chip
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={async () => {
+              await addDefaultChip();
+              setShowAddChipDialog(false);
+            }}
+          >
+            <PlusCircle className="w-4 h-4 mr-2" />
+            Start with Default Configuration
+          </Button>
+          
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-700" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gray-900 px-2 text-gray-400">Or choose from saved designs</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {savedDesigns.map((design) => (
+              <Button
+                key={design.id}
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => {
+                  addSavedChip(design);
+                  setShowAddChipDialog(false);
+                }}
+              >
+                <CpuIcon className="w-4 h-4 mr-2" />
+                {design.name}
+                <span className="ml-auto text-gray-400 text-xs">
+                  {new Date(design.createdAt).toLocaleDateString()}
+                </span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 
   return (
@@ -2053,7 +2442,7 @@ export default function ChipDesigner() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={addChip}
+                  onClick={() => setShowAddChipDialog(true)}
                   className="flex items-center gap-2"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -2131,60 +2520,7 @@ export default function ChipDesigner() {
             </div>
 
             {/* Network Configuration */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Network Configuration</h3>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Network className="w-4 h-4" />
-                  <Select
-                    value={systemConfig.topology}
-                    onValueChange={(value) => 
-                      setSystemConfig(prev => ({ ...prev, topology: value as SystemConfig['topology'] }))
-                    }
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select topology" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mesh">Mesh Network</SelectItem>
-                      <SelectItem value="ring">Ring Network</SelectItem>
-                      <SelectItem value="star">Star Network</SelectItem>
-                      <SelectItem value="fully-connected">Fully Connected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {systemConfig.networks.map((network, index) => (
-                    <div key={index} className="p-4 border border-gray-800 rounded-lg space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{network.type.toUpperCase()}</span>
-                        <Badge variant="outline">{network.bandwidth} GB/s</Badge>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm text-gray-400">Latency (ns)</label>
-                          <input
-                            type="number"
-                            value={network.latency}
-                            onChange={(e) => updateNetwork(index, { latency: parseInt(e.target.value) })}
-                            className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm text-gray-400">Ports</label>
-                          <input
-                            type="number"
-                            value={network.ports}
-                            onChange={(e) => updateNetwork(index, { ports: parseInt(e.target.value) })}
-                            className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-2 py-1"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <NetworkConfigSection />
 
             {/* System Configurations Section */}
             <div className="space-y-4 mb-6">
@@ -2257,6 +2593,9 @@ export default function ChipDesigner() {
 
         {/* History Dialog */}
         <HistoryDialog />
+
+        {/* Add Chip Dialog */}
+        <AddChipDialog />
 
         {/* Performance Estimate Results */}
         {performanceEstimate && (

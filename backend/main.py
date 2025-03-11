@@ -867,59 +867,59 @@ class SystemOptimizer:
                 graph = alexnet_graph()  # Using AlexNet as base for SSD
                 graphs.append(graph)
             elif workload == "HPCG":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "hpcg.py",
                     "nonai_models/hpcg.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "LINPACK":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "linpack.py",
                     "nonai_models/linpack.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "STREAM":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "stream.py",
                     "nonai_models/stream.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "BFS":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "bfs.py",
                     "nonai_models/bfs.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "PageRank":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "pagerank.py",
                     "nonai_models/pagerank.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "Connected Components":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "connected_components.py",
                     "nonai_models/connected_components.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "AES-256":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "aes.py",
                     "nonai_models/aes.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "SHA-3":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "sha3.py",
                     "nonai_models/sha3.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             elif workload == "RSA":
-                cfg = CFGBuilder().build_from_file(
+                graph = CFGBuilder().build_from_file(
                     "rsa.py",
                     "nonai_models/rsa.py",
                 )
-                graphs.append(cfg)
+                graphs.append(graph)
             else:
                 logger.warning(f"Unknown workload type: {workload}")
         
@@ -1726,6 +1726,471 @@ def estimate_gpu_performance(processor_config, workload):
             'power_efficiency': 0,
             'overall_utilization': 0
         }
+
+class CustomWorkloadKernel(BaseModel):
+    """Model for a single computational kernel in a custom workload"""
+    name: str = Field(..., description="Name of the kernel")
+    code_path: str = Field(..., description="Path to the Python file containing the kernel code")
+    compute_intensity: float = Field(..., ge=0, le=1, description="Compute intensity (0-1)")
+    memory_intensity: float = Field(..., ge=0, le=1, description="Memory intensity (0-1)")
+    data_size: int = Field(..., gt=0, description="Size of data processed in bytes")
+    preferred_processor: str = Field("any", description="Preferred processor type (cpu, gpu, accelerator, any)")
+    parallelizable: bool = Field(True, description="Whether the kernel can be parallelized")
+    dependencies: List[str] = Field(default_factory=list, description="Names of kernels that must complete before this one")
+
+class CustomWorkload(BaseModel):
+    """Model for defining a custom workload with multiple kernels"""
+    name: str = Field(..., description="Name of the workload")
+    description: str = Field(..., description="Description of the workload")
+    kernels: List[CustomWorkloadKernel] = Field(..., description="List of computational kernels")
+    total_data_size: int = Field(..., gt=0, description="Total size of data processed in bytes")
+    target_latency_ms: Optional[float] = Field(None, gt=0, description="Target latency in milliseconds")
+
+class CFGWorkloadAnalyzer:
+    """Analyzer for workloads using Control Flow Graph analysis"""
+    def __init__(self, code_path: str):
+        self.code_path = code_path
+        self.cfg = None
+        self.basic_blocks = []
+        self.execution_paths = []
+        
+    def build_cfg(self):
+        """Build Control Flow Graph from the source code"""
+        try:
+            self.cfg = CFGBuilder().build_from_file(
+                os.path.basename(self.code_path),
+                self.code_path
+            )
+            self._analyze_basic_blocks()
+            return True
+        except Exception as e:
+            logger.error(f"Error building CFG: {str(e)}")
+            return False
+            
+    def _analyze_basic_blocks(self):
+        """Analyze basic blocks from the CFG"""
+        if not self.cfg:
+            return
+            
+        for block in self.cfg.blocks:
+            block_info = self._analyze_block_characteristics(block)
+            self.basic_blocks.append(block_info)
+            
+    def _analyze_block_characteristics(self, block) -> Dict[str, Any]:
+        """Analyze characteristics of a basic block"""
+        try:
+            # Count different types of operations
+            compute_ops = 0
+            memory_ops = 0
+            control_ops = 0
+            
+            for node in block.nodes:
+                if isinstance(node, ast.BinOp):
+                    compute_ops += 1
+                elif isinstance(node, (ast.Load, ast.Store, ast.Subscript)):
+                    memory_ops += 1
+                elif isinstance(node, (ast.If, ast.While, ast.For)):
+                    control_ops += 1
+                    
+            total_ops = max(1, compute_ops + memory_ops + control_ops)
+            
+            return {
+                "block_id": id(block),
+                "compute_intensity": compute_ops / total_ops,
+                "memory_intensity": memory_ops / total_ops,
+                "control_intensity": control_ops / total_ops,
+                "parallelizable": self._is_block_parallelizable(block),
+                "estimated_cycles": self._estimate_block_cycles(block),
+                "data_dependencies": self._get_data_dependencies(block)
+            }
+        except Exception as e:
+            logger.error(f"Error analyzing block characteristics: {str(e)}")
+            return {
+                "block_id": id(block),
+                "compute_intensity": 0.33,
+                "memory_intensity": 0.33,
+                "control_intensity": 0.33,
+                "parallelizable": False,
+                "estimated_cycles": 100,
+                "data_dependencies": []
+            }
+            
+    def _is_block_parallelizable(self, block) -> bool:
+        """Determine if a basic block can be parallelized"""
+        try:
+            # Check for loop constructs that might be parallelizable
+            has_loop = any(isinstance(node, (ast.For, ast.While)) for node in block.nodes)
+            has_reduction = any(isinstance(node, ast.BinOp) and 
+                              isinstance(node.op, (ast.Add, ast.Mult)) for node in block.nodes)
+            
+            # Check for dependencies that would prevent parallelization
+            has_dependencies = bool(self._get_data_dependencies(block))
+            
+            return has_loop and not has_dependencies
+        except Exception as e:
+            logger.error(f"Error checking block parallelization: {str(e)}")
+            return False
+            
+    def _estimate_block_cycles(self, block) -> int:
+        """Estimate CPU cycles needed for a basic block"""
+        try:
+            cycles = 0
+            for node in block.nodes:
+                if isinstance(node, ast.BinOp):
+                    cycles += 1  # Basic arithmetic
+                elif isinstance(node, ast.Call):
+                    cycles += 10  # Function call overhead
+                elif isinstance(node, (ast.Load, ast.Store)):
+                    cycles += 4  # Memory operations
+                elif isinstance(node, (ast.If, ast.While, ast.For)):
+                    cycles += 2  # Control flow
+            return max(1, cycles)
+        except Exception as e:
+            logger.error(f"Error estimating block cycles: {str(e)}")
+            return 10  # Default cycles
+            
+    def _get_data_dependencies(self, block) -> List[str]:
+        """Get data dependencies for a basic block"""
+        try:
+            dependencies = set()
+            for node in block.nodes:
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                    dependencies.add(node.id)
+            return list(dependencies)
+        except Exception as e:
+            logger.error(f"Error getting data dependencies: {str(e)}")
+            return []
+            
+    def map_to_processors(self, system_config: SystemConfig) -> Dict[str, Any]:
+        """Map basic blocks to available processors"""
+        try:
+            mapping = {}
+            for block in self.basic_blocks:
+                best_processor = self._find_best_processor_for_block(block, system_config)
+                mapping[block["block_id"]] = {
+                    "processor": best_processor,
+                    "estimated_execution_time": self._estimate_execution_time(block, best_processor),
+                    "characteristics": block
+                }
+            return mapping
+        except Exception as e:
+            logger.error(f"Error mapping blocks to processors: {str(e)}")
+            return {}
+            
+    def _find_best_processor_for_block(self, block: Dict[str, Any], system_config: SystemConfig) -> Dict[str, Any]:
+        """Find the best processor for a given basic block"""
+        try:
+            best_processor = None
+            best_score = -1
+            
+            for processor in system_config.processors:
+                score = self._calculate_processor_score(block, processor)
+                if score > best_score:
+                    best_score = score
+                    best_processor = processor
+                    
+            # Also consider accelerator chips
+            for chip in system_config.chips:
+                if 'mm_compute' in chip:
+                    score = self._calculate_accelerator_score(block, chip)
+                    if score > best_score:
+                        best_score = score
+                        best_processor = chip
+                        
+            return best_processor or system_config.processors[0]  # Default to first processor
+        except Exception as e:
+            logger.error(f"Error finding best processor: {str(e)}")
+            return system_config.processors[0]
+            
+    def _calculate_processor_score(self, block: Dict[str, Any], processor: Dict[str, Any]) -> float:
+        """Calculate score for a processor based on block characteristics"""
+        try:
+            score = 0
+            proc_type = processor.get('type', '').lower()
+            
+            # CPU is good for control-intensive blocks
+            if proc_type == 'cpu':
+                score += block['control_intensity'] * 2
+                if block['parallelizable'] and processor.get('cores', 1) > 1:
+                    score += 1
+                    
+            # GPU is good for compute-intensive, parallelizable blocks
+            elif proc_type == 'gpu':
+                if block['parallelizable']:
+                    score += block['compute_intensity'] * 3
+                if block['memory_intensity'] > 0.7:
+                    score += 1
+                    
+            # RISC-V might be good for simple, sequential blocks
+            elif proc_type == 'riscv':
+                if not block['parallelizable']:
+                    score += 1
+                score += (1 - block['compute_intensity']) * 0.5
+                
+            return score
+        except Exception as e:
+            logger.error(f"Error calculating processor score: {str(e)}")
+            return 0
+            
+    def _calculate_accelerator_score(self, block: Dict[str, Any], chip: Dict[str, Any]) -> float:
+        """Calculate score for an accelerator chip based on block characteristics"""
+        try:
+            score = 0
+            
+            # Accelerators are good for compute-intensive, parallelizable blocks
+            if block['parallelizable']:
+                score += block['compute_intensity'] * 2
+                
+            # Consider accelerator's compute capabilities
+            compute_units = chip['mm_compute']['type1'].get('N_PE', 0)
+            frequency = chip['mm_compute']['type1'].get('frequency', 0)
+            
+            # More compute units and higher frequency increase score
+            score += (compute_units / 256) * 0.5
+            score += (frequency / 1000) * 0.5
+            
+            return score
+        except Exception as e:
+            logger.error(f"Error calculating accelerator score: {str(e)}")
+            return 0
+            
+    def _estimate_execution_time(self, block: Dict[str, Any], processor: Dict[str, Any]) -> float:
+        """Estimate execution time for a block on a given processor"""
+        try:
+            base_cycles = block['estimated_cycles']
+            
+            # Adjust cycles based on processor type and characteristics
+            if processor.get('type', '').lower() == 'gpu':
+                if block['parallelizable']:
+                    base_cycles /= 32  # Assume 32-way parallelism
+            elif processor.get('type', '').lower() == 'cpu':
+                if block['parallelizable']:
+                    cores = processor.get('cores', 1)
+                    base_cycles /= (cores ** 0.7)  # Sub-linear scaling
+            elif 'mm_compute' in processor:
+                compute_units = processor['mm_compute']['type1'].get('N_PE', 256)
+                frequency = processor['mm_compute']['type1'].get('frequency', 1000)
+                base_cycles *= (256 / compute_units) * (1000 / frequency)
+                
+            # Convert cycles to time (ms)
+            frequency_mhz = (processor.get('frequency', 1000) 
+                           if 'frequency' in processor 
+                           else processor.get('mm_compute', {}).get('type1', {}).get('frequency', 1000))
+            
+            execution_time_ms = (base_cycles / frequency_mhz) * 1000
+            return max(0.001, execution_time_ms)  # Minimum 1µs
+            
+        except Exception as e:
+            logger.error(f"Error estimating execution time: {str(e)}")
+            return 1.0  # Default 1ms
+
+def analyze_custom_workload_with_cfg(workload: CustomWorkload, system_config: SystemConfig) -> Dict[str, Any]:
+    """Analyze a custom workload using CFG analysis"""
+    try:
+        results = {
+            "kernels": {},
+            "total_execution_time": 0,
+            "processor_utilization": {},
+            "bottlenecks": []
+        }
+        
+        for kernel in workload.kernels:
+            # Create CFG analyzer for each kernel
+            analyzer = CFGWorkloadAnalyzer(kernel.code_path)
+            if not analyzer.build_cfg():
+                logger.warning(f"Failed to build CFG for kernel: {kernel.name}")
+                continue
+                
+            # Map blocks to processors
+            mapping = analyzer.map_to_processors(system_config)
+            
+            # Calculate kernel metrics
+            kernel_time = sum(m["estimated_execution_time"] for m in mapping.values())
+            processor_distribution = {}
+            
+            for block_id, block_mapping in mapping.items():
+                proc = block_mapping["processor"]
+                proc_id = proc.get('name', str(id(proc)))
+                if proc_id not in processor_distribution:
+                    processor_distribution[proc_id] = 0
+                processor_distribution[proc_id] += block_mapping["estimated_execution_time"]
+                
+            results["kernels"][kernel.name] = {
+                "execution_time_ms": kernel_time,
+                "processor_distribution": processor_distribution,
+                "block_mapping": mapping
+            }
+            
+            results["total_execution_time"] += kernel_time
+            
+            # Update processor utilization
+            for proc_id, time in processor_distribution.items():
+                if proc_id not in results["processor_utilization"]:
+                    results["processor_utilization"][proc_id] = 0
+                results["processor_utilization"][proc_id] += time
+                
+            # Identify bottlenecks
+            if kernel_time > (workload.target_latency_ms or float('inf')) * 0.2:  # If kernel takes >20% of target time
+                results["bottlenecks"].append({
+                    "kernel": kernel.name,
+                    "execution_time_ms": kernel_time,
+                    "cause": "Long execution time"
+                })
+                
+        return results
+        
+    except Exception as e:
+        logger.error(f"Error in CFG-based workload analysis: {str(e)}")
+        return {
+            "error": str(e),
+            "kernels": {},
+            "total_execution_time": 0,
+            "processor_utilization": {},
+            "bottlenecks": []
+        }
+
+@app.post("/api/analyze-custom-workload")
+async def analyze_custom_workload_endpoint(workload: CustomWorkload, system_config: SystemConfig):
+    """Analyze a custom workload using CFG-based analysis"""
+    try:
+        # Validate workload kernels
+        for kernel in workload.kernels:
+            if not os.path.exists(kernel.code_path):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Kernel code file not found: {kernel.code_path}"
+                )
+        
+        # Perform CFG-based analysis
+        analysis_results = analyze_custom_workload_with_cfg(workload, system_config)
+        
+        # Add visualization data
+        visualization_data = {
+            "timeline": generate_execution_timeline(analysis_results),
+            "processor_utilization": generate_utilization_chart(analysis_results),
+            "bottleneck_analysis": generate_bottleneck_visualization(analysis_results)
+        }
+        
+        return {
+            "analysis": analysis_results,
+            "visualization": visualization_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Error analyzing custom workload: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to analyze custom workload: {str(e)}"
+        )
+
+def generate_execution_timeline(analysis_results: Dict[str, Any]) -> str:
+    """Generate a Gantt chart visualization of kernel execution timeline"""
+    try:
+        plt.figure(figsize=(12, 6))
+        
+        # Collect timeline data
+        kernels = []
+        start_times = []
+        durations = []
+        processors = []
+        
+        for kernel_name, kernel_data in analysis_results["kernels"].items():
+            for proc, time in kernel_data["processor_distribution"].items():
+                kernels.append(kernel_name)
+                start_times.append(kernel_data["block_mapping"][list(kernel_data["block_mapping"].keys())[0]]["estimated_execution_time"])
+                durations.append(time)
+                processors.append(proc)
+        
+        # Create Gantt chart
+        y_pos = np.arange(len(kernels))
+        plt.barh(y_pos, durations, left=start_times)
+        plt.yticks(y_pos, [f"{k} ({p})" for k, p in zip(kernels, processors)])
+        
+        plt.xlabel('Time (ms)')
+        plt.title('Kernel Execution Timeline')
+        plt.grid(True, alpha=0.3)
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating execution timeline: {str(e)}")
+        return ""
+
+def generate_utilization_chart(analysis_results: Dict[str, Any]) -> str:
+    """Generate a bar chart of processor utilization"""
+    try:
+        plt.figure(figsize=(10, 6))
+        
+        processors = list(analysis_results["processor_utilization"].keys())
+        utilizations = list(analysis_results["processor_utilization"].values())
+        
+        # Calculate utilization percentage
+        total_time = analysis_results["total_execution_time"]
+        utilization_pct = [100 * u / total_time for u in utilizations]
+        
+        plt.bar(processors, utilization_pct)
+        plt.ylabel('Utilization (%)')
+        plt.title('Processor Utilization')
+        plt.xticks(rotation=45)
+        plt.grid(True, alpha=0.3)
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating utilization chart: {str(e)}")
+        return ""
+
+def generate_bottleneck_visualization(analysis_results: Dict[str, Any]) -> str:
+    """Generate a visualization of system bottlenecks"""
+    try:
+        plt.figure(figsize=(10, 6))
+        
+        # Collect bottleneck data
+        kernels = [b["kernel"] for b in analysis_results["bottlenecks"]]
+        times = [b["execution_time_ms"] for b in analysis_results["bottlenecks"]]
+        
+        if not kernels:
+            plt.text(0.5, 0.5, 'No bottlenecks detected', 
+                    horizontalalignment='center',
+                    verticalalignment='center')
+        else:
+            plt.bar(kernels, times, color='red', alpha=0.6)
+            plt.ylabel('Execution Time (ms)')
+            plt.title('Performance Bottlenecks')
+            plt.xticks(rotation=45)
+            
+            # Add threshold line if target latency exists
+            for kernel_data in analysis_results["kernels"].values():
+                if "target_latency_ms" in kernel_data:
+                    plt.axhline(y=kernel_data["target_latency_ms"], 
+                              color='green', 
+                              linestyle='--', 
+                              label='Target Latency')
+                    break
+        
+        plt.grid(True, alpha=0.3)
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating bottleneck visualization: {str(e)}")
+        return ""
 
 if __name__ == "__main__":
     import uvicorn
