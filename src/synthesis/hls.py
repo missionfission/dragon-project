@@ -2,6 +2,7 @@ import ast
 import re
 
 import astor
+import numpy as np
 
 from generator import get_mem_props
 from ir.cfg.staticfg import CFGBuilder
@@ -221,7 +222,6 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
     if type(string) == ast.Constant:
         parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
-import numpy as np
 def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation 
