@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from 'react'
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
-import { FaGoogle } from 'react-icons/fa'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -41,16 +42,20 @@ const testimonials = [
 
 export default function HomePage() {
   const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleGoogleSignIn = async () => {
+  const handleSignIn = async () => {
     setLoading(true)
+    setError('')
     try {
-      const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
+      await signInWithEmailAndPassword(auth, email, password)
       router.push('/dashboard')
-    } catch (error) {
-      console.error('Error signing in with Google:', error)
+    } catch (error: any) {
+      console.error('Error signing in:', error)
+      setError(error.message || 'Failed to sign in')
     } finally {
       setLoading(false)
     }
@@ -82,17 +87,42 @@ export default function HomePage() {
                 <p>Reduce development costs by up to 60%</p>
               </div>
             </div>
-            <div className="flex gap-4 mt-8">
-              <Button 
-                size="lg"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                className="bg-white text-black hover:bg-gray-200 flex items-center gap-2"
-              >
-                <FaGoogle className="w-5 h-5" />
-                Sign in with Google
-              </Button>
-            </div>
+            <Card className="p-6 bg-gray-800/50 border-gray-700 max-w-md">
+              <form onSubmit={(e) => { e.preventDefault(); handleSignIn(); }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                {error && (
+                  <div className="text-red-500 text-sm">{error}</div>
+                )}
+                <Button 
+                  type="submit"
+                  className="w-full bg-blue-500 hover:bg-blue-600"
+                  disabled={loading}
+                >
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </Button>
+              </form>
+            </Card>
           </div>
           {/* <div className="flex-1">
             <Image 
