@@ -377,6 +377,51 @@ export default function HomePage() {
         </p>
       </div>
 
+      {/* Blog Preview Section */}
+      <div className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-center mb-16">Latest from Our Blog</h2>
+        
+        <div className="max-w-4xl mx-auto space-y-8">
+          <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-colors cursor-pointer" onClick={() => router.push('/blog')}>
+            <h3 className="text-2xl font-semibold mb-4">Introducing DragonX: Revolutionary AI-Powered Chip Design Tools</h3>
+            <div className="mb-6">
+              <Image
+                src="/acc.png"
+                alt="AI Accelerator Performance"
+                width={800}
+                height={400}
+                className="rounded-lg shadow-xl mb-4"
+              />
+            </div>
+            <p className="text-gray-300 mb-6">
+              Announcing the launch of DragonX Systems with industry-leading 99% accuracy for transformer models and 
+              97% for CNN architectures. Our AI-powered tools deliver unprecedented speed and precision in chip design optimization.
+            </p>
+            <div className="flex items-center text-blue-400 hover:text-blue-300">
+              Read full article
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Card>
+
+          <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-colors cursor-pointer" onClick={() => router.push('/blog')}>
+            <h3 className="text-2xl font-semibold mb-4">Performance Validation: Beyond AI Workloads</h3>
+            <p className="text-gray-300 mb-6">
+              Discover how DragonX achieves 95% accuracy compared to industry-standard simulators like gem5, while delivering 
+              100-1000x faster simulation speeds. Our comprehensive validation study covers SPEC CPU2017, PARSEC, and various 
+              industrial workloads across 200+ processor configurations.
+            </p>
+            <div className="flex items-center text-blue-400 hover:text-blue-300">
+              Read full article
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Code & Library Support Section */}
       <div className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-16">Developer Tools & Library Support</h2>
