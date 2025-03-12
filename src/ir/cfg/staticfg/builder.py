@@ -80,12 +80,13 @@ class CFGBuilder(ast.NodeVisitor):
     a program's AST and iteratively build the corresponding CFG.
     """
 
-    def __init__(self, separate=False):
+    def __init__(self, separate=False, tech_node='45nm'):
         super().__init__()
         self.after_loop_block_stack = []
         self.curr_loop_guard_stack = []
         self.current_block = None
         self.separate_node_blocks = separate
+        self.tech_node = tech_node
 
     # ---------- CFG building methods ---------- #
     def build(self, name, tree, asynchr=False, entry_id=0):
@@ -104,7 +105,7 @@ class CFGBuilder(ast.NodeVisitor):
         Returns:
             The CFG produced from the AST.
         """
-        self.cfg = CFG(name, asynchr=asynchr)
+        self.cfg = CFG(name, asynchr=asynchr, tech_node=self.tech_node)
         # Tracking of the current block while building the CFG.
         self.current_id = entry_id
         self.current_block = self.new_block()

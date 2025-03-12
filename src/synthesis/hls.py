@@ -222,12 +222,32 @@ def check_and_parse(string, unrolled=1, loop_iters=1):
     if type(string) == ast.Constant:
         parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
 
-def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000):
+def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm'):
     """
-    Parse a non-AI workload graph and store the configuration as a hardware representation 
+    Parse a non-AI workload graph and store the configuration as a hardware representation.
+    Supports technology node scaling for power and latency values.
+    
+    Args:
+        graph: The control flow graph to parse
+        dse_input: Design space exploration input parameters
+        dse_given: Whether DSE parameters are provided
+        given_bandwidth: Available memory bandwidth
+        tech_node: Target technology node (default 45nm)
     """
-    global bw_avail
+    global bw_avail, latency, power
     bw_avail = given_bandwidth
+
+    # Get technology scaling factor from CFG
+    tech_scale = graph.get_tech_scaling() if hasattr(graph, 'get_tech_scaling') else 1.0
+
+    # Scale latency and power values based on technology node
+    scaled_latency = {k: v * tech_scale for k, v in latency.items()}
+    scaled_power = {k: [p * tech_scale for p in v] for k, v in power.items()}
+
+    # Use scaled values
+    latency = scaled_latency
+    power = scaled_power
+
     for key in op2sym_map.keys():
         hw_allocated[key] = 0
         hw_utilized[key] = 0

@@ -148,20 +148,50 @@ class CFG(object):
     CFG).
     """
 
-    def __init__(self, name, asynchr=False):
+    # Technology node scaling factors (relative to 45nm)
+    TECH_SCALING = {
+        '7nm': 0.15,   # 7nm scaling factor
+        '14nm': 0.31,  # 14nm scaling factor 
+        '22nm': 0.48,  # 22nm scaling factor
+        '32nm': 0.65,  # 32nm scaling factor
+        '45nm': 1.0,   # 45nm baseline
+        '65nm': 1.44,  # 65nm scaling factor
+        '90nm': 2.0    # 90nm scaling factor
+    }
+
+    def __init__(self, name, asynchr=False, tech_node='45nm'):
         assert type(name) == str, "Name of a CFG must be a string"
         assert type(asynchr) == bool, "Async must be a boolean value"
+        assert tech_node in self.TECH_SCALING, f"Technology node {tech_node} not supported"
+        
         # Name of the function or module being represented.
         self.name = name
         # Type of function represented by the CFG (sync or async). A Python
         # program is considered as a synchronous function (main).
         self.asynchr = asynchr
+        # Technology node for power/area scaling
+        self.tech_node = tech_node
+        self.tech_scale = self.TECH_SCALING[tech_node]
         # Entry block of the CFG.
         self.entryblock = None
         # Final blocks of the CFG.
         self.finalblocks = []
         # Sub-CFGs for functions defined inside the current CFG.
         self.functioncfgs = {}
+
+    def get_tech_scaling(self):
+        """Get the technology scaling factor for this CFG"""
+        return self.tech_scale
+
+    def get_tech_node(self):
+        """Get the technology node for this CFG"""
+        return self.tech_node
+
+    def set_tech_node(self, tech_node):
+        """Set a new technology node and update scaling factor"""
+        assert tech_node in self.TECH_SCALING, f"Technology node {tech_node} not supported"
+        self.tech_node = tech_node
+        self.tech_scale = self.TECH_SCALING[tech_node]
 
     def __str__(self):
         return "CFG for {}".format(self.name)

@@ -40,6 +40,7 @@ from src.common_models import (
 import ast
 
 from src.ir.cfg.staticfg import CFGBuilder
+import re
 
 # design_runner([vggnet_graph()])
 # # for node in dlrm_graph.nodes:
@@ -226,6 +227,7 @@ class ChipRequirements(BaseModel):
     optimizationPriority: Optional[str] = Field("balanced", description="Priority for optimization: 'power', 'performance', or 'balanced'")
     workloadTypes: Dict[str, str] = Field(default_factory=dict, description="Mapping of workload names to their types (inference/training)")
     systemConfig: Optional[SystemConfig] = None
+    tech_node: Optional[str] = Field(None, description="Technology node for CFG building")
 
 class ChipBlock(BaseModel):
     id: str
@@ -832,118 +834,112 @@ class SystemOptimizer:
         self.best_design = None
         self.optimization_states = []
         self.iteration = 0
+        self.accelerator_mapper = None
+        self.tech_node = requirements.tech_node if hasattr(requirements, 'tech_node') else '45nm'
+        
+        if requirements.systemConfig:
+            self.accelerator_mapper = AcceleratorFunctionMapper(requirements.systemConfig)
         
         # Convert workload names to graph objects
         self.graph_set = self._prepare_graph_set(requirements.selectedWorkloads)
-        
+    
     def _prepare_graph_set(self, workload_types: List[str]) -> List[Any]:
-        """
-        Convert workload types to corresponding graph objects.
-        Uses backprop=True for training mode workloads.
-        """
+        """Prepare the set of workload graphs for optimization"""
         graphs = []
-        
-        # Get workload types mapping for training/inference
-        workload_types_map = self.requirements.workloadTypes or {}
+        logger.info("Preparing workload graphs")
         
         for workload in workload_types:
-            # Check if this is a training workload
-            is_training = workload_types_map.get(workload) == 'training'
+            # Get the Python file for this workload
+            workflow_file = self._get_workflow_file(workload)
             
-            # Initialize appropriate graph based on workload
-            if workload == "ResNet-50":
-                graph = resnet_50_graph()
-                graphs.append(graph)
-            elif workload == "BERT":
-                graph = bert_graph()
-                graphs.append(graph)
-            elif workload == "GPT-4":
-                graph = gpt2_graph()  # Using GPT-2 as base for GPT-4
-                graphs.append(graph)
-            elif workload == "DLRM":
-                graph = langmodel_graph()  # Using language model for DLRM
-                graphs.append(graph)
-            elif workload == "SSD":
-                graph = alexnet_graph()  # Using AlexNet as base for SSD
-                graphs.append(graph)
-            elif workload == "HPCG":
-                graph = CFGBuilder().build_from_file(
-                    "hpcg.py",
-                    "nonai_models/hpcg.py",
+            if workflow_file and os.path.exists(workflow_file):
+                # Analyze workflow for accelerator offloading
+                if self.accelerator_mapper:
+                    self.accelerator_mapper.analyze_workflow(workflow_file)
+                
+                # Build CFG for the workflow with technology node
+                cfg = CFGBuilder(tech_node=self.tech_node).build_from_file(
+                    os.path.basename(workflow_file),
+                    workflow_file
                 )
-                graphs.append(graph)
-            elif workload == "LINPACK":
-                graph = CFGBuilder().build_from_file(
-                    "linpack.py",
-                    "nonai_models/linpack.py",
-                )
-                graphs.append(graph)
-            elif workload == "STREAM":
-                graph = CFGBuilder().build_from_file(
-                    "stream.py",
-                    "nonai_models/stream.py",
-                )
-                graphs.append(graph)
-            elif workload == "BFS":
-                graph = CFGBuilder().build_from_file(
-                    "bfs.py",
-                    "nonai_models/bfs.py",
-                )
-                graphs.append(graph)
-            elif workload == "PageRank":
-                graph = CFGBuilder().build_from_file(
-                    "pagerank.py",
-                    "nonai_models/pagerank.py",
-                )
-                graphs.append(graph)
-            elif workload == "Connected Components":
-                graph = CFGBuilder().build_from_file(
-                    "connected_components.py",
-                    "nonai_models/connected_components.py",
-                )
-                graphs.append(graph)
-            elif workload == "AES-256":
-                graph = CFGBuilder().build_from_file(
-                    "aes.py",
-                    "nonai_models/aes.py",
-                )
-                graphs.append(graph)
-            elif workload == "SHA-3":
-                graph = CFGBuilder().build_from_file(
-                    "sha3.py",
-                    "nonai_models/sha3.py",
-                )
-                graphs.append(graph)
-            elif workload == "RSA":
-                graph = CFGBuilder().build_from_file(
-                    "rsa.py",
-                    "nonai_models/rsa.py",
-                )
-                graphs.append(graph)
+                graphs.append(cfg)
             else:
-                logger.warning(f"Unknown workload type: {workload}")
+                # Handle built-in workloads
+                graph = self._get_builtin_graph(workload)
+                if graph:
+                    graphs.append(graph)
+                else:
+                    logger.warning(f"Unknown workload type: {workload}")
+        
+        if not graphs:
+            raise ValueError("No valid workload graphs could be prepared")
         
         return graphs
+    
+    def _get_workflow_file(self, workload: str) -> Optional[str]:
+        """Get the Python file path for a workload"""
+        # Map workload names to their Python files
+        workflow_files = {
+            "CustomWorkload": "workflows/custom_workflow.py",
+            "HPCG": "nonai_models/hpcg.py",
+            "LINPACK": "nonai_models/linpack.py",
+            "STREAM": "nonai_models/stream.py",
+            "BFS": "nonai_models/bfs.py",
+            "PageRank": "nonai_models/pagerank.py",
+            "Connected Components": "nonai_models/connected_components.py",
+            "AES-256": "nonai_models/aes.py",
+            "SHA-3": "nonai_models/sha3.py",
+            "RSA": "nonai_models/rsa.py"
+        }
+        return workflow_files.get(workload)
+    
+    def _get_builtin_graph(self, workload: str) -> Optional[Any]:
+        """Get built-in graph for standard workloads"""
+        if workload == "ResNet-50":
+            return resnet_50_graph()
+        elif workload == "VGG16":
+            return vggnet_graph()
+        elif workload == "BERT":
+            return bert_graph()
+        elif workload == "GPT2":
+            return gpt2_graph()
+        elif workload == "AlexNet":
+            return alexnet_graph()
+        elif workload == "LangModel":
+            g1, g2 = langmodel_graph()
+            return [g1, g2]
+        return None
     
     def optimize(self, iterations=10):
         """Run optimization using design_runner"""
         try:
+            # Get accelerator offloading plan if available
+            offload_plan = None
+            if self.accelerator_mapper:
+                offload_plan = self.accelerator_mapper.get_offload_plan()
+                logger.info(f"Accelerator offloading plan: {offload_plan}")
+            
             # Configure optimization parameters
             workload_types_map = self.requirements.workloadTypes or {}
-        
+            
             for workload in self.requirements.selectedWorkloads:
-            # Check if this is a training workload
                 is_training = workload_types_map.get(workload) == 'training'
+            
             backprop = is_training
             print_stats = True
             
-            # Run design optimization
+            # Create stats filename with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            stats_file = LOGS_DIR / f"stats_{timestamp}_{self.iteration}.txt"
+            
+            # Run design optimization with offload plan
             time, energy, area = design_runner(
                 graph_set=self.graph_set,
                 backprop=backprop,
                 print_stats=print_stats,
                 file="default.yaml",
-                stats_file=f"logs/stats_{self.iteration}.txt"
+                stats_file=str(stats_file),
+                offload_plan=offload_plan
             )
             
             # Generate performance estimation visualization
@@ -960,7 +956,7 @@ class SystemOptimizer:
                 performance=1/time[0],
                 area=area,
                 design=self._create_design_from_metrics(time, energy, area),
-                perf_estimation_frames=perf_frames  # Add frames to state
+                perf_estimation_frames=perf_frames
             )
             self.optimization_states.append(state)
             
@@ -975,1014 +971,6 @@ class SystemOptimizer:
             
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
-    
-    def _create_design_from_metrics(self, time: List[float], energy: List[float], area: float) -> Dict:
-        """Convert optimization metrics to ChipDesign format"""
-        # Calculate block sizes based on area distribution
-        total_area = area
-        block_width = math.sqrt(total_area)
-        
-        blocks = []
-        
-        # Add compute block
-        blocks.append(ChipBlock(
-            id="compute",
-            type="Computing",
-            size={"width": block_width * 0.5, "height": block_width * 0.5},
-            position={"x": 0, "y": 0},
-            powerConsumption=energy[0] * 0.6,  # 60% of total power
-            performance=1/time[0],  # Convert time to performance
-            utilization=0.85
-        ))
-        
-        # Add memory block if ML workload present
-        if "Machine Learning" in self.requirements.selectedWorkloads:
-            blocks.append(ChipBlock(
-                id="memory",
-                type="Memory",
-                size={"width": block_width * 0.5, "height": block_width * 0.3},
-                position={"x": block_width * 0.5, "y": 0},
-                powerConsumption=energy[0] * 0.4,  # 40% of total power
-                performance=1/time[0] * 0.8,  # 80% of compute performance
-                utilization=0.75
-            ))
-        
-        return {
-            "blocks": [block.dict() for block in blocks],
-            "totalPower": energy[0],
-            "totalArea": area,
-            "estimatedPerformance": 1/time[0],
-            "powerEfficiency": 1/(time[0] * energy[0])
-        }
-    
-    def _is_better_design(self, design: ChipDesign) -> bool:
-        """Evaluate if new design is better based on optimization priority"""
-        if not self.best_design:
-            return True
-            
-        priority = self.requirements.optimizationPriority
-        
-        if priority == "power":
-            return design.powerEfficiency > self.best_design.powerEfficiency
-        elif priority == "performance":
-            return design.estimatedPerformance > self.best_design.estimatedPerformance
-        else:  # balanced
-            current_score = (design.powerEfficiency + design.estimatedPerformance) / 2
-            best_score = (self.best_design.powerEfficiency + self.best_design.estimatedPerformance) / 2
-            return current_score > best_score
-    
-    def generate_optimization_graph(self) -> str:
-        """Generate optimization progress visualization"""
-        plt.figure(figsize=(10, 6))
-        iterations = [s.iteration for s in self.optimization_states]
-        power = [s.power for s in self.optimization_states]
-        perf = [s.performance for s in self.optimization_states]
-        
-        plt.plot(iterations, power, label='Power (W)', marker='o')
-        plt.plot(iterations, perf, label='Performance (MIPS)', marker='s')
-        
-        plt.xlabel('Iteration')
-        plt.ylabel('Value')
-        plt.title('Optimization Progress')
-        plt.legend()
-        plt.grid(True)
-        
-        # Save to base64 string
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        plt.close()
-        buf.seek(0)
-        return base64.b64encode(buf.getvalue()).decode()
-    
-    def generate_animation_frames(self) -> List[str]:
-        """Generate frames showing design evolution"""
-        frames = []
-        for state in self.optimization_states:
-            frame = self._generate_design_frame(state.design)
-            frames.append(frame)
-        return frames
-    
-    def _generate_design_frame(self, design: Dict) -> str:
-        """Generate a single frame visualizing the chip design"""
-        plt.figure(figsize=(8, 8))
-        
-        # Plot blocks
-        for block in design['blocks']:
-            x = block['position']['x']
-            y = block['position']['y']
-            w = block['size']['width']
-            h = block['size']['height']
-            
-            color = {
-                'Computing': 'lightcoral',
-                'Memory': 'lightblue',
-                'Network': 'lightgreen',
-                'Security': 'plum'
-            }.get(block['type'], 'gray')
-            
-            plt.gca().add_patch(
-                plt.Rectangle((x, y), w, h, 
-                            facecolor=color,
-                            edgecolor='black',
-                            alpha=0.7)
-            )
-            plt.text(x + w/2, y + h/2, block['type'],
-                    ha='center', va='center')
-        
-        plt.xlim(0, 400)
-        plt.ylim(0, 400)
-        plt.title(f'Chip Design Layout')
-        
-        # Save to base64 string
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        plt.close()
-        buf.seek(0)
-        return base64.b64encode(buf.getvalue()).decode()
-
-    def get_performance_estimation_animation(self) -> List[str]:
-        """Get all performance estimation visualization frames"""
-        frames = []
-        for state in self.optimization_states:
-            if hasattr(state, 'perf_estimation_frames'):
-                frames.extend(state.perf_estimation_frames)
-        return frames
-
-# Add new function for system-level performance estimation
-def estimate_system_performance(system_config: SystemConfig, workloads: List[str]):
-    """Estimate performance for multi-chip system configuration"""
-    
-    results = {
-        'chips': [],
-        'network': {
-            'bandwidth_utilization': [],
-            'latency_distribution': [],
-            'bottlenecks': []
-        },
-        'workload_distribution': {}
-    }
-    
-    # Analyze each chip
-    for chip in system_config.chips:
-        chip_perf = estimate_chip_performance(chip)
-        results['chips'].append(chip_perf)
-    
-    # Analyze network performance
-    for network in system_config.networks:
-        util = analyze_network_utilization(network, workloads)
-        results['network']['bandwidth_utilization'].append(util)
-        
-        latency = analyze_network_latency(network, system_config.topology)
-        results['network']['latency_distribution'].append(latency)
-    
-    # Analyze workload distribution
-    results['workload_distribution'] = analyze_workload_distribution(
-        workloads, 
-        system_config.chips,
-        system_config.processors
-    )
-    
-    return results
-
-@app.get("/api/default-config")
-async def get_default_config():
-    """Return the default chip configuration from default.yaml"""
-    try:
-        with open("default.yaml", "r") as f:
-            default_config = f.read()
-        return {"config": default_config}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Failed to load default configuration: {str(e)}"
-        )
-
-# Add new endpoint for system performance calculation
-@app.post("/api/calculate-system-performance")
-async def calculate_system_performance(
-    request: Dict[str, Any]
-):
-    """Calculate performance metrics for multi-chip system"""
-    try:
-        system_config = request.get("systemConfig", {})
-        workloads = request.get("workloads", [])
-        
-        # Calculate total system metrics
-        total_throughput = 0
-        total_power = 0
-        processor_metrics = []
-        
-        # Track chip utilizations
-        chip_utils = []
-        interconnect_bw = []
-        
-        # First analyze processors (CPU, GPU, RISC-V)
-        for i, processor in enumerate(system_config.get('processors', [])):
-            processor_perf = None
-            
-            if processor.get('type', '').lower() == 'riscv':
-                # Calculate RISC-V performance for each workload
-                riscv_perf = [estimate_riscv_performance(processor, workload) for workload in workloads]
-                processor_perf = {
-                    'type': 'riscv',
-                    'total_mips': sum(p['mips'] for p in riscv_perf),
-                    'avg_utilization': sum(p['utilization'] for p in riscv_perf) / len(riscv_perf) if riscv_perf else 0,
-                    'power_efficiency': sum(p['power_efficiency'] for p in riscv_perf) / len(riscv_perf) if riscv_perf else 0,
-                    'memory_bandwidth': max((p['memory_bandwidth'] for p in riscv_perf), default=0)
-                }
-                total_throughput += processor_perf['total_mips'] * 0.001  # Convert to GIPS
-                
-            elif processor.get('type', '').lower() == 'gpu':
-                # Calculate GPU performance for each workload
-                gpu_perf = [estimate_gpu_performance(processor, workload) for workload in workloads]
-                processor_perf = {
-                    'type': 'gpu',
-                    'total_tflops': sum(p['tflops'] for p in gpu_perf),
-                    'sm_utilization': sum(p['sm_utilization'] for p in gpu_perf) / len(gpu_perf) if gpu_perf else 0,
-                    'memory_bandwidth': max((p['memory_bandwidth'] for p in gpu_perf), default=0),
-                    'power_efficiency': sum(p['power_efficiency'] for p in gpu_perf) / len(gpu_perf) if gpu_perf else 0
-                }
-                total_throughput += processor_perf['total_tflops'] * 1000  # Convert to GIPS equivalent
-            
-            if processor_perf:
-                processor_metrics.append({
-                    "processorId": f"processor_{i}",
-                    "metrics": processor_perf
-                })
-                total_power += processor.get('tdp', 0)
-        
-        # Then analyze accelerator chips
-        for i, chip in enumerate(system_config.get('chips', [])):
-            # Calculate chip utilization directly without mapper
-            utilization = calculate_chip_utilization(None, chip, workloads)
-            
-            # Estimate chip performance based on configuration
-            throughput = (chip['mm_compute']['type1'].get('N_PE', 256) * 
-                        chip['mm_compute']['type1'].get('frequency', 1000) * 
-                        utilization) / 1e6  # Convert to GIPS
-            
-            power = (chip['memory']['level0'].get('leakage_power', 0.1) +
-                    chip['memory']['level1'].get('leakage_power', 0.5)) * utilization
-            
-            total_throughput += throughput
-            total_power += power
-            
-            chip_utils.append({
-                "chipId": f"chip_{i}",
-                "utilization": utilization
-            })
-
-        # Calculate network metrics
-        networks = system_config.get('networks', [])
-        system_latency = sum(net.get('latency', 0) for net in networks) / len(networks) if networks else 0
-        
-        # Calculate interconnect bandwidth utilization
-        interconnect_bw = []
-        chips = system_config.get('chips', [])
-        for i, network in enumerate(networks):
-            for j in range(len(chips)):
-                for k in range(j + 1, len(chips)):
-                    # Calculate actual network utilization between chips
-                    utilization = calculate_network_utilization(
-                        network_config=network,
-                        source_chip=chips[j],
-                        dest_chip=chips[k],
-                        workloads=workloads
-                    )
-                    
-                    interconnect_bw.append({
-                        "source": f"chip_{j}",
-                        "destination": f"chip_{k}",
-                        "bandwidth": network.get('bandwidth', 0),
-                        "utilization": utilization  # Already in percentage
-                    })
-
-        # Calculate average network utilization in percentage
-        network_utilization = sum(bw['utilization'] for bw in interconnect_bw) / len(interconnect_bw) if interconnect_bw else 0
-
-        return {
-            "totalThroughput": total_throughput,
-            "systemLatency": system_latency,
-            "powerConsumption": total_power,
-            "networkUtilization": network_utilization,  # Already in percentage
-            "chipUtilizations": chip_utils,
-            "interconnectBandwidth": interconnect_bw,
-            "processorMetrics": processor_metrics
-        }
-
-    except Exception as e:
-        logger.error(f"Failed to calculate system performance: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Traceback: {traceback.format_exc()}"
-        )
-
-# Add default configurations
-defaultProcessors = [
-    ProcessorConfig(
-        type='cpu',
-        name='Host CPU',
-        cores=64,
-        frequency=3000,
-        memory=256,
-        tdp=280
-    ),
-    ProcessorConfig(
-        type='gpu',
-        name='GPU Accelerator',
-        cores=6912,
-        frequency=1800,
-        memory=48,
-        tdp=350
-    )
-]
-
-defaultNetworks = [
-    NetworkConfig(
-        type='pcie',
-        bandwidth=64,
-        latency=500,
-        ports=64
-    ),
-    NetworkConfig(
-        type='nvlink',
-        bandwidth=300,
-        latency=100,
-        ports=12
-    )
-]
-
-def estimate_chip_performance(chip_config):
-    """Estimate performance metrics for a single chip configuration"""
-    try:
-        mapper = Mapper(hwfile="default.yaml")
-        mapper.complete_config(chip_config)
-        
-        time, energy, _, _, area = mapper.save_stats(
-            mapper,
-            backprop=False,
-            memory=get_backprop_memory([]),
-            print_stats=False
-        )
-        
-        return {
-            'performance': 1/time[0] if time[0] > 0 else 0,
-            'power': energy[0],
-            'area': area,
-            'utilization': random.uniform(0.6, 0.9)  # Simulated for now
-        }
-    except Exception as e:
-        print(f"Error estimating chip performance: {e}")
-        return {
-            'performance': 0,
-            'power': 0,
-            'area': 0,
-            'utilization': 0
-        }
-
-def get_workload_characteristics(workload_name: str, workload_type: Optional[str] = None):
-    """Get compute and memory characteristics for specific workloads"""
-    base_characteristics = {
-        # AI/ML Workloads with inference/training differentiation
-        "ResNet-50": {
-            "inference": {
-                "compute_intensity": 0.85,
-                "memory_intensity": 0.6,
-                "data_transfer": 400,
-                "parallel_friendly": True
-            },
-            "training": {
-                "compute_intensity": 0.90,
-                "memory_intensity": 0.75,
-                "data_transfer": 800,  # Double for training (weights + gradients)
-                "parallel_friendly": True
-            }
-        },
-        "BERT": {
-            "inference": {
-                "compute_intensity": 0.75,
-                "memory_intensity": 0.8,
-                "data_transfer": 600,
-                "parallel_friendly": True
-            },
-            "training": {
-                "compute_intensity": 0.85,
-                "memory_intensity": 0.9,
-                "data_transfer": 1200,
-                "parallel_friendly": True
-            }
-        },
-        "GPT-4": {
-            "inference": {
-                "compute_intensity": 0.9,
-                "memory_intensity": 0.85,
-                "data_transfer": 800,
-                "parallel_friendly": True
-            },
-            "training": {
-                "compute_intensity": 0.95,
-                "memory_intensity": 0.95,
-                "data_transfer": 1600,
-                "parallel_friendly": True
-            }
-        },
-        "DLRM": {
-            "inference": {
-                "compute_intensity": 0.6,
-                "memory_intensity": 0.9,
-                "data_transfer": 700,
-                "parallel_friendly": True
-            },
-            "training": {
-                "compute_intensity": 0.7,
-                "memory_intensity": 0.95,
-                "data_transfer": 1400,
-                "parallel_friendly": True
-            }
-        },
-        "SSD": {
-            "inference": {
-                "compute_intensity": 0.8,
-                "memory_intensity": 0.7,
-                "data_transfer": 300,
-                "parallel_friendly": True
-            },
-            "training": {
-                "compute_intensity": 0.85,
-                "memory_intensity": 0.8,
-                "data_transfer": 600,
-                "parallel_friendly": True
-            }
-        },
-        
-        # Non-AI/ML workloads remain the same
-        "HPCG": {
-            "compute_intensity": 0.7,
-            "memory_intensity": 0.85,
-            "data_transfer": 250,
-            "parallel_friendly": True
-        },
-        "LINPACK": {
-            "compute_intensity": 0.95,
-            "memory_intensity": 0.7,
-            "data_transfer": 400,
-            "parallel_friendly": True
-        },
-        "STREAM": {
-            "compute_intensity": 0.3,
-            "memory_intensity": 0.95,
-            "data_transfer": 600,
-            "parallel_friendly": True
-        },
-        "BFS": {
-            "compute_intensity": 0.4,
-            "memory_intensity": 0.9,
-            "data_transfer": 200,
-            "parallel_friendly": False
-        },
-        "PageRank": {
-            "compute_intensity": 0.5,
-            "memory_intensity": 0.85,
-            "data_transfer": 300,
-            "parallel_friendly": True
-        },
-        "Connected Components": {
-            "compute_intensity": 0.45,
-            "memory_intensity": 0.8,
-            "data_transfer": 250,
-            "parallel_friendly": False
-        },
-        "AES-256": {
-            "compute_intensity": 0.9,
-            "memory_intensity": 0.4,
-            "data_transfer": 100,
-            "parallel_friendly": True
-        },
-        "SHA-3": {
-            "compute_intensity": 0.85,
-            "memory_intensity": 0.3,
-            "data_transfer": 80,
-            "parallel_friendly": True
-        },
-        "RSA": {
-            "compute_intensity": 0.95,
-            "memory_intensity": 0.2,
-            "data_transfer": 50,
-            "parallel_friendly": False
-        }
-    }
-    
-    # Default characteristics for unknown workloads
-    default_chars = {
-        "compute_intensity": 0.5,
-        "memory_intensity": 0.5,
-        "data_transfer": 200,
-        "parallel_friendly": True
-    }
-    
-    # Handle AI/ML workloads with inference/training modes
-    workload_data = base_characteristics.get(workload_name)
-    if isinstance(workload_data, dict) and "inference" in workload_data:
-        # This is an AI/ML workload
-        mode = workload_type if workload_type in ["inference", "training"] else "inference"
-        return workload_data[mode]
-    
-    # Return regular characteristics for non-AI/ML workloads
-    return workload_data if workload_data else default_chars
-
-def calculate_chip_utilization(mapper, chip_config, workloads, workload_types=None):
-    """Calculate realistic chip utilization based on workload characteristics and hardware capabilities"""
-    try:
-        workload_types = workload_types or {}
-        # Get hardware capabilities
-        compute_capacity = (chip_config['mm_compute']['type1'].get('N_PE', 0) * 
-                          chip_config['mm_compute']['type1'].get('frequency', 1000))
-        memory_bandwidth = (chip_config['memory']['level0'].get('banks', 16) * 
-                          chip_config['memory']['level0'].get('width', 32) * 
-                          chip_config['memory']['level0'].get('frequency', 1000) / 8)  # Convert to bytes/s
-        
-        # Calculate actual resource usage
-        compute_usage = 0
-        memory_usage = 0
-        
-        for workload in workloads:
-            # Get workload type if available
-            workload_type = workload_types.get(workload)
-            
-            # Get specific workload characteristics with type consideration
-            chars = get_workload_characteristics(workload, workload_type)
-            
-            # Account for data dependencies and parallel execution
-            dependency_factor = 0.2  # Simplified dependency factor
-            
-            # Adjust parallel factor based on workload characteristics
-            base_parallel_factor = min(1.0, len(workloads) / chip_config['mm_compute']['type1'].get('N_PE', 256))
-            parallel_factor = base_parallel_factor if chars['parallel_friendly'] else base_parallel_factor * 0.5
-            
-            # Calculate resource usage considering workload characteristics
-            compute_usage += chars['compute_intensity'] * parallel_factor * (1 - dependency_factor)
-            memory_usage += chars['memory_intensity'] * parallel_factor
-            
-            # Add extra utilization for complementary operations
-            if chars['compute_intensity'] > chars['memory_intensity']:
-                memory_usage += chars['compute_intensity'] * 0.2  # Memory ops during compute
-            else:
-                compute_usage += chars['memory_intensity'] * 0.2  # Compute ops during memory access
-        
-        # Calculate overall utilization considering both compute and memory bottlenecks
-        compute_utilization = min(1.0, compute_usage)
-        memory_utilization = min(1.0, memory_usage)
-        
-        # Overall utilization is limited by the more constrained resource
-        utilization = min(compute_utilization, memory_utilization)
-        
-        # Add some realistic variation based on system state
-        variation = random.uniform(-0.05, 0.05)  # ±5% variation
-        utilization = max(0.1, min(0.95, utilization + variation))  # Clamp between 10% and 95%
-        
-        return utilization
-        
-    except Exception as e:
-        logger.error(f"Error calculating chip utilization: {str(e)}")
-        return 0.5  # Return moderate utilization on error
-
-def calculate_network_utilization(network_config, source_chip, dest_chip, workloads):
-    """Calculate realistic network utilization between two chips"""
-    try:
-        # Get network capabilities
-        bandwidth = float(network_config.get('bandwidth', 1))  # GB/s
-        ports = int(network_config.get('ports', 1))
-        
-        # Calculate data movement requirements
-        total_data = 0
-        max_parallel_transfers = 0
-        
-        for workload in workloads:
-            chars = get_workload_characteristics(workload)
-            total_data += chars['data_transfer']
-            
-            # Track maximum parallel transfers needed
-            if chars['parallel_friendly']:
-                max_parallel_transfers += 1
-        
-        # Convert MB to GB
-        total_data = total_data / 1024
-        
-        # Calculate theoretical maximum bandwidth
-        max_bandwidth = bandwidth * ports
-        
-        # Calculate base utilization based on required vs available bandwidth
-        # Assume data transfer happens over 1 second intervals
-        utilization = total_data / max_bandwidth if max_bandwidth > 0 else 0
-        
-        # Account for protocol overhead and network contention
-        protocol_overhead = {
-            'pcie': 0.15,    # PCIe has higher overhead
-            'nvlink': 0.08,  # NVLink is more efficient
-            'ethernet': 0.2, # Ethernet has highest overhead
-            'infinity-fabric': 0.1  # AMD Infinity Fabric
-        }.get(str(network_config.get('type', '')).lower(), 0.1)
-        
-        # Calculate contention based on parallel transfers and available ports
-        contention_factor = min(1.0, max_parallel_transfers / ports) if ports > 0 else 0
-        
-        # Apply network-specific adjustments
-        utilization = utilization * (1 + protocol_overhead) * (1 + contention_factor)
-        
-        # Add realistic variation based on network type
-        base_variation = 0.05  # Base 5% variation
-        if str(network_config.get('type', '')).lower() == 'ethernet':
-            base_variation = 0.1  # More variation for Ethernet
-        
-        variation = random.uniform(-base_variation, base_variation)
-        utilization = max(0.05, min(0.95, utilization + variation))
-        
-        return utilization * 100  # Convert to percentage
-        
-    except Exception as e:
-        logger.error(f"Error calculating network utilization: {str(e)}")
-        return 30  # Return default 30% utilization on error
-
-def estimate_riscv_performance(processor_config, workload):
-    """Estimate RISC-V processor performance for a given workload"""
-    try:
-        # Get workload characteristics
-        chars = get_workload_characteristics(workload)
-        
-        # RISC-V specific parameters
-        ipc_base = {  # Instructions Per Cycle baseline for different workload types
-            "AI/ML": 1.2,      # Most ML ops vectorized
-            "HPC": 1.5,        # Good for numerical computation
-            "Graph": 0.8,      # Branch heavy, less predictable
-            "Crypto": 1.8      # Dedicated crypto extensions
-        }
-        
-        # Determine workload type
-        workload_type = "AI/ML" if workload in ["ResNet-50", "BERT", "GPT-4", "DLRM", "SSD"] else \
-                       "HPC" if workload in ["HPCG", "LINPACK", "STREAM"] else \
-                       "Graph" if workload in ["BFS", "PageRank", "Connected Components"] else \
-                       "Crypto" if workload in ["AES-256", "SHA-3", "RSA"] else "HPC"
-        
-        # Calculate base IPC
-        base_ipc = ipc_base.get(workload_type, 1.0)
-        
-        # Adjust IPC based on processor configuration
-        frequency_ghz = processor_config['frequency'] / 1000  # Convert MHz to GHz
-        core_scaling = min(1.0, (processor_config['cores'] / 4) ** 0.7)  # Diminishing returns
-        
-        # Calculate MIPS (Millions of Instructions Per Second)
-        mips = frequency_ghz * base_ipc * processor_config['cores'] * core_scaling * 1000
-        
-        # Memory impact
-        memory_bandwidth_factor = min(1.0, (processor_config['memory'] / 32) ** 0.5)  # Memory size impact
-        memory_impact = 1.0 - (chars['memory_intensity'] * (1 - memory_bandwidth_factor))
-        
-        # Adjust performance based on workload characteristics
-        compute_scaling = 1.0 - (0.3 * chars['compute_intensity'])  # RISC-V less efficient for heavy compute
-        
-        # Final performance metrics
-        performance = {
-            'mips': mips * memory_impact * compute_scaling,
-            'utilization': min(0.95, chars['compute_intensity'] * core_scaling),
-            'power_efficiency': mips / processor_config['tdp'],
-            'memory_bandwidth': processor_config['memory'] * frequency_ghz * 0.1  # Rough estimate GB/s
-        }
-        
-        return performance
-        
-    except Exception as e:
-        print(f"Error estimating RISC-V performance: {e}")
-        return {
-            'mips': 0,
-            'utilization': 0,
-            'power_efficiency': 0,
-            'memory_bandwidth': 0
-        }
-
-def estimate_gpu_performance(processor_config, workload):
-    """Estimate GPU performance for a given workload"""
-    try:
-        # Get workload characteristics
-        chars = get_workload_characteristics(workload)
-        
-        # GPU architecture parameters
-        cuda_cores_per_sm = 128
-        sm_count = processor_config['cores'] / cuda_cores_per_sm
-        memory_bandwidth = processor_config['memory'] * 14  # Approximate GB/s per GB of memory
-        
-        # Workload-specific GPU efficiency
-        gpu_efficiency = {
-            "ResNet-50": 0.85,  # Excellent GPU utilization
-            "BERT": 0.80,       # Good for transformer ops
-            "GPT-4": 0.82,      # Good for large matrix ops
-            "DLRM": 0.70,       # Memory bound for embeddings
-            "SSD": 0.75,        # Good for convolutions
-            "HPCG": 0.65,       # Limited by memory access
-            "LINPACK": 0.90,    # Excellent for dense linear algebra
-            "STREAM": 0.95,     # Perfect for memory bandwidth
-            "BFS": 0.40,        # Poor for irregular access
-            "PageRank": 0.50,   # Limited by graph structure
-            "Connected Components": 0.45,  # Graph algorithm limitations
-            "AES-256": 0.70,    # Good with dedicated units
-            "SHA-3": 0.65,      # Decent parallelization
-            "RSA": 0.60         # Limited by sequential parts
-        }.get(workload, 0.60)
-        
-        # Calculate theoretical TFLOPS
-        frequency_ghz = processor_config['frequency'] / 1000
-        theoretical_tflops = (processor_config['cores'] * 2 * frequency_ghz) / 1000  # FMA = 2 ops
-        
-        # Actual performance considering efficiency
-        achieved_tflops = theoretical_tflops * gpu_efficiency
-        
-        # Memory bandwidth utilization
-        memory_utilization = min(1.0, chars['memory_intensity'] * 1.2)  # GPU memory system more efficient
-        effective_bandwidth = memory_bandwidth * memory_utilization
-        
-        # Calculate SM utilization
-        sm_utilization = min(0.95, chars['compute_intensity'] * gpu_efficiency)
-        
-        # Power efficiency (TFLOPS/W)
-        power_efficiency = achieved_tflops / processor_config['tdp']
-        
-        # Final performance metrics
-        performance = {
-            'tflops': achieved_tflops,
-            'sm_utilization': sm_utilization,
-            'memory_bandwidth': effective_bandwidth,
-            'power_efficiency': power_efficiency,
-            'overall_utilization': min(sm_utilization, memory_utilization)
-        }
-        
-        return performance
-        
-    except Exception as e:
-        print(f"Error estimating GPU performance: {e}")
-        return {
-            'tflops': 0,
-            'sm_utilization': 0,
-            'memory_bandwidth': 0,
-            'power_efficiency': 0,
-            'overall_utilization': 0
-        }
-
-class CustomWorkloadKernel(BaseModel):
-    """Model for a single computational kernel in a custom workload"""
-    name: str = Field(..., description="Name of the kernel")
-    code_path: str = Field(..., description="Path to the Python file containing the kernel code")
-    compute_intensity: float = Field(..., ge=0, le=1, description="Compute intensity (0-1)")
-    memory_intensity: float = Field(..., ge=0, le=1, description="Memory intensity (0-1)")
-    data_size: int = Field(..., gt=0, description="Size of data processed in bytes")
-    preferred_processor: str = Field("any", description="Preferred processor type (cpu, gpu, accelerator, any)")
-    parallelizable: bool = Field(True, description="Whether the kernel can be parallelized")
-    dependencies: List[str] = Field(default_factory=list, description="Names of kernels that must complete before this one")
-
-class CustomWorkload(BaseModel):
-    """Model for defining a custom workload with multiple kernels"""
-    name: str = Field(..., description="Name of the workload")
-    description: str = Field(..., description="Description of the workload")
-    kernels: List[CustomWorkloadKernel] = Field(..., description="List of computational kernels")
-    total_data_size: int = Field(..., gt=0, description="Total size of data processed in bytes")
-    target_latency_ms: Optional[float] = Field(None, gt=0, description="Target latency in milliseconds")
-
-class CFGWorkloadAnalyzer:
-    """Analyzer for workloads using Control Flow Graph analysis"""
-    def __init__(self, code_path: str):
-        self.code_path = code_path
-        self.cfg = None
-        self.basic_blocks = []
-        self.execution_paths = []
-        
-    def build_cfg(self):
-        """Build Control Flow Graph from the source code"""
-        try:
-            self.cfg = CFGBuilder().build_from_file(
-                os.path.basename(self.code_path),
-                self.code_path
-            )
-            self._analyze_basic_blocks()
-            return True
-        except Exception as e:
-            logger.error(f"Error building CFG: {str(e)}")
-            return False
-            
-    def _analyze_basic_blocks(self):
-        """Analyze basic blocks from the CFG"""
-        if not self.cfg:
-            return
-            
-        for block in self.cfg.blocks:
-            block_info = self._analyze_block_characteristics(block)
-            self.basic_blocks.append(block_info)
-            
-    def _analyze_block_characteristics(self, block) -> Dict[str, Any]:
-        """Analyze characteristics of a basic block"""
-        try:
-            # Count different types of operations
-            compute_ops = 0
-            memory_ops = 0
-            control_ops = 0
-            
-            for node in block.nodes:
-                if isinstance(node, ast.BinOp):
-                    compute_ops += 1
-                elif isinstance(node, (ast.Load, ast.Store, ast.Subscript)):
-                    memory_ops += 1
-                elif isinstance(node, (ast.If, ast.While, ast.For)):
-                    control_ops += 1
-                    
-            total_ops = max(1, compute_ops + memory_ops + control_ops)
-            
-            return {
-                "block_id": id(block),
-                "compute_intensity": compute_ops / total_ops,
-                "memory_intensity": memory_ops / total_ops,
-                "control_intensity": control_ops / total_ops,
-                "parallelizable": self._is_block_parallelizable(block),
-                "estimated_cycles": self._estimate_block_cycles(block),
-                "data_dependencies": self._get_data_dependencies(block)
-            }
-        except Exception as e:
-            logger.error(f"Error analyzing block characteristics: {str(e)}")
-            return {
-                "block_id": id(block),
-                "compute_intensity": 0.33,
-                "memory_intensity": 0.33,
-                "control_intensity": 0.33,
-                "parallelizable": False,
-                "estimated_cycles": 100,
-                "data_dependencies": []
-            }
-            
-    def _is_block_parallelizable(self, block) -> bool:
-        """Determine if a basic block can be parallelized"""
-        try:
-            # Check for loop constructs that might be parallelizable
-            has_loop = any(isinstance(node, (ast.For, ast.While)) for node in block.nodes)
-            has_reduction = any(isinstance(node, ast.BinOp) and 
-                              isinstance(node.op, (ast.Add, ast.Mult)) for node in block.nodes)
-            
-            # Check for dependencies that would prevent parallelization
-            has_dependencies = bool(self._get_data_dependencies(block))
-            
-            return has_loop and not has_dependencies
-        except Exception as e:
-            logger.error(f"Error checking block parallelization: {str(e)}")
-            return False
-            
-    def _estimate_block_cycles(self, block) -> int:
-        """Estimate CPU cycles needed for a basic block"""
-        try:
-            cycles = 0
-            for node in block.nodes:
-                if isinstance(node, ast.BinOp):
-                    cycles += 1  # Basic arithmetic
-                elif isinstance(node, ast.Call):
-                    cycles += 10  # Function call overhead
-                elif isinstance(node, (ast.Load, ast.Store)):
-                    cycles += 4  # Memory operations
-                elif isinstance(node, (ast.If, ast.While, ast.For)):
-                    cycles += 2  # Control flow
-            return max(1, cycles)
-        except Exception as e:
-            logger.error(f"Error estimating block cycles: {str(e)}")
-            return 10  # Default cycles
-            
-    def _get_data_dependencies(self, block) -> List[str]:
-        """Get data dependencies for a basic block"""
-        try:
-            dependencies = set()
-            for node in block.nodes:
-                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-                    dependencies.add(node.id)
-            return list(dependencies)
-        except Exception as e:
-            logger.error(f"Error getting data dependencies: {str(e)}")
-            return []
-            
-    def map_to_processors(self, system_config: SystemConfig) -> Dict[str, Any]:
-        """Map basic blocks to available processors"""
-        try:
-            mapping = {}
-            for block in self.basic_blocks:
-                best_processor = self._find_best_processor_for_block(block, system_config)
-                mapping[block["block_id"]] = {
-                    "processor": best_processor,
-                    "estimated_execution_time": self._estimate_execution_time(block, best_processor),
-                    "characteristics": block
-                }
-            return mapping
-        except Exception as e:
-            logger.error(f"Error mapping blocks to processors: {str(e)}")
-            return {}
-            
-    def _find_best_processor_for_block(self, block: Dict[str, Any], system_config: SystemConfig) -> Dict[str, Any]:
-        """Find the best processor for a given basic block"""
-        try:
-            best_processor = None
-            best_score = -1
-            
-            for processor in system_config.processors:
-                score = self._calculate_processor_score(block, processor)
-                if score > best_score:
-                    best_score = score
-                    best_processor = processor
-                    
-            # Also consider accelerator chips
-            for chip in system_config.chips:
-                if 'mm_compute' in chip:
-                    score = self._calculate_accelerator_score(block, chip)
-                    if score > best_score:
-                        best_score = score
-                        best_processor = chip
-                        
-            return best_processor or system_config.processors[0]  # Default to first processor
-        except Exception as e:
-            logger.error(f"Error finding best processor: {str(e)}")
-            return system_config.processors[0]
-            
-    def _calculate_processor_score(self, block: Dict[str, Any], processor: Dict[str, Any]) -> float:
-        """Calculate score for a processor based on block characteristics"""
-        try:
-            score = 0
-            proc_type = processor.get('type', '').lower()
-            
-            # CPU is good for control-intensive blocks
-            if proc_type == 'cpu':
-                score += block['control_intensity'] * 2
-                if block['parallelizable'] and processor.get('cores', 1) > 1:
-                    score += 1
-                    
-            # GPU is good for compute-intensive, parallelizable blocks
-            elif proc_type == 'gpu':
-                if block['parallelizable']:
-                    score += block['compute_intensity'] * 3
-                if block['memory_intensity'] > 0.7:
-                    score += 1
-                    
-            # RISC-V might be good for simple, sequential blocks
-            elif proc_type == 'riscv':
-                if not block['parallelizable']:
-                    score += 1
-                score += (1 - block['compute_intensity']) * 0.5
-                
-            return score
-        except Exception as e:
-            logger.error(f"Error calculating processor score: {str(e)}")
-            return 0
-            
-    def _calculate_accelerator_score(self, block: Dict[str, Any], chip: Dict[str, Any]) -> float:
-        """Calculate score for an accelerator chip based on block characteristics"""
-        try:
-            score = 0
-            
-            # Accelerators are good for compute-intensive, parallelizable blocks
-            if block['parallelizable']:
-                score += block['compute_intensity'] * 2
-                
-            # Consider accelerator's compute capabilities
-            compute_units = chip['mm_compute']['type1'].get('N_PE', 0)
-            frequency = chip['mm_compute']['type1'].get('frequency', 0)
-            
-            # More compute units and higher frequency increase score
-            score += (compute_units / 256) * 0.5
-            score += (frequency / 1000) * 0.5
-            
-            return score
-        except Exception as e:
-            logger.error(f"Error calculating accelerator score: {str(e)}")
-            return 0
-            
-    def _estimate_execution_time(self, block: Dict[str, Any], processor: Dict[str, Any]) -> float:
-        """Estimate execution time for a block on a given processor"""
-        try:
-            base_cycles = block['estimated_cycles']
-            
-            # Adjust cycles based on processor type and characteristics
-            if processor.get('type', '').lower() == 'gpu':
-                if block['parallelizable']:
-                    base_cycles /= 32  # Assume 32-way parallelism
-            elif processor.get('type', '').lower() == 'cpu':
-                if block['parallelizable']:
-                    cores = processor.get('cores', 1)
-                    base_cycles /= (cores ** 0.7)  # Sub-linear scaling
-            elif 'mm_compute' in processor:
-                compute_units = processor['mm_compute']['type1'].get('N_PE', 256)
-                frequency = processor['mm_compute']['type1'].get('frequency', 1000)
-                base_cycles *= (256 / compute_units) * (1000 / frequency)
-                
-            # Convert cycles to time (ms)
-            frequency_mhz = (processor.get('frequency', 1000) 
-                           if 'frequency' in processor 
-                           else processor.get('mm_compute', {}).get('type1', {}).get('frequency', 1000))
-            
-            execution_time_ms = (base_cycles / frequency_mhz) * 1000
-            return max(0.001, execution_time_ms)  # Minimum 1µs
-            
-        except Exception as e:
-            logger.error(f"Error estimating execution time: {str(e)}")
-            return 1.0  # Default 1ms
 
 def analyze_custom_workload_with_cfg(workload: CustomWorkload, system_config: SystemConfig) -> Dict[str, Any]:
     """Analyze a custom workload using CFG analysis"""
@@ -2191,6 +1179,738 @@ def generate_bottleneck_visualization(analysis_results: Dict[str, Any]) -> str:
     except Exception as e:
         logger.error(f"Error generating bottleneck visualization: {str(e)}")
         return ""
+
+class CFGFunctionAnalyzer:
+    """Analyzer for function-level offloading decisions using CFG analysis"""
+    def __init__(self, code_path: str, function_name: str = None):
+        self.code_path = code_path
+        self.function_name = function_name
+        self.cfg = None
+        self.function_cfgs = {}
+        self.offload_candidates = {}
+        
+    def analyze_functions(self):
+        """Build and analyze CFGs for all functions in the code"""
+        try:
+            # Build main CFG
+            self.cfg = CFGBuilder().build_from_file(
+                os.path.basename(self.code_path),
+                self.code_path
+            )
+            
+            # Extract all function definitions
+            with open(self.code_path, 'r') as f:
+                tree = ast.parse(f.read())
+                
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef):
+                    # Build CFG for each function
+                    func_cfg = self._extract_function_cfg(node)
+                    if func_cfg:
+                        self.function_cfgs[node.name] = {
+                            'cfg': func_cfg,
+                            'characteristics': self._analyze_function_characteristics(func_cfg, node)
+                        }
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error analyzing functions: {str(e)}")
+            return False
+    
+    def _extract_function_cfg(self, func_node: ast.FunctionDef) -> Any:
+        """Extract CFG for a specific function"""
+        try:
+            # Create a new module with just this function
+            module = ast.Module(body=[func_node], type_ignores=[])
+            code = compile(module, '<string>', 'exec')
+            
+            # Build CFG for the function
+            cfg_builder = CFGBuilder()
+            return cfg_builder.build_from_code(code)
+        except Exception as e:
+            logger.error(f"Error extracting function CFG: {str(e)}")
+            return None
+    
+    def _analyze_function_characteristics(self, cfg: Any, func_node: ast.FunctionDef) -> Dict[str, Any]:
+        """Analyze characteristics of a function for offloading decisions"""
+        try:
+            # Count different types of operations
+            stats = {
+                'compute_ops': 0,
+                'memory_ops': 0,
+                'control_ops': 0,
+                'function_calls': 0,
+                'data_size': 0,
+                'parallel_loops': 0,
+                'sequential_loops': 0
+            }
+            
+            # Analyze function arguments for data size estimation
+            for arg in func_node.args.args:
+                if hasattr(arg, 'annotation'):
+                    stats['data_size'] += self._estimate_data_size(arg.annotation)
+            
+            # Analyze function body
+            for node in ast.walk(func_node):
+                if isinstance(node, ast.BinOp):
+                    stats['compute_ops'] += 1
+                elif isinstance(node, (ast.Load, ast.Store, ast.Subscript)):
+                    stats['memory_ops'] += 1
+                elif isinstance(node, (ast.If, ast.While)):
+                    stats['control_ops'] += 1
+                elif isinstance(node, ast.Call):
+                    stats['function_calls'] += 1
+                elif isinstance(node, ast.For):
+                    if self._is_parallel_loop(node):
+                        stats['parallel_loops'] += 1
+                    else:
+                        stats['sequential_loops'] += 1
+            
+            # Calculate characteristics
+            total_ops = max(1, sum(stats.values()))
+            return {
+                'compute_intensity': stats['compute_ops'] / total_ops,
+                'memory_intensity': stats['memory_ops'] / total_ops,
+                'control_intensity': stats['control_ops'] / total_ops,
+                'parallelizable': stats['parallel_loops'] > 0,
+                'data_transfer_size': stats['data_size'],
+                'complexity': self._estimate_complexity(stats),
+                'estimated_cycles': self._estimate_function_cycles(stats),
+                'offload_benefit_score': self._calculate_offload_benefit(stats)
+            }
+        except Exception as e:
+            logger.error(f"Error analyzing function characteristics: {str(e)}")
+            return {}
+    
+    def _estimate_data_size(self, annotation: ast.AST) -> int:
+        """Estimate data size from type annotations"""
+        try:
+            if isinstance(annotation, ast.Subscript):
+                if hasattr(annotation, 'value') and isinstance(annotation.value, ast.Name):
+                    if annotation.value.id == 'List':
+                        return 8 * 1024  # Assume 8KB for lists
+                    elif annotation.value.id == 'Array':
+                        return 16 * 1024  # Assume 16KB for arrays
+            return 1024  # Default 1KB for other types
+        except Exception as e:
+            logger.error(f"Error estimating data size: {str(e)}")
+            return 1024
+    
+    def _is_parallel_loop(self, node: ast.For) -> bool:
+        """Check if a loop can be parallelized"""
+        try:
+            # Check for dependencies in loop body
+            dependencies = set()
+            writes = set()
+            
+            for inner_node in ast.walk(node):
+                if isinstance(inner_node, ast.Name):
+                    if isinstance(inner_node.ctx, ast.Load):
+                        dependencies.add(inner_node.id)
+                    elif isinstance(inner_node, ast.Store):
+                        writes.add(inner_node.id)
+            
+            # If there's no overlap between reads and writes, loop might be parallel
+            return len(dependencies.intersection(writes)) == 0
+        except Exception as e:
+            logger.error(f"Error checking loop parallelization: {str(e)}")
+            return False
+    
+    def _estimate_complexity(self, stats: Dict[str, int]) -> str:
+        """Estimate computational complexity"""
+        if stats['sequential_loops'] > 1:
+            return "O(n^2)"
+        elif stats['sequential_loops'] == 1:
+            return "O(n)"
+        else:
+            return "O(1)"
+    
+    def _estimate_function_cycles(self, stats: Dict[str, int]) -> int:
+        """Estimate CPU cycles for the function"""
+        try:
+            cycles = 0
+            # Basic operation costs
+            cycles += stats['compute_ops'] * 1  # 1 cycle per compute op
+            cycles += stats['memory_ops'] * 4   # 4 cycles per memory op
+            cycles += stats['control_ops'] * 2  # 2 cycles per control op
+            cycles += stats['function_calls'] * 10  # 10 cycles per function call
+            
+            # Loop overhead
+            loop_factor = 100  # Assume average of 100 iterations per loop
+            cycles += (stats['sequential_loops'] + stats['parallel_loops']) * loop_factor
+            
+            return max(1, cycles)
+        except Exception as e:
+            logger.error(f"Error estimating function cycles: {str(e)}")
+            return 100
+    
+    def _calculate_offload_benefit(self, stats: Dict[str, int]) -> float:
+        """Calculate benefit score for offloading (0-1)"""
+        try:
+            # Factors that make offloading beneficial
+            parallel_score = 0.4 if stats['parallel_loops'] > 0 else 0
+            compute_score = 0.3 if stats['compute_ops'] > stats['memory_ops'] else 0
+            size_score = 0.3 if stats['data_size'] < 32*1024 else 0  # Prefer smaller data transfers
+            
+            return parallel_score + compute_score + size_score
+        except Exception as e:
+            logger.error(f"Error calculating offload benefit: {str(e)}")
+            return 0.0
+    
+    def find_offload_candidates(self, system_config: SystemConfig) -> Dict[str, Any]:
+        """Find and analyze functions that are good candidates for offloading"""
+        try:
+            candidates = {}
+            
+            for func_name, func_data in self.function_cfgs.items():
+                characteristics = func_data['characteristics']
+                
+                # Calculate offloading score
+                score = self._calculate_offload_score(characteristics, system_config)
+                
+                # If score is above threshold, consider for offloading
+                if score > 0.6:  # 60% threshold
+                    best_processor = self._find_best_processor(characteristics, system_config)
+                    estimated_speedup = self._estimate_speedup(characteristics, best_processor)
+                    
+                    candidates[func_name] = {
+                        'score': score,
+                        'characteristics': characteristics,
+                        'recommended_processor': best_processor,
+                        'estimated_speedup': estimated_speedup,
+                        'estimated_energy_savings': self._estimate_energy_savings(
+                            characteristics, best_processor
+                        )
+                    }
+            
+            self.offload_candidates = candidates
+            return candidates
+            
+        except Exception as e:
+            logger.error(f"Error finding offload candidates: {str(e)}")
+            return {}
+    
+    def _calculate_offload_score(self, characteristics: Dict[str, Any], system_config: SystemConfig) -> float:
+        """Calculate overall score for offloading a function"""
+        try:
+            # Weights for different factors
+            weights = {
+                'compute_intensity': 0.3,
+                'parallelizable': 0.25,
+                'data_transfer': 0.2,
+                'complexity': 0.15,
+                'benefit_score': 0.1
+            }
+            
+            score = 0
+            score += weights['compute_intensity'] * characteristics['compute_intensity']
+            score += weights['parallelizable'] * (1.0 if characteristics['parallelizable'] else 0.0)
+            score += weights['data_transfer'] * (1.0 - min(1.0, characteristics['data_transfer_size'] / (1024*1024)))
+            score += weights['complexity'] * (1.0 if characteristics['complexity'] in ['O(n)', 'O(n^2)'] else 0.0)
+            score += weights['benefit_score'] * characteristics['offload_benefit_score']
+            
+            return score
+            
+        except Exception as e:
+            logger.error(f"Error calculating offload score: {str(e)}")
+            return 0.0
+    
+    def _find_best_processor(self, characteristics: Dict[str, Any], system_config: SystemConfig) -> Dict[str, Any]:
+        """Find the best processor for offloading a function"""
+        try:
+            best_processor = None
+            best_score = -1
+            
+            # Check accelerator chips
+            for chip in system_config.chips:
+                if 'mm_compute' in chip:
+                    score = self._calculate_accelerator_score(characteristics, chip)
+                    if score > best_score:
+                        best_score = score
+                        best_processor = {
+                            'type': 'accelerator',
+                            'config': chip
+                        }
+            
+            # Check other processors
+            for processor in system_config.processors:
+                score = self._calculate_processor_score(characteristics, processor)
+                if score > best_score:
+                    best_score = score
+                    best_processor = {
+                        'type': processor.get('type', 'unknown'),
+                        'config': processor
+                    }
+            
+            return best_processor
+            
+        except Exception as e:
+            logger.error(f"Error finding best processor: {str(e)}")
+            return None
+    
+    def _calculate_accelerator_score(self, characteristics: Dict[str, Any], chip: Dict[str, Any]) -> float:
+        """Calculate score for an accelerator chip"""
+        try:
+            score = 0
+            
+            # Accelerators are good for compute-intensive, parallel work
+            if characteristics['parallelizable']:
+                score += characteristics['compute_intensity'] * 2
+            
+            # Consider accelerator capabilities
+            compute_units = chip['mm_compute']['type1'].get('N_PE', 0)
+            frequency = chip['mm_compute']['type1'].get('frequency', 0)
+            
+            score += (compute_units / 256) * 0.5
+            score += (frequency / 1000) * 0.5
+            
+            return score
+            
+        except Exception as e:
+            logger.error(f"Error calculating accelerator score: {str(e)}")
+            return 0.0
+    
+    def _calculate_processor_score(self, characteristics: Dict[str, Any], processor: Dict[str, Any]) -> float:
+        """Calculate score for a processor"""
+        try:
+            score = 0
+            proc_type = processor.get('type', '').lower()
+            
+            if proc_type == 'gpu':
+                if characteristics['parallelizable']:
+                    score += characteristics['compute_intensity'] * 3
+                if characteristics['memory_intensity'] > 0.7:
+                    score += 1
+            elif proc_type == 'cpu':
+                score += characteristics['control_intensity'] * 2
+                if characteristics['parallelizable'] and processor.get('cores', 1) > 1:
+                    score += 1
+            
+            return score
+            
+        except Exception as e:
+            logger.error(f"Error calculating processor score: {str(e)}")
+            return 0.0
+    
+    def _estimate_speedup(self, characteristics: Dict[str, Any], processor: Dict[str, Any]) -> float:
+        """Estimate speedup from offloading"""
+        try:
+            if not processor:
+                return 1.0
+                
+            base_cycles = characteristics['estimated_cycles']
+            
+            if processor['type'] == 'accelerator':
+                compute_units = processor['config']['mm_compute']['type1'].get('N_PE', 256)
+                frequency_ratio = processor['config']['mm_compute']['type1'].get('frequency', 1000) / 1000
+                return min(20.0, (compute_units / 32) * frequency_ratio)
+                
+            elif processor['type'] == 'gpu':
+                if characteristics['parallelizable']:
+                    return min(15.0, processor['config'].get('cores', 1000) / 100)
+            
+            return 1.0
+            
+        except Exception as e:
+            logger.error(f"Error estimating speedup: {str(e)}")
+            return 1.0
+    
+    def _estimate_energy_savings(self, characteristics: Dict[str, Any], processor: Dict[str, Any]) -> float:
+        """Estimate energy savings percentage from offloading"""
+        try:
+            if not processor:
+                return 0.0
+                
+            if processor['type'] == 'accelerator':
+                # Accelerators are typically more energy efficient
+                compute_intensity = characteristics['compute_intensity']
+                return min(80.0, compute_intensity * 100)
+                
+            elif processor['type'] == 'gpu':
+                # GPUs might save energy for highly parallel workloads
+                if characteristics['parallelizable']:
+                    return min(60.0, characteristics['compute_intensity'] * 80)
+            
+            return 0.0
+            
+        except Exception as e:
+            logger.error(f"Error estimating energy savings: {str(e)}")
+            return 0.0
+
+@app.post("/api/analyze-function-offloading")
+async def analyze_function_offloading(
+    code_path: str,
+    function_name: Optional[str] = None,
+    system_config: SystemConfig = None
+):
+    """Analyze function(s) for potential offloading to accelerators"""
+    try:
+        # Validate input
+        if not os.path.exists(code_path):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Code file not found: {code_path}"
+            )
+        
+        # Create analyzer
+        analyzer = CFGFunctionAnalyzer(code_path, function_name)
+        
+        # Analyze functions
+        if not analyzer.analyze_functions():
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to analyze functions"
+            )
+        
+        # Find offload candidates
+        candidates = analyzer.find_offload_candidates(system_config)
+        
+        # Generate visualizations
+        visualizations = {
+            "offload_benefits": _generate_offload_benefits_chart(candidates),
+            "processor_distribution": _generate_processor_distribution_chart(candidates),
+            "speedup_analysis": _generate_speedup_analysis_chart(candidates)
+        }
+        
+        return {
+            "offload_candidates": candidates,
+            "visualizations": visualizations
+        }
+        
+    except Exception as e:
+        logger.error(f"Error analyzing function offloading: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to analyze function offloading: {str(e)}"
+        )
+
+def _generate_offload_benefits_chart(candidates: Dict[str, Any]) -> str:
+    """Generate visualization of offloading benefits"""
+    try:
+        plt.figure(figsize=(10, 6))
+        
+        functions = list(candidates.keys())
+        scores = [c['score'] for c in candidates.values()]
+        energy_savings = [c['estimated_energy_savings'] for c in candidates.values()]
+        
+        x = np.arange(len(functions))
+        width = 0.35
+        
+        plt.bar(x - width/2, scores, width, label='Offload Score', color='skyblue')
+        plt.bar(x + width/2, energy_savings, width, label='Energy Savings (%)', color='lightgreen')
+        
+        plt.xlabel('Functions')
+        plt.ylabel('Score / Percentage')
+        plt.title('Offloading Benefits Analysis')
+        plt.xticks(x, functions, rotation=45)
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating offload benefits chart: {str(e)}")
+        return ""
+
+def _generate_processor_distribution_chart(candidates: Dict[str, Any]) -> str:
+    """Generate visualization of processor distribution"""
+    try:
+        plt.figure(figsize=(10, 6))
+        
+        processor_counts = {}
+        for candidate in candidates.values():
+            proc_type = candidate['recommended_processor']['type']
+            processor_counts[proc_type] = processor_counts.get(proc_type, 0) + 1
+        
+        plt.pie(
+            processor_counts.values(),
+            labels=processor_counts.keys(),
+            autopct='%1.1f%%',
+            colors=['lightcoral', 'lightblue', 'lightgreen']
+        )
+        
+        plt.title('Recommended Processor Distribution')
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating processor distribution chart: {str(e)}")
+        return ""
+
+def _generate_speedup_analysis_chart(candidates: Dict[str, Any]) -> str:
+    """Generate visualization of expected speedups"""
+    try:
+        plt.figure(figsize=(10, 6))
+        
+        functions = list(candidates.keys())
+        speedups = [c['estimated_speedup'] for c in candidates.values()]
+        
+        plt.bar(functions, speedups, color='lightcoral')
+        plt.xlabel('Functions')
+        plt.ylabel('Estimated Speedup (x)')
+        plt.title('Expected Performance Speedup')
+        plt.xticks(rotation=45)
+        plt.grid(True, alpha=0.3)
+        
+        # Convert to base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.close()
+        buf.seek(0)
+        return base64.b64encode(buf.getvalue()).decode()
+        
+    except Exception as e:
+        logger.error(f"Error generating speedup analysis chart: {str(e)}")
+        return ""
+
+class AcceleratorFunctionMapper:
+    """Maps functions to accelerators based on system configuration and CFG analysis"""
+    def __init__(self, system_config: SystemConfig):
+        self.system_config = system_config
+        self.function_analyzers = {}
+        self.accelerator_mappings = {}
+        
+    def analyze_workflow(self, workflow_file: str):
+        """Analyze workflow file and map functions to accelerators"""
+        try:
+            # Create CFG analyzer for the workflow
+            analyzer = CFGFunctionAnalyzer(workflow_file)
+            if not analyzer.analyze_functions():
+                logger.error("Failed to analyze workflow functions")
+                return
+            
+            # Store analyzer for future reference
+            self.function_analyzers[workflow_file] = analyzer
+            
+            # Map accelerator-specific functions
+            self._map_accelerator_functions(analyzer)
+            
+        except Exception as e:
+            logger.error(f"Error analyzing workflow: {str(e)}")
+    
+    def _map_accelerator_functions(self, analyzer: CFGFunctionAnalyzer):
+        """Map functions to accelerators based on configuration and characteristics"""
+        try:
+            # Process each chip's accelerator configuration
+            for chip_idx, chip in enumerate(self.system_config.chips):
+                if 'accelerators' not in chip:
+                    continue
+                
+                for acc_name, acc_config in chip['accelerators'].items():
+                    # Get target functions for this accelerator
+                    target_functions = acc_config.get('target_functions', [])
+                    
+                    # Find matching functions in the workflow
+                    for func_name, func_data in analyzer.function_cfgs.items():
+                        # Check if function matches accelerator targets
+                        if self._is_function_match(func_name, func_data, target_functions, acc_config):
+                            # Calculate offloading score
+                            score = analyzer._calculate_offload_score(
+                                func_data['characteristics'],
+                                self.system_config
+                            )
+                            
+                            # If score is good enough, map function to accelerator
+                            if score > 0.6:  # 60% threshold
+                                if func_name not in self.accelerator_mappings:
+                                    self.accelerator_mappings[func_name] = {
+                                        'accelerator': acc_name,
+                                        'chip_index': chip_idx,
+                                        'score': score,
+                                        'characteristics': func_data['characteristics'],
+                                        'estimated_speedup': self._estimate_acc_speedup(
+                                            func_data['characteristics'],
+                                            acc_config
+                                        )
+                                    }
+                                elif score > self.accelerator_mappings[func_name]['score']:
+                                    # Update mapping if better score found
+                                    self.accelerator_mappings[func_name].update({
+                                        'accelerator': acc_name,
+                                        'chip_index': chip_idx,
+                                        'score': score
+                                    })
+            
+        except Exception as e:
+            logger.error(f"Error mapping accelerator functions: {str(e)}")
+    
+    def _is_function_match(self, func_name: str, func_data: Dict, target_functions: List[str], acc_config: Dict) -> bool:
+        """Check if function matches accelerator requirements"""
+        try:
+            # Direct name match
+            if func_name in target_functions:
+                return True
+            
+            # Pattern match
+            if 'function_patterns' in acc_config:
+                for pattern in acc_config['function_patterns']:
+                    if re.match(pattern, func_name):
+                        return True
+            
+            # Characteristic match
+            if 'required_characteristics' in acc_config:
+                chars = func_data['characteristics']
+                reqs = acc_config['required_characteristics']
+                
+                # Check compute intensity
+                if 'min_compute_intensity' in reqs:
+                    if chars['compute_intensity'] < reqs['min_compute_intensity']:
+                        return False
+                
+                # Check parallelizability
+                if 'require_parallel' in reqs and reqs['require_parallel']:
+                    if not chars['parallelizable']:
+                        return False
+                
+                # Check data size constraints
+                if 'max_data_size' in reqs:
+                    if chars['data_transfer_size'] > reqs['max_data_size']:
+                        return False
+                
+                return True
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error checking function match: {str(e)}")
+            return False
+    
+    def _estimate_acc_speedup(self, characteristics: Dict[str, Any], acc_config: Dict[str, Any]) -> float:
+        """Estimate speedup for function on specific accelerator"""
+        try:
+            base_speedup = acc_config.get('base_speedup', 1.0)
+            
+            # Adjust based on characteristics
+            if characteristics['parallelizable']:
+                parallel_factor = acc_config.get('parallel_speedup_factor', 1.5)
+                base_speedup *= parallel_factor
+            
+            # Adjust for compute intensity
+            compute_factor = 1.0 + (characteristics['compute_intensity'] * 
+                                  acc_config.get('compute_scaling_factor', 0.5))
+            base_speedup *= compute_factor
+            
+            # Cap maximum speedup
+            max_speedup = acc_config.get('max_speedup', 20.0)
+            return min(max_speedup, base_speedup)
+            
+        except Exception as e:
+            logger.error(f"Error estimating accelerator speedup: {str(e)}")
+            return 1.0
+    
+    def get_offload_plan(self) -> Dict[str, Any]:
+        """Get the complete offloading plan for all mapped functions"""
+        try:
+            plan = {
+                'mappings': self.accelerator_mappings,
+                'statistics': {
+                    'total_functions': len(self.accelerator_mappings),
+                    'accelerator_distribution': self._get_accelerator_distribution(),
+                    'estimated_total_speedup': self._calculate_total_speedup()
+                },
+                'visualizations': {
+                    'distribution': self._generate_distribution_chart(),
+                    'speedup': self._generate_speedup_chart()
+                }
+            }
+            
+            return plan
+            
+        except Exception as e:
+            logger.error(f"Error generating offload plan: {str(e)}")
+            return {}
+    
+    def _get_accelerator_distribution(self) -> Dict[str, int]:
+        """Get distribution of functions across accelerators"""
+        distribution = {}
+        for mapping in self.accelerator_mappings.values():
+            acc_name = mapping['accelerator']
+            distribution[acc_name] = distribution.get(acc_name, 0) + 1
+        return distribution
+    
+    def _calculate_total_speedup(self) -> float:
+        """Calculate estimated total speedup from all offloaded functions"""
+        try:
+            # Simple geometric mean of speedups
+            speedups = [m['estimated_speedup'] for m in self.accelerator_mappings.values()]
+            if not speedups:
+                return 1.0
+            return math.exp(sum(math.log(s) for s in speedups) / len(speedups))
+        except Exception as e:
+            logger.error(f"Error calculating total speedup: {str(e)}")
+            return 1.0
+    
+    def _generate_distribution_chart(self) -> str:
+        """Generate visualization of function distribution across accelerators"""
+        try:
+            plt.figure(figsize=(10, 6))
+            
+            distribution = self._get_accelerator_distribution()
+            plt.bar(distribution.keys(), distribution.values(), color='lightblue')
+            
+            plt.xlabel('Accelerators')
+            plt.ylabel('Number of Functions')
+            plt.title('Function Distribution Across Accelerators')
+            plt.xticks(rotation=45)
+            plt.grid(True, alpha=0.3)
+            
+            # Convert to base64
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', bbox_inches='tight')
+            plt.close()
+            buf.seek(0)
+            return base64.b64encode(buf.getvalue()).decode()
+            
+        except Exception as e:
+            logger.error(f"Error generating distribution chart: {str(e)}")
+            return ""
+    
+    def _generate_speedup_chart(self) -> str:
+        """Generate visualization of expected speedups per accelerator"""
+        try:
+            plt.figure(figsize=(10, 6))
+            
+            acc_speedups = {}
+            for mapping in self.accelerator_mappings.values():
+                acc_name = mapping['accelerator']
+                if acc_name not in acc_speedups:
+                    acc_speedups[acc_name] = []
+                acc_speedups[acc_name].append(mapping['estimated_speedup'])
+            
+            # Calculate average speedup per accelerator
+            avg_speedups = {
+                acc: sum(speedups) / len(speedups)
+                for acc, speedups in acc_speedups.items()
+            }
+            
+            plt.bar(avg_speedups.keys(), avg_speedups.values(), color='lightcoral')
+            plt.xlabel('Accelerators')
+            plt.ylabel('Average Speedup (x)')
+            plt.title('Expected Speedup per Accelerator')
+            plt.xticks(rotation=45)
+            plt.grid(True, alpha=0.3)
+            
+            # Convert to base64
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', bbox_inches='tight')
+            plt.close()
+            buf.seek(0)
+            return base64.b64encode(buf.getvalue()).decode()
+            
+        except Exception as e:
+            logger.error(f"Error generating speedup chart: {str(e)}")
+            return ""
 
 if __name__ == "__main__":
     import uvicorn
