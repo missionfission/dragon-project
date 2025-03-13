@@ -115,8 +115,8 @@ export default function BlogPage() {
                 <h4 className="text-xl font-semibold mb-4 text-blue-400">Validation Methodology</h4>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
                   <li>Benchmark Suite: SPEC CPU2017, PARSEC, and custom industrial workloads</li>
-                  <li>Test Configurations: Over 200 different processor configurations</li>
-                  <li>Architecture Types: Out-of-order and in-order cores, varying cache hierarchies</li>
+                  <li>Test Configurations: Over 20 different processor configurations</li>
+                  <li>Architecture Types: In-order cores, varying cache hierarchies</li>
                   <li>Validation Metrics: IPC, cache miss rates, branch prediction accuracy</li>
                 </ul>
               </div>
@@ -125,8 +125,6 @@ export default function BlogPage() {
                 <h4 className="text-xl font-semibold mb-4 text-blue-400">Key Results</h4>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
                   <li>95% average accuracy compared to gem5 for IPC predictions</li>
-                  <li>±3% margin of error for cache performance estimates</li>
-                  <li>98% correlation with actual silicon measurements for power estimates</li>
                   <li>100-1000x faster simulation speed compared to cycle-accurate simulators</li>
                 </ul>
               </div>
@@ -138,7 +136,6 @@ export default function BlogPage() {
                 </p>
                 <ol className="list-decimal list-inside text-gray-300 space-y-2">
                   <li>Initial calibration against open-source processors (RISC-V, ARM Cortex-A)</li>
-                  <li>Validation against commercial processor measurements</li>
                   <li>Continuous regression testing against new architectures</li>
                 </ol>
                 <p className="text-gray-300 mt-4">
@@ -157,7 +154,6 @@ export default function BlogPage() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
                   <li>Reduce design iteration cycles by 65%</li>
                   <li>Save millions in development costs through early-stage optimization</li>
-                  <li>Achieve first-silicon success rate of 90%</li>
                 </ul>
                 <p className="text-gray-300 mt-4">
                   These results demonstrate that DragonX's tools not only match the accuracy of traditional simulators 
