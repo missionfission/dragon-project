@@ -1,12 +1,81 @@
 import numpy as np
 import sys
 import os
+import ast
 from typing import Dict, Tuple
 
 # Add parent directory to path to allow imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ir.cfg.staticfg.builder import CFGBuilder
 from synthesis.hls import parse_graph
+
+def print_ast_graph(node, level=0, prefix=""):
+    """Print AST graph in a tree format"""
+    indent = "  " * level
+    node_type = type(node).__name__
+    
+    if isinstance(node, ast.Name):
+        print(f"{indent}{prefix}{node_type}: {node.id}")
+    elif isinstance(node, ast.Constant):
+        print(f"{indent}{prefix}{node_type}: {node.value}")
+    elif isinstance(node, ast.BinOp):
+        print(f"{indent}{prefix}{node_type} ({type(node.op).__name__})")
+    elif isinstance(node, ast.Call):
+        if isinstance(node.func, ast.Name):
+            print(f"{indent}{prefix}{node_type}: {node.func.id}()")
+        else:
+            print(f"{indent}{prefix}{node_type}")
+    else:
+        print(f"{indent}{prefix}{node_type}")
+    
+    for field, value in ast.iter_fields(node):
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, ast.AST):
+                    print_ast_graph(item, level + 1, f"{field}: ")
+        elif isinstance(value, ast.AST):
+            print_ast_graph(value, level + 1, f"{field}: ")
+
+def analyze_ast(src_code: str, name: str):
+    """Analyze AST for the given source code"""
+    print(f"\nAST Analysis for {name}:")
+    print("=" * 50)
+    tree = ast.parse(src_code)
+    print_ast_graph(tree)
+    
+    node_counts = {}
+    for node in ast.walk(tree):
+        node_type = type(node).__name__
+        node_counts[node_type] = node_counts.get(node_type, 0) + 1
+    
+    print("\nNode Type Statistics:")
+    print("-" * 30)
+    for node_type, count in sorted(node_counts.items()):
+        print(f"{node_type:15} : {count}")
+    print("-" * 30)
+
+def basic_matmul_code() -> str:
+    return """
+def basic_matmul(A, B, C, N):
+    for i in range(N):
+        for j in range(N):
+            for k in range(N):
+                C[i][j] += A[i][k] * B[k][j]
+    """
+
+def systolic_matmul_code() -> str:
+    return """
+def systolic_matmul(A, B, C, N, P):
+    # P x P systolic array
+    for i in range(0, N, P):
+        for j in range(0, N, P):
+            for k in range(0, N, P):
+                # Process P x P tile
+                for ii in range(P):
+                    for jj in range(P):
+                        for kk in range(P):
+                            C[i+ii][j+jj] += A[i+ii][k+kk] * B[k+kk][j+jj]
+    """
 
 def calculate_theoretical_metrics(matrix_size: int, tech_node: str = '45nm') -> Dict:
     """Calculate theoretical hardware metrics for matrix multiplication
@@ -253,5 +322,131 @@ def matrix_multiply_systolic(A, B):
     bandwidth_reduction = theoretical_basic['memory_requirements'] / theoretical_systolic['memory_bandwidth']
     print(f"Memory Bandwidth Reduction: {bandwidth_reduction:.2f}x")
 
+def main():
+    # Matrix size and PE array parameters
+    N = 32  # Matrix size (N x N)
+    P = 8   # PE array size (P x P)
+    
+    print("\nAnalyzing Matrix Multiplication Implementations:")
+    print("=" * 50)
+    
+    # Analyze basic matrix multiplication
+    analyze_ast(basic_matmul_code(), "Basic Matrix Multiplication")
+    
+    # Analyze systolic array implementation
+    analyze_ast(systolic_matmul_code(), "Systolic Array Matrix Multiplication")
+    
+    # ... rest of the validation code ...
+    
+    # Matrix size parameters
+    MATRIX_SIZE = 16
+    PE_ARRAY_SIZE = 8
+    
+    # Calculate theoretical metrics
+    theoretical_basic = calculate_theoretical_metrics(MATRIX_SIZE)
+    theoretical_systolic = calculate_systolic_metrics(MATRIX_SIZE, PE_ARRAY_SIZE)
+    
+    # Create CFG builder
+    cfg_builder = CFGBuilder(tech_node='45nm')
+    
+    # Test basic implementation
+    src_code_basic = """
+def matrix_multiply(A, B):
+    n = len(A)
+    m = len(A[0])
+    p = len(B[0])
+    C = [[0 for _ in range(p)] for _ in range(n)]
+    
+    for i in range(n):
+        for j in range(p):
+            for k in range(m):
+                C[i][j] += A[i][k] * B[k][j]
+    return C
+"""
+    
+    cfg_basic = cfg_builder.build_from_src("matmul", src_code_basic)
+    cycles_basic, hw_basic, mem_basic = parse_graph(
+        cfg_basic,
+        dse_given=True,
+        dse_input={"loop1": [16, 4]},
+        given_bandwidth=1000000,
+        tech_node='45nm'
+    )
+    
+    # Test systolic implementation
+    src_code_systolic = """
+def matrix_multiply_systolic(A, B):
+    n = len(A)
+    m = len(A[0])
+    p = len(B[0])
+    C = [[0 for _ in range(p)] for _ in range(n)]
+    
+    for wave in range(n + m - 1):
+        for i in range(max(0, wave - m + 1), min(n, wave + 1)):
+            j = wave - i
+            if j < p:
+                for k in range(m):
+                    if k <= wave:
+                        C[i][j] += A[i][k] * B[k][j]
+    return C
+"""
+    
+    cfg_systolic = cfg_builder.build_from_src("matmul_systolic", src_code_systolic)
+    cycles_systolic, hw_systolic, mem_systolic = parse_graph(
+        cfg_systolic,
+        dse_given=True,
+        dse_input={
+            "loop1": [16, 8],
+            "systolic": True,
+        },
+        given_bandwidth=2000000,
+        tech_node='45nm'
+    )
+    
+    # Print and validate results
+    print("\nBasic Matrix Multiplication Validation:")
+    print("=" * 50)
+    print("Theoretical Metrics:")
+    for key, value in theoretical_basic.items():
+        print(f"  {key}: {value}")
+    
+    print("\nSynthesis Results:")
+    print(f"  Cycles: {cycles_basic}")
+    print("\nHardware Resources:")
+    for op, count in hw_basic.items():
+        print(f"  {op}: {count}")
+    
+    is_valid, message = validate_synthesis_results(hw_basic, cycles_basic, theoretical_basic)
+    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
+    print(message)
+    
+    print("\nSystolic Array Implementation Validation:")
+    print("=" * 50)
+    print("Theoretical Metrics:")
+    for key, value in theoretical_systolic.items():
+        print(f"  {key}: {value}")
+    
+    print("\nSynthesis Results:")
+    print(f"  Cycles: {cycles_systolic}")
+    print("\nHardware Resources:")
+    for op, count in hw_systolic.items():
+        print(f"  {op}: {count}")
+    
+    is_valid, message = validate_synthesis_results(hw_systolic, cycles_systolic, theoretical_systolic)
+    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
+    print(message)
+    
+    # Print performance comparison
+    print("\nPerformance Comparison:")
+    print("=" * 50)
+    speedup = cycles_basic / cycles_systolic
+    print(f"Speedup with systolic array: {speedup:.2f}x")
+    
+    efficiency = (theoretical_systolic['num_pes'] * cycles_systolic) / (MATRIX_SIZE * MATRIX_SIZE * MATRIX_SIZE)
+    print(f"PE Array Efficiency: {efficiency:.2f}")
+    
+    bandwidth_reduction = theoretical_basic['memory_requirements'] / theoretical_systolic['memory_bandwidth']
+    print(f"Memory Bandwidth Reduction: {bandwidth_reduction:.2f}x")
+
 if __name__ == "__main__":
-    test_matmul_synthesis_with_validation() 
+    main() 
