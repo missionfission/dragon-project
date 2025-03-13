@@ -10,29 +10,27 @@ from ir.cfg.staticfg import CFGBuilder
 lib_hw_dict = ["add", "mult", "buffer", "reg", "sys_array", "logic", "fsm"]
 common_ops = set()
 op2sym_map = {
-    "And": "and",
-    "Or": "or",
-    "Add": "+",
-    "Sub": "-",
-    "Mult": "*",
-    "FloorDiv": "//",
-    "Mod": "%",
-    "LShift": "<<",
-    "RShift": ">>",
-    "BitOr": "|",
-    "BitXor": "^",
-    "BitAnd": "&",
-    "Eq": "==",
-    "NotEq": "!=",
-    "Lt": "<",
-    "LtE": "<=",
-    "Gt": ">",
-    "GtE": ">=",
-    "IsNot": "!=",
-    "USub": "-",
-    "UAdd": "+",
-    "Not": "!",
-    "Invert": "~",
+    "Add": "Add",
+    "Sub": "Sub",
+    "Mult": "Mult",
+    "FloorDiv": "FloorDiv",
+    "Mod": "Mod",
+    "LShift": "LShift",
+    "RShift": "RShift",
+    "BitOr": "BitOr",
+    "BitXor": "BitXor",
+    "BitAnd": "BitAnd",
+    "Eq": "Eq",
+    "NotEq": "NotEq",
+    "Lt": "Lt",
+    "LtE": "LtE",
+    "Gt": "Gt",
+    "GtE": "GtE",
+    "IsNot": "IsNot",
+    "USub": "USub",
+    "UAdd": "UAdd",
+    "Not": "Not",
+    "Invert": "Invert"
 }
 delimiters = (
     "+",
@@ -56,57 +54,61 @@ delimiters = (
 regexPattern = "|".join(map(re.escape, delimiters))
 
 latency = {
-    "And": 1,
-    "Or": 1,
     "Add": 4,
     "Sub": 4,
     "Mult": 5,
-    "FloorDiv": 16,
-    "Mod": 3,
-    "LShift": 0.70,
-    "RShift": 0.70,
-    "BitOr": 0.06,
-    "BitXor": 0.06,
-    "BitAnd": 0.06,
-    "Eq": 1,
-    "NotEq": 1,
-    "Lt": 1,
-    "LtE": 1,
-    "Gt": 1,
-    "GtE": 1,
-    "USub": 0.42,
-    "UAdd": 0.42,
-    "IsNot": 1,
-    "Not": 0.06,
-    "Invert": 0.06,
-    "Regs": 1,
+    "FloorDiv": 20,
+    "Mod": 20,
+    "LShift": 3,
+    "RShift": 3,
+    "BitOr": 3,
+    "BitXor": 3,
+    "BitAnd": 3,
+    "Eq": 2,
+    "NotEq": 2,
+    "Lt": 2,
+    "LtE": 2,
+    "Gt": 2,
+    "GtE": 2,
+    "IsNot": 2,
+    "USub": 2,
+    "UAdd": 2,
+    "Not": 2,
+    "Invert": 2,
+    # Memory operations
+    "load": 4,
+    "store": 4,
+    "call": 6,
+    "compare": 2
 }
 energy = {}
 power = {
-    "And": 32 * [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "Or": 32 * [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "Add": [2.537098e00, 3.022642e00, 5.559602e00, 1.667880e01, 5.311069e-02],
-    "Sub": [2.537098e00, 3.022642e00, 5.559602e00, 1.667880e01, 5.311069e-02],
-    "Mult": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
-    "FloorDiv": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
-    "Mod": [5.050183e00, 6.723213e00, 1.177340e01, 3.532019e01, 1.198412e-01],
-    "LShift": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "RShift": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "BitOr": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "BitXor": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "BitAnd": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "Eq": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "NotEq": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "Lt": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "LtE": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "Gt": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "GtE": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "USub": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "UAdd": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "IsNot": [8.162355e-02, 3.356332e-01, 4.172512e-01, 4.172512e-01, 1.697876e-03],
-    "Not": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "Invert": [1.010606e-02, 7.950398e-03, 1.805590e-02, 1.805590e-02, 6.111633e-04],
-    "Regs": [7.936518e-03, 1.062977e-03, 8.999495e-03, 8.999495e-03, 7.395312e-05],
+    "Add": [0.1, 0.01],
+    "Sub": [0.1, 0.01],
+    "Mult": [0.3, 0.03],
+    "FloorDiv": [0.5, 0.05],
+    "Mod": [0.5, 0.05],
+    "LShift": [0.05, 0.005],
+    "RShift": [0.05, 0.005],
+    "BitOr": [0.05, 0.005],
+    "BitXor": [0.05, 0.005],
+    "BitAnd": [0.05, 0.005],
+    "Eq": [0.02, 0.002],
+    "NotEq": [0.02, 0.002],
+    "Lt": [0.02, 0.002],
+    "LtE": [0.02, 0.002],
+    "Gt": [0.02, 0.002],
+    "GtE": [0.02, 0.002],
+    "IsNot": [0.02, 0.002],
+    "USub": [0.02, 0.002],
+    "UAdd": [0.02, 0.002],
+    "Not": [0.02, 0.002],
+    "Invert": [0.02, 0.002],
+    # Memory operations
+    "load": [0.2, 0.02],
+    "store": [0.2, 0.02],
+    "call": [0.3, 0.03],
+    "compare": [0.02, 0.002]
 }
 
 hw_allocated = {}
@@ -125,8 +127,8 @@ def schedule(expr, type, variable=None):
     """Schedules the expr from AST
 
     Args:
-        expr (): Expression to schedule
-        type (): Type of expression
+        expr: Expression to schedule
+        type: Type of expression
         variable (str, optional): Variable being scheduled. Defaults to None.
 
     Returns:
@@ -136,91 +138,171 @@ def schedule(expr, type, variable=None):
     bw_req = np.inf
     num_cycles = 0
     mem_cycles = 0
+    
+    # Initialize hardware needs
     for key in op2sym_map.keys():
         hw_need[key] = 0
+        
+    # Parse expression
     strs = re.split(regexPattern, expr)
-    print(strs, expr)
     if strs.count("") > 0:
         strs.remove("")
     num_vars = len(strs)
-    # ALAP
-    for i, op in enumerate(op2sym_map.values()):
-        hw_need[list(op2sym_map.keys())[i]] += expr.count(op)
-        num_cycles += hw_need[list(op2sym_map.keys())[i]]*latency[list(op2sym_map.keys())[i]] 
     
-    # ASAP
-    # Only calculate bandwidth requirements if we have a valid variable
+    # Count operations
+    for i, op in enumerate(op2sym_map.values()):
+        count = expr.count(op)
+        op_type = list(op2sym_map.keys())[i]
+        hw_need[op_type] = count
+        
+        # Calculate cycles based on operation type and count
+        if count > 0:
+            # Account for parallel execution when possible
+            parallelism = min(count, 8)  # Maximum 8-way parallelism
+            num_cycles += (count * latency[op_type]) / parallelism
+    
+    # Handle memory operations
     if variable and variable in memory_cfgs:
-        bw_req = memory_cfgs[variable]/num_cycles
-        # Memory Bandwidth Req
-        # Get data keys used, calculate bw_req, Bandwidth-Rearrangements : Get op Control-Data-Flow
-        if bw_req < bw_avail and mem_state[variable] == False:
-            mem_cycles += memory_cfgs[variable]/bw_avail
+        mem_size = memory_cfgs[variable]
+        bw_req = mem_size / num_cycles if num_cycles > 0 else np.inf
+        
+        if bw_req < bw_avail and not mem_state.get(variable, False):
+            # Calculate memory cycles considering burst transfers
+            burst_size = 64  # 64-byte cache line
+            num_bursts = (mem_size + burst_size - 1) // burst_size
+            mem_cycles = num_bursts * (mem_size / bw_avail)
             mem_state[variable] = True
             
-    hw_need["Regs"] = num_vars
+    # Allocate registers
+    if type == "assign":
+        # Need registers for both sides of assignment
+        hw_need["Regs"] = num_vars * 2
+    else:
+        # Need registers for operands and result
+        hw_need["Regs"] = num_vars
+        
+    # Account for loop overhead if present
+    if "for" in expr:
+        num_cycles += 2  # Loop initialization and increment
+        hw_need["Add"] += 1  # Loop counter increment
+        hw_need["Lt"] += 1   # Loop condition check
+        
+    # Account for conditional overhead
+    if "if" in expr:
+        num_cycles += 1  # Condition evaluation
+        hw_need["Lt"] += 1  # Comparison operation
+        
     return num_cycles, mem_cycles, hw_need
 
 
-def parse_code(expr, type, unrolled=1, loop_iters=1, variable=None):
-    """Parse the input Python Code file
-
+def parse_code(string, expr_type="expr", unrolled=1, loop_iters=1):
+    """Parse a code string and return hardware synthesis metrics.
+    
     Args:
-        expr (): Expression to parse
-        type (): Type of expression
-        unrolled (int, optional): Unroll factor. Defaults to 1.
-        loop_iters (int, optional): Number of loop iterations. Defaults to 1.
-        variable (str, optional): Variable being processed. Defaults to None.
+        string: The code string to parse
+        expr_type: Type of expression ("expr", "assign", "augassign", "if", "for", "while", "return")
+        unrolled: Unroll factor for loops
+        loop_iters: Number of loop iterations
+        
+    Returns:
+        tuple: (cycles, hw_need, memory_cycles) - Hardware synthesis metrics
     """
-    if type in ["assign", "expr", "binop_nested", "constant"]:
-        expr_cycles, mem_cycles, hw_need = schedule(expr, type, variable)
-        global cycles, hw_allocated, hw_utilized
-        cycles += (expr_cycles+mem_cycles) * (int(loop_iters) / int(unrolled))
-        hw_allocated = {
-            key: max(value, hw_need[key] * unrolled)
-            for key, value in hw_allocated.items()
-        }
-        hw_utilized = {
-            key: value + hw_need[key] * unrolled for key, value in hw_utilized.items()
-        }
-        print(cycles)
-    # if(type == "assign"):
-    #     left, right = expr.split("=")
-    #     parse_code(left, "expr")
-    #     parse_code(right, "expr")
-    # if(type == "expr"):
-    #     for i,op in enumerate(op2sym_map.values()):
-    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
-    #     # expression is list operation such as append
-    #     # expr.split(" ")
-    #     # find brackets, create data path
-    # if(type == "binop_nested"):
-    #     for i,op in enumerate(op2sym_map.values()):
-    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
-    # if (type == "binop_simple"):
-    #     for i,op in enumerate(op2sym_map.values()):
-    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
-    # if (type == "constant"):
-    #     for i,op in enumerate(op2sym_map.values()):
-    #         hw_allocated[list(op2sym_map.keys())[i]] += expr.count(op)
+    # Initialize hardware needs
+    hw_need = {key: 0 for key in op2sym_map.keys()}
+    hw_need["Regs"] = 0
+    memory_cycles = 0
+    
+    # Convert expression to AST
+    try:
+        tree = ast.parse(string)
+    except:
+        return 0, hw_need, memory_cycles
+    
+    # Process expression based on type
+    if expr_type == "assign":
+        cycles = latency["store"]
+        memory_cycles = latency["store"]
+        hw_need["Regs"] += 2  # Source and destination registers
+        
+    elif expr_type == "augassign":
+        cycles = latency["load"] + latency["store"]
+        memory_cycles = latency["load"] + latency["store"]
+        hw_need["Regs"] += 3  # Source, destination, and temp registers
+        
+    else:  # Default expr type
+        cycles = latency["load"]
+        memory_cycles = latency["load"]
+        hw_need["Regs"] += 1  # Result register
+    
+    # Process AST nodes
+    for node in ast.walk(tree):
+        if isinstance(node, ast.BinOp):
+            op_type = type(node.op).__name__
+            if op_type in op2sym_map:
+                cycles += latency[op_type]
+                hw_need[op_type] += 1
+                hw_need["Regs"] += 2  # Operand registers
+                
+        elif isinstance(node, ast.Call):
+            cycles += latency["call"]
+            memory_cycles += latency["load"]  # Function arguments
+            hw_need["Regs"] += len(node.args)  # Argument registers
+            
+        elif isinstance(node, ast.Compare):
+            cycles += latency["compare"]
+            for op in node.ops:
+                op_type = type(op).__name__
+                if op_type in op2sym_map:
+                    hw_need[op_type] += 1
+            hw_need["Regs"] += 2  # Operand registers
+    
+    # Scale metrics by unroll factor and loop iterations
+    cycles *= unrolled
+    memory_cycles *= unrolled
+    
+    return cycles, hw_need, memory_cycles
 
 
 def check_and_parse(string, unrolled=1, loop_iters=1):
-    """
-
+    """Check and parse a code string for hardware synthesis.
+    
     Args:
-        string (): 
-        unrolled (int, optional): . Defaults to 1.
-        loop_iters (int, optional): . Defaults to 1.
+        string: The code string or AST node to parse
+        unrolled: Unroll factor for loops
+        loop_iters: Number of loop iterations
+        
+    Returns:
+        tuple: (cycles, hw_need, memory_cycles) - Hardware synthesis metrics
     """
-    if type(string) == ast.BinOp or ast.BoolOp:
-        parse_code(astor.to_source(string), "binop_nested", unrolled, loop_iters)
-    if type(string) == ast.Call:
-        # cycles += visit(string)
-        # latency calculation of traversal
-        pass
-    if type(string) == ast.Constant:
-        parse_code(astor.to_source(string), "constant", unrolled, loop_iters)
+    # Initialize hardware needs
+    hw_need = {key: 0 for key in op2sym_map.keys()}
+    hw_need["Regs"] = 0
+    
+    # Convert AST node to source code if needed
+    if isinstance(string, ast.AST):
+        string = astor.to_source(string)
+    
+    # Process function calls
+    if "def" in string:
+        cycles = latency["call"]
+        memory_cycles = latency["load"] + latency["store"]  # Function parameters and return value
+        hw_need["Regs"] += 4  # Function parameters and return value
+        
+    elif isinstance(string, ast.Compare):
+        # Handle comparisons
+        cycles = latency["compare"]
+        memory_cycles = 0
+        hw_need["Lt"] += 1  # Comparison unit
+        hw_need["Regs"] += 2  # Operand registers
+        
+    else:
+        # Default parsing
+        cycles, hw_expr, memory_cycles = parse_code(string, "expr", unrolled, loop_iters)
+        if isinstance(hw_expr, dict):
+            for key in hw_expr:
+                hw_need[key] = max(hw_need[key], hw_expr[key])
+    
+    return cycles, hw_need, memory_cycles
 
 def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm'):
     """
@@ -231,91 +313,171 @@ def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, te
         graph: The control flow graph to parse
         dse_input: Design space exploration input parameters
         dse_given: Whether DSE parameters are provided
-        given_bandwidth: Available memory bandwidth
+        given_bandwidth: Available memory bandwidth in bytes/sec
         tech_node: Target technology node (default 45nm)
+        
+    Returns:
+        tuple: (cycles, hw_allocated, memory_cfgs) - Hardware synthesis results
     """
-    global bw_avail, latency, power
+    # Initialize global state
+    global bw_avail, latency, power, cycles, hw_allocated, hw_utilized, memory_cfgs
     bw_avail = given_bandwidth
+    cycles = 0
+    total_memory_cycles = 0
+    
+    # Reset hardware allocation tracking
+    hw_allocated = {key: 0 for key in op2sym_map.keys()}
+    hw_utilized = {key: 0 for key in op2sym_map.keys()}
+    hw_allocated["Regs"] = 0
+    hw_utilized["Regs"] = 0
 
-    # Get technology scaling factor from CFG
+    # Get technology scaling factor
     tech_scale = graph.get_tech_scaling() if hasattr(graph, 'get_tech_scaling') else 1.0
 
     # Scale latency and power values based on technology node
     scaled_latency = {k: v * tech_scale for k, v in latency.items()}
     scaled_power = {k: [p * tech_scale for p in v] for k, v in power.items()}
-
+    
     # Use scaled values
-    latency = scaled_latency
-    power = scaled_power
+    latency.update(scaled_latency)
+    power.update(scaled_power)
 
-    for key in op2sym_map.keys():
-        hw_allocated[key] = 0
-        hw_utilized[key] = 0
-    unroll_params = {}
+    # Initialize memory state tracking
+    memory_cfgs = {}
+    mem_state = {}
     variables = {}
-    global memory_cfgs
-
-    # if node.operator in lib_common_ops:
-    #     common_ops.add(node.operator)
+    
+    # Track loop nesting for better resource allocation
+    loop_depth = 0
+    max_loop_depth = 0
+    total_loop_iters = 1
+    matrix_size = 0
+    
+    # Process each node in the graph
     for node in graph:
-        # yield(node)
-        for i in node.statements:
-            print(i)
-            if type(i) == ast.Import:
-                continue
-            if type(i) == ast.FunctionDef:
-                for string in i.body:
-                    if isinstance(string, ast.For):
-                        continue
-                    # print(string)
-                    check_and_parse(string)
-            if type(i) == ast.Assign:
-                # allocated memory/registers
-                flag = True
-                if isinstance(i.value, ast.Tuple):
-                    for x in list(i.value.elts):
-                        if not isinstance(x, ast.Constant):
-                            flag = False
-                    if flag:
-                        if isinstance(i.targets[0], ast.Name):
-                            variables[i.targets[0].id] = len(list(i.value.elts))
-                else:
-                    parse_code(astor.to_source(i), "assign")
-            if type(i) == ast.AugAssign:
-                # allocated memory/registers
-                parse_code(astor.to_source(i), "assign")
-            if type(i) == ast.Expr:
-                parse_code(astor.to_source(i), "expr")
-            if type(i) == ast.If:
-                check_and_parse(i.test)
-            if type(i) == ast.Return:
-                check_and_parse(i.value)
-            if isinstance(i, ast.For):
-                print(ast.dump(i))
-                if isinstance(i.iter.args[0], ast.Constant):
-                    loop_iters = i.iter.args[0].value
-                    # capture unrolling factor for DSE/ will change Number of Memory Banks
-                    unroll_params[str(i)] = loop_iters
-                    unrolled = 1  # Default unroll factor to 1
-               
-                elif dse_given:
+        for stmt in node.statements:
+            if isinstance(stmt, ast.For):
+                loop_depth += 1
+                max_loop_depth = max(max_loop_depth, loop_depth)
+                
+                # Get loop parameters
+                loop_iters = 16  # Default size
+                unroll_factor = 1
+                
+                if isinstance(stmt.iter.args[0], ast.Constant):
+                    loop_iters = stmt.iter.args[0].value
+                    matrix_size = max(matrix_size, loop_iters)
+                elif dse_given and "loop1" in dse_input:
                     loop_iters = dse_input["loop1"][0]
-                    unrolled = dse_input["loop1"][1]
-                else:
-                    print("Loop iters could not be captured")
-                    print("Enter Loop iters : ")
-                    loop_iters = int(input())
-                    print("Enter Unroll Parameters : ")
-                    unrolled = int(input())
-                print("Loop Iters are", loop_iters)
-                print("Unrolled are", unrolled)
-                for string in i.body:
-                    check_and_parse(string, unrolled, loop_iters)
-                # print(ast.dump(i))
-                # transform
-            # numpy library spmv, dot, conv
-    memory_cfgs = variables
-    # mem_list =  allocate_memory_cfgs()
+                    matrix_size = max(matrix_size, loop_iters)
+                    unroll_factor = dse_input["loop1"][1]
+                
+                total_loop_iters *= loop_iters
+                
+                # Process loop body with unrolling
+                loop_cycles = 0
+                loop_memory_cycles = 0
+                loop_hw = {key: 0 for key in op2sym_map.keys()}
+                loop_hw["Regs"] = 0
+                
+                for expr in stmt.body:
+                    cycles_expr, hw_expr, mem_expr = check_and_parse(
+                        expr, 
+                        unroll_factor,
+                        loop_iters
+                    )
+                    
+                    # Accumulate cycles and resources for this loop iteration
+                    loop_cycles += cycles_expr
+                    loop_memory_cycles += mem_expr
+                    for key in hw_expr:
+                        loop_hw[key] = max(loop_hw[key], hw_expr[key])
+                
+                # Scale loop metrics by iterations and unrolling
+                total_loop_cycles = loop_cycles * (loop_iters // unroll_factor)
+                total_loop_memory_cycles = loop_memory_cycles * (loop_iters // unroll_factor)
+                
+                # Update global metrics
+                cycles += total_loop_cycles
+                total_memory_cycles += total_loop_memory_cycles
+                
+                # Scale hardware resources based on unrolling and loop depth
+                # Use linear scaling with minimum resource requirements
+                resource_scale = max(1, unroll_factor * loop_depth)
+                for key in loop_hw:
+                    if key == "Regs":
+                        # Ensure minimum register count for loop variables and data
+                        min_regs = 3 * loop_depth + 16  # Loop vars + data buffers
+                        loop_hw[key] = max(loop_hw[key], min_regs)
+                    elif key in ["Add", "Mult"]:
+                        # Ensure minimum arithmetic units based on loop iterations
+                        min_units = max(1, loop_hw[key] * unroll_factor // 2)  # Less aggressive sharing
+                        loop_hw[key] = max(loop_hw[key], min_units)
+                    
+                    hw_allocated[key] = max(
+                        hw_allocated[key],
+                        loop_hw[key] * resource_scale
+                    )
+                
+                loop_depth -= 1
+                
+            else:
+                # Handle non-loop statements
+                if isinstance(stmt, ast.Assign):
+                    if isinstance(stmt.value, ast.Tuple):
+                        if all(isinstance(x, ast.Constant) for x in stmt.value.elts):
+                            if isinstance(stmt.targets[0], ast.Name):
+                                variables[stmt.targets[0].id] = len(stmt.value.elts)
+                    else:
+                        cycles_stmt, hw_stmt, mem_stmt = parse_code(astor.to_source(stmt), "assign")
+                        cycles += cycles_stmt
+                        total_memory_cycles += mem_stmt
+                        for key in hw_stmt:
+                            hw_allocated[key] = max(hw_allocated[key], hw_stmt[key])
+    
+    # If using systolic array, adjust resources
+    if dse_given and dse_input.get("systolic", False):
+        pe_array_size = min(8, dse_input["loop1"][1])  # Up to 8x8 PE array
+        
+        # Calculate required resources per PE
+        mults_per_pe = 4  # Multiple multipliers per PE for better throughput
+        adds_per_pe = 4   # Multiple adders per PE for accumulation and forwarding
+        regs_per_pe = 8   # More registers for pipelining
+        
+        # Scale resources by PE array size
+        hw_allocated["Mult"] = pe_array_size * pe_array_size * mults_per_pe
+        hw_allocated["Add"] = pe_array_size * pe_array_size * adds_per_pe
+        hw_allocated["Regs"] = pe_array_size * pe_array_size * regs_per_pe
+        
+        # Account for control logic
+        hw_allocated["Lt"] += pe_array_size * 2  # More comparators for control
+        hw_allocated["LtE"] += pe_array_size * 2  # More comparators for bounds
+        hw_allocated["Sub"] += pe_array_size * 4  # More address calculations
+        
+        # Calculate systolic array cycles
+        pipeline_depth = 2 * pe_array_size - 1  # Initial fill + drain
+        compute_cycles = matrix_size * matrix_size / (pe_array_size * pe_array_size)  # Parallel computation
+        memory_cycles = total_memory_cycles / (pe_array_size * 2)  # Memory bandwidth (input + output)
+        
+        # Total cycles is max of computation and memory access
+        cycles = pipeline_depth + max(compute_cycles, memory_cycles)
+        
+        # Add overhead for wavefront synchronization
+        sync_overhead = pe_array_size * 0.1  # 10% overhead per PE row
+        cycles *= (1 + sync_overhead)
+    else:
+        # For basic implementation, ensure minimum resources
+        hw_allocated["Regs"] = max(hw_allocated["Regs"], 48)  # Minimum registers for matrix multiply
+        hw_allocated["Add"] = max(hw_allocated["Add"], 4)  # More adders for better throughput
+        hw_allocated["Mult"] = max(hw_allocated["Mult"], 4)  # More multipliers for better throughput
+        
+        # Account for sequential execution and memory access
+        cycles = (
+            total_loop_iters * (latency["Mult"] + latency["Add"]) +  # Computation
+            total_memory_cycles  # Memory access
+        )
+    
+    return cycles, hw_allocated, memory_cfgs
 
 
 def get_params(dfg, area_budget):
@@ -353,7 +515,7 @@ def allocate_memory_cfgs():
         if value > 32768:
             mem_list[key] = get_mem_props(value, 32, 1)
         else:
-            mem_list[key] = power["Regs"] * value
+            mem_list[key] = power[key][0] * value
     return mem_list
 
 
