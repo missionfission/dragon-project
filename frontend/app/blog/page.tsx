@@ -37,8 +37,8 @@ export default function BlogPage() {
               <div className="bg-gray-900/50 p-6 rounded-lg mb-8">
                 <h4 className="text-xl font-semibold mb-4 text-blue-400">AI Workload Performance</h4>
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
-                  <li>99% accuracy for transformer models (GPT, BERT families)</li>
-                  <li>97% accuracy for CNN architectures</li>
+                  <li>90% accuracy for transformer models (GPT, BERT families)</li>
+                  <li>92% accuracy for CNN architectures</li>
                   <li>95% accuracy for emerging architectures (MoE, Sparse Transformers)</li>
                   <li>Sub-minute evaluation time for complex neural networks</li>
                 </ul>
@@ -69,7 +69,7 @@ export default function BlogPage() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2">
                   <li>Neural architecture-aware performance modeling</li>
                   <li>Hardware-software co-optimization engine</li>
-                  <li>Automated design space exploration with reinforcement learning</li>
+                  <li>Automated design space exploration with gradient descent based methods</li>
                   <li>Memory hierarchy optimization using analytical models</li>
                   <li>Power and area estimation through hybrid ML/analytical approaches</li>
                 </ul>
