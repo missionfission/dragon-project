@@ -25,3 +25,4 @@ frontend/public/dashboard_files/
 frontend/public/dashboard.html
 logs/
 *.png
+gem5/
