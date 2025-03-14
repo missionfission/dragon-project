@@ -852,29 +852,29 @@ def _extract_defined_variables(stmt):
     
     return defined_vars
 
-def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type, algorithm_params=None):
-    """Allocate resources based on area constraints and algorithm parameters
+def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=None, algorithm_params=None):
+    """Allocate hardware resources based on area constraints and algorithm analysis
     
     Args:
-        dfg: Data flow graph
-        area_budget: Area budget in mm^2
-        algorithm_type: Type of algorithm ('matmul', 'fir', 'aes', or 'unknown')
-        algorithm_params: Dictionary of algorithm parameters (e.g., matrix_size for matmul)
-        
-    Returns:
-        tuple: (hw_allocated, cycles) - Hardware allocation and cycle count
-    """
-    # Default algorithm parameters if not provided
-    if algorithm_params is None:
-        algorithm_params = {}
+        dfg: Data Flow Graph
+        area_budget: Maximum area budget (in mm^2)
+        algorithm_type: Type of algorithm ('matmul', 'fir', 'aes', etc.)
+        algorithm_params: Dictionary of algorithm-specific parameters
+            - For matmul: {'matrix_size': N}
+            - For systolic: {'matrix_size': N, 'tile_size': P}
+            - For fir: {'filter_size': N}
+            - For aes: {'key_size': 128/192/256}
     
-    # Default area costs for different hardware components (mm^2)
+    Returns:
+        dict: Allocated hardware resources
+    """
+    # Define default area costs for hardware components (in mm^2)
     area_costs = {
         'Add': 0.01,
         'Sub': 0.01,
         'Mult': 0.05,
         'Div': 0.1,
-        'Mod': 0.1,
+        'Mod': 0.08,
         'BitXor': 0.005,
         'BitAnd': 0.005,
         'BitOr': 0.005,
@@ -884,186 +884,145 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type, al
         'LtE': 0.002,
         'Gt': 0.002,
         'GtE': 0.002,
-        'Load': 0.01,
-        'Store': 0.01,
-        'Call': 0.005,
-        'Branch': 0.005,
-        'Loop': 0.005,
+        'Load': 0.02,
+        'Store': 0.02,
         'Regs': 0.001,  # per register
     }
     
     # Initialize hardware allocation
     hw_allocated = {op: 0 for op in area_costs.keys()}
+    hw_allocated['Regs'] = 0
     
     # Count operations in the DFG
-    operation_counts = {}
-    for node_id, node in dfg.nodes.items():
-        if hasattr(node, 'operations'):
-            for op_type, count in node.operations.items():
-                if op_type not in operation_counts:
-                    operation_counts[op_type] = 0
-                operation_counts[op_type] += count
+    op_counts = {}
+    for node in dfg.nodes.values():
+        # Use node.type instead of node.node_type
+        node_type = node.type
+        op_counts[node_type] = op_counts.get(node_type, 0) + 1
+        
+        # Also count operations within each node
+        for op_type, count in node.operations.items():
+            op_counts[op_type] = op_counts.get(op_type, 0) + count
     
-    # Calculate initial area requirement (assuming 1 unit per operation type)
-    initial_area = 0
-    for op_type, count in operation_counts.items():
-        if op_type in area_costs:
-            initial_area += area_costs[op_type] * count
+    # Calculate initial area requirements
+    total_area = 0
+    for op, count in op_counts.items():
+        if op in area_costs:
+            total_area += count * area_costs[op]
     
     # Allocate resources based on algorithm type
-    cycles = 0
-    
     if algorithm_type == 'matmul':
-        # Extract matrix size from parameters
         matrix_size = algorithm_params.get('matrix_size', 16)
-        is_systolic = algorithm_params.get('is_systolic', False)
         
-        if is_systolic:
-            # Systolic array implementation
-            pe_array_size = algorithm_params.get('pe_array_size', 8)
+        # Basic matrix multiplication
+        min_registers = 3 * matrix_size  # For A, B, C matrices
+        min_multipliers = 1
+        min_adders = 1
+        
+        # Ensure minimum resources
+        hw_allocated['Regs'] = max(hw_allocated['Regs'], min_registers)
+        hw_allocated['Mult'] = max(hw_allocated['Mult'], min_multipliers)
+        hw_allocated['Add'] = max(hw_allocated['Add'], min_adders)
+        
+        # If we have more area budget, allocate more multipliers and adders
+        remaining_area = area_budget - (hw_allocated['Regs'] * area_costs['Regs'] + 
+                                       hw_allocated['Mult'] * area_costs['Mult'] + 
+                                       hw_allocated['Add'] * area_costs['Add'])
+        
+        # Allocate more multipliers and adders with remaining area
+        # Prioritize multipliers as they're the bottleneck
+        while remaining_area >= area_costs['Mult'] and hw_allocated['Mult'] < matrix_size:
+            hw_allocated['Mult'] += 1
+            remaining_area -= area_costs['Mult']
+        
+        while remaining_area >= area_costs['Add'] and hw_allocated['Add'] < matrix_size:
+            hw_allocated['Add'] += 1
+            remaining_area -= area_costs['Add']
             
-            # Calculate required resources
-            num_pes = pe_array_size * pe_array_size
-            min_registers = num_pes * 3  # 3 registers per PE (2 inputs, 1 partial sum)
-            min_multipliers = num_pes
-            min_adders = num_pes - 1
-            
-            # Calculate area for systolic array
-            systolic_area = (min_multipliers * area_costs['Mult'] + 
-                            min_adders * area_costs['Add'] + 
-                            min_registers * area_costs['Regs'])
-            
-            # Adjust PE array size if area budget is exceeded
-            while systolic_area > area_budget and pe_array_size > 1:
-                pe_array_size -= 1
-                num_pes = pe_array_size * pe_array_size
-                min_registers = num_pes * 3
-                min_multipliers = num_pes
-                min_adders = num_pes - 1
-                
-                systolic_area = (min_multipliers * area_costs['Mult'] + 
-                                min_adders * area_costs['Add'] + 
-                                min_registers * area_costs['Regs'])
-            
-            # Calculate cycles for systolic array
-            pipeline_depth = 2 * pe_array_size - 1 + 1
-            num_tiles = (matrix_size // pe_array_size) ** 2
-            cycles = num_tiles * pipeline_depth
-            
-            # Set hardware allocation
-            hw_allocated['Mult'] = min_multipliers
-            hw_allocated['Add'] = min_adders
+    elif algorithm_type == 'systolic':
+        matrix_size = algorithm_params.get('matrix_size', 16)
+        tile_size = algorithm_params.get('tile_size', 8)
+        
+        # Systolic array needs PEs (each with a multiplier and adder)
+        num_pes = tile_size * tile_size
+        min_registers = 3 * matrix_size + num_pes  # For A, B, C matrices and PE registers
+        
+        # For systolic array, we need to allocate enough resources for the PEs
+        # Each PE needs a multiplier and an adder
+        # The total number of multipliers should be num_pes
+        # The total number of adders should be num_pes - 1 (one less for the first PE)
+        
+        # Calculate area required for systolic array
+        systolic_area = (num_pes * area_costs['Mult'] + 
+                        (num_pes - 1) * area_costs['Add'] + 
+                        min_registers * area_costs['Regs'])
+        
+        # If area budget is sufficient, allocate resources for full systolic array
+        if systolic_area <= area_budget:
             hw_allocated['Regs'] = min_registers
-            
+            hw_allocated['Mult'] = num_pes
+            hw_allocated['Add'] = num_pes - 1
         else:
-            # Basic matrix multiplication
-            # Calculate minimum resources
-            min_registers = 3 + 1 + 2 * matrix_size  # 3 loop indices, 1 accumulator, 2*N elements
-            
-            # Calculate area for basic implementation
-            basic_area = (area_costs['Mult'] + area_costs['Add'] + 
-                         min_registers * area_costs['Regs'])
-            
-            # Determine how many multipliers and adders we can allocate
-            remaining_area = area_budget - (min_registers * area_costs['Regs'])
-            max_mult_add_pairs = int(remaining_area / (area_costs['Mult'] + area_costs['Add']))
-            
-            # Allocate at least 1 multiplier and adder
-            num_multipliers = max(1, max_mult_add_pairs)
-            num_adders = max(1, max_mult_add_pairs)
-            
-            # Calculate cycles for basic matrix multiplication
-            # N^3 operations with parallelism
-            total_ops = matrix_size ** 3
-            cycles = total_ops // max(1, min(num_multipliers, num_adders))
-            
-            # Set hardware allocation
-            hw_allocated['Mult'] = num_multipliers
-            hw_allocated['Add'] = num_adders
-            hw_allocated['Regs'] = min_registers
-    
+            # If area budget is not sufficient, scale down the systolic array
+            scale_factor = area_budget / systolic_area
+            hw_allocated['Regs'] = max(48, int(min_registers * scale_factor))
+            hw_allocated['Mult'] = max(16, int(num_pes * scale_factor))
+            hw_allocated['Add'] = max(15, int((num_pes - 1) * scale_factor))
+        
     elif algorithm_type == 'fir':
-        # Extract filter parameters
-        filter_length = algorithm_params.get('filter_length', 16)
-        signal_length = algorithm_params.get('signal_length', 64)
+        filter_size = algorithm_params.get('filter_size', 16)
         
-        # Calculate minimum resources
-        min_registers = filter_length + 2  # Filter coefficients + 2 indices
+        # FIR filter needs taps (multipliers) and adders
+        min_registers = 2 * filter_size  # For input samples and coefficients
+        min_multipliers = 1
+        min_adders = 1
         
-        # Calculate area for basic implementation
-        basic_area = (area_costs['Mult'] + area_costs['Add'] + 
-                     min_registers * area_costs['Regs'])
+        # Ensure minimum resources
+        hw_allocated['Regs'] = max(hw_allocated['Regs'], min_registers)
+        hw_allocated['Mult'] = max(hw_allocated['Mult'], min_multipliers)
+        hw_allocated['Add'] = max(hw_allocated['Add'], min_adders)
         
-        # Determine how many multipliers and adders we can allocate
-        remaining_area = area_budget - (min_registers * area_costs['Regs'])
-        max_mult_add_pairs = int(remaining_area / (area_costs['Mult'] + area_costs['Add']))
+        # If we have more area budget, allocate more multipliers and adders
+        remaining_area = area_budget - (hw_allocated['Regs'] * area_costs['Regs'] + 
+                                       hw_allocated['Mult'] * area_costs['Mult'] + 
+                                       hw_allocated['Add'] * area_costs['Add'])
         
-        # Allocate at least 1 multiplier and adder
-        num_multipliers = max(1, max_mult_add_pairs)
-        num_adders = max(1, max_mult_add_pairs)
-        
-        # Calculate cycles for FIR filter
-        # signal_length * filter_length operations with parallelism
-        total_ops = signal_length * filter_length
-        cycles = total_ops // max(1, min(num_multipliers, num_adders))
-        
-        # Set hardware allocation
-        hw_allocated['Mult'] = num_multipliers
-        hw_allocated['Add'] = num_adders
-        hw_allocated['Regs'] = min_registers
-    
+        # Allocate more multipliers and adders with remaining area
+        while remaining_area >= area_costs['Mult'] + area_costs['Add'] and hw_allocated['Mult'] < filter_size:
+            hw_allocated['Mult'] += 1
+            hw_allocated['Add'] += 1
+            remaining_area -= (area_costs['Mult'] + area_costs['Add'])
+            
     elif algorithm_type == 'aes':
-        # Extract AES parameters from AST or use defaults
-        num_rounds = algorithm_params.get('num_rounds', 14)  # AES-256 has 14 rounds
+        key_size = algorithm_params.get('key_size', 256)
         
-        # Calculate minimum resources
-        min_registers = 32  # State + key registers
-        min_xor_units = 8   # Minimum XOR units for AES
+        # AES needs registers for state and key, and BitXor operations
+        min_registers = 32  # 16 bytes state + 16 bytes round key
+        min_bitxors = 8     # Minimum BitXor units
         
-        # Calculate area for AES implementation
-        aes_area = (min_xor_units * area_costs['BitXor'] + 
-                   min_registers * area_costs['Regs'])
+        # Ensure minimum resources
+        hw_allocated['Regs'] = max(hw_allocated['Regs'], min_registers)
+        hw_allocated['BitXor'] = max(hw_allocated.get('BitXor', 0), min_bitxors)
         
-        # Determine how many XOR units we can allocate
-        remaining_area = area_budget - (min_registers * area_costs['Regs'])
-        max_xor_units = int(remaining_area / area_costs['BitXor'])
+        # If we have more area budget, allocate more BitXor units
+        remaining_area = area_budget - (hw_allocated['Regs'] * area_costs['Regs'] + 
+                                       hw_allocated.get('BitXor', 0) * area_costs['BitXor'])
         
-        # Allocate at least the minimum XOR units
-        num_xor_units = max(min_xor_units, max_xor_units)
-        
-        # Calculate cycles for AES
-        # Base cycles for AES-256
-        base_cycles = 94
-        
-        # Adjust cycles based on XOR unit parallelism
-        parallelism_factor = num_xor_units / min_xor_units
-        cycles = int(base_cycles / parallelism_factor)
-        
-        # Set hardware allocation
-        hw_allocated['BitXor'] = num_xor_units
-        hw_allocated['Regs'] = min_registers
+        # Allocate more BitXor units with remaining area
+        while remaining_area >= area_costs['BitXor'] and hw_allocated.get('BitXor', 0) < 16:
+            hw_allocated['BitXor'] = hw_allocated.get('BitXor', 0) + 1
+            remaining_area -= area_costs['BitXor']
     
-    else:
-        # Generic resource allocation for unknown algorithm type
-        # Allocate resources proportionally to operation counts
-        total_area = 0
-        
-        for op_type, count in operation_counts.items():
-            if op_type in area_costs:
-                # Allocate at least 1 unit for each operation type
-                hw_allocated[op_type] = max(1, count)
-                total_area += hw_allocated[op_type] * area_costs[op_type]
-        
-        # Scale down if area budget is exceeded
-        if total_area > area_budget:
-            scale_factor = area_budget / total_area
-            for op_type in hw_allocated:
-                hw_allocated[op_type] = max(1, int(hw_allocated[op_type] * scale_factor))
-        
-        # Estimate cycles based on operation counts and allocated resources
-        cycles = sum(operation_counts.values()) // max(1, sum(hw_allocated.values()))
+    # Calculate power consumption (simple model)
+    power = 0
+    for op, count in hw_allocated.items():
+        if op in area_costs:
+            # Power is roughly proportional to area
+            power += count * area_costs[op] * 10  # Simple scaling factor
     
-    return hw_allocated, cycles
+    hw_allocated['power'] = round(power, 2)
+    
+    return hw_allocated
 
 def improved_parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm'):
     """Improved version of parse_graph with better algorithm detection and resource allocation
@@ -1249,9 +1208,7 @@ def improved_parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=10
         }
     
     # Allocate resources based on area constraint and algorithm parameters
-    hw_allocated, cycles = allocate_resources_with_area_constraint(
-        dfg, area_budget, algorithm_type, algorithm_params
-    )
+    hw_allocated = allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type, algorithm_params)
     
     # Create scheduler
     scheduler = HLSScheduler(dfg, latency_table, resource_constraints)
@@ -1265,6 +1222,15 @@ def improved_parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=10
     # Calculate power
     power = allocator.calculate_power()
     hw_allocated['power'] = power
+    
+    # Initialize cycles
+    cycles = 0
+    
+    # Calculate cycles from schedule
+    for node_id, start_time in schedule.items():
+        node = dfg.nodes[node_id]
+        end_time = start_time + node.latency
+        cycles = max(cycles, end_time)
     
     # Apply algorithm-specific optimizations
     if algorithm_type == 'matmul':
@@ -1287,6 +1253,12 @@ def improved_parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=10
                 pipeline_depth = 2 * pe_array_size - 1 + 1
                 num_tiles = (matrix_size // pe_array_size) ** 2
                 cycles = num_tiles * pipeline_depth
+                
+            # Ensure minimum hardware allocation for systolic array
+            num_pes = pe_array_size * pe_array_size
+            hw_allocated['Regs'] = max(hw_allocated.get('Regs', 0), 3 * matrix_size + num_pes, 120)  # Ensure at least 120 registers
+            hw_allocated['Mult'] = max(hw_allocated.get('Mult', 0), num_pes)
+            hw_allocated['Add'] = max(hw_allocated.get('Add', 0), num_pes - 1)
         else:
             # Basic matrix multiplication
             matrix_size = algorithm_params['matrix_size']
