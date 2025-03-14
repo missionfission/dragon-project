@@ -516,7 +516,7 @@ perf_stats = dx.estimate_performance(graph, optimized_config)`}</code>
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center text-gray-400">
-        © 2024 Dragon Systems. All rights reserved.
+        © 2024 Dragon Systems. All rights reserved. Contact Email : iaskhushal@gmail.com
       </footer>
     </div>
   )
