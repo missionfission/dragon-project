@@ -884,6 +884,37 @@ class RISCVCompiler:
             reg = self.get_temp_reg()
             self.machine.x[reg] = self.machine.read_i32(var.addr)
             return reg
+        elif isinstance(node, ast.Subscript):
+            # Handle array indexing (e.g., arr[idx])
+            if isinstance(node.value, ast.Name):
+                # Get the array variable
+                array_var = self.get_variable(node.value.id)
+                if array_var is None:
+                    raise NameError(f"Variable {node.value.id} not found")
+                
+                # Compile the index expression
+                if isinstance(node.slice, ast.Index):
+                    # Python 3.8 and earlier
+                    index_reg = self.compile_expr(node.slice.value)
+                else:
+                    # Python 3.9+
+                    index_reg = self.compile_expr(node.slice)
+                
+                # Calculate the address of the element
+                index = self.machine.x[index_reg]
+                element_addr = array_var.addr + index * 4  # Assuming 4 bytes per element
+                
+                # Load the value from the calculated address
+                result_reg = self.get_temp_reg()
+                self.machine.x[result_reg] = self.machine.read_i32(element_addr)
+                
+                # Update instruction counter
+                self.instr_counter['LW'] += 1
+                
+                return result_reg
+            else:
+                # Handle more complex subscripts (e.g., obj.attr[idx])
+                raise NotImplementedError("Only simple subscripts supported")
         elif isinstance(node, ast.List):
             # Handle list literal
             size = len(node.elts)
@@ -1002,41 +1033,56 @@ class RISCVCompiler:
             raise NotImplementedError(f"Expression type not supported: {type(node)}")
     
     def compile_statement(self, node: ast.AST):
-        """Compile a statement"""
+        """Compile statement with improved assignment handling"""
         if isinstance(node, ast.Assign):
-            # Get value first
+            # Compile the value
             value_reg = self.compile_expr(node.value)
             value = self.machine.x[value_reg]
             
-            # Then handle each target
+            # Assign to each target
             for target in node.targets:
                 if isinstance(target, ast.Name):
-                    # Check if variable exists in any scope
+                    # Simple variable assignment
                     var = self.get_variable(target.id)
                     if var is None:
-                        # Create new variable in current scope
                         var = self.allocate_variable(target.id)
                     self.machine.write_i32(var.addr, value)
-                elif isinstance(target, ast.Attribute):
-                    if isinstance(target.value, ast.Name) and target.value.id == 'self':
-                        # Handle self.attr assignment
-                        var_name = f"self_{target.attr}"
-                        var = self.get_variable(var_name)
-                        if var is None:
-                            var = self.allocate_variable(var_name)
-                        self.machine.write_i32(var.addr, value)
+                    self.instr_counter['SW'] += 1
+                elif isinstance(target, ast.Subscript):
+                    # Array assignment (e.g., arr[idx] = value)
+                    if isinstance(target.value, ast.Name):
+                        # Get the array variable
+                        array_var = self.get_variable(target.value.id)
+                        if array_var is None:
+                            raise NameError(f"Variable {target.value.id} not found")
+                        
+                        # Compile the index expression
+                        if isinstance(target.slice, ast.Index):
+                            # Python 3.8 and earlier
+                            index_reg = self.compile_expr(target.slice.value)
+                        else:
+                            # Python 3.9+
+                            index_reg = self.compile_expr(target.slice)
+                        
+                        # Calculate the address of the element
+                        index = self.machine.x[index_reg]
+                        element_addr = array_var.addr + index * 4  # Assuming 4 bytes per element
+                        
+                        # Store the value at the calculated address
+                        self.machine.write_i32(element_addr, value)
+                        
+                        # Update instruction counter
+                        self.instr_counter['SW'] += 1
                     else:
-                        raise NotImplementedError("Only self.attr assignments supported")
+                        # Handle more complex subscripts (e.g., obj.attr[idx] = value)
+                        raise NotImplementedError("Only simple subscripts supported")
                 else:
                     raise NotImplementedError(f"Assignment target not supported: {type(target)}")
         elif isinstance(node, ast.Return):
             if node.value:
                 value_reg = self.compile_expr(node.value)
-                value = self.machine.x[value_reg]
-                self.machine.write_i32(0, value)  # Store return value at address 0
-                self.return_value = value
+                self.return_value = self.machine.x[value_reg]
             else:
-                self.machine.write_i32(0, 0)  # Return 0 by default
                 self.return_value = 0
         elif isinstance(node, ast.If):
             self.compile_if(node)
@@ -1045,7 +1091,7 @@ class RISCVCompiler:
         elif isinstance(node, ast.While):
             self.compile_while(node)
         elif isinstance(node, ast.Expr):
-            # Expression statement (like a function call)
+            # Expression statement (e.g., function call)
             self.compile_expr(node.value)
         else:
             raise NotImplementedError(f"Statement type not supported: {type(node)}")
