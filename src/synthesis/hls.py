@@ -868,6 +868,9 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
     Returns:
         dict: Allocated hardware resources
     """
+    # Print area constraint information
+    print(f"Area constraint: {area_budget} mm^2")
+    
     # Define default area costs for hardware components (in mm^2)
     area_costs = {
         'Add': 0.01,
@@ -910,6 +913,8 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
         if op in area_costs:
             total_area += count * area_costs[op]
     
+    print(f"Initial area requirement: {total_area:.2f} mm^2")
+    
     # Allocate resources based on algorithm type
     if algorithm_type == 'matmul':
         matrix_size = algorithm_params.get('matrix_size', 16)
@@ -928,6 +933,8 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
         remaining_area = area_budget - (hw_allocated['Regs'] * area_costs['Regs'] + 
                                        hw_allocated['Mult'] * area_costs['Mult'] + 
                                        hw_allocated['Add'] * area_costs['Add'])
+        
+        print(f"Remaining area after minimum allocation: {remaining_area:.2f} mm^2")
         
         # Allocate more multipliers and adders with remaining area
         # Prioritize multipliers as they're the bottleneck
@@ -957,14 +964,18 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
                         (num_pes - 1) * area_costs['Add'] + 
                         min_registers * area_costs['Regs'])
         
+        print(f"Systolic array area requirement: {systolic_area:.2f} mm^2")
+        
         # If area budget is sufficient, allocate resources for full systolic array
         if systolic_area <= area_budget:
+            print("Area budget is sufficient for full systolic array")
             hw_allocated['Regs'] = min_registers
             hw_allocated['Mult'] = num_pes
             hw_allocated['Add'] = num_pes - 1
         else:
             # If area budget is not sufficient, scale down the systolic array
             scale_factor = area_budget / systolic_area
+            print(f"Area budget is insufficient, scaling down by factor: {scale_factor:.2f}")
             hw_allocated['Regs'] = max(48, int(min_registers * scale_factor))
             hw_allocated['Mult'] = max(16, int(num_pes * scale_factor))
             hw_allocated['Add'] = max(15, int((num_pes - 1) * scale_factor))
@@ -987,6 +998,8 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
                                        hw_allocated['Mult'] * area_costs['Mult'] + 
                                        hw_allocated['Add'] * area_costs['Add'])
         
+        print(f"Remaining area after minimum allocation: {remaining_area:.2f} mm^2")
+        
         # Allocate more multipliers and adders with remaining area
         while remaining_area >= area_costs['Mult'] + area_costs['Add'] and hw_allocated['Mult'] < filter_size:
             hw_allocated['Mult'] += 1
@@ -1008,6 +1021,8 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
         remaining_area = area_budget - (hw_allocated['Regs'] * area_costs['Regs'] + 
                                        hw_allocated.get('BitXor', 0) * area_costs['BitXor'])
         
+        print(f"Remaining area after minimum allocation: {remaining_area:.2f} mm^2")
+        
         # Allocate more BitXor units with remaining area
         while remaining_area >= area_costs['BitXor'] and hw_allocated.get('BitXor', 0) < 16:
             hw_allocated['BitXor'] = hw_allocated.get('BitXor', 0) + 1
@@ -1021,6 +1036,17 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
             power += count * area_costs[op] * 10  # Simple scaling factor
     
     hw_allocated['power'] = round(power, 2)
+    
+    # Calculate final area usage
+    final_area = 0
+    for op, count in hw_allocated.items():
+        if op in area_costs:
+            final_area += count * area_costs[op]
+    
+    print(f"Final area usage: {final_area:.2f} mm^2 ({(final_area/area_budget)*100:.1f}% of budget)")
+    
+    # Print hardware allocation
+    print(f"Hardware allocation: {hw_allocated}")
     
     return hw_allocated
 
