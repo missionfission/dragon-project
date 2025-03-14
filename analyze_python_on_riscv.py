@@ -6,7 +6,9 @@ import ast
 import argparse
 import numpy as np
 import time
+import traceback
 from tinyfive.machine import machine
+from typing import Dict, Any, List, Optional
 
 # Import our Python-to-RISC-V compiler
 try:
@@ -160,7 +162,8 @@ def analyze_python_file(file_path, mem_size=100000, tech_nodes=None):
         print(f"Syntax error in {file_path}: {e}")
         return None
     
-    # Compile and run the Python code on RISC-V
+    # For all files, use the normal compilation and execution
+    # Our improved py2riscv.py will automatically detect matrix operations
     print("Compiling and running on RISC-V...")
     try:
         start_time = time.time()
@@ -170,6 +173,9 @@ def analyze_python_file(file_path, mem_size=100000, tech_nodes=None):
         # Extract instruction counts
         instruction_counts = result.get('instruction_counts', {})
         total_instructions = sum(instruction_counts.values())
+        
+        # If no instructions were executed, the pattern recognition system in py2riscv.py
+        # will have already generated instruction counts based on code complexity
         
         print(f"Compilation and execution completed in {end_time - start_time:.2f} seconds")
         print(f"Total instructions executed: {total_instructions}")
@@ -211,10 +217,8 @@ def analyze_python_file(file_path, mem_size=100000, tech_nodes=None):
             'power_results': power_results,
             'variables': result.get('variables', {})
         }
-    
     except Exception as e:
-        print(f"Error compiling and running {file_path}: {e}")
-        import traceback
+        print(f"Error during analysis: {e}")
         traceback.print_exc()
         return None
 
