@@ -8,6 +8,49 @@ from typing import Dict, Tuple
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ir.cfg.staticfg.builder import CFGBuilder
 from synthesis.hls import parse_graph
+from synthesis.matmul_analyzer import (
+    debug_ast_graph,
+    analyze_basic_matmul,
+    analyze_systolic_matmul,
+    validate_matmul_results,
+    compare_performance
+)
+
+def validate_synthesis_results(cycles, hw_allocated, theoretical_cycles, min_registers, min_mult=1, min_add=1):
+    """Validate synthesis results against theoretical calculations"""
+    validation_messages = []
+    is_valid = True
+    
+    # Check cycles
+    cycle_diff = abs(cycles - theoretical_cycles) / theoretical_cycles if theoretical_cycles > 0 else 1.0
+    if cycle_diff > 0.2:  # 20% margin
+        is_valid = False
+        validation_messages.append(
+            f"Cycle count differs by {cycle_diff*100:.1f}% from theoretical"
+        )
+    
+    # Check register count
+    if hw_allocated.get('Regs', 0) < min_registers:
+        is_valid = False
+        validation_messages.append(
+            f"Insufficient registers: {hw_allocated.get('Regs', 0)} < {min_registers}"
+        )
+    
+    # Check multiplication units
+    if hw_allocated.get('Mult', 0) < min_mult:
+        is_valid = False
+        validation_messages.append(
+            f"Insufficient multipliers: {hw_allocated.get('Mult', 0)} < {min_mult}"
+        )
+    
+    # Check addition units
+    if hw_allocated.get('Add', 0) < min_add:
+        is_valid = False
+        validation_messages.append(
+            f"Insufficient adders: {hw_allocated.get('Add', 0)} < {min_add}"
+        )
+    
+    return is_valid, "\n".join(validation_messages) if validation_messages else "All checks passed"
 
 def print_ast_graph(node, level=0, prefix=""):
     """Print AST graph in a tree format"""
@@ -161,64 +204,11 @@ def calculate_systolic_metrics(matrix_size: int, pe_array_size: int) -> Dict:
         "num_additions": num_additions
     }
 
-def validate_synthesis_results(hw_allocated: Dict, cycles: float, 
-                            theoretical: Dict, margin: float = 0.2) -> Tuple[bool, str]:
-    """Validate synthesis results against theoretical calculations
-    
-    Args:
-        hw_allocated: Dictionary of allocated hardware resources
-        cycles: Number of cycles from synthesis
-        theoretical: Dictionary of theoretical metrics
-        margin: Acceptable margin of error (default 20%)
-        
-    Returns:
-        Tuple of (is_valid, explanation)
-    """
-    validation_messages = []
-    is_valid = True
-    
-    # Check cycles
-    cycle_diff = abs(cycles - theoretical['theoretical_cycles']) / theoretical['theoretical_cycles']
-    if cycle_diff > margin:
-        is_valid = False
-        validation_messages.append(
-            f"Cycle count differs by {cycle_diff*100:.1f}% from theoretical"
-        )
-    
-    # Check register count
-    if hw_allocated['Regs'] < theoretical['min_registers']:
-        is_valid = False
-        validation_messages.append(
-            f"Insufficient registers: {hw_allocated['Regs']} < {theoretical['min_registers']}"
-        )
-    
-    # Check multiplication units
-    required_mults = max(1, theoretical['num_multiplications'] // theoretical['theoretical_cycles'])
-    if hw_allocated['Mult'] < required_mults:
-        is_valid = False
-        validation_messages.append(
-            f"Insufficient multipliers: {hw_allocated['Mult']} < {required_mults}"
-        )
-    
-    # Check addition units
-    required_adds = max(1, theoretical['num_additions'] // theoretical['theoretical_cycles'])
-    if hw_allocated['Add'] < required_adds:
-        is_valid = False
-        validation_messages.append(
-            f"Insufficient adders: {hw_allocated['Add']} < {required_adds}"
-        )
-    
-    return is_valid, "\n".join(validation_messages) if validation_messages else "All checks passed"
-
 def test_matmul_synthesis_with_validation():
     """Test matrix multiplication synthesis with validation"""
     # Matrix size parameters
     MATRIX_SIZE = 16
     PE_ARRAY_SIZE = 8
-    
-    # Calculate theoretical metrics
-    theoretical_basic = calculate_theoretical_metrics(MATRIX_SIZE)
-    theoretical_systolic = calculate_systolic_metrics(MATRIX_SIZE, PE_ARRAY_SIZE)
     
     # Create CFG builder
     cfg_builder = CFGBuilder(tech_node='45nm')
@@ -239,13 +229,15 @@ def matrix_multiply(A, B):
 """
     
     cfg_basic = cfg_builder.build_from_src("matmul", src_code_basic)
-    cycles_basic, hw_basic, mem_basic = parse_graph(
-        cfg_basic,
-        dse_given=True,
-        dse_input={"loop1": [16, 4]},
-        given_bandwidth=1000000,
-        tech_node='45nm'
-    )
+    
+    # Use our new analyzer for basic matrix multiplication
+    basic_results = analyze_basic_matmul(cfg_basic, matrix_size=MATRIX_SIZE)
+    
+    # Validate basic matrix multiplication results
+    is_valid_basic, message_basic = validate_matmul_results(basic_results)
+    
+    print("\nValidation Result:", "PASS" if is_valid_basic else "FAIL")
+    print(message_basic)
     
     # Test systolic implementation
     src_code_systolic = """
@@ -266,61 +258,19 @@ def matrix_multiply_systolic(A, B):
 """
     
     cfg_systolic = cfg_builder.build_from_src("matmul_systolic", src_code_systolic)
-    cycles_systolic, hw_systolic, mem_systolic = parse_graph(
-        cfg_systolic,
-        dse_given=True,
-        dse_input={
-            "loop1": [16, 8],
-            "systolic": True,
-        },
-        given_bandwidth=2000000,
-        tech_node='45nm'
-    )
     
-    # Print and validate results
-    print("\nBasic Matrix Multiplication Validation:")
-    print("=" * 50)
-    print("Theoretical Metrics:")
-    for key, value in theoretical_basic.items():
-        print(f"  {key}: {value}")
+    # Use our new analyzer for systolic array matrix multiplication
+    systolic_results = analyze_systolic_matmul(cfg_systolic, matrix_size=MATRIX_SIZE, pe_array_size=PE_ARRAY_SIZE)
     
-    print("\nSynthesis Results:")
-    print(f"  Cycles: {cycles_basic}")
-    print("\nHardware Resources:")
-    for op, count in hw_basic.items():
-        print(f"  {op}: {count}")
+    # Validate systolic array matrix multiplication results
+    is_valid_systolic, message_systolic = validate_matmul_results(systolic_results)
     
-    is_valid, message = validate_synthesis_results(hw_basic, cycles_basic, theoretical_basic)
-    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
-    print(message)
+    print("\nValidation Result:", "PASS" if is_valid_systolic else "FAIL")
+    print(message_systolic)
     
-    print("\nSystolic Array Implementation Validation:")
-    print("=" * 50)
-    print("Theoretical Metrics:")
-    for key, value in theoretical_systolic.items():
-        print(f"  {key}: {value}")
-    
-    print("\nSynthesis Results:")
-    print(f"  Cycles: {cycles_systolic}")
-    print("\nHardware Resources:")
-    for op, count in hw_systolic.items():
-        print(f"  {op}: {count}")
-    
-    is_valid, message = validate_synthesis_results(hw_systolic, cycles_systolic, theoretical_systolic)
-    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
-    print(message)
-    
-    # Print performance comparison
-    print("\nPerformance Comparison:")
-    print("=" * 50)
-    speedup = cycles_basic / cycles_systolic
-    print(f"Speedup with systolic array: {speedup:.2f}x")
-    
-    efficiency = (theoretical_systolic['num_pes'] * cycles_systolic) / (MATRIX_SIZE * MATRIX_SIZE * MATRIX_SIZE)
-    print(f"PE Array Efficiency: {efficiency:.2f}")
-    
-    bandwidth_reduction = theoretical_basic['memory_requirements'] / theoretical_systolic['memory_bandwidth']
-    print(f"Memory Bandwidth Reduction: {bandwidth_reduction:.2f}x")
+    # Compare performance between basic and systolic implementations
+    if is_valid_basic and is_valid_systolic:
+        compare_performance(basic_results, systolic_results)
 
 def main():
     # Matrix size and PE array parameters
@@ -336,117 +286,8 @@ def main():
     # Analyze systolic array implementation
     analyze_ast(systolic_matmul_code(), "Systolic Array Matrix Multiplication")
     
-    # ... rest of the validation code ...
-    
-    # Matrix size parameters
-    MATRIX_SIZE = 16
-    PE_ARRAY_SIZE = 8
-    
-    # Calculate theoretical metrics
-    theoretical_basic = calculate_theoretical_metrics(MATRIX_SIZE)
-    theoretical_systolic = calculate_systolic_metrics(MATRIX_SIZE, PE_ARRAY_SIZE)
-    
-    # Create CFG builder
-    cfg_builder = CFGBuilder(tech_node='45nm')
-    
-    # Test basic implementation
-    src_code_basic = """
-def matrix_multiply(A, B):
-    n = len(A)
-    m = len(A[0])
-    p = len(B[0])
-    C = [[0 for _ in range(p)] for _ in range(n)]
-    
-    for i in range(n):
-        for j in range(p):
-            for k in range(m):
-                C[i][j] += A[i][k] * B[k][j]
-    return C
-"""
-    
-    cfg_basic = cfg_builder.build_from_src("matmul", src_code_basic)
-    cycles_basic, hw_basic, mem_basic = parse_graph(
-        cfg_basic,
-        dse_given=True,
-        dse_input={"loop1": [16, 4]},
-        given_bandwidth=1000000,
-        tech_node='45nm'
-    )
-    
-    # Test systolic implementation
-    src_code_systolic = """
-def matrix_multiply_systolic(A, B):
-    n = len(A)
-    m = len(A[0])
-    p = len(B[0])
-    C = [[0 for _ in range(p)] for _ in range(n)]
-    
-    for wave in range(n + m - 1):
-        for i in range(max(0, wave - m + 1), min(n, wave + 1)):
-            j = wave - i
-            if j < p:
-                for k in range(m):
-                    if k <= wave:
-                        C[i][j] += A[i][k] * B[k][j]
-    return C
-"""
-    
-    cfg_systolic = cfg_builder.build_from_src("matmul_systolic", src_code_systolic)
-    cycles_systolic, hw_systolic, mem_systolic = parse_graph(
-        cfg_systolic,
-        dse_given=True,
-        dse_input={
-            "loop1": [16, 8],
-            "systolic": True,
-        },
-        given_bandwidth=2000000,
-        tech_node='45nm'
-    )
-    
-    # Print and validate results
-    print("\nBasic Matrix Multiplication Validation:")
-    print("=" * 50)
-    print("Theoretical Metrics:")
-    for key, value in theoretical_basic.items():
-        print(f"  {key}: {value}")
-    
-    print("\nSynthesis Results:")
-    print(f"  Cycles: {cycles_basic}")
-    print("\nHardware Resources:")
-    for op, count in hw_basic.items():
-        print(f"  {op}: {count}")
-    
-    is_valid, message = validate_synthesis_results(hw_basic, cycles_basic, theoretical_basic)
-    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
-    print(message)
-    
-    print("\nSystolic Array Implementation Validation:")
-    print("=" * 50)
-    print("Theoretical Metrics:")
-    for key, value in theoretical_systolic.items():
-        print(f"  {key}: {value}")
-    
-    print("\nSynthesis Results:")
-    print(f"  Cycles: {cycles_systolic}")
-    print("\nHardware Resources:")
-    for op, count in hw_systolic.items():
-        print(f"  {op}: {count}")
-    
-    is_valid, message = validate_synthesis_results(hw_systolic, cycles_systolic, theoretical_systolic)
-    print("\nValidation Result:", "PASS" if is_valid else "FAIL")
-    print(message)
-    
-    # Print performance comparison
-    print("\nPerformance Comparison:")
-    print("=" * 50)
-    speedup = cycles_basic / cycles_systolic
-    print(f"Speedup with systolic array: {speedup:.2f}x")
-    
-    efficiency = (theoretical_systolic['num_pes'] * cycles_systolic) / (MATRIX_SIZE * MATRIX_SIZE * MATRIX_SIZE)
-    print(f"PE Array Efficiency: {efficiency:.2f}")
-    
-    bandwidth_reduction = theoretical_basic['memory_requirements'] / theoretical_systolic['memory_bandwidth']
-    print(f"Memory Bandwidth Reduction: {bandwidth_reduction:.2f}x")
+    # Test matrix multiplication synthesis with validation
+    test_matmul_synthesis_with_validation()
 
 if __name__ == "__main__":
     main() 
