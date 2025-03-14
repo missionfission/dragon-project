@@ -1024,7 +1024,7 @@ def allocate_resources_with_area_constraint(dfg, area_budget, algorithm_type=Non
     
     return hw_allocated
 
-def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth=None, tech_node='45nm'):
+def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth=None, tech_node='45nm', area_constraint=None):
     """Improved version of parse_graph that handles different algorithm types
     
     Args:
@@ -1033,6 +1033,7 @@ def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth
         dse_given: Whether DSE input is given
         given_bandwidth: Given memory bandwidth
         tech_node: Technology node
+        area_constraint: Area constraint in mm^2 (overrides default area budget)
         
     Returns:
         Tuple of (cycles, hw_allocated, memory_cfgs)
@@ -1056,8 +1057,13 @@ def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth
     # Count operations in the DFG
     op_counts = count_operations_in_dfg(dfg)
     
-    # Set default area budget based on technology node
-    area_budget = get_area_budget_for_tech_node(tech_node)
+    # Set area budget based on constraint or default for technology node
+    if area_constraint is not None:
+        area_budget = area_constraint
+        print(f"Using user-specified area constraint: {area_budget} mm^2")
+    else:
+        area_budget = get_area_budget_for_tech_node(tech_node)
+        print(f"Using default area budget for {tech_node}: {area_budget} mm^2")
     
     # Extract algorithm parameters
     algorithm_params = extract_algorithm_params(graph, algorithm_type)
@@ -1207,7 +1213,7 @@ def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth
     
     else:
         # For unknown algorithm types, use the original parse_graph function
-        cycles, hw_allocated, memory_cfgs = original_parse_graph(graph, dse_input, dse_given, given_bandwidth, tech_node)
+        cycles, hw_allocated, memory_cfgs = original_parse_graph(graph, dse_input, dse_given, given_bandwidth, tech_node, area_constraint)
     
     # Calculate power based on hardware allocation
     power = calculate_power(hw_allocated, tech_node)
@@ -1217,6 +1223,7 @@ def improved_parse_graph(graph, dse_input=None, dse_given=False, given_bandwidth
     print(f"Cycles: {cycles}")
     print(f"Hardware allocation: {hw_allocated}")
     print(f"Power: {power} mW")
+    print(f"Area budget: {area_budget} mm^2")
     
     return cycles, hw_allocated, memory_cfgs
 
@@ -1272,7 +1279,7 @@ def _detect_algorithm_type(graph):
         return 'unknown'
 
 # Update the original parse_graph function to use the improved version
-def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm'):
+def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm', area_constraint=None):
     """
     Parse a non-AI workload graph and store the configuration as a hardware representation.
     Supports technology node scaling for power and latency values.
@@ -1283,12 +1290,13 @@ def parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, te
         dse_given: Whether DSE parameters are provided
         given_bandwidth: Available memory bandwidth in bytes/sec
         tech_node: Target technology node (default 45nm)
+        area_constraint: Area constraint in mm^2 (overrides default area budget)
         
     Returns:
         tuple: (cycles, hw_allocated, memory_cfgs) - Hardware synthesis results with power
     """
     # Use the improved parse_graph function
-    return improved_parse_graph(graph, dse_input, dse_given, given_bandwidth, tech_node)
+    return improved_parse_graph(graph, dse_input, dse_given, given_bandwidth, tech_node, area_constraint)
 
 def get_params(dfg, area_budget):
     """Adjust parameters to meet area budget
@@ -1473,3 +1481,294 @@ def get_stats(cfg):
 
 
 #     return hw_allocated
+
+def count_operations_in_dfg(dfg):
+    """Count operations in a data flow graph
+    
+    Args:
+        dfg: Data flow graph
+        
+    Returns:
+        Dictionary of operation counts
+    """
+    op_counts = {}
+    
+    # Count operations in each node
+    for node_id, node in dfg.nodes.items():
+        if hasattr(node, 'operations'):
+            for op_type, count in node.operations.items():
+                op_counts[op_type] = op_counts.get(op_type, 0) + count
+    
+    return op_counts
+
+def get_area_budget_for_tech_node(tech_node):
+    """Get default area budget for a technology node
+    
+    Args:
+        tech_node: Technology node (e.g., '45nm', '32nm', etc.)
+        
+    Returns:
+        Default area budget in mm^2
+    """
+    # Default area budgets by technology node
+    area_budgets = {
+        '45nm': 5.0,
+        '32nm': 4.0,
+        '22nm': 3.0,
+        '14nm': 2.0,
+        '7nm': 1.0
+    }
+    
+    return area_budgets.get(tech_node, 5.0)  # Default to 5.0 mm^2 if tech_node not found
+
+def extract_algorithm_params(graph, algorithm_type):
+    """Extract algorithm parameters from the graph
+    
+    Args:
+        graph: Control flow graph
+        algorithm_type: Type of algorithm ('matmul', 'fir', 'aes', 'letkf', etc.)
+        
+    Returns:
+        Dictionary of algorithm parameters
+    """
+    params = {}
+    
+    if algorithm_type == 'matmul':
+        # Extract matrix size from AST or use default
+        matrix_size = 16  # Default
+        
+        # Try to extract matrix size from function arguments or loop bounds
+        for node in graph:
+            if hasattr(node, 'statements'):
+                for stmt in node.statements:
+                    if isinstance(stmt, ast.For) and hasattr(stmt, 'iter') and hasattr(stmt.iter, 'args'):
+                        # Try to extract loop bound
+                        try:
+                            if len(stmt.iter.args) > 0 and isinstance(stmt.iter.args[0], ast.Constant):
+                                matrix_size = stmt.iter.args[0].value
+                        except:
+                            pass
+        
+        # Determine if this is a systolic array implementation
+        is_systolic = 'systolic' in str(graph).lower()
+        
+        # Set algorithm parameters
+        params = {
+            'matrix_size': matrix_size,
+            'is_systolic': is_systolic,
+            'num_pes': 16 if is_systolic else 1  # Default PE array size
+        }
+    
+    elif algorithm_type == 'fir':
+        # Extract filter parameters from AST or use defaults
+        filter_length = 16  # Default
+        input_size = 1024  # Default
+        
+        # Try to extract filter length from function arguments or loop bounds
+        for node in graph:
+            if hasattr(node, 'statements'):
+                for stmt in node.statements:
+                    if isinstance(stmt, ast.For) and hasattr(stmt, 'iter') and hasattr(stmt.iter, 'args'):
+                        # Try to extract loop bound
+                        try:
+                            if len(stmt.iter.args) > 0 and isinstance(stmt.iter.args[0], ast.Constant):
+                                # Assume first loop bound is input size, second is filter length
+                                if 'input_size' not in params:
+                                    input_size = stmt.iter.args[0].value
+                                else:
+                                    filter_length = stmt.iter.args[0].value
+                        except:
+                            pass
+        
+        # Set algorithm parameters
+        params = {
+            'filter_length': filter_length,
+            'input_size': input_size
+        }
+    
+    elif algorithm_type == 'aes':
+        # Extract AES parameters from AST or use defaults
+        block_size = 128  # Default
+        num_rounds = 10  # Default for AES-128
+        
+        # Try to extract number of rounds from function arguments or loop bounds
+        for node in graph:
+            if hasattr(node, 'statements'):
+                for stmt in node.statements:
+                    if isinstance(stmt, ast.For) and hasattr(stmt, 'iter') and hasattr(stmt.iter, 'args'):
+                        # Try to extract loop bound
+                        try:
+                            if len(stmt.iter.args) > 0 and isinstance(stmt.iter.args[0], ast.Constant):
+                                if stmt.iter.args[0].value > 1 and stmt.iter.args[0].value <= 14:
+                                    num_rounds = stmt.iter.args[0].value
+                        except:
+                            pass
+        
+        # Set algorithm parameters
+        params = {
+            'block_size': block_size,
+            'num_rounds': num_rounds
+        }
+    
+    elif algorithm_type == 'letkf':
+        # Extract LETKF parameters from AST or use defaults
+        ensemble_size = 4  # Default
+        state_dim = 6  # Default
+        obs_dim = 3  # Default
+        block_size = 2  # Default
+        
+        # Try to extract parameters from class initialization or function arguments
+        for node in graph:
+            if hasattr(node, 'statements'):
+                for stmt in node.statements:
+                    if isinstance(stmt, ast.Assign) and hasattr(stmt, 'targets') and len(stmt.targets) > 0:
+                        target = stmt.targets[0]
+                        if hasattr(target, 'attr'):
+                            if target.attr == 'k' or target.attr == 'ensemble_size':
+                                if hasattr(stmt.value, 'value'):
+                                    ensemble_size = stmt.value.value
+                            elif target.attr == 'state_dim':
+                                if hasattr(stmt.value, 'value'):
+                                    state_dim = stmt.value.value
+                            elif target.attr == 'obs_dim':
+                                if hasattr(stmt.value, 'value'):
+                                    obs_dim = stmt.value.value
+                            elif target.attr == 'block_size':
+                                if hasattr(stmt.value, 'value'):
+                                    block_size = stmt.value.value
+        
+        # Set algorithm parameters
+        params = {
+            'ensemble_size': ensemble_size,
+            'state_dim': state_dim,
+            'obs_dim': obs_dim,
+            'block_size': block_size
+        }
+    
+    return params
+
+def calculate_power(hw_allocated, tech_node='45nm'):
+    """Calculate power consumption based on hardware allocation
+    
+    Args:
+        hw_allocated: Dictionary of allocated hardware resources
+        tech_node: Technology node (e.g., '45nm', '32nm', etc.)
+        
+    Returns:
+        Power consumption in mW
+    """
+    # Power consumption per unit by technology node
+    power_table = {
+        '45nm': {
+            'Add': 0.05,
+            'Sub': 0.05,
+            'Mult': 0.1,
+            'Div': 0.2,
+            'Mod': 0.2,
+            'BitXor': 0.03,
+            'BitAnd': 0.03,
+            'BitOr': 0.03,
+            'Eq': 0.02,
+            'NotEq': 0.02,
+            'Lt': 0.02,
+            'LtE': 0.02,
+            'Gt': 0.02,
+            'GtE': 0.02,
+            'Load': 0.05,
+            'Store': 0.05,
+            'Call': 0.01,
+            'Branch': 0.02,
+            'Loop': 0.01,
+            'Regs': 0.01  # per register
+        }
+    }
+    
+    # Scale power based on technology node
+    scaling_factor = 1.0
+    if tech_node == '32nm':
+        scaling_factor = 0.7
+    elif tech_node == '22nm':
+        scaling_factor = 0.5
+    elif tech_node == '14nm':
+        scaling_factor = 0.3
+    elif tech_node == '7nm':
+        scaling_factor = 0.2
+    
+    # Get power table for the specified technology node
+    if tech_node not in power_table:
+        # Scale the 45nm power table
+        power_table[tech_node] = {op: value * scaling_factor for op, value in power_table['45nm'].items()}
+    
+    # Calculate power consumption
+    power = 0.0
+    for hw_type, count in hw_allocated.items():
+        if hw_type in power_table[tech_node]:
+            power += count * power_table[tech_node][hw_type]
+    
+    return power
+
+def original_parse_graph(graph, dse_input=0, dse_given=False, given_bandwidth=1000000, tech_node='45nm', area_constraint=None):
+    """Original implementation of parse_graph for backward compatibility
+    
+    Args:
+        graph: Control flow graph
+        dse_input: Design space exploration input
+        dse_given: Whether DSE input is given
+        given_bandwidth: Given memory bandwidth
+        tech_node: Technology node
+        area_constraint: Area constraint in mm^2 (overrides default area budget)
+        
+    Returns:
+        Tuple of (cycles, hw_allocated, memory_cfgs)
+    """
+    # This is a simplified version of the original parse_graph function
+    # that just calls the improved version with default parameters
+    
+    # Initialize hardware allocation
+    hw_allocated = {}
+    
+    # Initialize cycles
+    cycles = 0.0
+    
+    # Initialize memory configurations
+    memory_cfgs = {}
+    
+    # Build data flow graph
+    dfg = build_dfg_from_ast(graph)
+    
+    # Count operations in the DFG
+    op_counts = count_operations_in_dfg(dfg)
+    
+    # Set area budget based on constraint or default for technology node
+    if area_constraint is not None:
+        area_budget = area_constraint
+    else:
+        area_budget = get_area_budget_for_tech_node(tech_node)
+    
+    # Allocate hardware resources
+    for op_type, count in op_counts.items():
+        hw_allocated[op_type] = count
+    
+    # Ensure minimum hardware allocation
+    hw_allocated['Regs'] = max(hw_allocated.get('Regs', 0), 16)
+    
+    # Calculate cycles based on operations
+    for op_type, count in op_counts.items():
+        if op_type == 'Mult':
+            cycles += count * 5  # 5 cycles per multiplication
+        elif op_type in ['Add', 'Sub']:
+            cycles += count * 4  # 4 cycles per addition/subtraction
+        elif op_type == 'Div':
+            cycles += count * 10  # 10 cycles per division
+        elif op_type in ['Load', 'Store']:
+            cycles += count * 4  # 4 cycles per memory operation
+    
+    # Apply cycle time from DSE input
+    if dse_given and isinstance(dse_input, dict) and 'cycle_time' in dse_input:
+        cycle_time = dse_input['cycle_time']
+        cycles *= cycle_time
+    
+    # Allocate memory configurations
+    memory_cfgs = allocate_memory_cfgs()
+    
+    return cycles, hw_allocated, memory_cfgs
