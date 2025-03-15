@@ -2,12 +2,41 @@
 
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
-export default function BlogPage() {
+export default function BlogIndexPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-20">
-        <h1 className="text-5xl font-bold text-center mb-16">DragonX Blog</h1>
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-5xl font-bold">DragonX Blog</h1>
+          <Button 
+            onClick={() => router.push('/')}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            Back to Home
+          </Button>
+        </div>
+        
+        {/* Featured Article */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold mb-6">Featured Article</h2>
+          <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-colors cursor-pointer" onClick={() => router.push('/blog/python-risc-v-compiler')}>
+            <h3 className="text-2xl font-semibold mb-4">Building a Python to RISC-V Compiler and Simulator: Our Journey</h3>
+            <p className="text-gray-300 mb-6">
+              At DragonX Systems, we've developed a powerful Python to RISC-V compiler and simulator that enables rapid architecture evaluation and performance estimation for chip designs. Our multi-layered compilation strategy parses Python code into an AST, analyzes computational patterns, compiles to RISC-V instructions, and provides detailed performance metrics across various technology nodes.
+            </p>
+            <div className="flex items-center text-blue-400 hover:text-blue-300">
+              Read full article
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Card>
+        </div>
         
         <div className="space-y-20 max-w-4xl mx-auto">
           {/* Launch Blog Post */}

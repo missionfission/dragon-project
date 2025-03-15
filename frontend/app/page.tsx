@@ -382,6 +382,19 @@ export default function HomePage() {
         <h2 className="text-4xl font-bold text-center mb-16">Latest from Our Blog</h2>
         
         <div className="max-w-4xl mx-auto space-y-8">
+          <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-colors cursor-pointer" onClick={() => router.push('/blog/python-risc-v-compiler')}>
+            <h3 className="text-2xl font-semibold mb-4">Building a Python to RISC-V Compiler and Simulator: Our Journey</h3>
+            <p className="text-gray-300 mb-6">
+              At DragonX Systems, we've developed a powerful Python to RISC-V compiler and simulator that enables rapid architecture evaluation and performance estimation for chip designs. Our multi-layered compilation strategy parses Python code into an AST, analyzes computational patterns, compiles to RISC-V instructions, and provides detailed performance metrics across various technology nodes.
+            </p>
+            <div className="flex items-center text-blue-400 hover:text-blue-300">
+              Read full article
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Card>
+
           <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-colors cursor-pointer" onClick={() => router.push('/blog')}>
             <h3 className="text-2xl font-semibold mb-4">Introducing DragonX: Revolutionary AI-Powered Chip Design Tools</h3>
             <div className="mb-6">
